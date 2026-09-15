@@ -2,6 +2,7 @@
   "date": "2026-09-15",
   "scope": "Interactive NISHAN UI and local HTTP integration; not a new watermark robustness study.",
   "implementation_commit": "fcb375f57638b9b357e2354c67f8c8c39da3f7f3",
+  "review_fix_commit": "4616182b7beab385e466ebc374715ce65809ccff",
   "environment": {
     "platform": "Linux",
     "python": "3.14.7",
@@ -10,7 +11,7 @@
   },
   "checks": {
     "demo_tests": {
-      "passed": 17,
+      "passed": 23,
       "failed": 0,
       "signed_integration_skipped": false,
       "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq .venv/bin/python -m unittest discover -s prototypes/nishan_pq/demo_app/tests -v"
@@ -27,6 +28,7 @@
       "notes": "Checks existing saved safeguard evidence; not a claim of a new 12-scenario run today. Team and repository slide placeholders remain."
     },
     "browser": {
+      "rerun_after_review_fixes": true,
       "passed": 9,
       "failed": 0,
       "console_errors": 0,
