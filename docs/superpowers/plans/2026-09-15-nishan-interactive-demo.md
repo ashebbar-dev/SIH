@@ -57,7 +57,7 @@
 - Produce `DemoEngine(workspace, state_dir).analyze(path, mode)` and
   `.prepare_signed()` and the exact HTTP route/result contract from the spec.
 
-- [ ] **Step 1: Write focused failing tests for the detector and result policy.**
+- [x] **Step 1: Write focused failing tests for the detector and result policy.**
 
 Start with real public source and marked fixtures, not mocked success scores:
 
@@ -90,7 +90,7 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq /home/user_end4/MySpac
 Expected RED: missing application modules before implementation. Record the
 actual failing output in the implementation report.
 
-- [ ] **Step 2: Implement the engine, public decoder and lazy signed mode.**
+- [x] **Step 2: Implement the engine, public decoder and lazy signed mode.**
 
 Keep public material cached once per engine, scored across all 1,000 rows.
 Only layout-and-visual set agreement produces a digital public fixture match;
@@ -112,7 +112,7 @@ uploaded original. The signed PDF itself must remain byte-identical during
 verification. Include evidence score/threshold, channel outcomes, file hash,
 real elapsed time and limitations in results, not a decorative confidence %.
 
-- [ ] **Step 3: Write RED HTTP/security tests, then implement the bounded server and CLI.**
+- [x] **Step 3: Write RED HTTP/security tests, then implement the bounded server and CLI.**
 
 Create a test server on a dynamically selected loopback port, exercising real
 HTTP requests. Assert status 403 for missing request token/cross-origin writes,
@@ -129,7 +129,7 @@ must work without importing fcntl-dependent core. Server serves only explicit
 UI, job and fixture routes, applies request limits before allocating bodies,
 has no permissive CORS, and uses one worker for preparation/analysis.
 
-- [ ] **Step 4: Implement the responsive desktop and phone views.**
+- [x] **Step 4: Implement the responsive desktop and phone views.**
 
 Use the exact route contract in the spec. Status polling shares completed phone
 uploads with the desktop. Display errors/unsupported input without clearing a
@@ -151,7 +151,7 @@ transformation. In signed mode, allow Alice/Bob copy selection from the real
 prepared fixture list; do not expose a UI control that selects the detector's
 expected answer.
 
-- [ ] **Step 5: Document exact launch/phone commands and update entry points.**
+- [x] **Step 5: Document exact launch/phone commands and update entry points.**
 
 Document:
 
@@ -174,7 +174,7 @@ local state to `.gitignore`; update README/CONTINUE_HERE to point to this guide
 and correct their current repository visibility to public without rewriting
 historical evidence JSON.
 
-- [ ] **Step 6: Run focused suite, existing regressions and self-review; commit.**
+- [x] **Step 6: Run focused suite, existing regressions and self-review; commit.**
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq /home/user_end4/MySpace/SIH/.venv/bin/python -m unittest discover -s prototypes/nishan_pq/demo_app/tests -v
