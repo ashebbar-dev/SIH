@@ -10,17 +10,17 @@ The user has a six-person team and a 15 September evaluation. The immediate
 priority is a dependable NISHAN digital demonstration and presentation, not a
 new research direction. DHRUVA remains a separate research prototype.
 
-- NISHAN's supported demonstration is a terminal-driven synthetic one-page PDF
-  workflow: encrypted package, per-recipient/session fingerprint, recipient
-  ML-DSA signature, local ledger and configured witness checks, clean-file
-  attribution and manipulated-copy abstention.
+- NISHAN's primary demonstration is now the offline browser workflow in
+  `prototypes/nishan_pq/INTERACTIVE_DEMO.md`: real source/marked/screenshot
+  uploads, direct phone-browser capture, and optional freshly signed Alice/Bob
+  copies. The 12-scenario terminal runner remains a deeper safeguard backup.
 - The saved 12 September safeguard run passed 12/12 scenarios. Its 19 source
   hashes matched the current code at the 14 September readiness inspection.
   These are historical scenario results, not a fresh run on the new laptop.
 - The six-slide PPTX/PDF and speaker notes are under
   `submissions/SIH26237_NISHAN_PQ/`. Team name, team ID and repository-link
-  placeholders remained at the last strict check. A private handoff repository
-  does not automatically satisfy a public submission-link requirement.
+  placeholders remained at the last strict check. The repository is now public;
+  the slide's repository-link placeholder still requires an explicit rebuild.
 - Original physical recovery was 0/4 captures at the shipped threshold.
   Exploratory receivers recovered the same one capture. No reliable phone-photo
   attribution has been established. PDF-source raster evidence remains a
@@ -41,9 +41,8 @@ fresh dependency install or another laptop. The safe summary is
 `research/evidence/github-handoff-2026-09-15.json`; no generated private demo
 state is included.
 
-Repository: https://github.com/ashebbar-dev/SIH (private handoff).
-Authenticate with an account that has access. Do not put tokens in commands or
-remote URLs.
+Public repository: https://github.com/ashebbar-dev/SIH. Do not put tokens in
+commands or remote URLs.
 
 ```bash
 gh repo clone ashebbar-dev/SIH
@@ -88,7 +87,20 @@ the demonstration look successful. Complete downloads/setup before disconnecting
 the network; the prepared demonstration itself needs no Internet, GPU, ESP32 or
 microphone. `jq` is optional for displaying JSON; a text editor also works.
 
-## Rehearse the current demo
+## Rehearse the current browser demo
+
+Follow `prototypes/nishan_pq/INTERACTIVE_DEMO.md`. The short Linux launch is:
+
+```bash
+.venv/bin/python prototypes/nishan_pq/tools/run_interactive_demo.py
+```
+
+Open `http://127.0.0.1:8765/`. The guide includes the exact Android
+`adb reverse` commands, phone route, manual-file/trusted-LAN fallbacks,
+OpenSSL requirement, and existing-public-print versus fresh-signed-copy
+boundary. A photo below threshold remains inconclusive.
+
+## Rehearse the safeguard backup
 
 Run from the repository root in the prepared terminal:
 
@@ -124,7 +136,7 @@ rejects. These jq commands display the newly generated results, not new traces.
 Full presentation order and limitations:
 `submissions/SIH26237_NISHAN_PQ/DEMO_RUNBOOK.md`.
 Use `demo_release_safeguards.py`, not the older `python -m nishan demo` workflow
-as the current safeguard demonstration. Retain a screen recording as backup.
+as the safeguard backup. Retain a screen recording as backup.
 Temporary output may disappear after a reboot; keep any chosen backup securely
 outside Git and never reuse the synthetic private keys for real documents.
 
@@ -205,6 +217,6 @@ the result to manufacture a pass.
 - An accidental root file named `=4.11` remains locally, ignored rather than
   deleted. Nothing was removed from the user's original workspace for handoff.
 
-Preserve these exclusions in later commits. Private GitHub visibility is not a
-reason to commit reusable secrets. Do not make this research handoff public
-without another publication and licensing review.
+Preserve these exclusions in later commits. Public GitHub visibility is never a
+reason to commit reusable secrets; publication and licensing review remains an
+ongoing requirement for new material.

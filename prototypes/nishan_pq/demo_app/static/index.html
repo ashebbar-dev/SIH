@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NISHAN — Follow the evidence</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23087f78'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='38' fill='white' font-family='sans-serif'%3EN%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body data-view="desktop">
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="NISHAN home"><span class="brand-mark">N</span><span>NISHAN</span></a>
+    <div class="local-badge"><span></span> Local &amp; offline</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Document leak attribution · evidence, not guesses</p>
+        <h1>Give every copy a signal.<br><em>Follow it when it leaks.</em></h1>
+        <p class="hero-copy">Choose a real NISHAN fixture or upload a one-page PDF/photo. The detector extracts the carrier from the bytes you send and shows what each evidence channel actually supports.</p>
+      </div>
+      <aside class="truth-card">
+        <span class="truth-icon">✓</span>
+        <div><strong>No mocked answers</strong><p>Every Try button downloads an actual file, sends its bytes through the normal upload API, and waits for real extraction.</p></div>
+      </aside>
+    </section>
+
+    <ol class="story" aria-label="Demonstration steps">
+      <li><span>1</span><div><strong>Choose a copy</strong><small>Original, public fixture, or fresh signed Alice/Bob release</small></div></li>
+      <li><span>2</span><div><strong>Create a leak</strong><small>Share the PDF—or photograph the printed page</small></div></li>
+      <li><span>3</span><div><strong>Inspect evidence</strong><small>Visual, layout, signature and witness facts stay separate</small></div></li>
+    </ol>
+
+    <section class="workspace-card">
+      <div class="toolbar">
+        <fieldset class="mode-switch">
+          <legend>Evidence mode</legend>
+          <label><input id="mode-public" type="radio" name="mode" value="public" checked><span>Existing print</span></label>
+          <label><input id="mode-signed" type="radio" name="mode" value="signed"><span>Signed demo</span></label>
+        </fieldset>
+        <div id="incoming-status" class="incoming"><span></span>No incoming phone upload</div>
+      </div>
+
+      <div id="mode-help" class="mode-help">The existing printed page is public fixture row 0: useful for reproducibility, but not a real ledger person or signed release.</div>
+
+      <div class="quick-actions" aria-label="Real example files">
+        <button id="try-original" class="action original" data-fixture="source"><span>○</span><strong>Try original</strong><small>Exact published bytes</small></button>
+        <button id="try-marked" class="action marked" data-fixture="public-marked"><span>⌁</span><strong>Try marked</strong><small>Public fixture PDF</small></button>
+        <button id="try-screenshot" class="action screenshot" data-fixture="public-screenshot"><span>▣</span><strong>Try screenshot</strong><small>Digital transformation</small></button>
+      </div>
+      <div class="fixture-downloads"><span>Need print-ready files?</span><a href="/api/fixtures/source">Download original PDF</a><a href="/api/fixtures/public-marked">Download public fixture PDF</a></div>
+
+      <div id="signed-panel" class="signed-panel" hidden>
+        <div><strong>Digital backup with real signed releases</strong><p>Prepare fresh Alice and Bob PDFs using ML-KEM, ML-DSA, the quorum ledger and pinned witness. These copies have new session identities and would need reprinting for a physical test.</p></div>
+        <button id="prepare-signed" class="button primary">Prepare Alice + Bob</button>
+        <div id="signed-fixtures" class="signed-fixtures"></div>
+      </div>
+
+      <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-describedby="upload-help">
+        <div class="upload-icon">↑</div>
+        <strong>Drop a page here, or choose a file</strong>
+        <span id="upload-help">One-page PDF, JPEG, PNG or WebP · up to 25 MiB</span>
+        <label class="button secondary" for="upload-input">Choose file</label>
+        <input id="upload-input" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" hidden>
+      </div>
+      <div id="status-message" class="status-message" role="status" aria-live="polite">Ready for evidence.</div>
+    </section>
+
+    <section class="comparison" aria-labelledby="comparison-title">
+      <div class="section-heading"><p class="eyebrow">Side-by-side inspection</p><h2 id="comparison-title">Reference and uploaded page</h2></div>
+      <div class="preview-grid">
+        <figure><figcaption><span>Reference</span> Published unmarked page</figcaption><div class="paper"><img src="/api/fixtures/source-preview" alt="Rendered published source page"></div></figure>
+        <figure><figcaption><span>Suspect</span> <b id="uploaded-name">Waiting for upload</b></figcaption><div class="paper empty"><div id="preview-placeholder">Your uploaded page will appear here</div><img id="uploaded-preview" alt="Uploaded page preview" hidden></div></figure>
+      </div>
+    </section>
+
+    <section id="verdict" class="verdict neutral" aria-live="polite" tabindex="-1">
+      <div class="verdict-kicker">Evidence verdict</div>
+      <div id="result-context" class="result-context">No file selected</div>
+      <h2 id="result-title">No file inspected yet</h2>
+      <p id="result-summary">Choose a real example above or upload a page to begin.</p>
+      <div id="recipient-cards" class="recipient-cards"></div>
+      <div id="fact-strip" class="fact-strip"></div>
+      <details id="signal-details"><summary>See signal &amp; signature details</summary><pre id="details-json"></pre></details>
+      <a id="report-link" class="button secondary" href="#" hidden>Download evidence JSON</a>
+    </section>
+
+    <section class="phone-callout">
+      <div><p class="eyebrow">Use a phone camera</p><h2>Send the chosen photo straight to this laptop</h2><p>On Android with USB debugging and <code>adb reverse</code>, open <strong>http://127.0.0.1:8765/mobile</strong>. Camera behavior depends on the phone and browser; the desktop will notice the resulting job automatically.</p></div>
+      <a class="button primary" href="/mobile">Open phone view</a>
+    </section>
+
+    <p class="global-limit"><strong>Important:</strong> A photo below threshold is inconclusive, never proof of an unmarked page. Results describe carrier evidence—not guilt, intent, or mathematical certainty.</p>
+  </main>
+  <footer>NISHAN research prototype · local demonstration · no cloud upload</footer>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

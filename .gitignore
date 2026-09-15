@@ -9,6 +9,7 @@
 # Raw datasets and local demo state can be large or contain secret material.
 data/
 demo-run/
+/.nishan-demo/
 **/identities/
 **/authority/
 **/ledger/validators/

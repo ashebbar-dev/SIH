@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <title>NISHAN phone capture</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23087f78'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='38' fill='white' font-family='sans-serif'%3EN%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body data-view="mobile" class="mobile-body">
+  <header class="site-header"><a class="brand" href="/"><span class="brand-mark">N</span><span>NISHAN</span></a><div class="local-badge"><span></span> Direct to laptop</div></header>
+  <main class="mobile-main">
+    <p class="eyebrow">Phone capture</p>
+    <h1>Photograph the page.<br><em>Send the chosen file.</em></h1>
+    <p class="hero-copy">This page requests the rear camera when your browser supports it. Nothing is uploaded to a cloud service.</p>
+
+    <fieldset class="mode-switch mobile-modes">
+      <legend>Which copy are you testing?</legend>
+      <label><input id="mode-public" type="radio" name="mode" value="public" checked><span>Existing print</span></label>
+      <label><input id="mode-signed" type="radio" name="mode" value="signed"><span>Fresh signed copy</span></label>
+    </fieldset>
+    <div id="mode-help" class="mode-help">Existing print is the unsigned public test fixture—not a real ledger identity.</div>
+
+    <section class="capture-card">
+      <label class="camera-button" for="camera-input"><span>◎</span><strong>Take photo</strong><small>Request rear camera</small></label>
+      <input id="camera-input" type="file" accept="image/*" capture="environment" hidden>
+      <label class="button secondary wide" for="photo-input">Choose existing photo</label>
+      <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+      <p>Camera prompts and file names vary by device/browser. Keep the whole page visible and steady.</p>
+    </section>
+
+    <div id="mobile-status" class="mobile-status" role="status" aria-live="polite">Ready to choose a photo.</div>
+    <section id="mobile-result" class="verdict neutral compact" tabindex="-1">
+      <div class="verdict-kicker">Latest evidence</div>
+      <div id="result-context" class="result-context">No file selected</div>
+      <h2 id="result-title">Nothing sent yet</h2>
+      <p id="result-summary">After upload, this result also appears automatically on the desktop.</p>
+      <div id="recipient-cards" class="recipient-cards"></div>
+      <div id="fact-strip" class="fact-strip"></div>
+    </section>
+    <p class="global-limit"><strong>Photo limitation:</strong> No recovered signal means inconclusive—not “proven unmarked.” A raster cannot provide the signed PDF layout channel.</p>
+    <a href="/" class="text-link">Return to desktop story</a>
+  </main>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

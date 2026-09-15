@@ -4,13 +4,15 @@
 
 Read [CONTINUE_HERE.md](CONTINUE_HERE.md) for the current status, exact demo
 commands, environment recreation, excluded private state and paused research.
-The private handoff repository is https://github.com/ashebbar-dev/SIH.
+The public repository is https://github.com/ashebbar-dev/SIH.
 The tested Python package versions are in
 [requirements-handoff.txt](requirements-handoff.txt); OpenSSL must be installed
 separately with both required PQ algorithms available.
 
-Use `prototypes/nishan_pq/tools/demo_release_safeguards.py` for the current
-12-scenario demonstration. The older assessment, demo commands and publication
+Use [`prototypes/nishan_pq/INTERACTIVE_DEMO.md`](prototypes/nishan_pq/INTERACTIVE_DEMO.md)
+for the current browser demonstration, including the Android USB workflow and
+truthful physical-result boundaries. The 12-scenario safeguard runner, older
+assessment, demo commands and publication
 checklist below are historical context, not instructions to restart research or
 regenerate the presentation. Team/submission placeholders still need review.
 
