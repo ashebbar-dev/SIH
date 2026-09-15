@@ -1,0 +1,59 @@
+{
+  "date": "2026-09-15",
+  "scope": "Interactive NISHAN UI and local HTTP integration; not a new watermark robustness study.",
+  "implementation_commit": "fcb375f57638b9b357e2354c67f8c8c39da3f7f3",
+  "environment": {
+    "platform": "Linux",
+    "python": "3.14.7",
+    "browser": "Chrome/153.0.8010.36",
+    "browser_driver": "Puppeteer 24.43.1"
+  },
+  "checks": {
+    "demo_tests": {
+      "passed": 17,
+      "failed": 0,
+      "signed_integration_skipped": false,
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq .venv/bin/python -m unittest discover -s prototypes/nishan_pq/demo_app/tests -v"
+    },
+    "unchanged_core_tests": {
+      "passed": 59,
+      "failed": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq .venv/bin/python -m unittest discover -s prototypes/nishan_pq/tests -v"
+    },
+    "submission_verifier": {
+      "ok_with_allow_placeholders": true,
+      "recorded_code_hashes_verified": 19,
+      "presentation_changed": false,
+      "notes": "Checks existing saved safeguard evidence; not a claim of a new 12-scenario run today. Team and repository slide placeholders remain."
+    },
+    "browser": {
+      "passed": 9,
+      "failed": 0,
+      "console_errors": 0,
+      "checks": [
+        "desktop layout at 1440x1000",
+        "actual source upload: known_original, no recipient",
+        "actual dual public PDF: fixture_match, unsigned fixture session",
+        "actual screenshot: research_lead, not signed attribution",
+        "actual signed preparation",
+        "renamed signed Alice PDF: verified_session",
+        "invalid upload clears prior identity/report and next valid upload recovers",
+        "mobile route 390x844 upload automatically appears on foreground desktop",
+        "no browser console or page errors"
+      ]
+    }
+  },
+  "caveats": [
+    "No live phone USB/camera hardware test was performed.",
+    "No fresh physical print/photo recovery experiment was performed.",
+    "Existing print is public fixture row 0, not an Alice/Bob signed release.",
+    "Browser fixture actions upload real file bytes; no mocked verdicts or filename-based attribution.",
+    "The test harness waits for UI readiness after prepare and foregrounds desktop when testing polling to avoid browser background-timer throttling.",
+    "Image processing emitted a Mesa/Rusticl environment warning; Python tests still passed.",
+    "Private run state, identity keys, uploads and browser profiles are excluded from Git."
+  ],
+  "source_of_checks": {
+    "python_and_verifier": "Implementation-agent execution report",
+    "browser": "Primary-agent real local-server browser run"
+  }
+}
