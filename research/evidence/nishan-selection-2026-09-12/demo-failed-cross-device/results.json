@@ -1,0 +1,61 @@
+{
+  "all_passed": false,
+  "cases": [
+    {
+      "name": "harness_error",
+      "observed": {
+        "error": "Traceback (most recent call last):\n  File \"/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tools/demo_release_safeguards.py\", line 33, in _release_worker\n    result = core.decrypt_and_attribute(root / \"package.json\", root / \"identities\",\n        recipient, root / \"secret.bin\", root / \"ledger\", root / f\"{recipient}.pdf\",\n        witness_root=root / \"witness\", witness_public_key_sha3_256=pin)\n  File \"/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py\", line 183, in decrypt_and_attribute\n    return _decrypt_and_attribute_locked(\n        package_path, identities_root, recipient_id, authority_secret_path,\n        ledger_root, output_path, watermark_strength,\n        witness_root=witness_root, witness_public_key_sha3_256=pin,\n    )\n  File \"/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py\", line 410, in _decrypt_and_attribute_locked\n    os.replace(marked_path, output_path)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nOSError: [Errno 18] Invalid cross-device link: '/tmp/nishan-release-90l7rc0l/marked.pdf' -> 'research/evidence/nishan-selection-2026-09-12/demo/fixture/bob.pdf'\n",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tools/demo_release_safeguards.py\", line 138, in run\n    copies = _concurrent(root, pin)\n  File \"/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tools/demo_release_safeguards.py\", line 56, in _concurrent\n    raise RuntimeError(item[\"error\"])\nRuntimeError: Traceback (most recent call last):\n  File \"/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tools/demo_release_safeguards.py\", line 33, in _release_worker\n    result = core.decrypt_and_attribute(root / \"package.json\", root / \"identities\",\n        recipient, root / \"secret.bin\", root / \"ledger\", root / f\"{recipient}.pdf\",\n        witness_root=root / \"witness\", witness_public_key_sha3_256=pin)\n  File \"/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py\", line 183, in decrypt_and_attribute\n    return _decrypt_and_attribute_locked(\n        package_path, identities_root, recipient_id, authority_secret_path,\n        ledger_root, output_path, watermark_strength,\n        witness_root=witness_root, witness_public_key_sha3_256=pin,\n    )\n  File \"/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py\", line 410, in _decrypt_and_attribute_locked\n    os.replace(marked_path, output_path)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\nOSError: [Errno 18] Invalid cross-device link: '/tmp/nishan-release-90l7rc0l/marked.pdf' -> 'research/evidence/nishan-selection-2026-09-12/demo/fixture/bob.pdf'\n\n"
+      },
+      "passed": false
+    }
+  ],
+  "code_sha256": {
+    "prototypes/nishan_pq/nishan/__init__.py": "3d2042d954ea927a91a1a13e02acbb135ee85fa6cbf13f2a390cabbf13c177f2",
+    "prototypes/nishan_pq/nishan/__main__.py": "11cf323249f4ba4e79c9fb7660c0979fc91a3822bc5362286376b69808b41195",
+    "prototypes/nishan_pq/nishan/cli.py": "fc8a61c1613ecb9a1d4c67bb32794430e61776872943a03a39be1c0e051648b4",
+    "prototypes/nishan_pq/nishan/core.py": "0e16facfc3e7ccaab6539d648429d7f352ebaff28a472d2b3596d0a1f50f7e06",
+    "prototypes/nishan_pq/nishan/demo.py": "80f6e68dbc092285075459ffd35e193d91b4d06fe05ccc1171e1ef246ef82f50",
+    "prototypes/nishan_pq/nishan/identity.py": "9403f07ae0f92221bfb764f1b90712ff85ac2e408c6e730d2b88cda54b1706b4",
+    "prototypes/nishan_pq/nishan/layout_tag.py": "3994aa97c698980943ef73732a57a8c4c435c34c723b7deecc549f081ce4d8ac",
+    "prototypes/nishan_pq/nishan/ledger.py": "db549fcdc665167a21105d1a11a524e0e3e7a740bc1e897efe1142418e39b00d",
+    "prototypes/nishan_pq/nishan/live_pdf.py": "67b491a40327a3f8fbc87e4ffa14416583a9bc1050532b1f8bf204debd37f73f",
+    "prototypes/nishan_pq/nishan/pqc.py": "a3a8b56bd9486d71addc3e2f3b5344a28a30c54eabeec4347d6373fd387cd35a",
+    "prototypes/nishan_pq/nishan/registration.py": "604c380475bd604f32a16ace55463b28f29d52f61b23b103149bc74fa0b7f92f",
+    "prototypes/nishan_pq/nishan/tardos.py": "cf0fe3bb08bbb6aa4daaa56cbd6f356c86a98cfddaba5c64297668adf2623bd0",
+    "prototypes/nishan_pq/nishan/tardos_carrier.py": "ea818369f5fd73975fdd66380352d3d3afb75e42cd0de3dc841e4243a8a2a0f9",
+    "prototypes/nishan_pq/nishan/util.py": "ae7432659692979b9ddc84e15452acc8b260c91a3ddfc8c9bf5144b61e5fa51e",
+    "prototypes/nishan_pq/nishan/watermark.py": "f52b1aa480393ff8baae407b31f2400a1476571bb38eaeb9248c6761bdca006c",
+    "prototypes/nishan_pq/nishan/witness.py": "24097dab503ee2f0e18d706d62a15690270b95092f202860690c21c7ef3f8990",
+    "prototypes/nishan_pq/tests/test_pdf_format_policy.py": "f18140142a867adbd0469c1eed584d295dce44906090cc9a62ad904f8e6b363f",
+    "prototypes/nishan_pq/tests/test_release_safeguards.py": "449d359c3e5bbb60c458812456335b246076f85c4b789f725417004904278d78",
+    "prototypes/nishan_pq/tools/demo_release_safeguards.py": "dc60f61e4671042d3e692c09bc71614809ca424a45cbdda75b69818726f28854"
+  },
+  "command": ".venv/bin/python prototypes/nishan_pq/tools/demo_release_safeguards.py --output research/evidence/nishan-selection-2026-09-12/demo",
+  "limitations": [
+    "Scenario checks on public synthetic fixtures, not independent population trials or production certification.",
+    "Witness and validator administration and private keys are co-located; no hardware isolation or independent-admin claim.",
+    "Pinned state detects ledger rollback only while the provisioned key and retained witness state remain trustworthy; rollback of the witness too is outside this local guarantee.",
+    "The authority can reproduce carriers and frame a session; software/key custody is trusted. A release session is not proof of human guilt, delivery or reading.",
+    "Tracing is non-blind. Removal/retyping can defeat both carriers; raster and low-capacity PDF leads never become corroborated attribution.",
+    "Historical JPEG-Q55 30/30 was a visual-channel experiment on one document/codebook with repeated sessions, not this strict verdict or physical performance.",
+    "Historical shipped physical threshold recovered 0/4; experimental profiles recovered the same 1/4 capture.",
+    "A committed authorization survives checkpoint/publication failure; explicit review and checkpoint recovery are required.",
+    "Fresh keys and secrets are synthetic demo-only material and must not be reused for real documents."
+  ],
+  "pqc_profile": {
+    "ml_dsa_65": true,
+    "ml_kem_768": true,
+    "openssl_version": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)"
+  },
+  "pqc_ready": true,
+  "profile": {
+    "coalition_limit": 5,
+    "familywise_epsilon": 1e-06,
+    "fixture": "nishan.demo._sample_pdf; public synthetic one-page PDF",
+    "fusion_policy": "pdf-all-formats-corroboration/v1",
+    "pin_provisioning": "fresh local witness initialization in this demo; independent provisioning remains a deployment requirement",
+    "roster_size": 1000
+  },
+  "version": "nishan-selection-safeguards/v1"
+}

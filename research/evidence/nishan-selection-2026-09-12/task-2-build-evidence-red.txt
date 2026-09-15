@@ -1,0 +1,23 @@
+test_build_rejects_safeguard_code_hash_drift (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_rejects_safeguard_code_hash_drift) ... ERROR
+
+======================================================================
+ERROR: test_build_rejects_safeguard_code_hash_drift (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_rejects_safeguard_code_hash_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 360, in test_build_rejects_safeguard_code_hash_drift
+    self.build_deck.build(
+    ~~~~~~~~~~~~~~~~~~~~~^
+        ROOT / "resources" / "SIH2026-IDEA-Presentation-Format.pptx",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        repository_url=self.repository_url,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+TypeError: build() got an unexpected keyword argument 'safeguard_path'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.421s
+
+FAILED (errors=1)
+/tmp/tmp4ky73cjp/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx

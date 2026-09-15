@@ -1,0 +1,201 @@
+test_code_hash_drift_and_missing_required_coverage_are_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_code_hash_drift_and_missing_required_coverage_are_rejected) ... 
+  test_code_hash_drift_and_missing_required_coverage_are_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_code_hash_drift_and_missing_required_coverage_are_rejected) (label='drift') ... ERROR
+  test_code_hash_drift_and_missing_required_coverage_are_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_code_hash_drift_and_missing_required_coverage_are_rejected) (label='missing') ... ERROR
+test_current_safeguard_evidence_is_valid (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_current_safeguard_evidence_is_valid) ... ERROR
+test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) ... 
+  test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) (label='case') ... ERROR
+  test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) (label='summary') ... ERROR
+  test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) (label='wrong type') ... ERROR
+test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) ... 
+  test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) (mutate=<function SafeguardEvidenceTests.test_real_pqc_readiness_is_required.<locals>.<lambda> at 0x7f49a1833690>) ... ERROR
+  test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) (mutate=<function SafeguardEvidenceTests.test_real_pqc_readiness_is_required.<locals>.<lambda> at 0x7f49a1833b60>) ... ERROR
+  test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) (mutate=<function SafeguardEvidenceTests.test_real_pqc_readiness_is_required.<locals>.<lambda> at 0x7f49a1833950>) ... ERROR
+test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) ... 
+  test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) (mutate=<function SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique.<locals>.<lambda> at 0x7f49a1833c10>) ... ERROR
+  test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) (mutate=<function SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique.<locals>.<lambda> at 0x7f49a1833ab0>) ... ERROR
+  test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) (mutate=<function SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique.<locals>.<lambda> at 0x7f49a18333d0>) ... ERROR
+test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) ... 
+  test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict.<locals>.<lambda> at 0x7f49a1833d70>) ... ERROR
+  test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict.<locals>.<lambda> at 0x7f49a1833e20>) ... ERROR
+  test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict.<locals>.<lambda> at 0x7f49a1890040>) ... ERROR
+test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) ... 
+  test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) (bad_name={'not': 'hashable'}) ... ERROR
+  test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) (bad_name=['not', 'hashable']) ... ERROR
+  test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) (bad_name=7) ... ERROR
+  test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) (bad_name=None) ... ERROR
+
+======================================================================
+ERROR: test_code_hash_drift_and_missing_required_coverage_are_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_code_hash_drift_and_missing_required_coverage_are_rejected) (label='drift')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 230, in test_code_hash_drift_and_missing_required_coverage_are_rejected
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_code_hash_drift_and_missing_required_coverage_are_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_code_hash_drift_and_missing_required_coverage_are_rejected) (label='missing')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 230, in test_code_hash_drift_and_missing_required_coverage_are_rejected
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_current_safeguard_evidence_is_valid (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_current_safeguard_evidence_is_valid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 161, in test_current_safeguard_evidence_is_valid
+    self.deck_evidence.validate_safeguard_evidence(self.source),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) (label='case')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 175, in test_failed_or_inconsistent_verdict_is_rejected
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) (label='summary')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 175, in test_failed_or_inconsistent_verdict_is_rejected
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) (label='wrong type')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 175, in test_failed_or_inconsistent_verdict_is_rejected
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) (mutate=<function SafeguardEvidenceTests.test_real_pqc_readiness_is_required.<locals>.<lambda> at 0x7f49a1833690>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 209, in test_real_pqc_readiness_is_required
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) (mutate=<function SafeguardEvidenceTests.test_real_pqc_readiness_is_required.<locals>.<lambda> at 0x7f49a1833b60>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 209, in test_real_pqc_readiness_is_required
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) (mutate=<function SafeguardEvidenceTests.test_real_pqc_readiness_is_required.<locals>.<lambda> at 0x7f49a1833950>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 209, in test_real_pqc_readiness_is_required
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) (mutate=<function SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique.<locals>.<lambda> at 0x7f49a1833c10>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 188, in test_scenario_names_are_exact_and_unique
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) (mutate=<function SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique.<locals>.<lambda> at 0x7f49a1833ab0>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 188, in test_scenario_names_are_exact_and_unique
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) (mutate=<function SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique.<locals>.<lambda> at 0x7f49a18333d0>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 188, in test_scenario_names_are_exact_and_unique
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict.<locals>.<lambda> at 0x7f49a1833d70>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 243, in test_schema_and_top_level_types_are_strict
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict.<locals>.<lambda> at 0x7f49a1833e20>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 243, in test_schema_and_top_level_types_are_strict
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict.<locals>.<lambda> at 0x7f49a1890040>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 243, in test_schema_and_top_level_types_are_strict
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) (bad_name={'not': 'hashable'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 196, in test_unhashable_or_non_string_scenario_name_is_clean_value_error
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) (bad_name=['not', 'hashable'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 196, in test_unhashable_or_non_string_scenario_name_is_clean_value_error
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) (bad_name=7)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 196, in test_unhashable_or_non_string_scenario_name_is_clean_value_error
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+======================================================================
+ERROR: test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) (bad_name=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 196, in test_unhashable_or_non_string_scenario_name_is_clean_value_error
+    self.deck_evidence.validate_safeguard_evidence(evidence)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'deck_evidence' has no attribute 'validate_safeguard_evidence'
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.034s
+
+FAILED (errors=19)

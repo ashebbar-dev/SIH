@@ -1,0 +1,112 @@
+{
+  "captures": [
+    {
+      "accused_user_indices": [],
+      "aligned_preview": "artifacts/nishan/akshay1-camera-2026-09-10-alignments/00-akshay1-aligned.png",
+      "capture": "/home/user_end4/Downloads/akshay1.jpeg",
+      "capture_sha3_256": "3739e404a5a9a43e7ebe5bcdfe7135112bd3a6a1aa2e887eca8115f0b6d1ca37",
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": true,
+            "baseline_similarity": 0.453086,
+            "homography_suspect_to_reference": [
+              [
+                1.2900428053553683,
+                -0.007450425450955904,
+                2.875695037180094
+              ],
+              [
+                0.006947687141079761,
+                1.2778869714815488,
+                8.754333868473841
+              ],
+              [
+                1.1421585369201482e-06,
+                -1.547444558912578e-05,
+                1.0
+              ]
+            ],
+            "method": "ORB + RANSAC homography",
+            "ransac_inlier_ratio": 0.557229,
+            "ransac_inliers": 555,
+            "ratio_test_matches": 996,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.729354,
+            "rejection_reason": null,
+            "suspect_height": 1280,
+            "suspect_keypoints": 8000,
+            "suspect_width": 912
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "expected_score": -22.476589185736042,
+      "expected_user_index": 0,
+      "expected_user_recovered": false,
+      "highest_innocent_score": 168.5629414168747,
+      "innocent_accusations": [],
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.4996761904761905,
+        "violations": 26233
+      },
+      "median_absolute_block_correlation": 0.0,
+      "passed_fixture_rule": false,
+      "preview_registration": {
+        "applied": true,
+        "baseline_similarity": 0.453086,
+        "homography_suspect_to_reference": [
+          [
+            1.2900428053553683,
+            -0.007450425450955904,
+            2.875695037180094
+          ],
+          [
+            0.006947687141079761,
+            1.2778869714815488,
+            8.754333868473841
+          ],
+          [
+            1.1421585369201482e-06,
+            -1.547444558912578e-05,
+            1.0
+          ]
+        ],
+        "method": "ORB + RANSAC homography",
+        "ransac_inlier_ratio": 0.557229,
+        "ransac_inliers": 555,
+        "ratio_test_matches": 996,
+        "reference_height": 1684,
+        "reference_keypoints": 8013,
+        "reference_width": 1190,
+        "registered_similarity": 0.729354,
+        "rejection_reason": null,
+        "suspect_height": 1280,
+        "suspect_keypoints": 8000,
+        "suspect_width": 912
+      },
+      "theorem_applied_to_capture": false,
+      "theorem_note": "A physical capture is reported empirically. The Tardos reference theorem is not invoked unless the coalition limit and decoded marking condition are established.",
+      "threshold": 2100.0
+    }
+  ],
+  "fixture_only": true,
+  "generated_at": "2026-09-10T16:58:05.301078+00:00",
+  "parameters": {
+    "coalition_limit": 5,
+    "code_length": 52500,
+    "roster_size": 1000,
+    "threshold": 2100.0
+  },
+  "passed": 0,
+  "reference": {
+    "path": "artifacts/nishan/synthetic-source.pdf",
+    "sha3_256": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb"
+  },
+  "schema": "nishan.physical-capture-evidence/v1",
+  "total": 1
+}

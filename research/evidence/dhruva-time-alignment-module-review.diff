@@ -1,0 +1,519 @@
+diff --git a/prototypes/dhruva/time_alignment.py b/prototypes/dhruva/time_alignment.py
+new file mode 100644
+index 0000000..458957b
+--- /dev/null
++++ b/prototypes/dhruva/time_alignment.py
+@@ -0,0 +1,513 @@
++#!/usr/bin/env python3
++"""Timestamp-preserving loading and gap-safe alignment for IO-VNBD Dhruva data.
++
++Clock estimation in this module is reference-assisted and intended only for an
++offline benchmark.  It does not establish a phone-only deployment procedure.
++"""
++
++from __future__ import annotations
++
++import argparse
++import csv
++import json
++import math
++from dataclasses import dataclass
++from datetime import datetime, timezone
++from pathlib import Path
++
++import numpy as np
++
++
++PHONE_NUMERIC_COLUMNS = (3, *range(9, 24))
++REFERENCE_NUMERIC_COLUMNS = (2, 3, 4, 5, 14)
++PHONE_ELAPSED_COLUMN = 7
++PHONE_DATE_COLUMN = 8
++REFERENCE_TIME_COLUMN = 1
++SECONDS_PER_DAY = 86_400.0
++
++
++@dataclass
++class TimestampedPair:
++    phone_time_s: np.ndarray
++    phone_elapsed_ms: np.ndarray
++    phone: np.ndarray
++    reference_time_s: np.ndarray
++    reference: np.ndarray
++    phone_path: Path
++    reference_path: Path
++
++
++@dataclass
++class AlignedSegment:
++    phone: np.ndarray
++    reference: np.ndarray
++    time_s: np.ndarray
++    reference_rows: np.ndarray
++    phone_span: tuple[int, int]
++    reference_span: tuple[int, int]
++    phone_left_rows: np.ndarray
++    phone_right_rows: np.ndarray
++
++
++def _sequence_paths(data_root: Path, name: str) -> tuple[Path, Path]:
++    sequence = (
++        Path(data_root)
++        / "Synchronised V abd S datasets"
++        / "Categorised IOVNB Dataset"
++        / "S (Driver A)"
++        / name
++    )
++    phone_path = sequence / f"S-{name}.csv"
++    reference_path = sequence / f"V-{name}.csv"
++    if not phone_path.is_file() or not reference_path.is_file():
++        raise FileNotFoundError(
++            f"expected phone and VBOX CSV files for {name!r} under {sequence}"
++        )
++    return phone_path, reference_path
++
++
++def _read_phone(path: Path, phone_utc_offset_s: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
++    times: list[float] = []
++    elapsed: list[float] = []
++    measurements: list[list[float]] = []
++    try:
++        with path.open(newline="", encoding="latin1") as handle:
++            rows = csv.reader(handle)
++            next(rows)
++            for row_number, row in enumerate(rows, start=2):
++                if len(row) < 24:
++                    raise ValueError(f"{path}:{row_number}: expected at least 24 columns")
++                try:
++                    wall_time = datetime.strptime(
++                        row[PHONE_DATE_COLUMN].strip(), "%Y-%m-%d %H:%M:%S:%f"
++                    ).replace(tzinfo=timezone.utc)
++                    times.append(wall_time.timestamp() - phone_utc_offset_s)
++                    elapsed.append(float(row[PHONE_ELAPSED_COLUMN]))
++                    measurements.append([float(row[index]) for index in PHONE_NUMERIC_COLUMNS])
++                except (TypeError, ValueError) as error:
++                    raise ValueError(f"{path}:{row_number}: invalid phone value: {error}") from error
++    except StopIteration as error:
++        raise ValueError(f"{path}: missing CSV header") from error
++    if not times:
++        raise ValueError(f"{path}: phone input is empty")
++    time_array = np.asarray(times, dtype=float)
++    elapsed_array = np.asarray(elapsed, dtype=float)
++    measurement_array = np.asarray(measurements, dtype=float)
++    if not (
++        np.all(np.isfinite(time_array))
++        and np.all(np.isfinite(elapsed_array))
++        and np.all(np.isfinite(measurement_array))
++    ):
++        raise ValueError(f"{path}: phone clocks and measurements must be finite")
++    return time_array, elapsed_array, measurement_array
++
++
++def _read_reference(path: Path, first_phone_time_s: float) -> tuple[np.ndarray, np.ndarray]:
++    seconds_of_day: list[float] = []
++    measurements: list[list[float]] = []
++    try:
++        with path.open(newline="", encoding="latin1") as handle:
++            rows = csv.reader(handle)
++            next(rows)
++            for row_number, row in enumerate(rows, start=2):
++                if len(row) < 15:
++                    raise ValueError(f"{path}:{row_number}: expected at least 15 columns")
++                try:
++                    seconds_of_day.append(float(row[REFERENCE_TIME_COLUMN]))
++                    measurements.append([float(row[index]) for index in REFERENCE_NUMERIC_COLUMNS])
++                except (TypeError, ValueError) as error:
++                    raise ValueError(f"{path}:{row_number}: invalid reference value: {error}") from error
++    except StopIteration as error:
++        raise ValueError(f"{path}: missing CSV header") from error
++    if not seconds_of_day:
++        raise ValueError(f"{path}: reference input is empty")
++    clock = np.asarray(seconds_of_day, dtype=float)
++    measurement_array = np.asarray(measurements, dtype=float)
++    if not np.all(np.isfinite(clock)) or not np.all(np.isfinite(measurement_array)):
++        raise ValueError(f"{path}: reference clocks and measurements must be finite")
++    if np.any((clock < 0.0) | (clock >= SECONDS_PER_DAY)):
++        raise ValueError(f"{path}: VBOX seconds-of-day must be in [0, 86400)")
++
++    unwrapped = clock.copy()
++    day_adjustment = 0.0
++    for index in range(1, len(unwrapped)):
++        if clock[index] - clock[index - 1] < -(SECONDS_PER_DAY / 2.0):
++            day_adjustment += SECONDS_PER_DAY
++        unwrapped[index] += day_adjustment
++
++    nominal_day = math.floor(first_phone_time_s / SECONDS_PER_DAY) * SECONDS_PER_DAY
++    day_candidates = np.asarray(
++        [nominal_day - SECONDS_PER_DAY, nominal_day, nominal_day + SECONDS_PER_DAY]
++    )
++    anchor = float(day_candidates[np.argmin(np.abs(day_candidates + unwrapped[0] - first_phone_time_s))])
++    return anchor + unwrapped, measurement_array
++
++
++def load_timestamped_pair(
++    data_root: Path, name: str, phone_utc_offset_s: float
++) -> TimestampedPair:
++    """Load both streams without truncating or pairing rows by index.
++
++    ``phone_utc_offset_s`` is an explicit dataset setting.  Supplying 3600
++    seconds expresses the inferred one-hour wall-clock correction; this loader
++    does not certify that correction as acquisition metadata.
++    """
++
++    if not math.isfinite(phone_utc_offset_s):
++        raise ValueError("phone_utc_offset_s must be finite")
++    phone_path, reference_path = _sequence_paths(Path(data_root), name)
++    phone_time, phone_elapsed, phone = _read_phone(phone_path, phone_utc_offset_s)
++    reference_time, reference = _read_reference(reference_path, float(phone_time[0]))
++    return TimestampedPair(
++        phone_time_s=phone_time,
++        phone_elapsed_ms=phone_elapsed,
++        phone=phone,
++        reference_time_s=reference_time,
++        reference=reference,
++        phone_path=phone_path,
++        reference_path=reference_path,
++    )
++
++
++def contiguous_spans(
++    times_s: np.ndarray,
++    elapsed_ms: np.ndarray | None = None,
++    max_gap_s: float = 0.25,
++) -> list[tuple[int, int]]:
++    """Return half-open raw-row spans separated by gaps or clock restarts."""
++
++    times = np.asarray(times_s, dtype=float)
++    if times.ndim != 1 or len(times) == 0:
++        raise ValueError("times_s must be a non-empty one-dimensional array")
++    if not np.all(np.isfinite(times)):
++        raise ValueError("times_s must contain only finite values")
++    if not math.isfinite(max_gap_s) or max_gap_s <= 0.0:
++        raise ValueError("max_gap_s must be finite and positive")
++    elapsed: np.ndarray | None = None
++    if elapsed_ms is not None:
++        elapsed = np.asarray(elapsed_ms, dtype=float)
++        if elapsed.ndim != 1 or len(elapsed) != len(times):
++            raise ValueError("elapsed_ms must be one-dimensional and match times_s")
++        if not np.all(np.isfinite(elapsed)):
++            raise ValueError("elapsed_ms must contain only finite values")
++
++    time_deltas = np.diff(times)
++    boundaries = (time_deltas <= 0.0) | (time_deltas > max_gap_s)
++    if elapsed is not None:
++        boundaries |= np.diff(elapsed) <= 0.0
++    starts = np.concatenate(([0], np.flatnonzero(boundaries) + 1))
++    ends = np.concatenate((starts[1:], [len(times)]))
++    return [(int(start), int(end)) for start, end in zip(starts, ends)]
++
++
++def _prefix_length(times: np.ndarray, prefix_s: float) -> int:
++    outside = np.flatnonzero(times > times[0] + prefix_s)
++    return int(outside[0]) if len(outside) else len(times)
++
++
++def _first_overlap(
++    phone_times: np.ndarray,
++    phone_spans: list[tuple[int, int]],
++    reference_times: np.ndarray,
++    reference_spans: list[tuple[int, int]],
++) -> tuple[tuple[int, int], tuple[int, int], float, float] | None:
++    overlaps: list[tuple[float, int, int, tuple[int, int], tuple[int, int], float]] = []
++    for phone_span in phone_spans:
++        if phone_span[1] - phone_span[0] < 2:
++            continue
++        phone_start = float(phone_times[phone_span[0]])
++        phone_end = float(phone_times[phone_span[1] - 1])
++        for reference_span in reference_spans:
++            reference_start = float(reference_times[reference_span[0]])
++            reference_end = float(reference_times[reference_span[1] - 1])
++            start = max(phone_start, reference_start)
++            end = min(phone_end, reference_end)
++            if start <= end:
++                overlaps.append(
++                    (start, phone_span[0], reference_span[0], phone_span, reference_span, end)
++                )
++    if not overlaps:
++        return None
++    start, _, _, phone_span, reference_span, end = min(overlaps)
++    return phone_span, reference_span, start, end
++
++
++def _offset_grid(max_residual_s: float, step_s: float) -> list[float]:
++    count = int(math.floor((2.0 * max_residual_s) / step_s + 1e-12))
++    offsets = [-max_residual_s + index * step_s for index in range(count + 1)]
++    if not offsets or offsets[-1] < max_residual_s - 1e-12:
++        offsets.append(max_residual_s)
++    return [float(round(value, 12)) for value in offsets]
++
++
++def estimate_clock_offset(
++    pair: TimestampedPair,
++    prefix_s: float = 140.0,
++    max_residual_s: float = 2.0,
++    step_s: float = 0.1,
++) -> dict:
++    """Estimate a residual shift using only fixed raw calibration prefixes."""
++
++    if not math.isfinite(prefix_s) or prefix_s <= 0.0:
++        raise ValueError("prefix_s must be finite and positive")
++    if not math.isfinite(max_residual_s) or max_residual_s < 0.0:
++        raise ValueError("max_residual_s must be finite and non-negative")
++    if not math.isfinite(step_s) or step_s <= 0.0:
++        raise ValueError("step_s must be finite and positive")
++    if pair.phone.ndim != 2 or pair.phone.shape[1] < 10:
++        raise ValueError("phone measurements must contain the 16-column representation")
++    if pair.reference.ndim != 2 or pair.reference.shape[1] < 5:
++        raise ValueError("reference measurements must contain five columns")
++
++    phone_count = _prefix_length(pair.phone_time_s, prefix_s)
++    reference_count = _prefix_length(pair.reference_time_s, prefix_s)
++    phone_times_raw = pair.phone_time_s[:phone_count]
++    reference_times = pair.reference_time_s[:reference_count]
++    phone_values = pair.phone[:phone_count]
++    reference_values = pair.reference[:reference_count]
++    phone_spans = contiguous_spans(phone_times_raw, pair.phone_elapsed_ms[:phone_count])
++    reference_spans = contiguous_spans(reference_times)
++
++    best: tuple[float, float, int, int, float, float] | None = None
++    for offset in _offset_grid(max_residual_s, step_s):
++        shifted_phone_times = phone_times_raw + offset
++        overlap = _first_overlap(
++            shifted_phone_times, phone_spans, reference_times, reference_spans
++        )
++        if overlap is None:
++            continue
++        phone_span, reference_span, start, end = overlap
++        reference_start, reference_end = reference_span
++        rows = np.arange(reference_start, reference_end)
++        rows = rows[
++            (reference_times[rows] >= start) & (reference_times[rows] <= end)
++        ]
++        if len(rows) < 50:
++            continue
++        phone_start, phone_end = phone_span
++        interpolation_times = shifted_phone_times[phone_start:phone_end]
++        reference_signal = reference_values[rows, 4]
++        if np.ptp(reference_signal) == 0.0:
++            continue
++        for axis in range(3):
++            phone_signal = np.interp(
++                reference_times[rows],
++                interpolation_times,
++                phone_values[phone_start:phone_end, 7 + axis],
++            )
++            if np.ptp(phone_signal) == 0.0:
++                continue
++            correlation = abs(float(np.corrcoef(phone_signal, reference_signal)[0, 1]))
++            if not math.isfinite(correlation):
++                continue
++            candidate = (
++                correlation,
++                offset,
++                axis,
++                len(rows),
++                float(reference_times[rows[0]]),
++                float(reference_times[rows[-1]]),
++            )
++            if best is None:
++                best = candidate
++            else:
++                best_key = (best[0], -abs(best[1]), -best[1], -best[2])
++                candidate_key = (
++                    candidate[0],
++                    -abs(candidate[1]),
++                    -candidate[1],
++                    -candidate[2],
++                )
++                if candidate_key > best_key:
++                    best = candidate
++    if best is None:
++        raise ValueError(
++            "clock calibration requires at least 50 paired, varying observations "
++            "inside the first contiguous prefix overlap"
++        )
++
++    correlation, offset, axis, count, start, end = best
++    return {
++        "residual_offset_s": offset,
++        "phone_gyro_axis": axis,
++        "absolute_correlation": correlation,
++        "paired_sample_count": count,
++        "calibration_time_bounds_s": [start, end],
++        "phone_prefix_time_bounds_s": [
++            float(phone_times_raw[0]),
++            float(phone_times_raw[-1]),
++        ],
++        "reference_prefix_time_bounds_s": [
++            float(reference_times[0]),
++            float(reference_times[-1]),
++        ],
++        "low_confidence": correlation < 0.8,
++    }
++
++
++def align_pair(
++    pair: TimestampedPair,
++    residual_offset_s: float,
++    max_gap_s: float = 0.25,
++) -> list[AlignedSegment]:
++    """Interpolate phone values only within contiguous spans onto VBOX rows."""
++
++    if not math.isfinite(residual_offset_s):
++        raise ValueError("residual_offset_s must be finite")
++    if pair.phone.shape != (len(pair.phone_time_s), 16):
++        raise ValueError("phone measurements must have one 16-column row per timestamp")
++    if pair.reference.shape != (len(pair.reference_time_s), 5):
++        raise ValueError("reference measurements must have one five-column row per timestamp")
++    shifted_phone_times = pair.phone_time_s + residual_offset_s
++    phone_spans = contiguous_spans(
++        shifted_phone_times, pair.phone_elapsed_ms, max_gap_s=max_gap_s
++    )
++    reference_spans = contiguous_spans(pair.reference_time_s, max_gap_s=max_gap_s)
++    aligned: list[AlignedSegment] = []
++
++    for phone_span in phone_spans:
++        phone_start, phone_end = phone_span
++        if phone_end - phone_start < 2:
++            continue
++        phone_times = shifted_phone_times[phone_start:phone_end]
++        phone_values = pair.phone[phone_start:phone_end]
++        for reference_span in reference_spans:
++            reference_start, reference_end = reference_span
++            overlap_start = max(
++                float(phone_times[0]), float(pair.reference_time_s[reference_start])
++            )
++            overlap_end = min(
++                float(phone_times[-1]), float(pair.reference_time_s[reference_end - 1])
++            )
++            if overlap_start > overlap_end:
++                continue
++            reference_rows = np.arange(reference_start, reference_end, dtype=int)
++            reference_rows = reference_rows[
++                (pair.reference_time_s[reference_rows] >= overlap_start)
++                & (pair.reference_time_s[reference_rows] <= overlap_end)
++            ]
++            if len(reference_rows) == 0:
++                continue
++            target_times = pair.reference_time_s[reference_rows]
++            interpolated = np.empty((len(target_times), pair.phone.shape[1]), dtype=float)
++            for column in range(pair.phone.shape[1] - 3):
++                interpolated[:, column] = np.interp(
++                    target_times, phone_times, phone_values[:, column]
++                )
++            for column in range(pair.phone.shape[1] - 3, pair.phone.shape[1]):
++                unwrapped_radians = np.unwrap(np.deg2rad(phone_values[:, column]))
++                angles = np.rad2deg(np.interp(target_times, phone_times, unwrapped_radians))
++                interpolated[:, column] = (angles + 180.0) % 360.0 - 180.0
++
++            right = np.searchsorted(phone_times, target_times, side="left")
++            right = np.clip(right, 0, len(phone_times) - 1)
++            left = np.maximum(right - 1, 0)
++            left = np.where(phone_times[right] == target_times, right, left)
++            aligned.append(
++                AlignedSegment(
++                    phone=interpolated,
++                    reference=pair.reference[reference_rows].copy(),
++                    time_s=target_times.copy(),
++                    reference_rows=reference_rows,
++                    phone_span=phone_span,
++                    reference_span=reference_span,
++                    phone_left_rows=left + phone_start,
++                    phone_right_rows=right + phone_start,
++                )
++            )
++    return aligned
++
++
++def _discontinuities(
++    times: np.ndarray, elapsed: np.ndarray | None, max_gap_s: float
++) -> list[dict]:
++    records: list[dict] = []
++    for previous in range(len(times) - 1):
++        following = previous + 1
++        delta = float(times[following] - times[previous])
++        reasons: list[str] = []
++        if delta <= 0.0:
++            reasons.append("nonmonotonic_time")
++        if delta > max_gap_s:
++            reasons.append("time_gap")
++        elapsed_delta = None
++        if elapsed is not None:
++            elapsed_delta = float(elapsed[following] - elapsed[previous])
++            if elapsed_delta <= 0.0:
++                reasons.append("elapsed_restart")
++        if reasons:
++            record = {
++                "previous_row": previous,
++                "next_row": following,
++                "previous_time_s": float(times[previous]),
++                "next_time_s": float(times[following]),
++                "time_delta_s": delta,
++                "reasons": reasons,
++            }
++            if elapsed is not None:
++                record.update(
++                    {
++                        "previous_elapsed_ms": float(elapsed[previous]),
++                        "next_elapsed_ms": float(elapsed[following]),
++                        "elapsed_delta_ms": elapsed_delta,
++                    }
++                )
++            records.append(record)
++    return records
++
++
++def _audit(pair: TimestampedPair, estimate: dict, segments: list[AlignedSegment]) -> dict:
++    return {
++        "phone_path": str(pair.phone_path),
++        "reference_path": str(pair.reference_path),
++        "phone_row_count": len(pair.phone_time_s),
++        "reference_row_count": len(pair.reference_time_s),
++        "phone_time_bounds_s": [float(pair.phone_time_s[0]), float(pair.phone_time_s[-1])],
++        "reference_time_bounds_s": [
++            float(pair.reference_time_s[0]),
++            float(pair.reference_time_s[-1]),
++        ],
++        "phone_discontinuities": _discontinuities(
++            pair.phone_time_s, pair.phone_elapsed_ms, 0.25
++        ),
++        "reference_discontinuities": _discontinuities(
++            pair.reference_time_s, None, 0.25
++        ),
++        "clock_estimate": estimate,
++        "aligned_row_count": sum(len(segment.time_s) for segment in segments),
++        "aligned_segments": [
++            {
++                "phone_span": list(segment.phone_span),
++                "reference_span": list(segment.reference_span),
++                "reference_row_bounds": [
++                    int(segment.reference_rows[0]),
++                    int(segment.reference_rows[-1]),
++                ],
++                "time_bounds_s": [float(segment.time_s[0]), float(segment.time_s[-1])],
++                "row_count": len(segment.time_s),
++                "phone_bracket_row_bounds": [
++                    int(np.min(segment.phone_left_rows)),
++                    int(np.max(segment.phone_right_rows)),
++                ],
++            }
++            for segment in segments
++        ],
++    }
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--data-root", type=Path, required=True)
++    parser.add_argument("--sequence", default="S1")
++    parser.add_argument("--phone-utc-offset-s", type=float, default=3600.0)
++    arguments = parser.parse_args()
++    pair = load_timestamped_pair(
++        arguments.data_root, arguments.sequence, arguments.phone_utc_offset_s
++    )
++    estimate = estimate_clock_offset(pair)
++    segments = align_pair(pair, estimate["residual_offset_s"])
++    print(json.dumps(_audit(pair, estimate, segments), indent=2, sort_keys=True))
++
++
++if __name__ == "__main__":
++    main()

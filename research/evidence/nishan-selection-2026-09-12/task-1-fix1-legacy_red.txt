@@ -1,0 +1,56 @@
+test_legacy_generic_pdf_receipt_rejected_before_screening (test_release_safeguards.ReleaseSafeguardsTests.test_legacy_generic_pdf_receipt_rejected_before_screening) ... 
+  test_legacy_generic_pdf_receipt_rejected_before_screening (test_release_safeguards.ReleaseSafeguardsTests.test_legacy_generic_pdf_receipt_rejected_before_screening) (prefix=b'', suffix='.pdf') ... FAIL
+  test_legacy_generic_pdf_receipt_rejected_before_screening (test_release_safeguards.ReleaseSafeguardsTests.test_legacy_generic_pdf_receipt_rejected_before_screening) (prefix=b'\n', suffix='.bin') ... FAIL
+
+======================================================================
+FAIL: test_legacy_generic_pdf_receipt_rejected_before_screening (test_release_safeguards.ReleaseSafeguardsTests.test_legacy_generic_pdf_receipt_rejected_before_screening) (prefix=b'', suffix='.pdf')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_release_safeguards.py", line 205, in test_legacy_generic_pdf_receipt_rejected_before_screening
+    core.trace_leak(reference, generic, self.secret, legacy,
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        witness_root=legacy_witness, witness_public_key_sha3_256=pin)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py", line 973, in trace_leak
+    result = _trace_leak_snapshot(reference, suspect, authority_secret_path, state,
+                                  detection_threshold, null_samples, familywise_alpha)
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py", line 1036, in _trace_leak_snapshot
+    prepared = watermark.prepare_score(reference, suspect)
+  File "/usr/lib/python3.14/unittest/mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/unittest/mock.py", line 1241, in _execute_mock_call
+    raise effect
+AssertionError: legacy PDF reached generic screening
+
+======================================================================
+FAIL: test_legacy_generic_pdf_receipt_rejected_before_screening (test_release_safeguards.ReleaseSafeguardsTests.test_legacy_generic_pdf_receipt_rejected_before_screening) (prefix=b'\n', suffix='.bin')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_release_safeguards.py", line 205, in test_legacy_generic_pdf_receipt_rejected_before_screening
+    core.trace_leak(reference, generic, self.secret, legacy,
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        witness_root=legacy_witness, witness_public_key_sha3_256=pin)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py", line 973, in trace_leak
+    result = _trace_leak_snapshot(reference, suspect, authority_secret_path, state,
+                                  detection_threshold, null_samples, familywise_alpha)
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py", line 1036, in _trace_leak_snapshot
+    prepared = watermark.prepare_score(reference, suspect)
+  File "/usr/lib/python3.14/unittest/mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/unittest/mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/unittest/mock.py", line 1241, in _execute_mock_call
+    raise effect
+AssertionError: legacy PDF reached generic screening
+
+----------------------------------------------------------------------
+Ran 1 test in 19.923s
+
+FAILED (failures=2)

@@ -1,0 +1,1654 @@
+# Dhruva aligned ablation final whole-change package
+
+Complete new-file source/tests plus implementation report. Original numerical source unchanged after task review. Task1 and evidence fix review approved. No Git repo initialized; no commits. Read ledger for rulings and provenance.
+
+# Dhruva aligned ablation task review package
+
+No Git repository is initialized. Base is absence of these new files; this package retains complete new-file diffs instead of commits. No pre-existing source changed. Read the separate implementation report for exact test/run evidence.
+
+diff --git a/research/tools/audit_dhruva_aligned.py b/research/tools/audit_dhruva_aligned.py
+new file mode 100644
+index 0000000..35e0409
+--- /dev/null
++++ b/research/tools/audit_dhruva_aligned.py
+@@ -0,0 +1,1019 @@
++#!/usr/bin/env python3
++"""Fixed-window, timestamp-aligned Dhruva ablation diagnostic.
++
++This is an exploratory offline diagnostic.  Clock alignment, the outage-start
++position/heading/speed, pre-outage VBOX yaw calibration, reference-speed
++branches, and reference-heading branches are explicitly privileged oracles.
++They are not a deployable phone-only navigation path.
++"""
++
++from __future__ import annotations
++
++import argparse
++import csv
++import json
++import math
++import os
++import sys
++import time
++from collections import Counter, defaultdict
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any
++
++import numpy as np
++from sklearn.ensemble import HistGradientBoostingRegressor
++
++REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
++if str(REPOSITORY_ROOT) not in sys.path:
++    sys.path.insert(0, str(REPOSITORY_ROOT))
++
++from prototypes.dhruva import benchmark as legacy
++from prototypes.dhruva.time_alignment import (
++    AlignedSegment,
++    TimestampedPair,
++    align_pair,
++    contiguous_spans,
++    estimate_clock_offset,
++    load_timestamped_pair,
++)
++
++
++SEQUENCES = ("S1", "S2", "S3a", "S4")
++PHONE_UTC_OFFSET_S = 3600.0
++DURATION_ROWS = 600
++CALIBRATION_ROWS = 1200
++FEATURE_WARMUP_ROWS = 200
++MIN_DISTANCE_FOR_DRIFT_M = 50.0
++REFERENCE_CADENCE_S = 0.1
++CADENCE_TOLERANCE_S = 1e-3
++CLOCK_PREFIX_S = 140.0
++MODEL_CONSTANTS = {
++    "max_iter": 250,
++    "max_leaf_nodes": 31,
++    "learning_rate": 0.08,
++    "l2_regularization": 1.0,
++    "random_state": 42,
++}
++SPEED_PROFILES = ("learned_raw", "learned_initial_offset", "reference_oracle")
++HEADING_PROFILES = ("phone_gyro", "reference_oracle")
++GYRO_CALIBRATION_PROFILES = ("frozen_s1", "journey_prefix")
++BASELINE_METHOD = "constant_reference_initialized"
++
++
++def _utc_now() -> str:
++    return datetime.now(timezone.utc).isoformat()
++
++
++def _json_value(value: Any) -> Any:
++    """Convert numpy scalars/arrays and non-finite floats to strict JSON values."""
++
++    if isinstance(value, np.ndarray):
++        return [_json_value(item) for item in value.tolist()]
++    if isinstance(value, (np.integer,)):
++        return int(value)
++    if isinstance(value, (np.floating,)):
++        value = float(value)
++    if isinstance(value, float):
++        return value if math.isfinite(value) else None
++    if isinstance(value, Path):
++        return str(value)
++    if isinstance(value, dict):
++        return {str(key): _json_value(item) for key, item in value.items()}
++    if isinstance(value, (list, tuple)):
++        return [_json_value(item) for item in value]
++    return value
++
++
++def _write_json(path: Path, value: Any, *, exclusive: bool = False) -> None:
++    mode = "x" if exclusive else "w"
++    with path.open(mode, encoding="utf-8") as handle:
++        json.dump(_json_value(value), handle, indent=2, sort_keys=True, allow_nan=False)
++        handle.write("\n")
++        handle.flush()
++        os.fsync(handle.fileno())
++
++
++def method_name(
++    speed_profile: str, heading_profile: str, gyro_calibration_profile: str
++) -> str:
++    return (
++        f"speed={speed_profile}|heading={heading_profile}|"
++        f"gyro={gyro_calibration_profile}"
++    )
++
++
++METHODS = tuple(
++    method_name(speed, heading, gyro)
++    for speed in SPEED_PROFILES
++    for heading in HEADING_PROFILES
++    for gyro in GYRO_CALIBRATION_PROFILES
++) + (BASELINE_METHOD,)
++
++
++def integrate_displacement(
++    times: np.ndarray, velocities: np.ndarray, headings: np.ndarray
++) -> tuple[float, float]:
++    """Integrate velocity samples at their left-endpoint headings."""
++
++    times = np.asarray(times, dtype=float)
++    velocities = np.asarray(velocities, dtype=float)
++    headings = np.asarray(headings, dtype=float)
++    if times.ndim != 1 or velocities.ndim != 1 or headings.ndim != 1:
++        raise ValueError("times, velocities and headings must be one-dimensional")
++    if len(times) != len(velocities) + 1 or len(velocities) != len(headings):
++        raise ValueError("times must have L+1 endpoints for L velocity and heading samples")
++    if not (
++        np.all(np.isfinite(times))
++        and np.all(np.isfinite(velocities))
++        and np.all(np.isfinite(headings))
++    ):
++        raise ValueError("integration inputs must be finite")
++    dt = np.diff(times)
++    if np.any(dt <= 0.0):
++        raise ValueError("integration timestamps must be strictly increasing")
++    east = float(np.sum(velocities * np.sin(headings) * dt))
++    north = float(np.sum(velocities * np.cos(headings) * dt))
++    return east, north
++
++
++def phone_headings(
++    initial_heading: float, yaw: np.ndarray, dt: np.ndarray, bias: float
++) -> np.ndarray:
++    """Return left-endpoint headings using only preceding yaw increments."""
++
++    yaw = np.asarray(yaw, dtype=float)
++    dt = np.asarray(dt, dtype=float)
++    if yaw.ndim != 1 or dt.ndim != 1 or len(yaw) != len(dt):
++        raise ValueError("yaw and dt must be one-dimensional arrays of equal length")
++    if not (
++        math.isfinite(initial_heading)
++        and math.isfinite(bias)
++        and np.all(np.isfinite(yaw))
++        and np.all(np.isfinite(dt))
++    ):
++        raise ValueError("heading inputs must be finite")
++    if np.any(dt <= 0.0):
++        raise ValueError("heading intervals must be positive")
++    headings = np.empty(len(yaw), dtype=float)
++    if len(headings) == 0:
++        return headings
++    headings[0] = initial_heading
++    if len(headings) > 1:
++        headings[1:] = initial_heading + np.cumsum((yaw[:-1] - bias) * dt[:-1])
++    return headings
++
++
++def _reference_lookup(
++    segments: list[AlignedSegment],
++) -> dict[int, list[tuple[int, int]]]:
++    lookup: dict[int, list[tuple[int, int]]] = defaultdict(list)
++    for segment_index, segment in enumerate(segments):
++        for local_index, raw_row in enumerate(segment.reference_rows):
++            lookup[int(raw_row)].append((segment_index, local_index))
++    return dict(lookup)
++
++
++def _base_window_record(
++    pair: TimestampedPair, start: int, end: int, calibration_start: int
++) -> dict[str, Any]:
++    reference_count = len(pair.reference_time_s)
++    return {
++        "window_id": f"raw-{start}-{end}",
++        "raw_start_row": start,
++        "raw_end_row": end,
++        "calibration_raw_bounds": [calibration_start, start],
++        "start_time_s": (
++            float(pair.reference_time_s[start]) if 0 <= start < reference_count else None
++        ),
++        "end_time_s": (
++            float(pair.reference_time_s[end]) if 0 <= end < reference_count else None
++        ),
++        "actual_duration_s": (
++            float(pair.reference_time_s[end] - pair.reference_time_s[start])
++            if 0 <= start < reference_count and 0 <= end < reference_count
++            else None
++        ),
++        "included": False,
++        "exclusion_reason": None,
++        "segment_index": None,
++        "local_bounds": None,
++        "calibration_local_bounds": None,
++        "phone_span": None,
++        "reference_span": None,
++        "phone_bracket_row_bounds": None,
++    }
++
++
++def make_windows(
++    pair: TimestampedPair,
++    segments: list[AlignedSegment],
++    first_candidate_row: int,
++    duration_rows: int = DURATION_ROWS,
++    calibration_rows: int = CALIBRATION_ROWS,
++) -> list[dict]:
++    """Enumerate a gap-safe fixed raw-reference grid without using labels."""
++
++    if duration_rows <= 0 or calibration_rows <= 0:
++        raise ValueError("duration_rows and calibration_rows must be positive")
++    if first_candidate_row < 0 or first_candidate_row % duration_rows:
++        raise ValueError("first_candidate_row must lie on the raw-row duration grid")
++    reference_count = len(pair.reference_time_s)
++    lookup = _reference_lookup(segments)
++    records: list[dict] = []
++    for start in range(first_candidate_row, reference_count, duration_rows):
++        end = start + duration_rows
++        calibration_start = start - calibration_rows
++        record = _base_window_record(pair, start, end, calibration_start)
++        if end >= reference_count:
++            record["exclusion_reason"] = "endpoint_out_of_range"
++            records.append(record)
++            continue
++        if calibration_start < 0:
++            record["exclusion_reason"] = "insufficient_feature_history"
++            records.append(record)
++            continue
++
++        required_rows = range(calibration_start, end + 1)
++        matches = [lookup.get(raw_row, []) for raw_row in required_rows]
++        if any(len(items) > 1 for items in matches):
++            record["exclusion_reason"] = "ambiguous_reference_rows"
++            records.append(record)
++            continue
++        if any(len(items) == 0 for items in matches):
++            record["exclusion_reason"] = "missing_or_gap"
++            records.append(record)
++            continue
++        segment_indices = {items[0][0] for items in matches}
++        if len(segment_indices) != 1:
++            record["exclusion_reason"] = "missing_or_gap"
++            records.append(record)
++            continue
++        segment_index = segment_indices.pop()
++        local_indices = np.asarray([items[0][1] for items in matches], dtype=int)
++        if not np.array_equal(
++            local_indices, np.arange(local_indices[0], local_indices[0] + len(local_indices))
++        ):
++            record["exclusion_reason"] = "missing_or_gap"
++            records.append(record)
++            continue
++        calibration_local_start = int(local_indices[0])
++        start_local = int(local_indices[calibration_rows])
++        end_local = int(local_indices[-1])
++        if calibration_local_start < FEATURE_WARMUP_ROWS:
++            record["exclusion_reason"] = "insufficient_feature_history"
++            records.append(record)
++            continue
++
++        relevant_times = np.asarray(
++            pair.reference_time_s[calibration_start : end + 1], dtype=float
++        )
++        intervals = np.diff(relevant_times)
++        actual_duration = float(pair.reference_time_s[end] - pair.reference_time_s[start])
++        expected_duration = duration_rows * REFERENCE_CADENCE_S
++        if (
++            not np.all(np.isfinite(relevant_times))
++            or np.any(np.abs(intervals - REFERENCE_CADENCE_S) > CADENCE_TOLERANCE_S)
++            or abs(actual_duration - expected_duration) > CADENCE_TOLERANCE_S
++        ):
++            record["exclusion_reason"] = "non_10hz_reference_cadence"
++            records.append(record)
++            continue
++
++        segment = segments[segment_index]
++        bracket_left = segment.phone_left_rows[calibration_local_start : end_local + 1]
++        bracket_right = segment.phone_right_rows[calibration_local_start : end_local + 1]
++        record.update(
++            {
++                "included": True,
++                "segment_index": segment_index,
++                "local_bounds": [start_local, end_local],
++                "calibration_local_bounds": [calibration_local_start, start_local],
++                "phone_span": list(segment.phone_span),
++                "reference_span": list(segment.reference_span),
++                "phone_bracket_row_bounds": [
++                    int(np.min(bracket_left)),
++                    int(np.max(bracket_right)),
++                ],
++            }
++        )
++        records.append(record)
++    return records
++
++
++def evaluate_window_method(
++    window: dict,
++    segment: AlignedSegment,
++    predicted_speed: np.ndarray,
++    predicted_yaw: np.ndarray,
++    *,
++    speed_profile: str,
++    heading_profile: str,
++    gyro_calibration_profile: str,
++) -> dict[str, Any]:
++    """Evaluate one fixed branch; selection and fit happen outside this function."""
++
++    if not window.get("included"):
++        raise ValueError("cannot evaluate an excluded window")
++    if speed_profile not in SPEED_PROFILES:
++        raise ValueError(f"unknown speed profile: {speed_profile}")
++    if heading_profile not in HEADING_PROFILES:
++        raise ValueError(f"unknown heading profile: {heading_profile}")
++    if gyro_calibration_profile not in GYRO_CALIBRATION_PROFILES:
++        raise ValueError(f"unknown gyro calibration profile: {gyro_calibration_profile}")
++    predicted_speed = np.asarray(predicted_speed, dtype=float)
++    predicted_yaw = np.asarray(predicted_yaw, dtype=float)
++    if len(predicted_speed) != len(segment.time_s) or len(predicted_yaw) != len(segment.time_s):
++        raise ValueError("prediction arrays must match the aligned segment")
++
++    start, end = (int(value) for value in window["local_bounds"])
++    calibration_start, calibration_end = (
++        int(value) for value in window["calibration_local_bounds"]
++    )
++    if calibration_end != start or calibration_end - calibration_start != CALIBRATION_ROWS:
++        raise ValueError("window must contain exactly 1200 pre-outage calibration samples")
++    times = segment.time_s[start : end + 1]
++    dt = np.diff(times)
++    reference = segment.reference
++
++    if speed_profile == "learned_raw":
++        velocity = np.maximum(0.0, predicted_speed[start:end])
++    elif speed_profile == "learned_initial_offset":
++        initial_offset = float(reference[start, 2] / 3.6 - predicted_speed[start])
++        velocity = np.maximum(0.0, predicted_speed[start:end] + initial_offset)
++    else:
++        velocity = reference[start:end, 2] / 3.6
++
++    initial_heading = math.radians(float(reference[start, 3]))
++    if heading_profile == "phone_gyro":
++        yaw_target_history = -np.deg2rad(reference[calibration_start:start, 4])
++        yaw_bias = float(
++            np.mean(predicted_yaw[calibration_start:start] - yaw_target_history)
++        )
++        headings = phone_headings(
++            initial_heading, predicted_yaw[start:end], dt, yaw_bias
++        )
++    else:
++        yaw_bias = None
++        headings = np.deg2rad(reference[start:end, 3])
++
++    predicted_east, predicted_north = integrate_displacement(times, velocity, headings)
++    east, north = legacy.local_coordinates(reference)
++    truth_east = float(east[end] - east[start])
++    truth_north = float(north[end] - north[start])
++    distance = float(np.sum((reference[start:end, 2] / 3.6) * dt))
++    endpoint_error = math.hypot(
++        predicted_east - truth_east, predicted_north - truth_north
++    )
++    eligible = distance >= MIN_DISTANCE_FOR_DRIFT_M
++    return {
++        "predicted_east_m": predicted_east,
++        "predicted_north_m": predicted_north,
++        "truth_east_m": truth_east,
++        "truth_north_m": truth_north,
++        "distance_m": distance,
++        "distance_eligible_for_drift_ratio": eligible,
++        "endpoint_error_m": endpoint_error,
++        "drift_ratio": endpoint_error / distance if eligible else None,
++        "yaw_bias_rad_s": yaw_bias,
++        "privileged_initial_position": True,
++        "privileged_initial_heading": True,
++        "privileged_initial_speed": speed_profile == "learned_initial_offset",
++        "reference_speed_oracle": speed_profile == "reference_oracle",
++        "reference_heading_oracle": heading_profile == "reference_oracle",
++        "pre_outage_vbox_yaw_calibration": heading_profile == "phone_gyro",
++    }
++
++
++def _evaluate_constant(window: dict, segment: AlignedSegment) -> dict[str, Any]:
++    start, end = (int(value) for value in window["local_bounds"])
++    times = segment.time_s[start : end + 1]
++    dt = np.diff(times)
++    reference = segment.reference
++    velocity = np.full(end - start, float(reference[start, 2] / 3.6))
++    headings = np.full(end - start, math.radians(float(reference[start, 3])))
++    predicted_east, predicted_north = integrate_displacement(times, velocity, headings)
++    east, north = legacy.local_coordinates(reference)
++    truth_east = float(east[end] - east[start])
++    truth_north = float(north[end] - north[start])
++    distance = float(np.sum((reference[start:end, 2] / 3.6) * dt))
++    endpoint_error = math.hypot(
++        predicted_east - truth_east, predicted_north - truth_north
++    )
++    eligible = distance >= MIN_DISTANCE_FOR_DRIFT_M
++    return {
++        "predicted_east_m": predicted_east,
++        "predicted_north_m": predicted_north,
++        "truth_east_m": truth_east,
++        "truth_north_m": truth_north,
++        "distance_m": distance,
++        "distance_eligible_for_drift_ratio": eligible,
++        "endpoint_error_m": endpoint_error,
++        "drift_ratio": endpoint_error / distance if eligible else None,
++        "yaw_bias_rad_s": None,
++        "privileged_initial_position": True,
++        "privileged_initial_heading": True,
++        "privileged_initial_speed": True,
++        "reference_speed_oracle": False,
++        "reference_heading_oracle": False,
++        "pre_outage_vbox_yaw_calibration": False,
++    }
++
++
++def _validate_segments(segments: list[AlignedSegment], sequence: str) -> None:
++    if not segments:
++        raise ValueError(f"{sequence}: alignment returned no segments")
++    for segment_index, segment in enumerate(segments):
++        if len(segment.reference_rows) == 0:
++            raise ValueError(f"{sequence}: aligned segment {segment_index} is empty")
++        if not np.all(np.diff(segment.reference_rows) == 1):
++            raise ValueError(
++                f"{sequence}: aligned segment {segment_index} does not preserve consecutive raw rows"
++            )
++        if not np.all(np.isfinite(segment.time_s)) or np.any(np.diff(segment.time_s) <= 0.0):
++            raise ValueError(
++                f"{sequence}: aligned segment {segment_index} has nonpositive timestamp intervals"
++            )
++
++
++def _first_s1_candidate(pair: TimestampedPair, cutoff_s: float) -> int:
++    for raw_row in range(0, len(pair.reference_time_s), DURATION_ROWS):
++        if pair.reference_time_s[raw_row] >= cutoff_s:
++            return raw_row
++    raise ValueError("S1 contains no raw-row grid candidate at or after the training cutoff")
++
++
++def _segment_provenance(segments: list[AlignedSegment]) -> list[dict[str, Any]]:
++    records = []
++    for index, segment in enumerate(segments):
++        records.append(
++            {
++                "segment_index": index,
++                "row_count": len(segment.time_s),
++                "phone_span": list(segment.phone_span),
++                "reference_span": list(segment.reference_span),
++                "raw_reference_row_bounds": [
++                    int(segment.reference_rows[0]),
++                    int(segment.reference_rows[-1]),
++                ],
++                "time_bounds_s": [float(segment.time_s[0]), float(segment.time_s[-1])],
++                "phone_bracket_row_bounds": [
++                    int(np.min(segment.phone_left_rows)),
++                    int(np.max(segment.phone_right_rows)),
++                ],
++            }
++        )
++    return records
++
++
++def _training_indices(
++    pair: TimestampedPair,
++    segments: list[AlignedSegment],
++    residual_offset_s: float,
++    cutoff_s: float,
++) -> list[dict[str, int]]:
++    lookup = _reference_lookup(segments)
++    records: list[dict[str, int]] = []
++    shifted_phone_times = pair.phone_time_s + residual_offset_s
++    for segment_index, segment in enumerate(segments):
++        for local_index in range(FEATURE_WARMUP_ROWS, len(segment.time_s)):
++            raw_row = int(segment.reference_rows[local_index])
++            left = int(segment.phone_left_rows[local_index])
++            right = int(segment.phone_right_rows[local_index])
++            if len(lookup[raw_row]) != 1:
++                continue
++            if not (
++                segment.time_s[local_index] < cutoff_s
++                and shifted_phone_times[left] < cutoff_s
++                and shifted_phone_times[right] < cutoff_s
++            ):
++                continue
++            records.append(
++                {
++                    "segment_index": segment_index,
++                    "local_index": local_index,
++                    "raw_reference_row": raw_row,
++                    "phone_left_row": left,
++                    "phone_right_row": right,
++                }
++            )
++    if not records:
++        raise ValueError("S1 has no eligible aligned training rows")
++    return records
++
++
++def _prefix_fit_indices(
++    pair: TimestampedPair,
++    segments: list[AlignedSegment],
++    estimate: dict,
++) -> list[dict[str, int]]:
++    segment = segments[0]
++    phone_prefix_end = contiguous_spans(pair.phone_time_s, pair.phone_elapsed_ms)[0][1]
++    phone_prefix_end = min(
++        phone_prefix_end,
++        int(
++            np.searchsorted(
++                pair.phone_time_s[:phone_prefix_end],
++                pair.phone_time_s[0] + CLOCK_PREFIX_S,
++                side="right",
++            )
++        ),
++    )
++    reference_prefix_end = contiguous_spans(pair.reference_time_s)[0][1]
++    reference_prefix_end = min(
++        reference_prefix_end,
++        int(
++            np.searchsorted(
++                pair.reference_time_s[:reference_prefix_end],
++                pair.reference_time_s[0] + CLOCK_PREFIX_S,
++                side="right",
++            )
++        ),
++    )
++    phone_bounds = estimate["phone_prefix_time_bounds_s"]
++    reference_bounds = estimate["reference_prefix_time_bounds_s"]
++    records: list[dict[str, int]] = []
++    for local_index in range(FEATURE_WARMUP_ROWS, len(segment.time_s)):
++        raw_row = int(segment.reference_rows[local_index])
++        left = int(segment.phone_left_rows[local_index])
++        right = int(segment.phone_right_rows[local_index])
++        if raw_row >= reference_prefix_end or left >= phone_prefix_end or right >= phone_prefix_end:
++            continue
++        if not (
++            reference_bounds[0] <= segment.time_s[local_index] <= reference_bounds[1]
++            and phone_bounds[0] <= pair.phone_time_s[left] <= phone_bounds[1]
++            and phone_bounds[0] <= pair.phone_time_s[right] <= phone_bounds[1]
++        ):
++            continue
++        records.append(
++            {
++                "segment_index": 0,
++                "local_index": local_index,
++                "raw_reference_row": raw_row,
++                "phone_left_row": left,
++                "phone_right_row": right,
++            }
++        )
++    if len(records) < 50:
++        raise ValueError(
++            "journey-prefix gyro calibration requires at least 50 finite aligned rows "
++            "after the 200-row warmup inside both original clock prefixes"
++        )
++    return records
++
++
++def _features_by_segment(segments: list[AlignedSegment]) -> list[np.ndarray]:
++    return [legacy.causal_features(segment.phone) for segment in segments]
++
++
++def _fit_gyro(
++    segments: list[AlignedSegment], indices: list[dict[str, int]]
++) -> np.ndarray:
++    design_rows = []
++    targets = []
++    for record in indices:
++        segment = segments[record["segment_index"]]
++        local_index = record["local_index"]
++        design_rows.append([*segment.phone[local_index, 7:10], 1.0])
++        targets.append(-math.radians(float(segment.reference[local_index, 4])))
++    design = np.asarray(design_rows, dtype=float)
++    target = np.asarray(targets, dtype=float)
++    finite = np.all(np.isfinite(design), axis=1) & np.isfinite(target)
++    if int(np.sum(finite)) < 50:
++        raise ValueError("gyro calibration requires at least 50 finite fit rows")
++    return np.linalg.lstsq(design[finite], target[finite], rcond=None)[0]
++
++
++def _predict_yaw(segment: AlignedSegment, coefficients: np.ndarray) -> np.ndarray:
++    design = np.column_stack([segment.phone[:, 7:10], np.ones(len(segment.phone))])
++    return design @ coefficients
++
++
++def _percentile(values: list[float], percentile: float) -> float | None:
++    if not values:
++        return None
++    return float(np.percentile(np.asarray(values, dtype=float), percentile))
++
++
++def _summaries(rows: list[dict[str, Any]], manifest_windows: list[dict]) -> dict:
++    summary: dict[str, dict[str, dict[str, Any]]] = {}
++    for sequence in SEQUENCES:
++        sequence_windows = [row for row in manifest_windows if row["sequence"] == sequence]
++        exclusion_counts = Counter(
++            row["exclusion_reason"] for row in sequence_windows if not row["included"]
++        )
++        summary[sequence] = {}
++        for method in METHODS:
++            method_rows = [
++                row for row in rows if row["sequence"] == sequence and row["method"] == method
++            ]
++            valid = [row for row in method_rows if row["included"]]
++            eligible = [
++                row for row in valid if row["distance_eligible_for_drift_ratio"]
++            ]
++            errors = [float(row["endpoint_error_m"]) for row in valid]
++            ratios = [float(row["drift_ratio"]) for row in eligible]
++            summary[sequence][method] = {
++                "candidate_count": len(sequence_windows),
++                "valid_window_count": len(valid),
++                "eligible_drift_window_count": len(eligible),
++                "below_50m_ratio_excluded_count": len(valid) - len(eligible),
++                "coverage_fraction": (
++                    len(valid) / len(sequence_windows) if sequence_windows else None
++                ),
++                "exclusion_counts": dict(sorted(exclusion_counts.items())),
++                "median_absolute_error_m": _percentile(errors, 50),
++                "p95_absolute_error_m": _percentile(errors, 95),
++                "median_eligible_drift_percent": (
++                    _percentile(ratios, 50) * 100 if ratios else None
++                ),
++                "p95_eligible_drift_percent": (
++                    _percentile(ratios, 95) * 100 if ratios else None
++                ),
++                "fraction_eligible_windows_below_10_percent": (
++                    float(np.mean(np.asarray(ratios) < 0.10)) if ratios else None
++                ),
++            }
++    return summary
++
++
++def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
++    if not rows:
++        raise ValueError("refusing to write an empty window/method table")
++    fields = list(rows[0])
++    with path.open("x", newline="", encoding="utf-8") as handle:
++        writer = csv.DictWriter(handle, fieldnames=fields)
++        writer.writeheader()
++        for row in rows:
++            writer.writerow(
++                {
++                    key: (
++                        json.dumps(_json_value(value), separators=(",", ":"))
++                        if isinstance(value, (list, tuple, dict))
++                        else _json_value(value)
++                    )
++                    for key, value in row.items()
++                }
++            )
++
++
++def run(data_root: Path, output: Path) -> dict:
++    run_started_utc = _utc_now()
++    data_root = Path(data_root).resolve()
++    output = Path(output).resolve()
++    if output.exists():
++        raise FileExistsError(f"output directory already exists: {output}")
++
++    pairs: dict[str, TimestampedPair] = {}
++    segments_by_sequence: dict[str, list[AlignedSegment]] = {}
++    clock_estimates: dict[str, dict] = {}
++    all_windows: list[dict[str, Any]] = []
++    for sequence in SEQUENCES:
++        pair = load_timestamped_pair(data_root, sequence, PHONE_UTC_OFFSET_S)
++        estimate = estimate_clock_offset(pair)
++        if estimate["low_confidence"]:
++            raise ValueError(
++                f"{sequence}: low-confidence clock alignment "
++                f"({estimate['absolute_correlation']:.6f}); refusing trajectory-based shift selection"
++            )
++        segments = align_pair(pair, estimate["residual_offset_s"])
++        _validate_segments(segments, sequence)
++        pairs[sequence] = pair
++        segments_by_sequence[sequence] = segments
++        clock_estimates[sequence] = estimate
++
++    s1_pair = pairs["S1"]
++    training_cutoff_s = float(
++        s1_pair.reference_time_s[0]
++        + 0.4 * (s1_pair.reference_time_s[-1] - s1_pair.reference_time_s[0])
++    )
++    first_candidates = {
++        "S1": _first_s1_candidate(s1_pair, training_cutoff_s),
++        "S2": 1800,
++        "S3a": 1800,
++        "S4": 1800,
++    }
++    for sequence in SEQUENCES:
++        sequence_windows = make_windows(
++            pairs[sequence],
++            segments_by_sequence[sequence],
++            first_candidates[sequence],
++        )
++        for record in sequence_windows:
++            record["sequence"] = sequence
++            record["window_id"] = f"{sequence}:{record['window_id']}"
++        all_windows.extend(sequence_windows)
++
++    training_indices = _training_indices(
++        s1_pair,
++        segments_by_sequence["S1"],
++        float(clock_estimates["S1"]["residual_offset_s"]),
++        training_cutoff_s,
++    )
++    prefix_indices = {
++        sequence: _prefix_fit_indices(
++            pairs[sequence], segments_by_sequence[sequence], clock_estimates[sequence]
++        )
++        for sequence in SEQUENCES
++    }
++
++    output.mkdir(parents=True, exist_ok=False)
++    runner_path = Path(__file__).resolve()
++    manifest = {
++        "status": "exploratory development diagnostic; not fresh confirmation",
++        "run_started_utc": run_started_utc,
++        "manifest_written_utc": _utc_now(),
++        "written_before_fit": True,
++        "phone_utc_offset_s": PHONE_UTC_OFFSET_S,
++        "sequence_scope": list(SEQUENCES),
++        "outage_duration_s": 60.0,
++        "raw_grid": {
++            "anchor_raw_reference_row": 0,
++            "duration_rows": DURATION_ROWS,
++            "calibration_rows": CALIBRATION_ROWS,
++            "feature_warmup_rows": FEATURE_WARMUP_ROWS,
++            "first_candidate_rows": first_candidates,
++            "reference_cadence_s": REFERENCE_CADENCE_S,
++            "cadence_tolerance_s": CADENCE_TOLERANCE_S,
++        },
++        "training": {
++            "sequence": "S1",
++            "cutoff_reference_time_s": training_cutoff_s,
++            "cutoff_formula": "S1 reference first + 0.4 * (reference last - reference first)",
++            "eligibility": (
++                "segment-local index >= 200; reference timestamp and both residual-shifted "
++                "phone bracket timestamps strictly below cutoff; raw reference row unique"
++            ),
++            "indices": training_indices,
++        },
++        "model": {
++            "class": "sklearn.ensemble.HistGradientBoostingRegressor",
++            "constants": MODEL_CONSTANTS,
++            "features": "unchanged prototypes.dhruva.benchmark.causal_features, per segment",
++            "prediction_clamp": "maximum(0, prediction)",
++        },
++        "gyro_calibration": {
++            "target": "-deg2rad(VBOX yaw rate)",
++            "design": "three aligned phone gyro axes plus intercept",
++            "frozen_s1": {
++                "sequence": "S1",
++                "indices": training_indices,
++            },
++            "journey_prefix": {
++                sequence: {
++                    "clock_prefix_s": CLOCK_PREFIX_S,
++                    "initial_aligned_segment_only": True,
++                    "indices": prefix_indices[sequence],
++                }
++                for sequence in SEQUENCES
++            },
++        },
++        "clock_alignment": {
++            "method": "estimate_clock_offset defaults; low confidence rejected",
++            "explicit_phone_utc_offset_s": PHONE_UTC_OFFSET_S,
++            "estimates": clock_estimates,
++        },
++        "segments": {
++            sequence: _segment_provenance(segments_by_sequence[sequence])
++            for sequence in SEQUENCES
++        },
++        "windows": all_windows,
++        "methods": list(METHODS),
++        "privileged_offline_inputs": [
++            "reference position at outage start",
++            "reference heading at outage start",
++            "reference speed at outage start for baseline and learned_initial_offset",
++            "1200 pre-outage reference yaw-rate samples for phone-heading bias",
++            "reference speed for reference_oracle branches",
++            "reference heading for reference_oracle branches",
++            "reference-assisted residual clock estimates",
++        ],
++        "hashes": {
++            "runner_sha256": legacy.sha256(runner_path),
++            "original_benchmark_sha256": legacy.sha256(Path(legacy.__file__).resolve()),
++            "alignment_module_sha256": legacy.sha256(
++                Path(__file__).resolve().parents[2] / "prototypes/dhruva/time_alignment.py"
++            ),
++            "data": {
++                sequence: {
++                    "phone_path": str(pairs[sequence].phone_path),
++                    "phone_sha256": legacy.sha256(pairs[sequence].phone_path),
++                    "reference_path": str(pairs[sequence].reference_path),
++                    "reference_sha256": legacy.sha256(pairs[sequence].reference_path),
++                }
++                for sequence in SEQUENCES
++            },
++        },
++    }
++    manifest_path = output / "manifest.json"
++    _write_json(manifest_path, manifest, exclusive=True)
++    pre_fit_manifest_sha256 = legacy.sha256(manifest_path)
++
++    features = {
++        sequence: _features_by_segment(segments_by_sequence[sequence])
++        for sequence in SEQUENCES
++    }
++    train_x = np.vstack(
++        [
++            features["S1"][record["segment_index"]][record["local_index"]]
++            for record in training_indices
++        ]
++    )
++    train_y = np.asarray(
++        [
++            segments_by_sequence["S1"][record["segment_index"]].reference[
++                record["local_index"], 2
++            ]
++            / 3.6
++            for record in training_indices
++        ],
++        dtype=float,
++    )
++    model = HistGradientBoostingRegressor(**MODEL_CONSTANTS)
++    fit_started_utc = _utc_now()
++    fit_started = time.perf_counter()
++    model.fit(train_x, train_y)
++    fit_elapsed_s = time.perf_counter() - fit_started
++    fit_completed_utc = _utc_now()
++
++    predicted_speed = {
++        sequence: [np.maximum(0.0, model.predict(block)) for block in features[sequence]]
++        for sequence in SEQUENCES
++    }
++    frozen_coefficients = _fit_gyro(segments_by_sequence["S1"], training_indices)
++    journey_coefficients = {
++        sequence: _fit_gyro(segments_by_sequence[sequence], prefix_indices[sequence])
++        for sequence in SEQUENCES
++    }
++    predicted_yaw: dict[str, dict[str, list[np.ndarray]]] = {}
++    for sequence in SEQUENCES:
++        predicted_yaw[sequence] = {
++            "frozen_s1": [
++                _predict_yaw(segment, frozen_coefficients)
++                for segment in segments_by_sequence[sequence]
++            ],
++            "journey_prefix": [
++                _predict_yaw(segment, journey_coefficients[sequence])
++                for segment in segments_by_sequence[sequence]
++            ],
++        }
++
++    output_rows: list[dict[str, Any]] = []
++    for sequence in SEQUENCES:
++        sequence_windows = [row for row in all_windows if row["sequence"] == sequence]
++        segments = segments_by_sequence[sequence]
++        for window in sequence_windows:
++            for method in METHODS:
++                row: dict[str, Any] = {
++                    "window_id": window["window_id"],
++                    "sequence": sequence,
++                    "raw_start_row": window["raw_start_row"],
++                    "raw_end_row": window["raw_end_row"],
++                    "start_time_s": window["start_time_s"],
++                    "end_time_s": window["end_time_s"],
++                    "actual_duration_s": window["actual_duration_s"],
++                    "included": window["included"],
++                    "exclusion_reason": window["exclusion_reason"],
++                    "segment_index": window["segment_index"],
++                    "local_bounds": window["local_bounds"],
++                    "calibration_raw_bounds": window["calibration_raw_bounds"],
++                    "calibration_local_bounds": window["calibration_local_bounds"],
++                    "phone_span": window["phone_span"],
++                    "reference_span": window["reference_span"],
++                    "method": method,
++                    "speed_profile": None,
++                    "heading_profile": None,
++                    "gyro_calibration_profile": None,
++                    "predicted_east_m": None,
++                    "predicted_north_m": None,
++                    "truth_east_m": None,
++                    "truth_north_m": None,
++                    "distance_m": None,
++                    "distance_eligible_for_drift_ratio": None,
++                    "endpoint_error_m": None,
++                    "drift_ratio": None,
++                    "yaw_bias_rad_s": None,
++                    "privileged_initial_position": None,
++                    "privileged_initial_heading": None,
++                    "privileged_initial_speed": None,
++                    "reference_speed_oracle": None,
++                    "reference_heading_oracle": None,
++                    "pre_outage_vbox_yaw_calibration": None,
++                }
++                if window["included"]:
++                    segment_index = int(window["segment_index"])
++                    segment = segments[segment_index]
++                    if method == BASELINE_METHOD:
++                        metrics = _evaluate_constant(window, segment)
++                    else:
++                        parts = dict(item.split("=", 1) for item in method.split("|"))
++                        row.update(
++                            {
++                                "speed_profile": parts["speed"],
++                                "heading_profile": parts["heading"],
++                                "gyro_calibration_profile": parts["gyro"],
++                            }
++                        )
++                        metrics = evaluate_window_method(
++                            window,
++                            segment,
++                            predicted_speed[sequence][segment_index],
++                            predicted_yaw[sequence][parts["gyro"]][segment_index],
++                            speed_profile=parts["speed"],
++                            heading_profile=parts["heading"],
++                            gyro_calibration_profile=parts["gyro"],
++                        )
++                    row.update(metrics)
++                output_rows.append(row)
++        sequence_exclusions = Counter(
++            row["exclusion_reason"] for row in sequence_windows if not row["included"]
++        )
++        print(
++            f"{sequence}: candidates={len(sequence_windows)} "
++            f"valid={sum(row['included'] for row in sequence_windows)} "
++            f"exclusions={dict(sorted(sequence_exclusions.items()))}",
++            flush=True,
++        )
++
++    valid_ids_by_method = {
++        method: {
++            row["window_id"]
++            for row in output_rows
++            if row["method"] == method and row["included"]
++        }
++        for method in METHODS
++    }
++    if len({frozenset(ids) for ids in valid_ids_by_method.values()}) != 1:
++        raise AssertionError("methods did not evaluate identical valid-window IDs")
++    for speed in SPEED_PROFILES:
++        first = method_name(speed, "reference_oracle", "frozen_s1")
++        second = method_name(speed, "reference_oracle", "journey_prefix")
++        first_rows = [row for row in output_rows if row["method"] == first and row["included"]]
++        second_rows = [row for row in output_rows if row["method"] == second and row["included"]]
++        for left, right in zip(first_rows, second_rows, strict=True):
++            for field in (
++                "predicted_east_m",
++                "predicted_north_m",
++                "endpoint_error_m",
++                "drift_ratio",
++            ):
++                if left[field] is None and right[field] is None:
++                    continue
++                if not np.isclose(left[field], right[field], rtol=0.0, atol=1e-12):
++                    raise AssertionError(
++                        f"reference-heading factorial controls disagree for {speed}, "
++                        f"{left['window_id']}, {field}"
++                    )
++
++    summaries = _summaries(output_rows, all_windows)
++    _write_csv(output / "windows.csv", output_rows)
++    result = {
++        "status": "exploratory development diagnostic; not fresh confirmation",
++        "run_started_utc": run_started_utc,
++        "fit_started_utc": fit_started_utc,
++        "fit_completed_utc": fit_completed_utc,
++        "run_completed_utc": _utc_now(),
++        "fit_elapsed_s": fit_elapsed_s,
++        "pre_fit_manifest_sha256": pre_fit_manifest_sha256,
++        "training_sample_count": len(training_indices),
++        "changed_aligned_training_samples": (
++            "timestamp/bracket-constrained S1 samples listed in manifest; this refit is not "
++            "an exact matched comparison with the legacy 18.342% result"
++        ),
++        "gyro_calibration": {
++            "frozen_s1": {
++                "coefficients": frozen_coefficients.tolist(),
++                "fit_row_count": len(training_indices),
++            },
++            "journey_prefix": {
++                sequence: {
++                    "coefficients": journey_coefficients[sequence].tolist(),
++                    "fit_row_count": len(prefix_indices[sequence]),
++                }
++                for sequence in SEQUENCES
++            },
++        },
++        "method_count": len(METHODS),
++        "methods": list(METHODS),
++        "summaries": summaries,
++        "limitations": [
++            "All four sequences are exploratory development sequences, not fresh confirmation.",
++            "Reference initialization, clock alignment, calibration, and oracle branches are privileged offline diagnostics.",
++            "Only 60-second outages were evaluated; no claim is made for other durations.",
++            "No novelty, deployment readiness, production-system pass, or target-compliance claim is made.",
++        ],
++    }
++    _write_json(output / "results.json", result, exclusive=True)
++    return result
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--data-root", type=Path, required=True)
++    parser.add_argument("--output", type=Path, required=True)
++    arguments = parser.parse_args()
++    run(arguments.data_root, arguments.output)
++
++
++if __name__ == "__main__":
++    main()
+
+diff --git a/prototypes/dhruva/tests/test_aligned_ablation.py b/prototypes/dhruva/tests/test_aligned_ablation.py
+new file mode 100644
+index 0000000..d42f39b
+--- /dev/null
++++ b/prototypes/dhruva/tests/test_aligned_ablation.py
+@@ -0,0 +1,197 @@
++import unittest
++from pathlib import Path
++
++import numpy as np
++
++from prototypes.dhruva.benchmark import causal_features
++from prototypes.dhruva.time_alignment import AlignedSegment, TimestampedPair
++from research.tools.audit_dhruva_aligned import (
++    evaluate_window_method,
++    integrate_displacement,
++    make_windows,
++    phone_headings,
++)
++
++
++class AlignedAblationTests(unittest.TestCase):
++    @staticmethod
++    def _fixture() -> tuple[TimestampedPair, AlignedSegment]:
++        times = np.arange(4001, dtype=float) * 0.1
++        phone = np.zeros((len(times), 16), dtype=float)
++        reference = np.zeros((len(times), 5), dtype=float)
++        reference[:, 0] = 52.0 + times * 10.0 / 6_371_000.0 * 180.0 / np.pi
++        reference[:, 2] = 36.0
++        rows = np.arange(len(times), dtype=int)
++        pair = TimestampedPair(
++            phone_time_s=times.copy(),
++            phone_elapsed_ms=times * 1000.0,
++            phone=phone.copy(),
++            reference_time_s=times.copy(),
++            reference=reference.copy(),
++            phone_path=Path("phone.csv"),
++            reference_path=Path("reference.csv"),
++        )
++        segment = AlignedSegment(
++            phone=phone.copy(),
++            reference=reference.copy(),
++            time_s=times.copy(),
++            reference_rows=rows,
++            phone_span=(0, len(times)),
++            reference_span=(0, len(times)),
++            phone_left_rows=rows.copy(),
++            phone_right_rows=rows.copy(),
++        )
++        return pair, segment
++
++    @staticmethod
++    def _slice_segment(segment: AlignedSegment, start: int, end: int) -> AlignedSegment:
++        return AlignedSegment(
++            phone=segment.phone[start:end].copy(),
++            reference=segment.reference[start:end].copy(),
++            time_s=segment.time_s[start:end].copy(),
++            reference_rows=segment.reference_rows[start:end].copy(),
++            phone_span=(start, end),
++            reference_span=(start, end),
++            phone_left_rows=segment.phone_left_rows[start:end].copy(),
++            phone_right_rows=segment.phone_right_rows[start:end].copy(),
++        )
++
++    def test_actual_elapsed_integration_and_left_endpoint_heading(self):
++        east, north = integrate_displacement(
++            np.array([0.0, 0.1, 0.3]),
++            np.array([10.0, 10.0]),
++            np.zeros(2),
++        )
++        np.testing.assert_allclose([east, north], [0.0, 3.0], atol=1e-10)
++        heading = phone_headings(
++            0.0, np.array([np.pi / 2, np.pi / 2]), np.ones(2), 0.0
++        )
++        np.testing.assert_allclose(heading, [0.0, np.pi / 2])
++
++    def test_complete_window_and_full_history_are_accepted(self):
++        pair, segment = self._fixture()
++
++        windows = make_windows(pair, [segment], first_candidate_row=1800)
++
++        first = windows[0]
++        self.assertTrue(first["included"])
++        self.assertEqual(first["raw_start_row"], 1800)
++        self.assertEqual(first["raw_end_row"], 2400)
++        self.assertEqual(first["calibration_raw_bounds"], [600, 1800])
++        self.assertEqual(first["local_bounds"], [1800, 2400])
++        self.assertEqual(first["calibration_local_bounds"], [600, 1800])
++        east, north = integrate_displacement(
++            pair.reference_time_s[1800:2401],
++            pair.reference[1800:2400, 2] / 3.6,
++            np.deg2rad(pair.reference[1800:2400, 3]),
++        )
++        np.testing.assert_allclose([east, north], [0.0, 600.0], atol=1e-8)
++
++    def test_split_inside_outage_or_calibration_rejects_same_candidate(self):
++        pair, segment = self._fixture()
++        for split in (2100, 1200):
++            with self.subTest(split=split):
++                segments = [
++                    self._slice_segment(segment, 0, split),
++                    self._slice_segment(segment, split, len(segment.time_s)),
++                ]
++                record = make_windows(pair, segments, first_candidate_row=1800)[0]
++                self.assertEqual(record["raw_start_row"], 1800)
++                self.assertFalse(record["included"])
++                self.assertEqual(record["exclusion_reason"], "missing_or_gap")
++
++    def test_overlapping_reference_rows_are_rejected_as_ambiguous(self):
++        pair, segment = self._fixture()
++        duplicate = self._slice_segment(segment, 1700, 2501)
++
++        record = make_windows(pair, [segment, duplicate], first_candidate_row=1800)[0]
++
++        self.assertFalse(record["included"])
++        self.assertEqual(record["exclusion_reason"], "ambiguous_reference_rows")
++
++    def test_final_out_of_range_candidate_is_not_silently_dropped(self):
++        pair, segment = self._fixture()
++
++        windows = make_windows(pair, [segment], first_candidate_row=1800)
++
++        self.assertEqual([row["raw_start_row"] for row in windows], [1800, 2400, 3000, 3600])
++        self.assertFalse(windows[-1]["included"])
++        self.assertEqual(windows[-1]["exclusion_reason"], "endpoint_out_of_range")
++
++    def test_missing_endpoint_row_is_not_integrated(self):
++        pair, segment = self._fixture()
++        shortened = self._slice_segment(segment, 0, 2400)
++
++        record = make_windows(pair, [shortened], first_candidate_row=1800)[0]
++
++        self.assertFalse(record["included"])
++        self.assertEqual(record["exclusion_reason"], "missing_or_gap")
++
++    def test_non_10hz_reference_cadence_is_rejected_and_logged(self):
++        pair, segment = self._fixture()
++        pair.reference_time_s[2000] += 0.002
++        segment.time_s[2000] += 0.002
++
++        record = make_windows(pair, [segment], first_candidate_row=1800)[0]
++
++        self.assertFalse(record["included"])
++        self.assertEqual(record["exclusion_reason"], "non_10hz_reference_cadence")
++
++    def test_window_exclusion_does_not_use_reference_labels(self):
++        pair, segment = self._fixture()
++        before = make_windows(pair, [segment], first_candidate_row=1800)
++        pair.reference[:, 2:] = np.linspace(-1e6, 1e6, len(pair.reference))[:, None]
++        segment.reference[:, 2:] = pair.reference[:, 2:]
++        after = make_windows(pair, [segment], first_candidate_row=1800)
++
++        self.assertEqual(
++            [(row["included"], row["exclusion_reason"]) for row in before],
++            [(row["included"], row["exclusion_reason"]) for row in after],
++        )
++
++    def test_phone_gps_column_is_not_a_causal_feature(self):
++        pair, _ = self._fixture()
++        before = causal_features(pair.phone)
++        pair.phone[:, 0] = np.linspace(-1e9, 1e9, len(pair.phone))
++        after = causal_features(pair.phone)
++        np.testing.assert_array_equal(before, after)
++
++    def test_learned_raw_phone_gyro_does_not_use_outage_reference_labels(self):
++        pair, segment = self._fixture()
++        window = make_windows(pair, [segment], first_candidate_row=1800)[0]
++        predicted_speed = np.linspace(8.0, 12.0, len(segment.time_s))
++        predicted_yaw = np.linspace(-0.02, 0.03, len(segment.time_s))
++        before = evaluate_window_method(
++            window,
++            segment,
++            predicted_speed,
++            predicted_yaw,
++            speed_profile="learned_raw",
++            heading_profile="phone_gyro",
++            gyro_calibration_profile="frozen_s1",
++        )
++        # Preserve the privileged initial state and the complete pre-outage
++        # calibration labels; mutate only labels strictly after outage start.
++        segment.reference[1801:, 2] = 720.0
++        segment.reference[1801:, 3] = 177.0
++        segment.reference[1801:, 4] = -900.0
++        after = evaluate_window_method(
++            window,
++            segment,
++            predicted_speed,
++            predicted_yaw,
++            speed_profile="learned_raw",
++            heading_profile="phone_gyro",
++            gyro_calibration_profile="frozen_s1",
++        )
++
++        np.testing.assert_allclose(
++            [before["predicted_east_m"], before["predicted_north_m"]],
++            [after["predicted_east_m"], after["predicted_north_m"]],
++            atol=1e-10,
++        )
++        self.assertNotEqual(before["distance_m"], after["distance_m"])
++
++
++if __name__ == "__main__":
++    unittest.main()
+
+
+# Dhruva ablation evidence fix review
+
+Fix base: original runner/test package dhruva-aligned-ablation-review.diff. Runner and tests are unchanged (SHA256 a5db4055e09a17cf669e9ad0544fa50c62d790186862ca7f97923bc4a3548440 and 5c9cbdbae83f8a69efb7a9ad76d6adf69e1a21cc0f9e56ca0867889a1dfaf930). This supplemental new-file diff adds the required implementation report to the authoritative snapshot. The report now retains the clean 10-test transcript and original successful-fit process identifiers, alongside original failures/noisy tests. No new model fit or physical data run occurred.
+
+diff --git a/research/evidence/dhruva-aligned-ablation-implementation.md b/research/evidence/dhruva-aligned-ablation-implementation.md
+new file mode 100644
+index 0000000..b3e5449
+--- /dev/null
++++ b/research/evidence/dhruva-aligned-ablation-implementation.md
+@@ -0,0 +1,403 @@
++# Dhruva timestamp-aligned fixed-window ablation — implementation record
++
++## Status and scope
++
++Implemented the prespecified exploratory 60-second evaluation for S1, S2, S3a,
++and S4. The runner evaluates all 12 fixed factorial combinations plus the
++constant reference-initialized baseline on one common candidate set. It does
++not evaluate alternative positioning systems, other outage durations, or new
++models/features.
++
++The evaluation is an offline diagnostic, not fresh confirmation. Reference
++initial position/heading, reference initial speed where applicable, pre-outage
++VBOX yaw labels, residual clock alignment, and both reference-oracle branches
++are explicitly privileged. No novelty, deployment-readiness, target-pass, or
++production-system claim is supported by these results.
++
++## Created files
++
++- `research/tools/audit_dhruva_aligned.py`
++- `prototypes/dhruva/tests/test_aligned_ablation.py`
++- `research/evidence/dhruva-aligned-ablation-implementation.md`
++- `research/evidence/dhruva-aligned-2026-09-10-2/manifest.json`
++- `research/evidence/dhruva-aligned-2026-09-10-2/windows.csv`
++- `research/evidence/dhruva-aligned-2026-09-10-2/results.json`
++
++The originally requested unnumbered output was never created: the first real
++command failed at module import before entering `run()`. The corrected run used
++the required clearly numbered fresh directory and did not overwrite anything.
++
++## Implemented controls
++
++- Actual `np.diff(times)` integration with L+1 timestamps, L velocities, and L
++  left-endpoint headings.
++- Exclusive gyro integration: outage sample zero uses exactly the privileged
++  initial reference heading; only preceding yaw increments affect later samples.
++- Raw-reference 600-row candidate grid, 1200-row pre-outage history, 200-row
++  segment-local feature warmup, same-segment uniqueness, endpoint presence, and
++  10 Hz cadence checks independent of speed/heading/error labels.
++- Duplicate raw reference rows across aligned segments are rejected as
++  `ambiguous_reference_rows`; gaps/restarts are never bridged.
++- Unchanged legacy `causal_features`, computed independently within each aligned
++  segment. Phone column 0 is proven absent from the learned inputs.
++- S1 training rows require segment-local index at least 200, reference time
++  strictly before the fixed 40% cutoff, both residual-shifted phone bracket times
++  strictly before the cutoff, and an unambiguous raw reference row.
++- One fixed `HistGradientBoostingRegressor` fit with the specified constants;
++  learned predictions are clamped nonnegative. Exact changed aligned training
++  rows are retained in the pre-fit manifest and are not presented as a
++  single-variable comparison with the legacy 18.342% evidence.
++- Frozen-S1 gyro calibration uses the manifested S1 training rows. Each
++  journey-prefix calibration uses only its first aligned segment after row 200,
++  stays inside both original raw clock prefixes, and has at least 50 finite rows.
++- Manifest was exclusively created and fsynced before `model.fit`; its frozen
++  SHA-256 is repeated in `results.json` and still matches the final file.
++- All excluded and included candidates have all 13 method rows in `windows.csv`.
++  Empty aggregate groups serialize as JSON `null`, never NaN.
++- Reference-heading duplicate gyro-control branches are asserted equal to
++  absolute tolerance `1e-12`; all methods are asserted to share identical valid
++  window IDs.
++
++## TDD record
++
++### Expected red run
++
++Command:
++
++```sh
++.venv/bin/python -m unittest discover -s prototypes/dhruva/tests -p 'test_aligned_ablation.py' -v
++```
++
++Output (exit 1):
++
++```text
++/home/user_end4/.config/matplotlib is not a writable directory
++Matplotlib created a temporary cache directory at /tmp/matplotlib-y2a6qrh5 because there was an issue with the path; it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
++test_aligned_ablation (unittest.loader._FailedTest.test_aligned_ablation) ... ERROR
++
++======================================================================
++ERROR: test_aligned_ablation (unittest.loader._FailedTest.test_aligned_ablation)
++----------------------------------------------------------------------
++Traceback (most recent call last):
++  File "/usr/lib/python3.13/unittest/loader.py", line 396, in _find_test_path
++    module = self._get_module_from_name(name)
++             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.13/unittest/loader.py", line 339, in _get_module_from_name
++    __import__(name)
++  File "/home/user_end4/MySpace/SIH/prototypes/dhruva/tests/test_aligned_ablation.py", line 8, in <module>
++    from research.tools.audit_dhruva_aligned import (
++ModuleNotFoundError: No module named 'research.tools.audit_dhruva_aligned'
++
++----------------------------------------------------------------------
++Ran 1 test in 0.000s
++
++FAILED (errors=1)
++```
++
++### Intermediate test correction
++
++The first implementation run executed 10 tests with 9 passing and one failing:
++
++```text
++FAIL: test_learned_raw_phone_gyro_does_not_use_outage_reference_labels
++AssertionError: 180.06304787999548 == 180.06304787999548
++
++----------------------------------------------------------------------
++Ran 10 tests in 0.134s
++
++FAILED (failures=1)
++```
++
++This was a test-assertion error: mutating only reference speed/heading/yaw does
++not have to change coordinate-derived endpoint error. The requirement says
++error/distance metrics may change. The assertion was corrected to require
++unchanged predicted displacement and changed reference-derived distance.
++
++### Final green run before diagnostic
++
++Command:
++
++```sh
++.venv/bin/python -m unittest discover -s prototypes/dhruva/tests -p 'test_aligned_ablation.py' -v
++```
++
++Output (exit 0):
++
++```text
++/home/user_end4/.config/matplotlib is not a writable directory
++Matplotlib created a temporary cache directory at /tmp/matplotlib-9hbt5xcs because there was an issue with the path; it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
++test_actual_elapsed_integration_and_left_endpoint_heading (test_aligned_ablation.AlignedAblationTests.test_actual_elapsed_integration_and_left_endpoint_heading) ... ok
++test_complete_window_and_full_history_are_accepted (test_aligned_ablation.AlignedAblationTests.test_complete_window_and_full_history_are_accepted) ... ok
++test_final_out_of_range_candidate_is_not_silently_dropped (test_aligned_ablation.AlignedAblationTests.test_final_out_of_range_candidate_is_not_silently_dropped) ... ok
++test_learned_raw_phone_gyro_does_not_use_outage_reference_labels (test_aligned_ablation.AlignedAblationTests.test_learned_raw_phone_gyro_does_not_use_outage_reference_labels) ... ok
++test_missing_endpoint_row_is_not_integrated (test_aligned_ablation.AlignedAblationTests.test_missing_endpoint_row_is_not_integrated) ... ok
++test_non_10hz_reference_cadence_is_rejected_and_logged (test_aligned_ablation.AlignedAblationTests.test_non_10hz_reference_cadence_is_rejected_and_logged) ... ok
++test_overlapping_reference_rows_are_rejected_as_ambiguous (test_aligned_ablation.AlignedAblationTests.test_overlapping_reference_rows_are_rejected_as_ambiguous) ... ok
++test_phone_gps_column_is_not_a_causal_feature (test_aligned_ablation.AlignedAblationTests.test_phone_gps_column_is_not_a_causal_feature) ... ok
++test_split_inside_outage_or_calibration_rejects_same_candidate (test_aligned_ablation.AlignedAblationTests.test_split_inside_outage_or_calibration_rejects_same_candidate) ... ok
++test_window_exclusion_does_not_use_reference_labels (test_aligned_ablation.AlignedAblationTests.test_window_exclusion_does_not_use_reference_labels) ... ok
++
++----------------------------------------------------------------------
++Ran 10 tests in 0.105s
++
++OK
++```
++
++### Clean focused run retained for review
++
++This evidence-only rerun used a writable matplotlib cache. No source or real
++diagnostic was changed or rerun.
++
++Command:
++
++```sh
++env MPLCONFIGDIR=/tmp/sih-matplotlib .venv/bin/python -m unittest discover -s prototypes/dhruva/tests -p 'test_aligned_ablation.py' -v
++```
++
++Exact output (exit 0):
++
++```text
++test_actual_elapsed_integration_and_left_endpoint_heading (test_aligned_ablation.AlignedAblationTests.test_actual_elapsed_integration_and_left_endpoint_heading) ... ok
++test_complete_window_and_full_history_are_accepted (test_aligned_ablation.AlignedAblationTests.test_complete_window_and_full_history_are_accepted) ... ok
++test_final_out_of_range_candidate_is_not_silently_dropped (test_aligned_ablation.AlignedAblationTests.test_final_out_of_range_candidate_is_not_silently_dropped) ... ok
++test_learned_raw_phone_gyro_does_not_use_outage_reference_labels (test_aligned_ablation.AlignedAblationTests.test_learned_raw_phone_gyro_does_not_use_outage_reference_labels) ... ok
++test_missing_endpoint_row_is_not_integrated (test_aligned_ablation.AlignedAblationTests.test_missing_endpoint_row_is_not_integrated) ... ok
++test_non_10hz_reference_cadence_is_rejected_and_logged (test_aligned_ablation.AlignedAblationTests.test_non_10hz_reference_cadence_is_rejected_and_logged) ... ok
++test_overlapping_reference_rows_are_rejected_as_ambiguous (test_aligned_ablation.AlignedAblationTests.test_overlapping_reference_rows_are_rejected_as_ambiguous) ... ok
++test_phone_gps_column_is_not_a_causal_feature (test_aligned_ablation.AlignedAblationTests.test_phone_gps_column_is_not_a_causal_feature) ... ok
++test_split_inside_outage_or_calibration_rejects_same_candidate (test_aligned_ablation.AlignedAblationTests.test_split_inside_outage_or_calibration_rejects_same_candidate) ... ok
++test_window_exclusion_does_not_use_reference_labels (test_aligned_ablation.AlignedAblationTests.test_window_exclusion_does_not_use_reference_labels) ... ok
++
++----------------------------------------------------------------------
++Ran 10 tests in 0.128s
++
++OK
++```
++
++## Real execution record
++
++### Attempt 1: entry-point bug before artifact creation
++
++Command:
++
++```sh
++env OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MPLCONFIGDIR=/tmp/sih-matplotlib \
++  .venv/bin/python research/tools/audit_dhruva_aligned.py \
++  --data-root /tmp/iovnbd \
++  --output research/evidence/dhruva-aligned-2026-09-10
++```
++
++Output (exit 1):
++
++```text
++Traceback (most recent call last):
++  File "/home/user_end4/MySpace/SIH/research/tools/audit_dhruva_aligned.py", line 26, in <module>
++    from prototypes.dhruva import benchmark as legacy
++ModuleNotFoundError: No module named 'prototypes'
++```
++
++The direct-script import path was corrected by inserting the resolved repository
++root before repository imports. The failure happened before output-directory
++creation, so there was no failed directory to preserve. After the correction,
++the focused suite was run again with the same command. Complete output (exit 0):
++
++```text
++/home/user_end4/.config/matplotlib is not a writable directory
++Matplotlib created a temporary cache directory at /tmp/matplotlib-sehiiq60 because there was an issue with the path; it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
++test_actual_elapsed_integration_and_left_endpoint_heading (test_aligned_ablation.AlignedAblationTests.test_actual_elapsed_integration_and_left_endpoint_heading) ... ok
++test_complete_window_and_full_history_are_accepted (test_aligned_ablation.AlignedAblationTests.test_complete_window_and_full_history_are_accepted) ... ok
++test_final_out_of_range_candidate_is_not_silently_dropped (test_aligned_ablation.AlignedAblationTests.test_final_out_of_range_candidate_is_not_silently_dropped) ... ok
++test_learned_raw_phone_gyro_does_not_use_outage_reference_labels (test_aligned_ablation.AlignedAblationTests.test_learned_raw_phone_gyro_does_not_use_outage_reference_labels) ... ok
++test_missing_endpoint_row_is_not_integrated (test_aligned_ablation.AlignedAblationTests.test_missing_endpoint_row_is_not_integrated) ... ok
++test_non_10hz_reference_cadence_is_rejected_and_logged (test_aligned_ablation.AlignedAblationTests.test_non_10hz_reference_cadence_is_rejected_and_logged) ... ok
++test_overlapping_reference_rows_are_rejected_as_ambiguous (test_aligned_ablation.AlignedAblationTests.test_overlapping_reference_rows_are_rejected_as_ambiguous) ... ok
++test_phone_gps_column_is_not_a_causal_feature (test_aligned_ablation.AlignedAblationTests.test_phone_gps_column_is_not_a_causal_feature) ... ok
++test_split_inside_outage_or_calibration_rejects_same_candidate (test_aligned_ablation.AlignedAblationTests.test_split_inside_outage_or_calibration_rejects_same_candidate) ... ok
++test_window_exclusion_does_not_use_reference_labels (test_aligned_ablation.AlignedAblationTests.test_window_exclusion_does_not_use_reference_labels) ... ok
++
++----------------------------------------------------------------------
++Ran 10 tests in 0.101s
++
++OK
++```
++
++### Attempt 2: successful numbered run
++
++Command:
++
++```sh
++env OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MPLCONFIGDIR=/tmp/sih-matplotlib \
++  .venv/bin/python research/tools/audit_dhruva_aligned.py \
++  --data-root /tmp/iovnbd \
++  --output research/evidence/dhruva-aligned-2026-09-10-2
++```
++
++Output (exit 0):
++
++```text
++S1: candidates=52 valid=48 exclusions={'endpoint_out_of_range': 1, 'non_10hz_reference_cadence': 3}
++S2: candidates=154 valid=144 exclusions={'endpoint_out_of_range': 1, 'missing_or_gap': 3, 'non_10hz_reference_cadence': 6}
++S3a: candidates=39 valid=37 exclusions={'endpoint_out_of_range': 1, 'missing_or_gap': 1}
++S4: candidates=155 valid=141 exclusions={'endpoint_out_of_range': 1, 'insufficient_feature_history': 1, 'missing_or_gap': 9, 'non_10hz_reference_cadence': 3}
++```
++
++Original successful-fit tool provenance retained from the execution context
++(not reconstructed from generated artifacts):
++
++```text
++launch: session_id=78308 chunk_id=2c0971 wall_time_seconds=30.002220166 original_token_count=0 output=""
++continuation request: session_id=78308
++completion: chunk_id=f39423 wall_time_seconds=10.821833369 exit_code=0 original_token_count=118
++```
++
++Raw completion output retained by that tool session:
++
++```text
++S1: candidates=52 valid=48 exclusions={'endpoint_out_of_range': 1, 'non_10hz_reference_cadence': 3}
++S2: candidates=154 valid=144 exclusions={'endpoint_out_of_range': 1, 'missing_or_gap': 3, 'non_10hz_reference_cadence': 6}
++S3a: candidates=39 valid=37 exclusions={'endpoint_out_of_range': 1, 'missing_or_gap': 1}
++S4: candidates=155 valid=141 exclusions={'endpoint_out_of_range': 1, 'insufficient_feature_history': 1, 'missing_or_gap': 9, 'non_10hz_reference_cadence': 3}
++```
++
++Fit facts: 20,495 manifested S1 training samples; fit elapsed
++12.765429898863658 s. Journey-prefix gyro-fit row counts were S1 1,198,
++S2 1,125, S3a 1,132, and S4 1,182. Clock absolute correlations were S1
++0.9736273, S2 0.9840840, S3a 0.9712053, and S4 0.9686993; none was marked
++low confidence.
++
++Candidate totals and distance eligibility are common to every method:
++
++| Sequence | Candidates | Valid | Drift eligible | Below 50 m | Exclusions |
++|---|---:|---:|---:|---:|---|
++| S1 | 52 | 48 | 46 | 2 | endpoint 1; cadence 3 |
++| S2 | 154 | 144 | 139 | 5 | endpoint 1; gap 3; cadence 6 |
++| S3a | 39 | 37 | 36 | 1 | endpoint 1; gap 1 |
++| S4 | 155 | 141 | 134 | 7 | endpoint 1; history 1; gap 9; cadence 3 |
++
++## Complete 13-method summaries
++
++Values are direct from `results.json`. “Valid/eligible” is the common window
++coverage; the share column is the fraction of distance-eligible windows with
++drift strictly below 10%.
++
++### S1
++
++| Method | Valid/eligible | Median abs m | P95 abs m | Median drift % | P95 drift % | <10% share |
++|---|---:|---:|---:|---:|---:|---:|
++| `speed=learned_raw|heading=phone_gyro|gyro=frozen_s1` | 48/46 | 67.669 | 188.029 | 16.110 | 45.466 | 0.261 |
++| `speed=learned_raw|heading=phone_gyro|gyro=journey_prefix` | 48/46 | 58.504 | 162.147 | 16.124 | 44.098 | 0.326 |
++| `speed=learned_raw|heading=reference_oracle|gyro=frozen_s1` | 48/46 | 43.131 | 118.156 | 11.695 | 35.740 | 0.457 |
++| `speed=learned_raw|heading=reference_oracle|gyro=journey_prefix` | 48/46 | 43.131 | 118.156 | 11.695 | 35.740 | 0.457 |
++| `speed=learned_initial_offset|heading=phone_gyro|gyro=frozen_s1` | 48/46 | 69.495 | 302.768 | 17.971 | 59.431 | 0.196 |
++| `speed=learned_initial_offset|heading=phone_gyro|gyro=journey_prefix` | 48/46 | 66.888 | 298.494 | 17.641 | 59.186 | 0.239 |
++| `speed=learned_initial_offset|heading=reference_oracle|gyro=frozen_s1` | 48/46 | 51.993 | 277.914 | 14.803 | 57.527 | 0.413 |
++| `speed=learned_initial_offset|heading=reference_oracle|gyro=journey_prefix` | 48/46 | 51.993 | 277.914 | 14.803 | 57.527 | 0.413 |
++| `speed=reference_oracle|heading=phone_gyro|gyro=frozen_s1` | 48/46 | 23.678 | 111.987 | 6.739 | 22.608 | 0.630 |
++| `speed=reference_oracle|heading=phone_gyro|gyro=journey_prefix` | 48/46 | 22.420 | 106.598 | 5.844 | 20.137 | 0.783 |
++| `speed=reference_oracle|heading=reference_oracle|gyro=frozen_s1` | 48/46 | 1.897 | 4.341 | 0.426 | 1.072 | 1.000 |
++| `speed=reference_oracle|heading=reference_oracle|gyro=journey_prefix` | 48/46 | 1.897 | 4.341 | 0.426 | 1.072 | 1.000 |
++| `constant_reference_initialized` | 48/46 | 297.300 | 698.609 | 79.928 | 157.624 | 0.000 |
++
++### S2
++
++| Method | Valid/eligible | Median abs m | P95 abs m | Median drift % | P95 drift % | <10% share |
++|---|---:|---:|---:|---:|---:|---:|
++| `speed=learned_raw|heading=phone_gyro|gyro=frozen_s1` | 144/139 | 100.860 | 389.187 | 21.855 | 62.912 | 0.158 |
++| `speed=learned_raw|heading=phone_gyro|gyro=journey_prefix` | 144/139 | 91.817 | 399.484 | 20.187 | 60.327 | 0.173 |
++| `speed=learned_raw|heading=reference_oracle|gyro=frozen_s1` | 144/139 | 71.596 | 360.894 | 17.947 | 45.172 | 0.223 |
++| `speed=learned_raw|heading=reference_oracle|gyro=journey_prefix` | 144/139 | 71.596 | 360.894 | 17.947 | 45.172 | 0.223 |
++| `speed=learned_initial_offset|heading=phone_gyro|gyro=frozen_s1` | 144/139 | 110.520 | 379.358 | 23.473 | 83.179 | 0.129 |
++| `speed=learned_initial_offset|heading=phone_gyro|gyro=journey_prefix` | 144/139 | 99.691 | 354.183 | 22.491 | 81.873 | 0.158 |
++| `speed=learned_initial_offset|heading=reference_oracle|gyro=frozen_s1` | 144/139 | 79.779 | 293.127 | 19.618 | 60.215 | 0.245 |
++| `speed=learned_initial_offset|heading=reference_oracle|gyro=journey_prefix` | 144/139 | 79.779 | 293.127 | 19.618 | 60.215 | 0.245 |
++| `speed=reference_oracle|heading=phone_gyro|gyro=frozen_s1` | 144/139 | 34.971 | 163.415 | 7.923 | 23.862 | 0.612 |
++| `speed=reference_oracle|heading=phone_gyro|gyro=journey_prefix` | 144/139 | 26.909 | 204.363 | 6.497 | 25.796 | 0.719 |
++| `speed=reference_oracle|heading=reference_oracle|gyro=frozen_s1` | 144/139 | 1.688 | 4.347 | 0.353 | 1.305 | 1.000 |
++| `speed=reference_oracle|heading=reference_oracle|gyro=journey_prefix` | 144/139 | 1.688 | 4.347 | 0.353 | 1.305 | 1.000 |
++| `constant_reference_initialized` | 144/139 | 375.989 | 800.628 | 83.964 | 189.769 | 0.029 |
++
++### S3a
++
++| Method | Valid/eligible | Median abs m | P95 abs m | Median drift % | P95 drift % | <10% share |
++|---|---:|---:|---:|---:|---:|---:|
++| `speed=learned_raw|heading=phone_gyro|gyro=frozen_s1` | 37/36 | 255.379 | 836.214 | 45.412 | 73.985 | 0.028 |
++| `speed=learned_raw|heading=phone_gyro|gyro=journey_prefix` | 37/36 | 258.125 | 835.424 | 44.878 | 73.936 | 0.028 |
++| `speed=learned_raw|heading=reference_oracle|gyro=frozen_s1` | 37/36 | 224.970 | 835.711 | 41.665 | 71.794 | 0.111 |
++| `speed=learned_raw|heading=reference_oracle|gyro=journey_prefix` | 37/36 | 224.970 | 835.711 | 41.665 | 71.794 | 0.111 |
++| `speed=learned_initial_offset|heading=phone_gyro|gyro=frozen_s1` | 37/36 | 102.651 | 381.274 | 21.822 | 59.959 | 0.167 |
++| `speed=learned_initial_offset|heading=phone_gyro|gyro=journey_prefix` | 37/36 | 107.827 | 361.806 | 22.766 | 60.124 | 0.250 |
++| `speed=learned_initial_offset|heading=reference_oracle|gyro=frozen_s1` | 37/36 | 92.080 | 312.527 | 17.301 | 52.221 | 0.306 |
++| `speed=learned_initial_offset|heading=reference_oracle|gyro=journey_prefix` | 37/36 | 92.080 | 312.527 | 17.301 | 52.221 | 0.306 |
++| `speed=reference_oracle|heading=phone_gyro|gyro=frozen_s1` | 37/36 | 40.401 | 130.759 | 5.312 | 18.230 | 0.778 |
++| `speed=reference_oracle|heading=phone_gyro|gyro=journey_prefix` | 37/36 | 25.762 | 105.496 | 4.736 | 23.974 | 0.806 |
++| `speed=reference_oracle|heading=reference_oracle|gyro=frozen_s1` | 37/36 | 1.757 | 3.282 | 0.276 | 0.528 | 1.000 |
++| `speed=reference_oracle|heading=reference_oracle|gyro=journey_prefix` | 37/36 | 1.757 | 3.282 | 0.276 | 0.528 | 1.000 |
++| `constant_reference_initialized` | 37/36 | 280.631 | 578.259 | 50.886 | 128.132 | 0.056 |
++
++### S4
++
++| Method | Valid/eligible | Median abs m | P95 abs m | Median drift % | P95 drift % | <10% share |
++|---|---:|---:|---:|---:|---:|---:|
++| `speed=learned_raw|heading=phone_gyro|gyro=frozen_s1` | 141/134 | 93.645 | 738.462 | 20.347 | 54.215 | 0.112 |
++| `speed=learned_raw|heading=phone_gyro|gyro=journey_prefix` | 141/134 | 108.836 | 738.778 | 23.729 | 56.910 | 0.104 |
++| `speed=learned_raw|heading=reference_oracle|gyro=frozen_s1` | 141/134 | 75.013 | 721.991 | 16.587 | 52.065 | 0.269 |
++| `speed=learned_raw|heading=reference_oracle|gyro=journey_prefix` | 141/134 | 75.013 | 721.991 | 16.587 | 52.065 | 0.269 |
++| `speed=learned_initial_offset|heading=phone_gyro|gyro=frozen_s1` | 141/134 | 113.447 | 433.214 | 20.331 | 76.730 | 0.149 |
++| `speed=learned_initial_offset|heading=phone_gyro|gyro=journey_prefix` | 141/134 | 132.655 | 445.197 | 25.180 | 88.553 | 0.142 |
++| `speed=learned_initial_offset|heading=reference_oracle|gyro=frozen_s1` | 141/134 | 88.979 | 363.628 | 17.061 | 61.522 | 0.291 |
++| `speed=learned_initial_offset|heading=reference_oracle|gyro=journey_prefix` | 141/134 | 88.979 | 363.628 | 17.061 | 61.522 | 0.291 |
++| `speed=reference_oracle|heading=phone_gyro|gyro=frozen_s1` | 141/134 | 35.085 | 167.760 | 6.623 | 21.305 | 0.634 |
++| `speed=reference_oracle|heading=phone_gyro|gyro=journey_prefix` | 141/134 | 50.074 | 216.873 | 8.947 | 31.872 | 0.522 |
++| `speed=reference_oracle|heading=reference_oracle|gyro=frozen_s1` | 141/134 | 2.102 | 6.894 | 0.361 | 1.355 | 1.000 |
++| `speed=reference_oracle|heading=reference_oracle|gyro=journey_prefix` | 141/134 | 2.102 | 6.894 | 0.361 | 1.355 | 1.000 |
++| `constant_reference_initialized` | 141/134 | 391.850 | 811.946 | 79.021 | 235.397 | 0.015 |
++
++## Artifact verification
++
++Commands:
++
++```sh
++wc -l research/evidence/dhruva-aligned-2026-09-10-2/windows.csv
++sha256sum research/evidence/dhruva-aligned-2026-09-10-2/manifest.json \
++  research/tools/audit_dhruva_aligned.py prototypes/dhruva/benchmark.py \
++  prototypes/dhruva/time_alignment.py
++jq -r '.pre_fit_manifest_sha256' \
++  research/evidence/dhruva-aligned-2026-09-10-2/results.json
++rg -n 'NaN|Infinity' research/evidence/dhruva-aligned-2026-09-10-2 || true
++```
++
++Output:
++
++```text
++5201 research/evidence/dhruva-aligned-2026-09-10-2/windows.csv
++c8a82a54a587506a7546a1d635be4a6e1f397b6304f87517c8681803c5134c37  research/evidence/dhruva-aligned-2026-09-10-2/manifest.json
++a5db4055e09a17cf669e9ad0544fa50c62d790186862ca7f97923bc4a3548440  research/tools/audit_dhruva_aligned.py
++3aedc19ad7fc39e3ae10976f1504f428c129f0fcf8d9aa359594f7711833d2d9  prototypes/dhruva/benchmark.py
++84d179c4f8d8ca75077acf42b3351f9c657937624beab62e3bd013620ceb273e  prototypes/dhruva/time_alignment.py
++c8a82a54a587506a7546a1d635be4a6e1f397b6304f87517c8681803c5134c37
++```
++
++The 5,201 CSV lines are one header plus 400 candidates × 13 methods. Manifest
++and recorded pre-fit hashes match. Current runner, legacy benchmark, and reviewed
++alignment-module hashes match those stored in the manifest. All valid windows
++have an actual duration of exactly 60.0 s. The NaN/Infinity scan returned no
++matches.
++
++## Concerns and interpretation limits
++
++1. Attempt 1 exposed and documented the direct-entry import bug; it produced no
++   artifact directory. Attempt 2 is therefore the only fitted/evaluated run.
++2. The matplotlib cache warning in tests is environmental noise from importing
++   the unchanged legacy benchmark. The prescribed real-run environment supplied
++   `MPLCONFIGDIR`, so it did not recur there.
++3. The refit uses 20,495 corrected timestamp/bracket-constrained S1 samples and
++   shifted evaluation windows. It must not be described as a controlled
++   old-18.342%-to-new causal improvement.
++4. Learned-raw/phone-gyro median eligible drift remains 16.110%/16.124% on S1,
++   21.855%/20.187% on S2, 45.412%/44.878% on S3a, and 20.347%/23.729% on S4
++   for frozen-S1/journey-prefix calibration respectively. These exploratory
++   values do not support a general accuracy or threshold claim.
++5. Reference-speed and reference-heading branches are component/oracle sanity
++   checks. The near-zero reference-speed/reference-heading integration residuals
++   validate coordinate/velocity consistency but are not estimator performance.
++6. Independent review is required before any accuracy number is reused.
+
+

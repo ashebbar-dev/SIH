@@ -1,0 +1,277 @@
+import csv
+import tempfile
+import unittest
+from datetime import datetime, timezone
+from pathlib import Path
+
+import numpy as np
+
+from prototypes.dhruva.time_alignment import (
+    TimestampedPair,
+    align_pair,
+    contiguous_spans,
+    estimate_clock_offset,
+    load_timestamped_pair,
+)
+
+
+class TimeAlignmentTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.data_root = Path(self.temporary_directory.name)
+
+    def tearDown(self):
+        self.temporary_directory.cleanup()
+
+    def _write_pair(self, phone_rows, reference_rows, name="S1"):
+        sequence = (
+            self.data_root
+            / "Synchronised V abd S datasets"
+            / "Categorised IOVNB Dataset"
+            / "S (Driver A)"
+            / name
+        )
+        sequence.mkdir(parents=True)
+        phone_path = sequence / f"S-{name}.csv"
+        reference_path = sequence / f"V-{name}.csv"
+        with phone_path.open("w", newline="", encoding="latin1") as handle:
+            writer = csv.writer(handle)
+            writer.writerow([f"phone_{column}" for column in range(24)])
+            writer.writerows(phone_rows)
+        with reference_path.open("w", newline="", encoding="latin1") as handle:
+            writer = csv.writer(handle)
+            writer.writerow([f"reference_{column}" for column in range(29)])
+            writer.writerows(reference_rows)
+        return phone_path, reference_path
+
+    @staticmethod
+    def _phone_row(elapsed_ms, timestamp, base=0.0):
+        row = [base + column / 100.0 for column in range(24)]
+        row[7] = elapsed_ms
+        row[8] = timestamp
+        return row
+
+    @staticmethod
+    def _reference_row(seconds_of_day, base=0.0):
+        row = [base + column / 100.0 for column in range(29)]
+        row[1] = seconds_of_day
+        return row
+
+    @staticmethod
+    def _pair(phone_time, phone, reference_time, reference, elapsed=None):
+        if elapsed is None:
+            elapsed = np.arange(len(phone_time), dtype=float) * 100.0
+        return TimestampedPair(
+            phone_time_s=np.asarray(phone_time, dtype=float),
+            phone_elapsed_ms=np.asarray(elapsed, dtype=float),
+            phone=np.asarray(phone, dtype=float),
+            reference_time_s=np.asarray(reference_time, dtype=float),
+            reference=np.asarray(reference, dtype=float),
+            phone_path=Path("phone.csv"),
+            reference_path=Path("reference.csv"),
+        )
+
+    def test_gap_and_restart_split(self):
+        times = np.array([0.0, 0.1, 312.242, 312.342])
+        elapsed = np.array([100.0, 200.0, 10.0, 110.0])
+        self.assertEqual(contiguous_spans(times, elapsed), [(0, 2), (2, 4)])
+
+    def test_nonmonotonic_split(self):
+        self.assertEqual(
+            contiguous_spans(np.array([0.0, 0.1, 0.1, 0.2])),
+            [(0, 2), (2, 4)],
+        )
+
+    def test_elapsed_restart_splits_smooth_wall_clock(self):
+        self.assertEqual(
+            contiguous_spans(
+                np.array([0.0, 0.1, 0.2, 0.3]),
+                np.array([100.0, 200.0, 10.0, 110.0]),
+            ),
+            [(0, 2), (2, 4)],
+        )
+
+    def test_loader_preserves_unequal_lengths_and_explicit_timezone(self):
+        phone_rows = [
+            self._phone_row(100.0, "2019-09-08 10:07:49:546", 1.0),
+            self._phone_row(200.0, "2019-09-08 10:07:49:646", 2.0),
+            self._phone_row(300.0, "2019-09-08 10:07:49:746", 3.0),
+        ]
+        reference_rows = [
+            self._reference_row(32869.0, 10.0),
+            self._reference_row(32869.1, 20.0),
+        ]
+        phone_path, reference_path = self._write_pair(phone_rows, reference_rows)
+
+        pair = load_timestamped_pair(self.data_root, "S1", 3600.0)
+
+        expected = datetime(2019, 9, 8, 10, 7, 49, 546000, tzinfo=timezone.utc).timestamp() - 3600.0
+        self.assertAlmostEqual(pair.phone_time_s[0], expected)
+        self.assertAlmostEqual(pair.reference_time_s[0], expected - 0.546)
+        self.assertEqual(pair.phone.shape, (3, 16))
+        self.assertEqual(pair.reference.shape, (2, 5))
+        np.testing.assert_allclose(pair.phone[0], np.asarray(phone_rows[0], dtype=object)[[3, *range(9, 24)]].astype(float))
+        np.testing.assert_allclose(pair.reference[0], np.asarray(reference_rows[0])[[2, 3, 4, 5, 14]])
+        self.assertEqual(pair.phone_path, phone_path)
+        self.assertEqual(pair.reference_path, reference_path)
+
+    def test_vbox_midnight_rollover_is_unwrapped(self):
+        phone_rows = [
+            self._phone_row(100.0, "2019-09-09 00:00:00:050"),
+            self._phone_row(200.0, "2019-09-09 00:00:00:150"),
+        ]
+        reference_rows = [
+            self._reference_row(86399.9),
+            self._reference_row(0.0),
+            self._reference_row(0.1),
+        ]
+        self._write_pair(phone_rows, reference_rows)
+
+        pair = load_timestamped_pair(self.data_root, "S1", 0.0)
+
+        np.testing.assert_allclose(np.diff(pair.reference_time_s), [0.1, 0.1], atol=1e-6)
+        self.assertLess(abs(pair.reference_time_s[1] - pair.phone_time_s[0]), 0.1)
+
+    def test_loader_rejects_invalid_or_nonfinite_input(self):
+        cases = [
+            ("2019-09-08 10:07:49.546", 32869.0),
+            ("2019-09-08 10:07:49:546", float("nan")),
+        ]
+        for index, (timestamp, seconds_of_day) in enumerate(cases):
+            with self.subTest(index=index):
+                name = f"S{index}"
+                self._write_pair(
+                    [self._phone_row(100.0, timestamp)],
+                    [self._reference_row(seconds_of_day)],
+                    name,
+                )
+                with self.assertRaises(ValueError):
+                    load_timestamped_pair(self.data_root, name, 3600.0)
+
+    def test_alignment_never_bridges_a_phone_gap_and_retains_raw_rows(self):
+        phone = np.column_stack([np.arange(4.0) + column for column in range(16)])
+        reference = np.column_stack([np.arange(3.0) + column for column in range(5)])
+        pair = self._pair(
+            [0.0, 0.1, 10.0, 10.1],
+            phone,
+            [0.05, 5.0, 10.05],
+            reference,
+        )
+
+        segments = align_pair(pair, 0.0)
+
+        np.testing.assert_array_equal(
+            np.concatenate([segment.reference_rows for segment in segments]),
+            [0, 2],
+        )
+        for segment in segments:
+            start, end = segment.phone_span
+            self.assertTrue(np.all(segment.phone_left_rows >= start))
+            self.assertTrue(np.all(segment.phone_right_rows < end))
+        self.assertEqual(segments[0].phone_span, (0, 2))
+        self.assertEqual(segments[0].reference_span, (0, 1))
+        np.testing.assert_array_equal(segments[0].phone_left_rows, [0])
+        np.testing.assert_array_equal(segments[0].phone_right_rows, [1])
+
+    def test_orientation_uses_shortest_angle_interpolation(self):
+        phone = np.zeros((2, 16))
+        phone[:, -3:] = [[359.0, 179.0, -179.0], [1.0, -179.0, 179.0]]
+        reference = np.zeros((1, 5))
+        pair = self._pair([0.0, 1.0], phone, [0.5], reference)
+
+        segment = align_pair(pair, 0.0, max_gap_s=2.0)[0]
+
+        np.testing.assert_allclose(segment.phone[0, -3:], [0.0, -180.0, -180.0], atol=1e-12)
+
+    def test_clock_calibration_recovers_offset_and_ignores_post_prefix_data(self):
+        time = np.arange(0.0, 200.0, 0.1)
+        physical_phone_time = time + 0.3
+        signal = (
+            np.sin(0.013 * physical_phone_time**2)
+            + 0.45 * np.sin(0.71 * physical_phone_time)
+            + 0.2 * np.cos(1.37 * physical_phone_time)
+        )
+        phone = np.zeros((len(time), 16))
+        phone[:, 7] = signal
+        phone[:, 8] = 0.3 * np.roll(signal, 7)
+        phone[:, 9] = np.linspace(-1.0, 1.0, len(time))
+        reference = np.zeros((len(time), 5))
+        reference[:, 4] = (
+            np.sin(0.013 * time**2)
+            + 0.45 * np.sin(0.71 * time)
+            + 0.2 * np.cos(1.37 * time)
+        )
+        pair = self._pair(time, phone, time, reference)
+
+        before = estimate_clock_offset(pair)
+        phone[time > 140.0] = 1e9
+        reference[time > 140.0] = -1e9
+        after = estimate_clock_offset(pair)
+
+        self.assertEqual(before, after)
+        self.assertAlmostEqual(before["residual_offset_s"], 0.3)
+        self.assertEqual(before["phone_gyro_axis"], 0)
+        self.assertGreater(before["absolute_correlation"], 0.99)
+        self.assertGreaterEqual(before["paired_sample_count"], 50)
+        self.assertLessEqual(before["calibration_time_bounds_s"][1], 140.0)
+
+    def test_clock_calibration_ignores_later_backward_restart(self):
+        initial_time = np.arange(10.0, 20.0, 0.1)
+        restarted_time = np.arange(0.0, 10.0, 0.1)
+        phone_time = np.concatenate((initial_time, restarted_time))
+        reference_time = np.arange(0.0, 20.0, 0.1)
+        phone = np.zeros((len(phone_time), 16))
+        reference = np.zeros((len(reference_time), 5))
+        phone[:, 7] = np.sin(0.37 * phone_time) + 0.2 * np.cos(1.13 * phone_time)
+        reference[:, 4] = (
+            np.sin(0.37 * reference_time) + 0.2 * np.cos(1.13 * reference_time)
+        )
+        pair = self._pair(phone_time, phone, reference_time, reference)
+
+        before = estimate_clock_offset(pair, max_residual_s=0.0)
+        phone[len(initial_time) :, 7] = np.linspace(-20.0, 30.0, len(restarted_time))
+        after = estimate_clock_offset(pair, max_residual_s=0.0)
+
+        self.assertEqual(before, after)
+        self.assertGreaterEqual(before["calibration_time_bounds_s"][0], 10.0)
+        self.assertEqual(before["phone_prefix_time_bounds_s"], [10.0, initial_time[-1]])
+
+    def test_clock_calibration_ignores_smooth_wall_clock_after_elapsed_reset(self):
+        time = np.arange(0.0, 20.0, 0.1)
+        elapsed = np.concatenate((np.arange(100) * 100.0, np.arange(100) * 100.0))
+        signal = np.sin(0.019 * time**2) + 0.3 * np.cos(0.83 * time)
+        phone = np.zeros((len(time), 16))
+        reference = np.zeros((len(time), 5))
+        phone[:, 7] = signal
+        reference[:, 4] = signal
+        pair = self._pair(time, phone, time, reference, elapsed=elapsed)
+
+        before = estimate_clock_offset(pair, max_residual_s=0.0)
+        phone[100:, 7] = np.linspace(100.0, -100.0, 100)
+        after = estimate_clock_offset(pair, max_residual_s=0.0)
+
+        self.assertEqual(before, after)
+        self.assertEqual(before["paired_sample_count"], 100)
+        self.assertEqual(before["phone_prefix_time_bounds_s"], [0.0, time[99]])
+
+    def test_clock_calibration_does_not_fallback_after_inadequate_initial_overlap(self):
+        later_time = np.arange(0.0, 10.0, 0.1)
+        phone_time = np.concatenate(([100.0, 100.1], later_time))
+        phone = np.zeros((len(phone_time), 16))
+        reference = np.zeros((len(later_time), 5))
+        phone[2:, 7] = np.sin(0.7 * later_time)
+        reference[:, 4] = np.sin(0.7 * later_time)
+        pair = self._pair(phone_time, phone, later_time, reference)
+
+        with self.assertRaisesRegex(ValueError, "initial contiguous"):
+            estimate_clock_offset(pair)
+
+    def test_zero_motion_clock_calibration_fails_explicitly(self):
+        time = np.arange(0.0, 20.0, 0.1)
+        pair = self._pair(time, np.zeros((len(time), 16)), time, np.zeros((len(time), 5)))
+        with self.assertRaisesRegex(ValueError, "varying"):
+            estimate_clock_offset(pair, prefix_s=20.0)
+
+
+if __name__ == "__main__":
+    unittest.main()

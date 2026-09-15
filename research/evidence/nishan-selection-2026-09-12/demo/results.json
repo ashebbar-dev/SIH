@@ -1,0 +1,395 @@
+{
+  "all_passed": true,
+  "cases": [
+    {
+      "name": "concurrent_distinct_sessions_rows",
+      "observed": {
+        "barrier_before_decrypt": true,
+        "processes": 2,
+        "rows": [
+          1,
+          0
+        ],
+        "sessions": [
+          "b852c2de-6ce3-4727-b820-5edeabc0ad78",
+          "9bb88924-d0ba-4943-b113-4ae1bc2e6174"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "third_release_row",
+      "observed": {
+        "row": 2,
+        "session": "70c3bcc8-e4a4-42a2-8e93-adf64106e7f5"
+      },
+      "passed": true
+    },
+    {
+      "name": "signed_copy_hash_match",
+      "observed": [
+        {
+          "actual": "061dc16c25238245831ef93ab18c9ab8fa23294236d69d1bae71ec91dd492a8d",
+          "session": "b852c2de-6ce3-4727-b820-5edeabc0ad78",
+          "signed": "061dc16c25238245831ef93ab18c9ab8fa23294236d69d1bae71ec91dd492a8d"
+        },
+        {
+          "actual": "2c99f24cb2cc06f6c70dad4794d9cb61e26922e8022b243a20dd6265a1374f0c",
+          "session": "9bb88924-d0ba-4943-b113-4ae1bc2e6174",
+          "signed": "2c99f24cb2cc06f6c70dad4794d9cb61e26922e8022b243a20dd6265a1374f0c"
+        },
+        {
+          "actual": "3a79949ceb610edb4250917ac1887aee5030d278818911c28340b9d5fda37c05",
+          "session": "70c3bcc8-e4a4-42a2-8e93-adf64106e7f5",
+          "signed": "3a79949ceb610edb4250917ac1887aee5030d278818911c28340b9d5fda37c05"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "clean_pdf_trace",
+      "observed": {
+        "attribution": [
+          {
+            "above_threshold": true,
+            "fingerprint_user_index": 1,
+            "layout_tag": {
+              "corrected_blocks": 0,
+              "hamming_blocks": 18,
+              "match": true,
+              "release_channel_available": true,
+              "status": "authenticated tag matched",
+              "suspect_carrier_symbols": 133,
+              "suspect_is_pdf": true
+            },
+            "ledger_block_hash": "aa8d6cb7b5c4f38b2c3b0a94db98c0c3bde32e1d8d301547566d728416c5b7cb",
+            "ledger_block_index": 1,
+            "recipient_display_name": "Alice",
+            "recipient_id": "alice",
+            "recipient_signature_valid": true,
+            "score": 17431.259418,
+            "selected_by_fusion": true,
+            "session_id": "b852c2de-6ce3-4727-b820-5edeabc0ad78",
+            "tardos_above_threshold": true
+          }
+        ],
+        "decision": {
+          "conflict": false,
+          "corroboration_required": true,
+          "decision": "corroborated_channels",
+          "editable_pdf_corroboration_required": true,
+          "layout_authenticated_indices": [
+            1
+          ],
+          "layout_observation": {
+            "carrier_symbols_read": 133,
+            "encoded_bits": 126,
+            "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+            "read_error": null,
+            "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+            "suspect_is_pdf": true,
+            "tag_bits": 72
+          },
+          "reason": "Both separately encoded, domain-separated carriers identify the same release event set.",
+          "selected_indices": [
+            1
+          ],
+          "tardos_issued_indices": [
+            1
+          ],
+          "unissued_tardos_indices": []
+        },
+        "ledger_witness": {
+          "failure": null,
+          "latest": {
+            "canonical_head": "a16737c25d1fafad6590bd852394c22e3bef55d29eb27b2b3485605e487e0dcd",
+            "canonical_length": 3,
+            "identity_registry_sha3_256": "5cf65c9f268081685e3a1bcf1ae8710ac82b90a365265273361037632fc3d6e9",
+            "index": 3,
+            "ledger_trust_root_hash": "7cf62e72da29b99f55a2d8e253dc3360d232bbda360961020368575441e94974",
+            "previous_checkpoint_hash": "9aa243bbe5a06fb954ff5f72e8f27b558181f13b3bf049f2f047355a451834d2",
+            "version": "nishan-external-head-witness/v1",
+            "witnessed_at": "2026-09-12T05:24:56.485428+00:00"
+          },
+          "latest_checkpoint_hash": "f5bcbbd88fb9038038f9656b4f8a99904e38a6eefb45b337e2582498a2543cdd",
+          "ledger_comparison": "consistent",
+          "observed_ledger_head": "a16737c25d1fafad6590bd852394c22e3bef55d29eb27b2b3485605e487e0dcd",
+          "observed_ledger_length": 3,
+          "valid": true,
+          "verified_checkpoints": 4,
+          "witness_enforced": true,
+          "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040",
+          "witnessed_ledger_head": "a16737c25d1fafad6590bd852394c22e3bef55d29eb27b2b3485605e487e0dcd",
+          "witnessed_ledger_length": 3
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "trace_read_only",
+      "observed": {
+        "after_sha256": "37f245e5db2562e25d0202a09d945bfb2de609f3c6863881467a1fa7314c7c97",
+        "before_sha256": "37f245e5db2562e25d0202a09d945bfb2de609f3c6863881467a1fa7314c7c97"
+      },
+      "passed": true
+    },
+    {
+      "name": "rendered_transplant_abstains",
+      "observed": {
+        "attribution": [],
+        "decision": {
+          "conflict": true,
+          "corroboration_required": true,
+          "decision": "abstain_missing_layout_channel",
+          "editable_pdf_corroboration_required": false,
+          "layout_authenticated_indices": [],
+          "layout_observation": {
+            "carrier_symbols_read": null,
+            "encoded_bits": 126,
+            "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+            "read_error": null,
+            "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+            "suspect_is_pdf": false,
+            "tag_bits": 72
+          },
+          "reason": "The raster suspect has no digital PDF layout channel; visual scores are research leads only.",
+          "screening_lead_indices": [
+            1
+          ],
+          "selected_indices": [],
+          "tardos_issued_indices": [
+            1
+          ],
+          "unissued_tardos_indices": []
+        },
+        "visual_only_research_leads": [
+          {
+            "above_threshold": true,
+            "fingerprint_user_index": 1,
+            "layout_tag": {
+              "corrected_blocks": null,
+              "match": false,
+              "release_channel_available": true,
+              "status": "suspect is not a supported digital PDF",
+              "suspect_carrier_symbols": null,
+              "suspect_is_pdf": false
+            },
+            "ledger_block_hash": "aa8d6cb7b5c4f38b2c3b0a94db98c0c3bde32e1d8d301547566d728416c5b7cb",
+            "ledger_block_index": 1,
+            "recipient_display_name": "Alice",
+            "recipient_id": "alice",
+            "recipient_signature_valid": true,
+            "score": 17431.259418,
+            "selected_by_fusion": false,
+            "session_id": "b852c2de-6ce3-4727-b820-5edeabc0ad78",
+            "tardos_above_threshold": true
+          }
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "low_capacity_pdf_abstains",
+      "observed": {
+        "attribution": [],
+        "decision": {
+          "conflict": true,
+          "corroboration_required": true,
+          "decision": "abstain_inadequate_release_capacity",
+          "editable_pdf_corroboration_required": false,
+          "layout_authenticated_indices": [],
+          "layout_observation": {
+            "carrier_symbols_read": 0,
+            "encoded_bits": 126,
+            "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+            "read_error": null,
+            "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+            "suspect_is_pdf": true,
+            "tag_bits": 72
+          },
+          "reason": "The signed release has inadequate layout capacity for corroborated attribution.",
+          "screening_lead_indices": [
+            0
+          ],
+          "selected_indices": [],
+          "tardos_issued_indices": [
+            0
+          ],
+          "unissued_tardos_indices": []
+        },
+        "signed_fingerprint_policy": {
+          "biases_sha3_256": "1c82e5c5ab06b1e88f44126a554646836e44f19c47503bd601be78d41db84cd8",
+          "carrier_scope": "The theorem is conditional on the decoded pirate word obeying the marking condition; the carrier must be evaluated separately for each attack.",
+          "codebook_sha3_256": "dc8be0a3340f43c9dd48bf2a605ef7af6bb113c3c5cc7b4c015352c1740bd25e",
+          "corroboration_required": true,
+          "fusion_policy": "All PDF-source traces require visual/layout set-equality corroboration, including rasterized suspects and releases with insufficient layout capacity. Single-channel scores are research leads only; missing channels, inadequate release capacity, disagreement or any unissued accusation cause abstention.",
+          "fusion_policy_version": "pdf-all-formats-corroboration/v1",
+          "generator": "AES-256-CTR streams derived by HMAC-SHA3-512; 53-bit bias and 32-bit Bernoulli discretization",
+          "generator_assurance": "prototype construction using the cryptography library; no independent DRBG audit",
+          "layout_tag": {
+            "available": false,
+            "codec": "Hamming(7,4), one-symbol correction per seven-symbol block",
+            "encoded_bits": 126,
+            "scheme": "nishan-hmac-layout-tag/v1",
+            "scope": "Exact digital-PDF text-layout channel; not collusion-secure and not claimed robust to optimizer normalization, print/scan, OCR, or photography.",
+            "supported_capacity_bits": 2,
+            "tag_bits": 72,
+            "tag_commitment_sha3_256": "f07c3f06f4c8d07d28efdcd0d9bc9723c0bf724d0373e4c92f630b829ba563e4"
+          },
+          "parameters": {
+            "coalition_limit": 5,
+            "code_length": 52500,
+            "cutoff": 0.0006666666666666666,
+            "familywise_epsilon": 1e-06,
+            "k": 21,
+            "marking_assumption_required": true,
+            "per_user_epsilon": 9.999999999999999e-10,
+            "roster_size": 1000,
+            "theorem_profile": "Tardos F_(n,c,epsilon/n), original conservative constants",
+            "threshold": 2100.0
+          },
+          "scheme": "nishan-tardos-live-pdf/v1",
+          "theorem_bounds": {
+            "combined_error_upper": 9.990056234132518e-07,
+            "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+            "scope": "random code construction; coalition obeys the marking condition",
+            "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+            "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+          },
+          "user_index": 0
+        },
+        "visual_only_research_leads": [
+          {
+            "above_threshold": true,
+            "fingerprint_user_index": 0,
+            "layout_tag": {
+              "corrected_blocks": null,
+              "match": false,
+              "release_channel_available": false,
+              "status": "release had no supported layout capacity",
+              "suspect_carrier_symbols": 0,
+              "suspect_is_pdf": true
+            },
+            "ledger_block_hash": "03b596002f17e7983ab4f9f969e94e9739998d4047ed8e450c9865b2998fabd0",
+            "ledger_block_index": 3,
+            "recipient_display_name": "Alice",
+            "recipient_id": "alice",
+            "recipient_signature_valid": true,
+            "score": 17387.835028,
+            "selected_by_fusion": false,
+            "session_id": "15fb1e08-9496-46ca-a1b8-1eaf1d1886dd",
+            "tardos_above_threshold": true
+          }
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "wrong_pin_rejected",
+      "observed": {
+        "error": "witness public key does not match the provisioned pin",
+        "error_type": "RuntimeError",
+        "output_exists": false,
+        "rejected": true
+      },
+      "passed": true
+    },
+    {
+      "name": "rollback_release_rejected",
+      "observed": {
+        "comparison": "rollback_detected",
+        "error": "pinned witness is not consistent: rollback_detected",
+        "error_type": "RuntimeError",
+        "ledger_quorum_valid": true,
+        "output_exists": false,
+        "rejected": true
+      },
+      "passed": true
+    },
+    {
+      "name": "rollback_trace_rejected",
+      "observed": {
+        "error": "pinned witness is not consistent: rollback_detected",
+        "error_type": "RuntimeError",
+        "rejected": true
+      },
+      "passed": true
+    },
+    {
+      "name": "checkpoint_failure_no_publication",
+      "observed": {
+        "after_length": 5,
+        "before_length": 4,
+        "comparison": "unwitnessed_extension",
+        "destination_preserved": true,
+        "error": "injected checkpoint failure",
+        "error_type": "RuntimeError",
+        "existing_destination": false,
+        "rejected": true
+      },
+      "passed": true
+    },
+    {
+      "name": "checkpoint_failure_preserves_existing_output",
+      "observed": {
+        "after_length": 5,
+        "before_length": 4,
+        "comparison": "unwitnessed_extension",
+        "destination_preserved": true,
+        "error": "injected checkpoint failure",
+        "error_type": "RuntimeError",
+        "existing_destination": true,
+        "rejected": true
+      },
+      "passed": true
+    }
+  ],
+  "code_sha256": {
+    "prototypes/nishan_pq/nishan/__init__.py": "3d2042d954ea927a91a1a13e02acbb135ee85fa6cbf13f2a390cabbf13c177f2",
+    "prototypes/nishan_pq/nishan/__main__.py": "11cf323249f4ba4e79c9fb7660c0979fc91a3822bc5362286376b69808b41195",
+    "prototypes/nishan_pq/nishan/cli.py": "fc8a61c1613ecb9a1d4c67bb32794430e61776872943a03a39be1c0e051648b4",
+    "prototypes/nishan_pq/nishan/core.py": "da4ac2487aad358df7ff0e9512a1d22a006906934e51c188b3a6cae823534b99",
+    "prototypes/nishan_pq/nishan/demo.py": "80f6e68dbc092285075459ffd35e193d91b4d06fe05ccc1171e1ef246ef82f50",
+    "prototypes/nishan_pq/nishan/identity.py": "9403f07ae0f92221bfb764f1b90712ff85ac2e408c6e730d2b88cda54b1706b4",
+    "prototypes/nishan_pq/nishan/layout_tag.py": "3994aa97c698980943ef73732a57a8c4c435c34c723b7deecc549f081ce4d8ac",
+    "prototypes/nishan_pq/nishan/ledger.py": "db549fcdc665167a21105d1a11a524e0e3e7a740bc1e897efe1142418e39b00d",
+    "prototypes/nishan_pq/nishan/live_pdf.py": "67b491a40327a3f8fbc87e4ffa14416583a9bc1050532b1f8bf204debd37f73f",
+    "prototypes/nishan_pq/nishan/pqc.py": "a3a8b56bd9486d71addc3e2f3b5344a28a30c54eabeec4347d6373fd387cd35a",
+    "prototypes/nishan_pq/nishan/registration.py": "604c380475bd604f32a16ace55463b28f29d52f61b23b103149bc74fa0b7f92f",
+    "prototypes/nishan_pq/nishan/tardos.py": "cf0fe3bb08bbb6aa4daaa56cbd6f356c86a98cfddaba5c64297668adf2623bd0",
+    "prototypes/nishan_pq/nishan/tardos_carrier.py": "ea818369f5fd73975fdd66380352d3d3afb75e42cd0de3dc841e4243a8a2a0f9",
+    "prototypes/nishan_pq/nishan/util.py": "ae7432659692979b9ddc84e15452acc8b260c91a3ddfc8c9bf5144b61e5fa51e",
+    "prototypes/nishan_pq/nishan/watermark.py": "f52b1aa480393ff8baae407b31f2400a1476571bb38eaeb9248c6761bdca006c",
+    "prototypes/nishan_pq/nishan/witness.py": "24097dab503ee2f0e18d706d62a15690270b95092f202860690c21c7ef3f8990",
+    "prototypes/nishan_pq/tests/test_pdf_format_policy.py": "70405e56a9b2cdcd58dfecf7ec8638bb56b3260b74da61dda389abb27313248d",
+    "prototypes/nishan_pq/tests/test_release_safeguards.py": "80d8af59bdb2703f508792865e7eb539abce4591c1c41d1db26036f0b6872b45",
+    "prototypes/nishan_pq/tools/demo_release_safeguards.py": "dc60f61e4671042d3e692c09bc71614809ca424a45cbdda75b69818726f28854"
+  },
+  "command": ".venv/bin/python prototypes/nishan_pq/tools/demo_release_safeguards.py --output research/evidence/nishan-selection-2026-09-12/demo",
+  "limitations": [
+    "Scenario checks on public synthetic fixtures, not independent population trials or production certification.",
+    "Witness and validator administration and private keys are co-located; no hardware isolation or independent-admin claim.",
+    "Pinned state detects ledger rollback only while the provisioned key and retained witness state remain trustworthy; rollback of the witness too is outside this local guarantee.",
+    "The authority can reproduce carriers and frame a session; software/key custody is trusted. A release session is not proof of human guilt, delivery or reading.",
+    "Tracing is non-blind. Removal/retyping can defeat both carriers; raster and low-capacity PDF leads never become corroborated attribution.",
+    "Historical JPEG-Q55 30/30 was a visual-channel experiment on one document/codebook with repeated sessions, not this strict verdict or physical performance.",
+    "Historical shipped physical threshold recovered 0/4; experimental profiles recovered the same 1/4 capture.",
+    "A committed authorization survives checkpoint/publication failure; explicit review and checkpoint recovery are required.",
+    "Fresh keys and secrets are synthetic demo-only material and must not be reused for real documents."
+  ],
+  "pqc_profile": {
+    "ml_dsa_65": true,
+    "ml_kem_768": true,
+    "openssl_version": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)"
+  },
+  "pqc_ready": true,
+  "profile": {
+    "coalition_limit": 5,
+    "familywise_epsilon": 1e-06,
+    "fixture": "nishan.demo._sample_pdf; public synthetic one-page PDF",
+    "fusion_policy": "pdf-all-formats-corroboration/v1",
+    "pin_provisioning": "fresh local witness initialization in this demo; independent provisioning remains a deployment requirement",
+    "roster_size": 1000
+  },
+  "version": "nishan-selection-safeguards/v1"
+}

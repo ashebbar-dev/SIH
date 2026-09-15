@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-10",
+  "status": "independently verified from raw CSV by main agent",
+  "dataset": "IO-VNBD, Categorised IOVNB Dataset, S (Driver A), S4",
+  "phone_file": "S-S4.csv",
+  "phone_columns_zero_based": {"elapsed_ms": 7, "wall_clock": 8},
+  "phone_before": {"data_row_zero_based": 35185, "csv_line_one_based": 35187, "elapsed_ms": 3526929, "wall_clock": "2019-09-06 19:14:53:611"},
+  "phone_after": {"data_row_zero_based": 35186, "csv_line_one_based": 35188, "elapsed_ms": 10, "wall_clock": "2019-09-06 19:20:05:753"},
+  "phone_wall_clock_gap_s": 312.142,
+  "reference_file": "V-S4.csv",
+  "reference_columns_zero_based": {"seconds_since_day_start": 1, "sample_period_s": 8},
+  "reference_before_s": 65691.9,
+  "reference_after_s": 65692.0,
+  "reference_step_s": 0.1,
+  "loader_defect": "research/tools/audit_dhruva_transfer.py:load_sequence drops both timestamp columns and truncates paired rows to equal length; evaluation assumes every sample interval is0.1s.",
+  "interpretation": "Earlier transfer numbers reproduce that pipeline but cannot establish clean model generalization. Missing-data segments and per-journey clock alignment require repair before rerunning.",
+  "limits": "This check establishes the data/loader inconsistency, not its complete contribution to every error or an improved navigation result."
+}

@@ -1,0 +1,443 @@
+[
+  {
+    "event": {
+      "decrypted_at": "2026-09-12T05:24:54.221582+00:00",
+      "document_id": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb",
+      "fingerprint": {
+        "biases_sha3_256": "cbdadadb68d9eca4655155cf34a81eeff33124eea12c86948089f797933d81b3",
+        "carrier_scope": "The theorem is conditional on the decoded pirate word obeying the marking condition; the carrier must be evaluated separately for each attack.",
+        "codebook_sha3_256": "4952e24f65f039d33790452018f4103f5d78826965ae006fd9b240adfb72a9e0",
+        "corroboration_required": true,
+        "fusion_policy": "All PDF-source traces require visual/layout set-equality corroboration, including rasterized suspects and releases with insufficient layout capacity. Single-channel scores are research leads only; missing channels, inadequate release capacity, disagreement or any unissued accusation cause abstention.",
+        "fusion_policy_version": "pdf-all-formats-corroboration/v1",
+        "generator": "AES-256-CTR streams derived by HMAC-SHA3-512; 53-bit bias and 32-bit Bernoulli discretization",
+        "generator_assurance": "prototype construction using the cryptography library; no independent DRBG audit",
+        "layout_tag": {
+          "available": true,
+          "codec": "Hamming(7,4), one-symbol correction per seven-symbol block",
+          "embed_metrics": {
+            "adjustment_magnitude": 0.001,
+            "capacity_bits": 133,
+            "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "modified_streams": 9,
+            "payload_bits": 126,
+            "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "text_preserved": true
+          },
+          "encoded_bits": 126,
+          "scheme": "nishan-hmac-layout-tag/v1",
+          "scope": "Exact digital-PDF text-layout channel; not collusion-secure and not claimed robust to optimizer normalization, print/scan, OCR, or photography.",
+          "supported_capacity_bits": 133,
+          "tag_bits": 72,
+          "tag_commitment_sha3_256": "9bf268f740b9c1d3abe905b1add9b0b1cec65c4809e46a80baafc4f2be170c13"
+        },
+        "parameters": {
+          "coalition_limit": 5,
+          "code_length": 52500,
+          "cutoff": 0.0006666666666666666,
+          "familywise_epsilon": 1e-06,
+          "k": 21,
+          "marking_assumption_required": true,
+          "per_user_epsilon": 9.999999999999999e-10,
+          "roster_size": 1000,
+          "theorem_profile": "Tardos F_(n,c,epsilon/n), original conservative constants",
+          "threshold": 2100.0
+        },
+        "scheme": "nishan-tardos-live-pdf/v1",
+        "theorem_bounds": {
+          "combined_error_upper": 9.990056234132518e-07,
+          "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+          "scope": "random code construction; coalition obeys the marking condition",
+          "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+          "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+        },
+        "user_index": 1
+      },
+      "recipient_display_name": "Alice",
+      "recipient_id": "alice",
+      "recipient_sign_public_key": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJSHNqQUxCZ2xnaGtnQlpRTUVBeElEZ2dlaEFJdXpBNXp5amR4M3JvaGluaG9wR0JVb3A5OFg2S1QrYjQ3WAppTURUMmtyZVhTK0h1QitzZmxpN3hxN1ZaaEFMMytNdmorY3NXRnVMVTBERDl4UlIwTEovbGpOYzNzVmdKR1QwCmJqMytVNzZsbC9kZFhLUjJ0amNHeHpDK082Q1RxQWlvT1hOZVZyQUdSZUpRbi8vdXRIazNHVnJ4TjVpb3lrNmkKeFJTRHdLL0p2WFJkYUJ3ZTFNY0RjUFNKNnlGWDZSWWVRZXlyOWx6OVZsYkFWS1d1NDRWZnJVTnZWcmtaSnZpSgpXMzFDY3A2OEFKSzRkSHJGc2RMUjY1YnRSQUN1bUdodlFIcFBOSUV1ZGdoMzVSREJzbkptYW9zQ0c2OUVUVXN4CjgzK1BLQTJlRXl2RHN2UXRkeU1qVzFYd3lXS0w0QjV5QVFEN2pCYUxTd0NIQUpOb1lNc2hYSFFPcTNYbFl5R3EKVHJYUVFKRWRraGtsZ243blV3empqblA1VzVXZnZKTFRWQkN4cUx4dkFPeDdveUMxWW9nZVRpSXc4em81YjVYbAo3Ulp5a3BFVTVNWUcyN0lHVUYwdVVucm9nbngwZlBrWXhDRElscUc0R0xTcndmU2pVQmlXbXYvakxxRnVGNW13Ck13MlpPSkJOTkcrSG9OL0tXdWlFa0UyMFEreWYvbWhzMzVxbXk4RkNoTE9lRXUzZHpoamxxOGpjbjNuMlpKTzIKc0pGUEF0Si9lSlRVbjRtS1d1ZnRkU1dkNFlJcDdDdzVjb0M4dHFIeHRmZHc1OGx3dmRrKzhVZXRjZi9hbnBLNApRNTZCQ1NKOEQ1eDJ5aTQzemQ4V1Q3NzQ1N3RNVnJXL2tzT1JzNmFFQTN6Rm1QRHNBMGN3ajF4d1JIRG1nY09QClcyaWt6MStXdXBIbHZSVkVjMEV4TFZ6ZEp0NEpqNDFIOC9FQmFSZkVONHlxYXN6LzRaMEUvSmh4QTZjRzhyNGoKL1ppQW81c2V3c0QyWnpxMkhLUWU2eXJvTC9TVjZROU1YSTZMbSt3aHFoc2VOZk40N0E3QXNDWFd2RUlZbHJNVgpNYndyK0FQNGx1aEF3cWkyOFFWK3A0aFlIK0t4WHYvZi81cnN0L3JFMnVXVjJDdHI5WGp5Wi9rTHdXMjh4aWpDCkpZTHVkV0pTazc0OVNCQ1dXaWY4YWZld2cxRWZ3NngwSXE3QXhIS2dmWDQ4YXN2VzF6d3JBeU9naDNBZHNHTFoKUW5YSDBhRkIzcWNDeVArZEtJdUZVK3lvUFZFWEZ4WjdMMWEvR1pseU8xc3JoeWNtVGFSWXlPQWN5c2ROZGh0agpYN1E5bWZSRjlmZ3l3aE1ySjk2SVJvcWJqbENxR1NqU1NOeTBFOE1aVU1pTkVId05MN01sMk1mZjBoV3FhT3dnCis5S05RUGNzT0lYamNPMmxKTHNESVVwNnNoaHd2Y3YzUVducFRLdEdQWmF2d0VoM1NxNHVlQWRyN3NDTDdYSE8KdUQxTHEzYyt0WERxd2toZG5VNy8zRXpYYkNHZXhhMjFYaVl6TklPT0pSUEYxQ0VXRUNzQkxsaGRZVXo1amVYOQp6bDIwTEdVS2RCVmxjOVBaeDVIeGZpYjV5eUdVb3lmNWFZTHk5dVhHRGJxWHBDbGUrTFIvRVdoTTJXWEJVOXhECng1SWZScnUybkdyZ3FjRGtlOFVzRzREWUpjZTYrQ3JEYUsrRndDV1ZkYUUrVnM0c1VIMHB0V1lYaTJ4dlg3dDYKNDFwcmNzbXdZclkyeFpYOVZEMzFPcWpoOGIyMGRrWlpLUzhseWQ3aWpGZ2kxM0NnaVJkZGd1SFp2anBvY0NhTwpUZVk5UEZpVFNWckw2K0FhWDlzY3pHdjJwNjJ4V25PaTdjSUlQMTltOGc1dDFRWGMwR0dnM1kzaWs4NWMzeDhCCkVUdE1QOFExaldiZkFwMVFtSDErR1U2b244MEc0WWJqOE9JR3ovaUJwV3dHMXRlTVQyZVowRzBOQWVucWQrT2cKZG11d0N5em9ML1BoQ2h4RlpMUTF1UWo3YllNMExkaXgreTBTMHJTNlM5QW9LUUpQV3ZZUGxKSkNlamVHaElRaApFcjZObHdmd1Vhd0VRT3ZlRkRTMUJEdGxIY2lWaU0yRFhpZVlSaHhYVzc2RGhySE45S0hIZ2VVQy8wbmREb0Y2ClBFejBnb0tmUzZ3dTFXUFhzT3poRXA5STQ0NHQ2bndrTGFybE1FaThRUjJ3N3pVQU1XeThYZkw4cVV1Z3NTQUgKc1I3L1RqSExBYmtTRzc5YTFLaFNWVDZIa20vVjhhUXZ4VDhJR3Q3b2orelpONVhLVUNMTDh6ZlNsblQ3ek03MQpMcXVkeXl6WTUvY2ZJT3huUUR1R1lTK2hnV2c0d3NRVDZmYlVoWmFpcjhGK1VpdktRVFdPSXBPVmpMTzlhcTNCCnVIRWZpb2dwZHk2b3NIYXR1MWJ0Y3FjNzdEemk4eGNGQWY2VklVRkRQVm10OVZsSnRLc3ZiU041QWV1NUYvd00Ka0FtcTkyZWFlOWs1L2RsSjlCWTZpeHBMV0lzNC9vaWJwN0RsODhwckorbnQ4cVMxd3hIU0JPSEZsUVFDeGxkYwpkTDBKQXAyTlNQRjFyTkdYaFBueGlGWWFOYzJVK0dRem10eXo0NDN0VDNDNG9iMlhpazVGR3FoVFdFMXBrSkkrCjA2dUFNWndFSjJPMkk5K1AxMVB4OC9OK2RId05NTFIyZkloMVBxVEE5MUFyM3lDRHkvTGFFblM3dHRSQnpsU2UKSmJrb0dYeTdPVWFkVlFRMWxLazdxeHRRTC8xRmZnY0VXbmNXNGJBVzIwRHdwTG1VS2tUVUZOdWVqdzBkYisreQpmdnU1RXBvR1ZlTHk4QWpVM3p2S25zMnpGaGh4ZGZ1eFoydHFiVGE4anFnT3ZSYUIxdTJxaHJnMWVVR0VaQ0dNCnNad0NQM1VmclRpQ2dSY1BUR0ZiNW45VTN3NzZKSW1oZUprZU9OQnpPZWkrR0tDOGIwdlBiYWxWRTVzT1BEc2MKWElYRTcyeW1sVWdYbmZ6ZzdKVWNZR0tieWpjNUl2TCtlY0NlRjliQ3NCSUsrb0k0OFVLZ1FDNy9zcUZNdzRaSApzbVZ4U280Zy94REdTbmI4Z3FIditYV29JSXU4WUhLWi9hOTIzZC80Nm9LcFJSSVJaSW5XRXBBa3p6VG1SK0NhCisvcWpjWWduTkJESFlnOVhZRlh0MytTMU5Vazdmd001NXpPVTI4ZlBTQncvd2NJT1NLSkF0MWRQL0hhVURNU1EKWWgzN0J2cHRPQjVLYlFuNW9iZzNwazJqOXVPZGNIYzg2d1NnU2V6T0U0bVhlMzk4ckhldU1SQmc0L1BadEZjUQpITEVLZStJeVBDK2NJSWJRYzhLeDUveFdiNmsxcENkR1ZkWDBWRTZScWtMcUdmMDJHMDNGRnovLzFEemhkOWVLCm1qVllWM3ZFCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+      "recipient_sign_public_key_sha3_256": "96f32f15030b85feedab39a3538855062a0b5942eef86adc2b104ea92d59d115",
+      "release_assurance": {
+        "mode": "pinned_witness",
+        "record_meaning": "release authorized; not proof of delivery or reading",
+        "version": "nishan-release-assurance/v1",
+        "witness_enforced": true,
+        "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040"
+      },
+      "released_copy_sha3_256": "061dc16c25238245831ef93ab18c9ab8fa23294236d69d1bae71ec91dd492a8d",
+      "session_id": "b852c2de-6ce3-4727-b820-5edeabc0ad78",
+      "source_sha3_256": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb",
+      "version": "nishan-decryption-event/v1",
+      "watermark_commitment_sha3_256": "57ad27155fc20df1573a6d1b3300522378ca786346e05acf85c73fd9254076fb",
+      "watermark_metrics": {
+        "block_size_pixels": 6,
+        "capacity_symbols": 55440,
+        "dpi": 144,
+        "embedded_symbols": 52500,
+        "layout_tag_carrier": {
+          "available": true,
+          "codec": "Hamming(7,4), one-symbol correction per seven-symbol block",
+          "embed_metrics": {
+            "adjustment_magnitude": 0.001,
+            "capacity_bits": 133,
+            "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "modified_streams": 9,
+            "payload_bits": 126,
+            "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "text_preserved": true
+          },
+          "encoded_bits": 126,
+          "scheme": "nishan-hmac-layout-tag/v1",
+          "scope": "Exact digital-PDF text-layout channel; not collusion-secure and not claimed robust to optimizer normalization, print/scan, OCR, or photography.",
+          "supported_capacity_bits": 133,
+          "tag_bits": 72,
+          "tag_commitment_sha3_256": "9bf268f740b9c1d3abe905b1add9b0b1cec65c4809e46a80baafc4f2be170c13"
+        },
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 41.867,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "strength": 4.0,
+        "text_preserved": true,
+        "visual_tardos_carrier": {
+          "block_size_pixels": 6,
+          "capacity_symbols": 55440,
+          "dpi": 144,
+          "embedded_symbols": 52500,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.867,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "strength": 4.0,
+          "text_preserved": true
+        }
+      }
+    },
+    "ledger_block_hash": "aa8d6cb7b5c4f38b2c3b0a94db98c0c3bde32e1d8d301547566d728416c5b7cb",
+    "output": "research/evidence/nishan-selection-2026-09-12/demo/fixture/alice.pdf",
+    "release_assurance": {
+      "checkpoint": {
+        "failure": null,
+        "latest": {
+          "canonical_head": "aa8d6cb7b5c4f38b2c3b0a94db98c0c3bde32e1d8d301547566d728416c5b7cb",
+          "canonical_length": 2,
+          "identity_registry_sha3_256": "5cf65c9f268081685e3a1bcf1ae8710ac82b90a365265273361037632fc3d6e9",
+          "index": 2,
+          "ledger_trust_root_hash": "7cf62e72da29b99f55a2d8e253dc3360d232bbda360961020368575441e94974",
+          "previous_checkpoint_hash": "3da535278923b0c0c1e106166ba093bf5de8a5be3835769c2d21a44712aba115",
+          "version": "nishan-external-head-witness/v1",
+          "witnessed_at": "2026-09-12T05:24:54.465791+00:00"
+        },
+        "latest_checkpoint_hash": "9aa243bbe5a06fb954ff5f72e8f27b558181f13b3bf049f2f047355a451834d2",
+        "ledger_comparison": "consistent",
+        "observed_ledger_head": "aa8d6cb7b5c4f38b2c3b0a94db98c0c3bde32e1d8d301547566d728416c5b7cb",
+        "observed_ledger_length": 2,
+        "valid": true,
+        "verified_checkpoints": 3,
+        "witness_enforced": true,
+        "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040",
+        "witnessed_ledger_head": "aa8d6cb7b5c4f38b2c3b0a94db98c0c3bde32e1d8d301547566d728416c5b7cb",
+        "witnessed_ledger_length": 2
+      },
+      "mode": "pinned_witness",
+      "record_meaning": "release authorized; not proof of delivery or reading",
+      "version": "nishan-release-assurance/v1",
+      "witness_enforced": true,
+      "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040"
+    }
+  },
+  {
+    "event": {
+      "decrypted_at": "2026-09-12T05:24:52.614913+00:00",
+      "document_id": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb",
+      "fingerprint": {
+        "biases_sha3_256": "cbdadadb68d9eca4655155cf34a81eeff33124eea12c86948089f797933d81b3",
+        "carrier_scope": "The theorem is conditional on the decoded pirate word obeying the marking condition; the carrier must be evaluated separately for each attack.",
+        "codebook_sha3_256": "4952e24f65f039d33790452018f4103f5d78826965ae006fd9b240adfb72a9e0",
+        "corroboration_required": true,
+        "fusion_policy": "All PDF-source traces require visual/layout set-equality corroboration, including rasterized suspects and releases with insufficient layout capacity. Single-channel scores are research leads only; missing channels, inadequate release capacity, disagreement or any unissued accusation cause abstention.",
+        "fusion_policy_version": "pdf-all-formats-corroboration/v1",
+        "generator": "AES-256-CTR streams derived by HMAC-SHA3-512; 53-bit bias and 32-bit Bernoulli discretization",
+        "generator_assurance": "prototype construction using the cryptography library; no independent DRBG audit",
+        "layout_tag": {
+          "available": true,
+          "codec": "Hamming(7,4), one-symbol correction per seven-symbol block",
+          "embed_metrics": {
+            "adjustment_magnitude": 0.001,
+            "capacity_bits": 133,
+            "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "modified_streams": 9,
+            "payload_bits": 126,
+            "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "text_preserved": true
+          },
+          "encoded_bits": 126,
+          "scheme": "nishan-hmac-layout-tag/v1",
+          "scope": "Exact digital-PDF text-layout channel; not collusion-secure and not claimed robust to optimizer normalization, print/scan, OCR, or photography.",
+          "supported_capacity_bits": 133,
+          "tag_bits": 72,
+          "tag_commitment_sha3_256": "214029a0bb2295fa353aa18893fd42f008b6592a03a75749eb703f4fbc8bc4cc"
+        },
+        "parameters": {
+          "coalition_limit": 5,
+          "code_length": 52500,
+          "cutoff": 0.0006666666666666666,
+          "familywise_epsilon": 1e-06,
+          "k": 21,
+          "marking_assumption_required": true,
+          "per_user_epsilon": 9.999999999999999e-10,
+          "roster_size": 1000,
+          "theorem_profile": "Tardos F_(n,c,epsilon/n), original conservative constants",
+          "threshold": 2100.0
+        },
+        "scheme": "nishan-tardos-live-pdf/v1",
+        "theorem_bounds": {
+          "combined_error_upper": 9.990056234132518e-07,
+          "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+          "scope": "random code construction; coalition obeys the marking condition",
+          "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+          "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+        },
+        "user_index": 0
+      },
+      "recipient_display_name": "Bob",
+      "recipient_id": "bob",
+      "recipient_sign_public_key": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJSHNqQUxCZ2xnaGtnQlpRTUVBeElEZ2dlaEFINXRySGQrTlQ2QWNGZnFSOXNlanpHREVxQkhOQkVDNnBIcwpWVWdUVGlHTUc2S3cyY3NHVk15bFVqaXJqMFpTb2hhTmkxZzRBZjZnRTVuS3hJT3RncmZ5YVlCUFNURkxtQUEyCmFOOW85NE5pN01qaittNWZQemxZMHpidUxtQ2M1bUJMTHFTVmpGc0ZRUUZ3aDNLS1hNM1ZFd2tWWVhOWEh3eFoKWlhtb2tBQUZVc0hvK2R3a29mQ0RNS05MSkVzYnA3YjBwc3l4cEQrMm9HL0dlZUp0bzRCa1Q5eFdSYjVOeEVXRQp3NjgydHliakhkamR4VmdKUEFKNmJkKzkrZkd5UlFjcnFmNnRZdEFnZnNvTHUrWThMNG8xQVFmOTdxN2QrbXZECmlyWlBwV1pTSldXbmdZT1p4SVcwazl0bmVzU2xER1lhMTNZc1lFVW05SDc3eFI3SW9xTVBMRHVOWHRNSkFRemYKblBCOCt2eWpvSW1oVERseGIwdThaKy9saGZoMHNiYXBzTWlwYXV1RXIxT1Fkb2ZuaFEvVmZpSlBwZm53cHlzUwpVSDZBeHBhRXlLYTU3UWZVTnJJVUVNNlRuOFNMZTZTL21oNXNvUlFWV1dnSlF3eWdJdDhiUHlNclYzSW1PVlVKCnJWdFc2TGFEUWtYWUpJeVQ1SjJveFh4LzhrT2N0TGhIemhONTFaTTdwL1BiNWJ4TDFCa1dhNWZ0dVhsZlZzMGYKNlRySzR2b29Pd0d2cGsvMjdnenQ3ZVBzVHBRQ01nblducGJGMlhSeDg5WHViN2ljeUxKY2lkRVI1ZC81VUUxdwpEcXVxeTVhbU9udnlqdHVlb2U3N2FCNU1UVlQ4RGNwcmZ4ckszalNzWDRFLzN4dm9SYjd4OWFYejR2cmVrOEtrCm9Eb0RGdStlU0l2SVRLelBrUmhXakdoa0xaLzkyTm5UTk5lQkdDclpJQWN4UFpIWnRNc1pvZmxtK1Y1Q1lZK20KMGFyemtxRzl1Z0dxNVJtb2wxamFKZjAvcndzdmlTdjJBWU5TTlp2eTBQOUc0VzB2dW9EZUtETkd6VEk4bkM5cwpWQXRwR05xdkpvRmJTdzZCSWMyQnR0czJMVmgybTl5Z1ByVWl6eGJHWGduZVBCZ0Z0S3NNZFltZE9SY2RYRUpWClB4czhqNWdBWGdPajBGR3d0Si9sWXd2MkZtZFYxQU1PSFhRTkZzMmFSMDBPT3FHU2RONVJMWDE1SlhicEc3a3oKcjBNY2hJclU2VzRQNDFGWDlZNVoxbFdEQU82Smx4by9HVmZzK1JMSWZpNGhiOE1EMnpVb3kzbmUyejJ2U0tHMwpJckw0Z1B5NTF1WWxRK2pYUjRDbzRMeFhibXoyTGRtdGkvVi8zdkYyZE5ackpGTkh0OXRFN3dlcXRjeU5QTUNlCkFhM1NNTFlhNzJMTStjdklpSHlvY3oxVmVCa2ZXcHRwYlh1Ky8xMVEySWtqWXZZNXJlTWdhMlBLd3NVbzh6bWkKbTRHRkxpbVM1RDBYWjErTDlCSm1LMERQQ0w0WlpPRUZxN1FLQVM2NGF4dVdKWlRXRko1QnBER2V4cWtLL1dVWgpXbDZmOGR3QzJsOXNrQUpLRnVFY04rZldqQ3ZJcEtjT1NuUVRvd3NzMC9USDArcm1XUzNIMEMxemhLaFJkVjhDCk1QWW1zMCtHdkZEOGlnSEk5MStDK1BFdnN1YUFOdkJKWWJFaXBtQU5kR3RwNWVtTUdQQnVaNk1OaXJuQXFjcHkKRUpyRVJWRTdCN25ibjV4emo5ZWMyQk9sWGdkUmJuV29BTDl3WVNFTnp4UTVzOHVIWENPc0VNdzg4U1cxL0xKQwoxZitxeDk0WFdrUlNIT0FsRkcyZjZmbmkwM0JITUEvN3ozRVN2TWJ4Y1IreXpudnYrbUF1dDU2c0d0bnNHdy8zCitrL0lSK3hCT1FUZi9YUUFSS21NaVRmRkVtak5HMk5zMUtzR0ZiSTRDUzNUWld2M0xJaC81U3paSUNScDc2ZDcKWHpKOHJKSFREZ2VjdTNzWDZxdXV2c3NhdzF2NjF1cXpsektNV01XclBRZ3IyREZlSU1UNUYzL3Fjcjg1RHBITwpQMnFKMVpuNkl2Q3pKc0xjVGkrNVNGOUp3eWQzdndoc3c3VE1nWUZIaWV3Tnh0TE0xTjdXUmQwNCtVUC9pekdOCjB6YmlUeEdJQWR2QTRaUEJ4dEpNN252NWZLMEZNU2RjMkdIK0ZndFN3TlB1Z2Z1QzY2N0ZlSXoyTTRkSGtVSVAKanB5TytSZEJCZSs1SVBQQmFHZmNlZUQ1SUQ0SCtSaFZ5YTBiNm8vVmkvMnNyMWJyZVNOSG9oM3BxVVFyb3UzbwpjMXliUXM4ZENSdWdKN0NXS0ZQVEpyYTVwVW0zUUxYMWxsYmtkTXpVd2sxajZNdWlMWDdlYXJEMWNDWW1pR1EwCnB4ZDh2SHlhcGNJMGJNc0l5K3F5ZmxpVkJuM2tMSWh1N21tS3JiSkI3a2tMNkFCMHBFQWpSMGl2NC9HeDgzS0IKMlRKZi9FM3V2YUlCRG9DeWo1Mll6YVlPS3BIYnVnNkJzN3JCOEQza0cybHVhWUt4NG9tVk8zNDIwcDFnK2hySwpMdVNFM2JTeDVWNWF0bnI1ZXB1TW1tSjNRc3pNWTBNeEpYUmRqbkFJMVVIZXh2RWQwZ3ZEeFJkaFA2a0p4Z0tpCkFmQ1pnL0VFZ3Y4OUJ6aUxheUNVNjFTVUY3b091L2tFM2c4UDdFWkUzWG1hUHY2RWh6TGxSWFk3VjFpSnRwaTgKaXd3YjJxdW8yTzRkb2MvY2J1S0J0dGtRMDlVUC90YVU3RG1zOVArYWhncVVSN0lCRHZzUm5PaDRmV08zWWtJaQp6T2pKVndqeWVzVVAzME8yeVhiR1lYNnA0cjRzRjhhZTZxR2d6SjFpL25QMGxQOHNvTFRpeUNNM1B4bU53L0g5CmpsV3MxVWYyUHhCNGR3TUdlVTVrcVEzdW82cGMyUFk5ak01dWZ4SGFBdmZqQUtlNHFEM3ZSM3lTVExYTFZTNWIKamk3ZytvUU9yVkVic29LV2xQV0c4T0VzRWo0UXJxS3QzbzJBZHBxQUVJZWN5Z0hHRHduV3BCUlllWDlldXF1LwpQRE8wUGtDWVVaTjBGQUpIS0Jlekh6ZERRMHRKLzJ0SXJuWDB4UkdoSTk3YkZKdjZ5dmFPaGU3TjgyKzUrOUh4Ck5CS0gyYm1iT0ovOTZ2cGxGRUVCTCtpeWQza1A4aFZ1Q1dHN3dxSWczWEJHdUpuQnRFd1F2Z09ubGxjbWZWejMKNHVZWm1RV25URXNOMzBmRHJjckk5Tmc5cTJpZENJcHpvREpsenZKR2pvTFd3S0lQazNTS1F3NzBQQ1Q3RzFJMgpkYnRoRllaZ0w4YW45amFEbW9Yb0J3alNHbHV3aWdSRjlFVVhZaHdNb2RGSXFVS0dMckFSaGVNQmhLbzh0NlZoCjd5UWxKU3RBCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+      "recipient_sign_public_key_sha3_256": "2d510fc4942bdf16a9c9bde2f671f059a63d52d747db50fd8100ef1b9e10aeed",
+      "release_assurance": {
+        "mode": "pinned_witness",
+        "record_meaning": "release authorized; not proof of delivery or reading",
+        "version": "nishan-release-assurance/v1",
+        "witness_enforced": true,
+        "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040"
+      },
+      "released_copy_sha3_256": "2c99f24cb2cc06f6c70dad4794d9cb61e26922e8022b243a20dd6265a1374f0c",
+      "session_id": "9bb88924-d0ba-4943-b113-4ae1bc2e6174",
+      "source_sha3_256": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb",
+      "version": "nishan-decryption-event/v1",
+      "watermark_commitment_sha3_256": "389fcf4ccbfcf0d86f39f4fa9d008a45e2e7c8b4471f09c53bc8cc1e3bb89b74",
+      "watermark_metrics": {
+        "block_size_pixels": 6,
+        "capacity_symbols": 55440,
+        "dpi": 144,
+        "embedded_symbols": 52500,
+        "layout_tag_carrier": {
+          "available": true,
+          "codec": "Hamming(7,4), one-symbol correction per seven-symbol block",
+          "embed_metrics": {
+            "adjustment_magnitude": 0.001,
+            "capacity_bits": 133,
+            "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "modified_streams": 9,
+            "payload_bits": 126,
+            "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "text_preserved": true
+          },
+          "encoded_bits": 126,
+          "scheme": "nishan-hmac-layout-tag/v1",
+          "scope": "Exact digital-PDF text-layout channel; not collusion-secure and not claimed robust to optimizer normalization, print/scan, OCR, or photography.",
+          "supported_capacity_bits": 133,
+          "tag_bits": 72,
+          "tag_commitment_sha3_256": "214029a0bb2295fa353aa18893fd42f008b6592a03a75749eb703f4fbc8bc4cc"
+        },
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 41.623,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "strength": 4.0,
+        "text_preserved": true,
+        "visual_tardos_carrier": {
+          "block_size_pixels": 6,
+          "capacity_symbols": 55440,
+          "dpi": 144,
+          "embedded_symbols": 52500,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.865,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "strength": 4.0,
+          "text_preserved": true
+        }
+      }
+    },
+    "ledger_block_hash": "fb43f20187e7abae3ea30c95289b8d576cf67c9b5b544d67bea80a197ef2a864",
+    "output": "research/evidence/nishan-selection-2026-09-12/demo/fixture/bob.pdf",
+    "release_assurance": {
+      "checkpoint": {
+        "failure": null,
+        "latest": {
+          "canonical_head": "fb43f20187e7abae3ea30c95289b8d576cf67c9b5b544d67bea80a197ef2a864",
+          "canonical_length": 1,
+          "identity_registry_sha3_256": "5cf65c9f268081685e3a1bcf1ae8710ac82b90a365265273361037632fc3d6e9",
+          "index": 1,
+          "ledger_trust_root_hash": "7cf62e72da29b99f55a2d8e253dc3360d232bbda360961020368575441e94974",
+          "previous_checkpoint_hash": "47fb7f2183b6ad0b78043d45e5e848b5cf9ecb85fd945ef4f2d6e77ebad7c467",
+          "version": "nishan-external-head-witness/v1",
+          "witnessed_at": "2026-09-12T05:24:52.778664+00:00"
+        },
+        "latest_checkpoint_hash": "3da535278923b0c0c1e106166ba093bf5de8a5be3835769c2d21a44712aba115",
+        "ledger_comparison": "consistent",
+        "observed_ledger_head": "fb43f20187e7abae3ea30c95289b8d576cf67c9b5b544d67bea80a197ef2a864",
+        "observed_ledger_length": 1,
+        "valid": true,
+        "verified_checkpoints": 2,
+        "witness_enforced": true,
+        "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040",
+        "witnessed_ledger_head": "fb43f20187e7abae3ea30c95289b8d576cf67c9b5b544d67bea80a197ef2a864",
+        "witnessed_ledger_length": 1
+      },
+      "mode": "pinned_witness",
+      "record_meaning": "release authorized; not proof of delivery or reading",
+      "version": "nishan-release-assurance/v1",
+      "witness_enforced": true,
+      "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040"
+    }
+  },
+  {
+    "event": {
+      "decrypted_at": "2026-09-12T05:24:56.165460+00:00",
+      "document_id": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb",
+      "fingerprint": {
+        "biases_sha3_256": "cbdadadb68d9eca4655155cf34a81eeff33124eea12c86948089f797933d81b3",
+        "carrier_scope": "The theorem is conditional on the decoded pirate word obeying the marking condition; the carrier must be evaluated separately for each attack.",
+        "codebook_sha3_256": "4952e24f65f039d33790452018f4103f5d78826965ae006fd9b240adfb72a9e0",
+        "corroboration_required": true,
+        "fusion_policy": "All PDF-source traces require visual/layout set-equality corroboration, including rasterized suspects and releases with insufficient layout capacity. Single-channel scores are research leads only; missing channels, inadequate release capacity, disagreement or any unissued accusation cause abstention.",
+        "fusion_policy_version": "pdf-all-formats-corroboration/v1",
+        "generator": "AES-256-CTR streams derived by HMAC-SHA3-512; 53-bit bias and 32-bit Bernoulli discretization",
+        "generator_assurance": "prototype construction using the cryptography library; no independent DRBG audit",
+        "layout_tag": {
+          "available": true,
+          "codec": "Hamming(7,4), one-symbol correction per seven-symbol block",
+          "embed_metrics": {
+            "adjustment_magnitude": 0.001,
+            "capacity_bits": 133,
+            "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "modified_streams": 9,
+            "payload_bits": 126,
+            "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "text_preserved": true
+          },
+          "encoded_bits": 126,
+          "scheme": "nishan-hmac-layout-tag/v1",
+          "scope": "Exact digital-PDF text-layout channel; not collusion-secure and not claimed robust to optimizer normalization, print/scan, OCR, or photography.",
+          "supported_capacity_bits": 133,
+          "tag_bits": 72,
+          "tag_commitment_sha3_256": "987f4bd4ca683c6b24d3bad62d64706d0f7197b204dc4fc90732affa4bac87a8"
+        },
+        "parameters": {
+          "coalition_limit": 5,
+          "code_length": 52500,
+          "cutoff": 0.0006666666666666666,
+          "familywise_epsilon": 1e-06,
+          "k": 21,
+          "marking_assumption_required": true,
+          "per_user_epsilon": 9.999999999999999e-10,
+          "roster_size": 1000,
+          "theorem_profile": "Tardos F_(n,c,epsilon/n), original conservative constants",
+          "threshold": 2100.0
+        },
+        "scheme": "nishan-tardos-live-pdf/v1",
+        "theorem_bounds": {
+          "combined_error_upper": 9.990056234132518e-07,
+          "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+          "scope": "random code construction; coalition obeys the marking condition",
+          "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+          "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+        },
+        "user_index": 2
+      },
+      "recipient_display_name": "Alice",
+      "recipient_id": "alice",
+      "recipient_sign_public_key": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJSHNqQUxCZ2xnaGtnQlpRTUVBeElEZ2dlaEFJdXpBNXp5amR4M3JvaGluaG9wR0JVb3A5OFg2S1QrYjQ3WAppTURUMmtyZVhTK0h1QitzZmxpN3hxN1ZaaEFMMytNdmorY3NXRnVMVTBERDl4UlIwTEovbGpOYzNzVmdKR1QwCmJqMytVNzZsbC9kZFhLUjJ0amNHeHpDK082Q1RxQWlvT1hOZVZyQUdSZUpRbi8vdXRIazNHVnJ4TjVpb3lrNmkKeFJTRHdLL0p2WFJkYUJ3ZTFNY0RjUFNKNnlGWDZSWWVRZXlyOWx6OVZsYkFWS1d1NDRWZnJVTnZWcmtaSnZpSgpXMzFDY3A2OEFKSzRkSHJGc2RMUjY1YnRSQUN1bUdodlFIcFBOSUV1ZGdoMzVSREJzbkptYW9zQ0c2OUVUVXN4CjgzK1BLQTJlRXl2RHN2UXRkeU1qVzFYd3lXS0w0QjV5QVFEN2pCYUxTd0NIQUpOb1lNc2hYSFFPcTNYbFl5R3EKVHJYUVFKRWRraGtsZ243blV3empqblA1VzVXZnZKTFRWQkN4cUx4dkFPeDdveUMxWW9nZVRpSXc4em81YjVYbAo3Ulp5a3BFVTVNWUcyN0lHVUYwdVVucm9nbngwZlBrWXhDRElscUc0R0xTcndmU2pVQmlXbXYvakxxRnVGNW13Ck13MlpPSkJOTkcrSG9OL0tXdWlFa0UyMFEreWYvbWhzMzVxbXk4RkNoTE9lRXUzZHpoamxxOGpjbjNuMlpKTzIKc0pGUEF0Si9lSlRVbjRtS1d1ZnRkU1dkNFlJcDdDdzVjb0M4dHFIeHRmZHc1OGx3dmRrKzhVZXRjZi9hbnBLNApRNTZCQ1NKOEQ1eDJ5aTQzemQ4V1Q3NzQ1N3RNVnJXL2tzT1JzNmFFQTN6Rm1QRHNBMGN3ajF4d1JIRG1nY09QClcyaWt6MStXdXBIbHZSVkVjMEV4TFZ6ZEp0NEpqNDFIOC9FQmFSZkVONHlxYXN6LzRaMEUvSmh4QTZjRzhyNGoKL1ppQW81c2V3c0QyWnpxMkhLUWU2eXJvTC9TVjZROU1YSTZMbSt3aHFoc2VOZk40N0E3QXNDWFd2RUlZbHJNVgpNYndyK0FQNGx1aEF3cWkyOFFWK3A0aFlIK0t4WHYvZi81cnN0L3JFMnVXVjJDdHI5WGp5Wi9rTHdXMjh4aWpDCkpZTHVkV0pTazc0OVNCQ1dXaWY4YWZld2cxRWZ3NngwSXE3QXhIS2dmWDQ4YXN2VzF6d3JBeU9naDNBZHNHTFoKUW5YSDBhRkIzcWNDeVArZEtJdUZVK3lvUFZFWEZ4WjdMMWEvR1pseU8xc3JoeWNtVGFSWXlPQWN5c2ROZGh0agpYN1E5bWZSRjlmZ3l3aE1ySjk2SVJvcWJqbENxR1NqU1NOeTBFOE1aVU1pTkVId05MN01sMk1mZjBoV3FhT3dnCis5S05RUGNzT0lYamNPMmxKTHNESVVwNnNoaHd2Y3YzUVducFRLdEdQWmF2d0VoM1NxNHVlQWRyN3NDTDdYSE8KdUQxTHEzYyt0WERxd2toZG5VNy8zRXpYYkNHZXhhMjFYaVl6TklPT0pSUEYxQ0VXRUNzQkxsaGRZVXo1amVYOQp6bDIwTEdVS2RCVmxjOVBaeDVIeGZpYjV5eUdVb3lmNWFZTHk5dVhHRGJxWHBDbGUrTFIvRVdoTTJXWEJVOXhECng1SWZScnUybkdyZ3FjRGtlOFVzRzREWUpjZTYrQ3JEYUsrRndDV1ZkYUUrVnM0c1VIMHB0V1lYaTJ4dlg3dDYKNDFwcmNzbXdZclkyeFpYOVZEMzFPcWpoOGIyMGRrWlpLUzhseWQ3aWpGZ2kxM0NnaVJkZGd1SFp2anBvY0NhTwpUZVk5UEZpVFNWckw2K0FhWDlzY3pHdjJwNjJ4V25PaTdjSUlQMTltOGc1dDFRWGMwR0dnM1kzaWs4NWMzeDhCCkVUdE1QOFExaldiZkFwMVFtSDErR1U2b244MEc0WWJqOE9JR3ovaUJwV3dHMXRlTVQyZVowRzBOQWVucWQrT2cKZG11d0N5em9ML1BoQ2h4RlpMUTF1UWo3YllNMExkaXgreTBTMHJTNlM5QW9LUUpQV3ZZUGxKSkNlamVHaElRaApFcjZObHdmd1Vhd0VRT3ZlRkRTMUJEdGxIY2lWaU0yRFhpZVlSaHhYVzc2RGhySE45S0hIZ2VVQy8wbmREb0Y2ClBFejBnb0tmUzZ3dTFXUFhzT3poRXA5STQ0NHQ2bndrTGFybE1FaThRUjJ3N3pVQU1XeThYZkw4cVV1Z3NTQUgKc1I3L1RqSExBYmtTRzc5YTFLaFNWVDZIa20vVjhhUXZ4VDhJR3Q3b2orelpONVhLVUNMTDh6ZlNsblQ3ek03MQpMcXVkeXl6WTUvY2ZJT3huUUR1R1lTK2hnV2c0d3NRVDZmYlVoWmFpcjhGK1VpdktRVFdPSXBPVmpMTzlhcTNCCnVIRWZpb2dwZHk2b3NIYXR1MWJ0Y3FjNzdEemk4eGNGQWY2VklVRkRQVm10OVZsSnRLc3ZiU041QWV1NUYvd00Ka0FtcTkyZWFlOWs1L2RsSjlCWTZpeHBMV0lzNC9vaWJwN0RsODhwckorbnQ4cVMxd3hIU0JPSEZsUVFDeGxkYwpkTDBKQXAyTlNQRjFyTkdYaFBueGlGWWFOYzJVK0dRem10eXo0NDN0VDNDNG9iMlhpazVGR3FoVFdFMXBrSkkrCjA2dUFNWndFSjJPMkk5K1AxMVB4OC9OK2RId05NTFIyZkloMVBxVEE5MUFyM3lDRHkvTGFFblM3dHRSQnpsU2UKSmJrb0dYeTdPVWFkVlFRMWxLazdxeHRRTC8xRmZnY0VXbmNXNGJBVzIwRHdwTG1VS2tUVUZOdWVqdzBkYisreQpmdnU1RXBvR1ZlTHk4QWpVM3p2S25zMnpGaGh4ZGZ1eFoydHFiVGE4anFnT3ZSYUIxdTJxaHJnMWVVR0VaQ0dNCnNad0NQM1VmclRpQ2dSY1BUR0ZiNW45VTN3NzZKSW1oZUprZU9OQnpPZWkrR0tDOGIwdlBiYWxWRTVzT1BEc2MKWElYRTcyeW1sVWdYbmZ6ZzdKVWNZR0tieWpjNUl2TCtlY0NlRjliQ3NCSUsrb0k0OFVLZ1FDNy9zcUZNdzRaSApzbVZ4U280Zy94REdTbmI4Z3FIditYV29JSXU4WUhLWi9hOTIzZC80Nm9LcFJSSVJaSW5XRXBBa3p6VG1SK0NhCisvcWpjWWduTkJESFlnOVhZRlh0MytTMU5Vazdmd001NXpPVTI4ZlBTQncvd2NJT1NLSkF0MWRQL0hhVURNU1EKWWgzN0J2cHRPQjVLYlFuNW9iZzNwazJqOXVPZGNIYzg2d1NnU2V6T0U0bVhlMzk4ckhldU1SQmc0L1BadEZjUQpITEVLZStJeVBDK2NJSWJRYzhLeDUveFdiNmsxcENkR1ZkWDBWRTZScWtMcUdmMDJHMDNGRnovLzFEemhkOWVLCm1qVllWM3ZFCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=",
+      "recipient_sign_public_key_sha3_256": "96f32f15030b85feedab39a3538855062a0b5942eef86adc2b104ea92d59d115",
+      "release_assurance": {
+        "mode": "pinned_witness",
+        "record_meaning": "release authorized; not proof of delivery or reading",
+        "version": "nishan-release-assurance/v1",
+        "witness_enforced": true,
+        "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040"
+      },
+      "released_copy_sha3_256": "3a79949ceb610edb4250917ac1887aee5030d278818911c28340b9d5fda37c05",
+      "session_id": "70c3bcc8-e4a4-42a2-8e93-adf64106e7f5",
+      "source_sha3_256": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb",
+      "version": "nishan-decryption-event/v1",
+      "watermark_commitment_sha3_256": "f0cd85f631b2de62bb67a9bdc01f4d3285d7a5bd62b464433e5401a6b13a9723",
+      "watermark_metrics": {
+        "block_size_pixels": 6,
+        "capacity_symbols": 55440,
+        "dpi": 144,
+        "embedded_symbols": 52500,
+        "layout_tag_carrier": {
+          "available": true,
+          "codec": "Hamming(7,4), one-symbol correction per seven-symbol block",
+          "embed_metrics": {
+            "adjustment_magnitude": 0.001,
+            "capacity_bits": 133,
+            "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "modified_streams": 9,
+            "payload_bits": 126,
+            "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+            "text_preserved": true
+          },
+          "encoded_bits": 126,
+          "scheme": "nishan-hmac-layout-tag/v1",
+          "scope": "Exact digital-PDF text-layout channel; not collusion-secure and not claimed robust to optimizer normalization, print/scan, OCR, or photography.",
+          "supported_capacity_bits": 133,
+          "tag_bits": 72,
+          "tag_commitment_sha3_256": "987f4bd4ca683c6b24d3bad62d64706d0f7197b204dc4fc90732affa4bac87a8"
+        },
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 41.868,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "strength": 4.0,
+        "text_preserved": true,
+        "visual_tardos_carrier": {
+          "block_size_pixels": 6,
+          "capacity_symbols": 55440,
+          "dpi": 144,
+          "embedded_symbols": 52500,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.868,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "strength": 4.0,
+          "text_preserved": true
+        }
+      }
+    },
+    "ledger_block_hash": "a16737c25d1fafad6590bd852394c22e3bef55d29eb27b2b3485605e487e0dcd",
+    "output": "research/evidence/nishan-selection-2026-09-12/demo/fixture/third.pdf",
+    "release_assurance": {
+      "checkpoint": {
+        "failure": null,
+        "latest": {
+          "canonical_head": "a16737c25d1fafad6590bd852394c22e3bef55d29eb27b2b3485605e487e0dcd",
+          "canonical_length": 3,
+          "identity_registry_sha3_256": "5cf65c9f268081685e3a1bcf1ae8710ac82b90a365265273361037632fc3d6e9",
+          "index": 3,
+          "ledger_trust_root_hash": "7cf62e72da29b99f55a2d8e253dc3360d232bbda360961020368575441e94974",
+          "previous_checkpoint_hash": "9aa243bbe5a06fb954ff5f72e8f27b558181f13b3bf049f2f047355a451834d2",
+          "version": "nishan-external-head-witness/v1",
+          "witnessed_at": "2026-09-12T05:24:56.485428+00:00"
+        },
+        "latest_checkpoint_hash": "f5bcbbd88fb9038038f9656b4f8a99904e38a6eefb45b337e2582498a2543cdd",
+        "ledger_comparison": "consistent",
+        "observed_ledger_head": "a16737c25d1fafad6590bd852394c22e3bef55d29eb27b2b3485605e487e0dcd",
+        "observed_ledger_length": 3,
+        "valid": true,
+        "verified_checkpoints": 4,
+        "witness_enforced": true,
+        "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040",
+        "witnessed_ledger_head": "a16737c25d1fafad6590bd852394c22e3bef55d29eb27b2b3485605e487e0dcd",
+        "witnessed_ledger_length": 3
+      },
+      "mode": "pinned_witness",
+      "record_meaning": "release authorized; not proof of delivery or reading",
+      "version": "nishan-release-assurance/v1",
+      "witness_enforced": true,
+      "witness_public_key_sha3_256": "9b3d152b71215bd9bf854efe8ff704039f0313b76dd7471be2b750ccce243040"
+    }
+  }
+]

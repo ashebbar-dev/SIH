@@ -1,0 +1,79 @@
+{
+  "cases": [
+    {
+      "file": "alice.pdf",
+      "parser_is_pdf": true,
+      "text_characters": 588,
+      "decision": "corroborated_channels",
+      "require_corroboration": true,
+      "tardos": [
+        0
+      ],
+      "layout": [
+        0
+      ],
+      "attribution": [
+        "alice"
+      ]
+    },
+    {
+      "file": "transplant.pdf",
+      "parser_is_pdf": true,
+      "text_characters": 588,
+      "decision": "abstain_channel_conflict",
+      "require_corroboration": true,
+      "tardos": [
+        0
+      ],
+      "layout": [
+        1
+      ],
+      "attribution": []
+    },
+    {
+      "file": "transplant-prefixed.pdf",
+      "parser_is_pdf": true,
+      "text_characters": 588,
+      "decision": "tardos_channel_only",
+      "require_corroboration": false,
+      "tardos": [
+        0
+      ],
+      "layout": [],
+      "attribution": [
+        "alice"
+      ]
+    },
+    {
+      "file": "alice-no-layout.pdf",
+      "parser_is_pdf": true,
+      "text_characters": 588,
+      "decision": "abstain_single_channel_editable_pdf",
+      "require_corroboration": true,
+      "tardos": [
+        0
+      ],
+      "layout": [],
+      "attribution": []
+    },
+    {
+      "file": "alice-no-layout-prefixed.pdf",
+      "parser_is_pdf": true,
+      "text_characters": 588,
+      "decision": "tardos_channel_only",
+      "require_corroboration": false,
+      "tardos": [
+        0
+      ],
+      "layout": [],
+      "attribution": [
+        "alice"
+      ]
+    }
+  ],
+  "audit_date": "2026-09-10",
+  "baseline_tests": {
+    "tests": 19,
+    "passed": true
+  }
+}

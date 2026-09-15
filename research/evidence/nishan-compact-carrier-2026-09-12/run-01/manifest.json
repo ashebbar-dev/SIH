@@ -1,0 +1,490 @@
+{
+  "carrier": {
+    "dpi": 144,
+    "key_commitment_sha3_256": "20e84a0a70377316bdb10e6a626de2ab0819c1825faaa8c02d9515af2f891129",
+    "profile_context_commitments_sha3_256": {
+      "original-6-r1": "86c6d1e3ed6010c5e9b2eee55c633fe22c0323f27ad523378c32e089c938cd64",
+      "symmetric-12-r1": "fe90341b5561928f645aa9dc97e7b3e0d54e325acc45bb919755cb7cffc3e5fc",
+      "symmetric-6-r4": "2b886cfda7887c7420c85988d8eed5a604d36200cbb345ff7eea4d022ebf400b"
+    },
+    "profile_contexts_are_distinct": true,
+    "rendered_capacities": {
+      "12": 13860,
+      "6": 55440
+    },
+    "strength": 4.0,
+    "wrong_key_commitment_sha3_256": "8efa51e2b220921ca50768dc798db4a316b5012b2e116ff54e4f632a45b2e431"
+  },
+  "created_at_utc": "2026-09-12T08:00:06.778544+00:00",
+  "declared_matrix": [
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 0,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 0,
+      "transform": "blur1"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 0,
+      "transform": "blur2"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 0,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 7,
+      "transform": "clean"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 7,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 7,
+      "transform": "blur1"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 7,
+      "transform": "blur2"
+    },
+    {
+      "kind": "positive",
+      "profile": "original-6-r1",
+      "row": 7,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 0,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 0,
+      "transform": "blur1"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 0,
+      "transform": "blur2"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 0,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 7,
+      "transform": "clean"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 7,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 7,
+      "transform": "blur1"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 7,
+      "transform": "blur2"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-6-r4",
+      "row": 7,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 0,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 0,
+      "transform": "blur1"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 0,
+      "transform": "blur2"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 0,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 7,
+      "transform": "clean"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 7,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 7,
+      "transform": "blur1"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 7,
+      "transform": "blur2"
+    },
+    {
+      "kind": "positive",
+      "profile": "symmetric-12-r1",
+      "row": 7,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "original-6-r1",
+      "row": null,
+      "transform": "clean"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "original-6-r1",
+      "row": null,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "original-6-r1",
+      "row": null,
+      "transform": "blur1"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "original-6-r1",
+      "row": null,
+      "transform": "blur2"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "original-6-r1",
+      "row": null,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-6-r4",
+      "row": null,
+      "transform": "clean"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-6-r4",
+      "row": null,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-6-r4",
+      "row": null,
+      "transform": "blur1"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-6-r4",
+      "row": null,
+      "transform": "blur2"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-6-r4",
+      "row": null,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-12-r1",
+      "row": null,
+      "transform": "clean"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-12-r1",
+      "row": null,
+      "transform": "jpeg55"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-12-r1",
+      "row": null,
+      "transform": "blur1"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-12-r1",
+      "row": null,
+      "transform": "blur2"
+    },
+    {
+      "kind": "unmarked",
+      "profile": "symmetric-12-r1",
+      "row": null,
+      "transform": "half-resize"
+    },
+    {
+      "kind": "wrong-key",
+      "profile": "original-6-r1",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-key",
+      "profile": "original-6-r1",
+      "row": 7,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-key",
+      "profile": "symmetric-6-r4",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-key",
+      "profile": "symmetric-6-r4",
+      "row": 7,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-key",
+      "profile": "symmetric-12-r1",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-key",
+      "profile": "symmetric-12-r1",
+      "row": 7,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-context",
+      "profile": "original-6-r1",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-context",
+      "profile": "original-6-r1",
+      "row": 7,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-context",
+      "profile": "symmetric-6-r4",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-context",
+      "profile": "symmetric-6-r4",
+      "row": 7,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-context",
+      "profile": "symmetric-12-r1",
+      "row": 0,
+      "transform": "clean"
+    },
+    {
+      "kind": "wrong-context",
+      "profile": "symmetric-12-r1",
+      "row": 7,
+      "transform": "clean"
+    }
+  ],
+  "declared_observation_count": 57,
+  "families": {
+    "original": {
+      "biases_sha3_256": "b3c3aa8bb4fe97881576b807c3497742d8fda2c9bc88d876ee906d1e1cef3f45",
+      "codebook_sha3_256": "99e5058edbea95b75d9b7e2bbd89f40c20a372cb5a5f84456e296cf72a425335",
+      "codebook_shape": [
+        1000,
+        52500
+      ],
+      "empirical_inherited_sampler": "53-bit/float64 biases and 32-bit Bernoulli thresholds",
+      "generator_key_commitment_sha3_256": "219069d231c4ac0eca7ff7e6e13078ff4665739cc6c13ebf6f0ffa7e274409b3"
+    },
+    "symmetric": {
+      "biases_sha3_256": "8404f6e7237cb986b6f1c311743af041ba3c29833459c20bd4537899d097822e",
+      "codebook_sha3_256": "e4be37b213beb03d66bc0afe828026b042eae584829cb8cfe7b1c153bba46268",
+      "codebook_shape": [
+        1000,
+        12331
+      ],
+      "empirical_inherited_sampler": "53-bit/float64 biases and 32-bit Bernoulli thresholds",
+      "generator_key_commitment_sha3_256": "c64afd3dfe0117263f2e08ad4fdebc301de1cf1a9edfa69c268be9fbd39c5839",
+      "same_codebook_for_both_symmetric_profiles": true
+    }
+  },
+  "generator_configurations": {
+    "original": {
+      "coalition_limit": 5,
+      "code_length": 52500,
+      "cutoff": 0.0006666666666666666,
+      "familywise_epsilon": 1e-06,
+      "k": 21,
+      "marking_assumption_required": true,
+      "per_user_epsilon": 9.999999999999999e-10,
+      "roster_size": 1000,
+      "theorem_certified": false,
+      "theorem_profile": "Tardos F_(n,c,epsilon/n), original conservative constants",
+      "threshold": 2100.0
+    },
+    "symmetric": {
+      "coalition_limit": 5,
+      "code_length": 12331,
+      "cutoff": 0.007064641469445425,
+      "familywise_epsilon": 1e-06,
+      "k": 21,
+      "marking_assumption_required": true,
+      "per_user_epsilon": 9.999999999999999e-10,
+      "roster_size": 1000,
+      "theorem_certified": false,
+      "theorem_profile": "Empirical symmetric carrier pilot; inherited keyed sampler baseline; not theorem-certified",
+      "threshold": 837.2843088602898
+    }
+  },
+  "implementation_sha3_256": {
+    "experiment/README.md": "ddc03b1d22aa610343f66c3bce53dca1ff2be9b4c763edf35df86ba254fcf8a7",
+    "experiment/profiles.py": "8d160068358184a803f93be2aa9678ddab2d1cada9479de0bdb0fec0a0f776fc",
+    "experiment/run_study.py": "72c9c2c8a44e3be64a0be4a83ed0362777c7d3631e23ce0fdcb241869bac273e",
+    "experiment/score_capture.py": "4b19e9c94593616cfa709f497039cae470f8447089ce188594e639ecb05966e3",
+    "experiment/test_profiles.py": "ec6ea01c61e9c88d0a977ad1c11f5d35907913da89d2213697d921a74efa38b7",
+    "tardos.py": "3105d70b12d6a3d3569f8e2844a4010f29f0dec4e5cabc2d4e95dec3a974b4d5",
+    "tardos_carrier.py": "d5d3eee193f704a7e8f6a3a2a1a15ac8f9f29624138b66a105aef1b8bbee9127",
+    "watermark.py": "7ab48ba0c7b4d2b1ad0ec1bd76fc66a5228c0e913b31de08a76dd945adf2a794"
+  },
+  "manifest_provenance_limitation": "This local manifest is not independently signed provenance.",
+  "private_replay": {
+    "mode": "0600",
+    "path": "private/replay-state.npz",
+    "sha3_256": "453d8060f9c47063ebe9a4957d7f5ecc312e1681310231f1e7f063fc07e25692"
+  },
+  "profile_version": "compact-carrier-v1",
+  "profiles": {
+    "original-6-r1": {
+      "block_size": 6,
+      "dpi": 144,
+      "family": "original",
+      "logical_positions": 52500,
+      "name": "original-6-r1",
+      "nominal_pixels": 1890000,
+      "physical_placements": 52500,
+      "repetitions": 1,
+      "scorer": "original-one-sided",
+      "strength": 4.0,
+      "theorem_certified": false,
+      "threshold": 2100.0
+    },
+    "symmetric-12-r1": {
+      "block_size": 12,
+      "dpi": 144,
+      "family": "symmetric",
+      "logical_positions": 12331,
+      "name": "symmetric-12-r1",
+      "nominal_pixels": 1775664,
+      "physical_placements": 12331,
+      "repetitions": 1,
+      "scorer": "symmetric-signed",
+      "strength": 4.0,
+      "theorem_certified": false,
+      "threshold": 837.2843088602898
+    },
+    "symmetric-6-r4": {
+      "block_size": 6,
+      "dpi": 144,
+      "family": "symmetric",
+      "logical_positions": 12331,
+      "name": "symmetric-6-r4",
+      "nominal_pixels": 1775664,
+      "physical_placements": 49324,
+      "repetitions": 4,
+      "scorer": "symmetric-signed",
+      "strength": 4.0,
+      "theorem_certified": false,
+      "threshold": 837.2843088602898
+    }
+  },
+  "schema_version": "nishan-compact-carrier-run/v1",
+  "scope": "Isolated empirical one-source carrier pilot; no physical result, probability certification, production attribution, collusion guarantee, novelty, or superiority claim.",
+  "source": {
+    "input_path": "artifacts/nishan/synthetic-source.pdf",
+    "run_path": "source/synthetic-source.pdf",
+    "sha3_256": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb"
+  },
+  "versions": {
+    "cryptography": "50.0.1",
+    "numpy": "2.5.3",
+    "pillow": "12.3.0",
+    "pymupdf": "1.28.2",
+    "python": "3.14.7"
+  }
+}

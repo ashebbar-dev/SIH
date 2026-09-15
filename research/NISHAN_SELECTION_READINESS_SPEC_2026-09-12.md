@@ -1,0 +1,34 @@
+# NISHAN selection-readiness specification
+
+User authorization: implement useful improvements for the final presentation and second-round selection. Working primary is NISHAN-PQ; DHRUVA remains unchanged. User deadline is 15 September. This is a tested prototype improvement, not a claim of competition acceptance or production certification.
+
+## Deliverables
+
+1. Serialized release transactions; optional explicitly pinned witness enforcement on actual release and trace paths; conservative PDF attribution across rasterization and low-capacity releases.
+2. A fresh reproducible safeguard demonstration, with public synthetic documents and real available PQC, saved separately from historical benchmarks.
+3. Six-slide editable SIH presentation, matching PDF, complete speaker notes, concise submission prose and an actionable demo script. Preserve the existing SIH template/section order, logos and slide dimensions.
+
+## Security contract
+
+- Acquire the existing ledger transaction lock before history validation and row allocation; retain it through signing, append, verification and publication. Use append(lock_held=True), never recursively acquire the same lock. Failed transactions release locks.
+- Keep existing APIs usable. Add keyword-only witness_root: Path | None = None and witness_public_key_sha3_256: str | None = None to decrypt_and_attribute and trace_leak. Both must be supplied together; malformed/missing pins fail before new plaintext is produced. CLI exposes matching --witness-root and --witness-public-key-sha3-256 on decrypt/trace.
+- A supplied pin is independently provisioned by the caller. Compare it to the actual witness verification key, not just a digest asserted in its config. It is not an independent trust anchor if retrieved from the suspect ledger or witness directory at verification time.
+- Witness mode requires an explicitly bootstrapped, valid, nonempty checkpoint chain matching a healthy signed ledger. No silent trust-on-first-use, no automatic repair of an unwitnessed extension. Reject rollback, fork, replaced root, missing checkpoint history, invalid signature or unavailable witness.
+- Lock order is ledger then witness. Under both locks, validate history and pinned witness, prepare/sign the marked output, append, re-audit the signed ledger, checkpoint the new head, then re-verify consistent pinned witness state before os.replace publishes the output. Public witness APIs must not cause recursive locking.
+- Trace checks a healthy signed ledger and consistent pinned witness snapshot before extraction. It never updates the witness. Its evidence identifies the checked snapshot, not an eternal freshness guarantee.
+- A signed event includes the release assurance mode and witness pin when configured. Return explicit witness enforcement status/checkpoint metadata. Default legacy mode remains clearly unwitnessed, not quietly presented as the hardened mode.
+- If checkpointing fails after ledger append, retain the committed release-authorized record but publish no new output. A pre-existing destination must remain unchanged. Future strict calls fail on the unwitnessed extension until deliberate recovery/checkpoint review. Do not claim delivery/read proof or automatic transactional rollback of already committed records.
+- All PDF-source tracing requires visual/layout set-equality corroboration regardless of the suspect's extension or raster format and regardless of original layout capacity. Select the release profile from parsed authenticated plaintext, not unauthenticated package metadata; reject inconsistent declared media type. Encrypt-time type metadata must also come from the existing content parser, not filename suffix. Trace must reject actual PDF references backed only by legacy generic-image receipts before generic screening. Preserve genuine image screening. Keep single-channel Tardos scores in ranking/research leads, with attribution empty. Low-capacity releases must state the limitation in signed policy. Do not change the carrier, thresholds, frozen benchmark data or mathematical code.
+- Preserve legacy generic-image screening behavior, explicitly labeled research screening. PDF-only safeguards are not a claim that every media type has the same assurance.
+
+## Evidence and presentation contract
+
+- Fresh tests cover actual concurrent same-document issuance with distinct rows, later successful release, exception lock cleanup, consistent pinned release/trace, wrong pin, missing/empty witness, all-replica rollback, checkpoint failure with no output publication, and trace read-only behavior.
+- Fresh PDF checks cover clean corroborated output; rendered transplant with empty attribution but retained research score; too-short PDF with no high-assurance attribution. No benchmark success is invented or inherited from a paper.
+- A focused PDF-policy regression edits only a valid package's media-type field before first issuance and proves strict release cannot select the generic-image profile; another exercises rejection of actual PDF references with legacy generic receipts. A genuinely raster image retains its existing screening behavior.
+- Save a deterministic-structure JSON demo report recording commands/profile, code hashes, actual case verdicts and explicit boundaries. Include a real-PQC readiness check; skip/unavailable is not a pass. Avoid overwriting historical artifacts or existing identities/keys.
+- Historical 30/30 JPEG-Q55 result is a visual-channel experiment on one document/codebook with repeated sessions, not the current strict corroborated-PDF verdict and not physical performance. Historical shipped physical threshold recovered 0/4; experimental profiles recovered the same 1/4 capture. Keep those facts and sampling limitations visible where claims are made.
+- The story is accountable decryption, recipient/session-specific outputs, conservative evidence and tested fail-closed release controls. Do not call required components inventions or claim superiority without comparison.
+- State co-located validator/witness administration, trusted software/key custody, operator reproduction/framing, removal/retyping, non-blind reference and session-not-human-guilt limits. Hardware-isolated signing, independent validator governance, portable independent proof verifier, robust physical recovery and larger held-out tests are future work unless separately implemented and verified.
+- Preserve all existing source/evidence outside scope. Keep before snapshots because there is no Git repository. Do not initialize Git, publish a repository, install dependencies or change DHRUVA.
+- Team name, team ID and public repository URL remain explicit missing fields unless supplied. The strict submission verifier must fail for missing required fields; draft mode may pass with those listed.

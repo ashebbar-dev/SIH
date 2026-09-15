@@ -1,0 +1,709 @@
+# Review package: research/evidence/nishan-selection-2026-09-12/task-2-after.tar.gz -> working files
+No Git repository; complete net snapshot diff, 10 lines of context.
+## Changed files
+submissions/SIH26237_NISHAN_PQ/DEMO_RUNBOOK.md: 6258 -> 6141 bytes; SHA256 7cf808968c907f12935e4e2d43fb8688978f95818e1396ddf5013b1168fcc4f5 -> 7a834bd5dbfe15a98a8198e79e3934308191b5adc4b9c0586e992e64c8547d4b
+submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx: 693901 -> 694113 bytes; SHA256 dcacba6f0a0957471deb702c00f082ded2b4cf085a9d1846a788a8811b073f95 -> f081f3cab7c13479945b39abb0bad3903092ddb92fb18339655678fa4c4386d1
+submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237_speaker_notes.md: 10777 -> 10980 bytes; SHA256 36501a934360481e75835b8edfb3c84ec2d46a394cfff0c32537304731198410 -> 143a99ed4100ec18e06a0783e26f8426f9fdb51291703091acb90a5b34d18307
+submissions/SIH26237_NISHAN_PQ/build_deck.py: 33850 -> 34069 bytes; SHA256 518cb67264beaec2d2bbb1f081d2bf0302d8aa171c3e59559d50919b4c2d7dec -> 2009665aad97988b9825adade34b1bf8b2a4bdf98dec27acb113e36b0cb2e607
+submissions/SIH26237_NISHAN_PQ/deck_evidence.py: 29688 -> 43819 bytes; SHA256 27ad2f88d5356d9f1eaeaaaadf7a16e41847e3a23766e1540bec54da7266a8cf -> ac0f9b303de482b511c895cafe1350f1c810836c442c52361525e96036993b35
+submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py: 24737 -> 29997 bytes; SHA256 cbeedaecaa83a854add8b0b99bf7e034e312f1e4eef6405c7003c9af668276dd -> 96049161d4e8ab97aaab64b67cc366918f796c42cee574594b49e78e13ce7c3e
+
+## Diff
+--- before/submissions/SIH26237_NISHAN_PQ/DEMO_RUNBOOK.md
++++ current/submissions/SIH26237_NISHAN_PQ/DEMO_RUNBOOK.md
+@@ -17,21 +17,21 @@
+   private keys or secrets; they are synthetic demo-only material.
+ - Open slide 5 and a terminal at the project root.
+ 
+ ## Invocation
+ 
+ Choose a new literal run name every time. For example, use `run-01` only once;
+ increment the suffix for later rehearsals instead of deleting or overwriting it.
+ 
+ ```bash
+ .venv/bin/python prototypes/nishan_pq/tools/demo_release_safeguards.py \
+-  --output research/evidence/nishan-selection-2026-09-12/demo-judges-run-01
++  --output /tmp/nishan-judges-run-01
+ ```
+ 
+ Expected summary shape:
+ 
+ ```json
+ {
+   "results": ".../results.json",
+   "pqc_ready": true,
+   "cases": 12,
+   "all_passed": true
+@@ -136,24 +136,24 @@
+ 3. Next round: independent administrative/key custody, a larger multi-recipient
+    and multi-page corpus, representative held-out print/camera tests, and a
+    portable independent evidence verifier.
+ 
+ ## Quick result inspection
+ 
+ Replace the path with the new run root used above.
+ 
+ ```bash
+ jq '{version, pqc_ready, all_passed, cases: [.cases[] | {name, passed}]}' \
+-  research/evidence/nishan-selection-2026-09-12/demo-judges-run-01/results.json
++  /tmp/nishan-judges-run-01/results.json
+ ```
+ 
+ Optional current-file hash check:
+ 
+ ```bash
+ jq -r '.code_sha256 | to_entries[] | "\(.value)  \(.key)"' \
+-  research/evidence/nishan-selection-2026-09-12/demo-judges-run-01/results.json \
++  /tmp/nishan-judges-run-01/results.json \
+   | sha256sum -c -
+ ```
+ 
+ Stop if any case is missing, duplicated or false; if `pqc_ready` is not exactly
+ true; or if any code hash differs. Do not describe a partial run as the reviewed
+ 12/12 demonstration.
+
+Binary artifact changed: submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx (hashes above).
+--- before/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237_speaker_notes.md
++++ current/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237_speaker_notes.md
+@@ -43,20 +43,21 @@
+ P10: Physical evidence is historical shipped-threshold 0/4 and exploratory 1/4 in each profile, with the same akshay3 capture recovered in both—not two recovered captures. Latest akshay3 is 1827.334 vs 1096.290; baseline is 1709.941 vs 1097.482. akshay2 latest is 835.191 vs 1021.632; the first two refined-profile captures are boundary failures. This is one printed single-page public fixture, not end-to-end signed physical attribution.
+ P11: The 30/30 end-to-end JPEG-Q55 runs use one recipient identity across 30 accumulated issued sessions (rows 0..29); other-issued score is null 1 time and non-null 29 times, not a multi-person test.
+ P12: All 30 end-to-end trials reuse the same document, authority secret and codebook; no independent-document or independent-authority inference follows.
+ P13: The 30-codebook × 4-strategy study has 120 code-level cases; it is not carrier, PDF or physical evidence.
+ P14: Signed-PDF preservation is an expected compatibility issue because changed bytes normally invalidate signatures; damage to tagged PDF structure is untested, not demonstrated.
+ P15: Main published experiments are single-page. Page loops exist in code, but there is no validated multi-page benchmark.
+ P16: This selection update corrects deck, notes, verifier, paste-ready prose and runbook semantics; historical evidence artifacts and prototype code are not rewritten by Task 2.
+ P19: Registration and 1,000-row scoring do not prove photo robustness; physical synchronization and useful capacity remain unresolved.
+ P20: Co-located validator and witness administration remains a material limitation; the local quorum is not administrator-resistant DLT.
+ P21: No Git repository was initialized. Local version history and publishing are distinct actions; controller backups are retained.
++Feasibility context (unnumbered): a confirmed six-person team has an existing offline laptop prototype, repeatable tests and saved evidence; neither GPU nor ESP32 is required for this measured workflow.
+ Sources: demo/results.json; artifacts/nishan/end-to-end-jpeg-trials.json; artifacts/nishan/tardos-independent-codebook-study.json; research/evidence/nishan-bias-physical-2026-09-10/scores.json.
+ 
+ ## Slide 5
+ 
+ Slide 5 — impact, judge demo and next-round gates
+ R11: Verifiable associated recipient/event — signature and ledger checks support a source-copy/session association; authority framing and copy-to-human inference limits remain.
+ R12: Offline/air-gapped operation — demonstrated in a local architecture, not an audited hardened deployment.
+ R13: No cloud KMS — the implemented workflow has no required external KMS dependency.
+ R14: No public blockchain — the local demonstrator has no public-chain dependency.
+ P9: Evidence identifies a released session/copy association, not which human intentionally disclosed it, received it successfully or read it.
+--- before/submissions/SIH26237_NISHAN_PQ/build_deck.py
++++ current/submissions/SIH26237_NISHAN_PQ/build_deck.py
+@@ -417,42 +417,42 @@
+     capabilities = [
+         (
+             "01",
+             "Session-specific release",
+             "Serialized row + session allocation. Marked output is signed before publication.",
+             TEAL,
+         ),
+         (
+             "02",
+             "Commit before release",
+-            "ML-DSA receipt enters the local 3-of-4 log; configured mode also pins a signed checkpoint.",
++            "ML-DSA receipt enters the local 3-of-4 log. Configured mode checks signed witness state under a caller-provisioned key pin.",
+             BLUE,
+         ),
+         (
+             "03",
+             "Conservative trace",
+             "Clean PDFs need two-channel agreement. Missing evidence produces a lead or inconclusive result.",
+             AMBER,
+         ),
+     ]
+     for index, (number, title_value, body, accent) in enumerate(capabilities):
+         x = 0.66 + index * 4.12
+         box(slide, x, 1.48, 3.82, 2.13, fill=WHITE, line=accent, line_width=1.4)
+         text(slide, x + 0.20, 1.68, 0.54, 0.40, number, size=19, color=accent, bold=True)
+         text(slide, x + 0.86, 1.71, 2.70, 0.34, title_value, size=14.4, color=NAVY, bold=True)
+         text(slide, x + 0.22, 2.25, 3.36, 1.03, body, size=13.0, color=INK)
+ 
+     box(slide, 0.66, 3.92, 12.06, 1.55, fill=PALE, line=None)
+     text(slide, 0.90, 4.14, 11.58, 0.30, "CONTROLLED RELEASE → EVIDENCE", size=11.2, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
+     flow = [
+         ("Encrypt once", "AES-256-GCM"),
+-        ("Authorize", "ML-KEM-768"),
++        ("Wrap key", "ML-KEM-768"),
+         ("Mark", "visual + layout"),
+         ("Sign + commit", "ML-DSA-65"),
+         ("Trace", "attribute / abstain"),
+     ]
+     x = 0.90
+     for index, (title_value, body) in enumerate(flow):
+         box(slide, x, 4.57, 2.05, 0.60, fill=WHITE, line=GREY)
+         text(slide, x + 0.08, 4.64, 1.89, 0.22, title_value, size=10.8, color=NAVY, bold=True, align=PP_ALIGN.CENTER)
+         text(slide, x + 0.08, 4.89, 1.89, 0.18, body, size=8.7, color=MUTED, align=PP_ALIGN.CENTER)
+         x += 2.33
+@@ -543,21 +543,22 @@
+     text(slide, 0.91, 1.62, 2.18, 0.31, "FRESH · CURRENT CODE", size=12.2, color=NAVY, bold=True)
+     text(slide, 0.91, 2.00, 2.20, 0.58, f"{len(safeguards['cases'])}/12", size=31, color=TEAL_DARK, bold=True)
+     text(slide, 2.35, 2.03, 4.05, 0.55, "safeguard scenarios passed\n59/59 final-code tests · real PQC · 19 hashes verified", size=11.8, color=INK, bold=True)
+     controls = [
+         "Serialized release: concurrent rows differ; next release succeeds",
+         "Pinned mode: wrong pin blocks release; rollback blocks release + trace",
+         "Checkpoint failure publishes nothing; existing output is preserved",
+         "Clean PDF corroborates; raster and low-capacity PDF abstain",
+     ]
+     bullet_list(slide, 0.92, 2.80, 5.62, 2.13, controls, size=12.2, gap=7)
+-    pill(slide, 0.92, 5.39, 5.62, "SYNTHETIC OFFLINE SCENARIOS · NOT POPULATION EXPERIMENTS", fill=NAVY, color=WHITE, size=8.2)
++    text(slide, 0.92, 5.05, 5.62, 0.25, "Six-person team · existing offline laptop prototype · repeatable saved evidence", size=10.4, color=TEAL_DARK, bold=True, align=PP_ALIGN.CENTER)
++    pill(slide, 0.92, 5.45, 5.62, "SYNTHETIC OFFLINE SCENARIOS · NOT POPULATION EXPERIMENTS", fill=NAVY, color=WHITE, size=8.2)
+ 
+     box(slide, 7.05, 1.37, 5.67, 2.18, fill=PALE_AMBER, line=None)
+     text(slide, 7.33, 1.62, 5.12, 0.31, "HISTORICAL VISUAL FIXTURES", size=12.2, color=NAVY, bold=True)
+     text(slide, 7.33, 2.08, 5.12, 0.52, f"{digital['jpeg_exact']}/{digital['jpeg_trials']} JPEG-Q55 visual-channel trials", size=17.2, color="8A5D00", bold=True)
+     text(slide, 7.33, 2.66, 5.12, 0.60, f"One document/codebook; repeated sessions. {digital['pdf_count']} one-page PDFs retained text; mean PSNR {digital['psnr_mean']:.2f} dB.", size=11.5, color=INK)
+ 
+     box(slide, 7.05, 3.76, 5.67, 2.42, fill=WHITE, line=GREY)
+     text(slide, 7.33, 4.01, 5.12, 0.52, "Physical recovery remains experimental: 0/4 at the shipped threshold", size=14.0, color=RED, bold=True)
+     text(slide, 7.33, 4.63, 5.12, 0.66, "Exploratory profiles recover the same 1/4 capture. No added capture; no robust physical claim.", size=12.0, color=INK, bold=True)
+     text(slide, 7.33, 5.45, 5.12, 0.42, "Digital PDF corroboration; raster-only matches are research leads", size=11.3, color=TEAL_DARK, bold=True)
+--- before/submissions/SIH26237_NISHAN_PQ/deck_evidence.py
++++ current/submissions/SIH26237_NISHAN_PQ/deck_evidence.py
+@@ -49,20 +49,294 @@
+     "prototypes/nishan_pq/nishan/tardos_carrier.py",
+     "prototypes/nishan_pq/nishan/util.py",
+     "prototypes/nishan_pq/nishan/watermark.py",
+     "prototypes/nishan_pq/nishan/witness.py",
+     "prototypes/nishan_pq/tests/test_pdf_format_policy.py",
+     "prototypes/nishan_pq/tests/test_release_safeguards.py",
+     "prototypes/nishan_pq/tools/demo_release_safeguards.py",
+ )
+ 
+ 
++def _validate_safeguard_profile(profile: Any) -> None:
++    if not isinstance(profile, dict):
++        raise ValueError("safeguard profile must be an object")
++
++    def exact_integer(field: str, expected: int) -> None:
++        value = profile.get(field)
++        if isinstance(value, bool) or not isinstance(value, int) or value != expected:
++            raise ValueError(f"safeguard profile {field} must be integer {expected}")
++
++    exact_integer("roster_size", 1_000)
++    exact_integer("coalition_limit", 5)
++    epsilon = profile.get("familywise_epsilon")
++    if (
++        isinstance(epsilon, bool)
++        or not isinstance(epsilon, (int, float))
++        or not math.isfinite(epsilon)
++        or float(epsilon) != 1e-6
++    ):
++        raise ValueError("safeguard profile familywise_epsilon must be numeric 1e-6")
++    if profile.get("fusion_policy") != "pdf-all-formats-corroboration/v1":
++        raise ValueError(
++            "safeguard profile fusion_policy must be pdf-all-formats-corroboration/v1"
++        )
++    expected_text = {
++        "fixture": "nishan.demo._sample_pdf; public synthetic one-page PDF",
++        "pin_provisioning": (
++            "fresh local witness initialization in this demo; independent "
++            "provisioning remains a deployment requirement"
++        ),
++    }
++    for field, expected in expected_text.items():
++        value = profile.get(field)
++        if not isinstance(value, str) or value != expected:
++            raise ValueError(f"safeguard profile {field} must match the reviewed fixture")
++
++
++def _validate_safeguard_observations(cases: dict[str, dict[str, Any]]) -> None:
++    hash_pattern = re.compile(r"[0-9a-f]{64}")
++
++    def fail(case: str, message: str) -> None:
++        raise ValueError(f"safeguard case {case}: {message}")
++
++    def observed_object(case: str) -> dict[str, Any]:
++        observed = cases[case]["observed"]
++        if not isinstance(observed, dict):
++            fail(case, "observed must be an object")
++        return observed
++
++    def required_bool(case: str, obj: dict[str, Any], field: str, expected: bool) -> None:
++        value = obj.get(field)
++        if not isinstance(value, bool) or value is not expected:
++            fail(case, f"{field} must be boolean {expected}")
++
++    def required_int(case: str, obj: dict[str, Any], field: str) -> int:
++        value = obj.get(field)
++        if isinstance(value, bool) or not isinstance(value, int):
++            fail(case, f"{field} must be an integer")
++        return value
++
++    def required_text(case: str, obj: dict[str, Any], field: str) -> str:
++        value = obj.get(field)
++        if not isinstance(value, str) or not value.strip():
++            fail(case, f"{field} must be a nonempty string")
++        return value
++
++    def required_hash(case: str, obj: dict[str, Any], field: str) -> str:
++        value = required_text(case, obj, field)
++        if hash_pattern.fullmatch(value) is None:
++            fail(case, f"{field} must be 64 lowercase hexadecimal characters")
++        return value
++
++    concurrent_name = "concurrent_distinct_sessions_rows"
++    concurrent = observed_object(concurrent_name)
++    required_bool(concurrent_name, concurrent, "barrier_before_decrypt", True)
++    if required_int(concurrent_name, concurrent, "processes") != 2:
++        fail(concurrent_name, "processes must be 2")
++    rows = concurrent.get("rows")
++    if (
++        not isinstance(rows, list)
++        or len(rows) != 2
++        or any(isinstance(row, bool) or not isinstance(row, int) for row in rows)
++        or set(rows) != {0, 1}
++    ):
++        fail(concurrent_name, "rows must be the two distinct integers 0 and 1")
++    sessions = concurrent.get("sessions")
++    if (
++        not isinstance(sessions, list)
++        or len(sessions) != 2
++        or any(not isinstance(session, str) or not session.strip() for session in sessions)
++        or len(set(sessions)) != 2
++    ):
++        fail(concurrent_name, "sessions must be two distinct nonempty strings")
++
++    third_name = "third_release_row"
++    third = observed_object(third_name)
++    if required_int(third_name, third, "row") != 2:
++        fail(third_name, "row must be 2")
++    third_session = required_text(third_name, third, "session")
++    if third_session in sessions:
++        fail(third_name, "session must differ from both concurrent sessions")
++
++    hash_name = "signed_copy_hash_match"
++    copies = cases[hash_name]["observed"]
++    if not isinstance(copies, list) or len(copies) != 3:
++        fail(hash_name, "observed must contain exactly three signed-copy records")
++    copy_sessions: list[str] = []
++    for index, copy_record in enumerate(copies):
++        if not isinstance(copy_record, dict):
++            fail(hash_name, f"record {index} must be an object")
++        actual = required_hash(hash_name, copy_record, "actual")
++        signed = required_hash(hash_name, copy_record, "signed")
++        if actual != signed:
++            fail(hash_name, f"record {index} actual hash must equal signed hash")
++        copy_sessions.append(required_text(hash_name, copy_record, "session"))
++    if len(set(copy_sessions)) != 3 or set(copy_sessions) != set(sessions + [third_session]):
++        fail(hash_name, "records must cover the two concurrent and third release sessions")
++
++    clean_name = "clean_pdf_trace"
++    clean = observed_object(clean_name)
++    attribution = clean.get("attribution")
++    if not isinstance(attribution, list) or len(attribution) != 1:
++        fail(clean_name, "attribution must contain exactly one selected release")
++    selected = attribution[0]
++    if not isinstance(selected, dict):
++        fail(clean_name, "selected attribution must be an object")
++    required_bool(clean_name, selected, "recipient_signature_valid", True)
++    required_bool(clean_name, selected, "selected_by_fusion", True)
++    selected_index = required_int(clean_name, selected, "fingerprint_user_index")
++    if required_text(clean_name, selected, "recipient_id") != "alice":
++        fail(clean_name, "selected recipient_id must be alice")
++    selected_session = required_text(clean_name, selected, "session_id")
++    if selected_session not in sessions:
++        fail(clean_name, "selected session must be one of the concurrent releases")
++    layout_tag = selected.get("layout_tag")
++    if not isinstance(layout_tag, dict):
++        fail(clean_name, "selected layout_tag must be an object")
++    required_bool(clean_name, layout_tag, "match", True)
++    required_bool(clean_name, layout_tag, "suspect_is_pdf", True)
++    required_bool(clean_name, layout_tag, "release_channel_available", True)
++    decision = clean.get("decision")
++    if not isinstance(decision, dict):
++        fail(clean_name, "decision must be an object")
++    if decision.get("decision") != "corroborated_channels":
++        fail(clean_name, "decision must be corroborated_channels")
++    required_bool(clean_name, decision, "corroboration_required", True)
++    if decision.get("selected_indices") != [selected_index]:
++        fail(clean_name, "selected_indices must match the selected attribution")
++    witness = clean.get("ledger_witness")
++    if not isinstance(witness, dict):
++        fail(clean_name, "ledger_witness must be an object")
++    required_bool(clean_name, witness, "valid", True)
++    required_bool(clean_name, witness, "witness_enforced", True)
++    required_hash(clean_name, witness, "witness_public_key_sha3_256")
++    if witness.get("ledger_comparison") != "consistent":
++        fail(clean_name, "ledger_witness comparison must be consistent")
++
++    read_only_name = "trace_read_only"
++    read_only = observed_object(read_only_name)
++    before_hash = required_hash(read_only_name, read_only, "before_sha256")
++    after_hash = required_hash(read_only_name, read_only, "after_sha256")
++    if before_hash != after_hash:
++        fail(read_only_name, "before_sha256 must equal after_sha256")
++
++    def validate_abstention(
++        case: str, expected_decision: str
++    ) -> tuple[dict[str, Any], dict[str, Any]]:
++        observed = observed_object(case)
++        if observed.get("attribution") != []:
++            fail(case, "attribution must be an empty list")
++        case_decision = observed.get("decision")
++        if not isinstance(case_decision, dict):
++            fail(case, "decision must be an object")
++        if case_decision.get("decision") != expected_decision:
++            fail(case, f"decision must be {expected_decision}")
++        required_bool(case, case_decision, "corroboration_required", True)
++        if case_decision.get("selected_indices") != []:
++            fail(case, "selected_indices must be an empty list")
++        lead_indices = case_decision.get("screening_lead_indices")
++        if (
++            not isinstance(lead_indices, list)
++            or not lead_indices
++            or any(isinstance(index, bool) or not isinstance(index, int) for index in lead_indices)
++        ):
++            fail(case, "screening_lead_indices must contain integer research leads")
++        leads = observed.get("visual_only_research_leads")
++        if not isinstance(leads, list) or not leads:
++            fail(case, "visual_only_research_leads must be nonempty")
++        for lead in leads:
++            if not isinstance(lead, dict):
++                fail(case, "each visual-only research lead must be an object")
++            required_bool(case, lead, "selected_by_fusion", False)
++            required_bool(case, lead, "recipient_signature_valid", True)
++        observed_lead_indices = [
++            required_int(case, lead, "fingerprint_user_index") for lead in leads
++        ]
++        if observed_lead_indices != lead_indices:
++            fail(case, "research-lead identities must match screening_lead_indices")
++        layout_observation = case_decision.get("layout_observation")
++        if not isinstance(layout_observation, dict):
++            fail(case, "layout_observation must be an object")
++        return observed, layout_observation
++
++    _rendered, rendered_layout = validate_abstention(
++        "rendered_transplant_abstains", "abstain_missing_layout_channel"
++    )
++    required_bool(
++        "rendered_transplant_abstains", rendered_layout, "suspect_is_pdf", False
++    )
++    low_name = "low_capacity_pdf_abstains"
++    low, low_layout = validate_abstention(
++        low_name, "abstain_inadequate_release_capacity"
++    )
++    required_bool(low_name, low_layout, "suspect_is_pdf", True)
++    policy = low.get("signed_fingerprint_policy")
++    if not isinstance(policy, dict):
++        fail(low_name, "signed_fingerprint_policy must be an object")
++    required_bool(low_name, policy, "corroboration_required", True)
++    if policy.get("fusion_policy_version") != "pdf-all-formats-corroboration/v1":
++        fail(low_name, "fusion_policy_version must be pdf-all-formats-corroboration/v1")
++    layout_policy = policy.get("layout_tag")
++    if not isinstance(layout_policy, dict):
++        fail(low_name, "signed layout_tag policy must be an object")
++    required_bool(low_name, layout_policy, "available", False)
++    supported = required_int(low_name, layout_policy, "supported_capacity_bits")
++    encoded = required_int(low_name, layout_policy, "encoded_bits")
++    if supported < 0 or supported >= encoded:
++        fail(low_name, "supported capacity must be nonnegative and below encoded bits")
++
++    wrong_pin_name = "wrong_pin_rejected"
++    wrong_pin = observed_object(wrong_pin_name)
++    required_bool(wrong_pin_name, wrong_pin, "rejected", True)
++    required_bool(wrong_pin_name, wrong_pin, "output_exists", False)
++    required_text(wrong_pin_name, wrong_pin, "error_type")
++    if "pin" not in required_text(wrong_pin_name, wrong_pin, "error").lower():
++        fail(wrong_pin_name, "error must identify the pin rejection")
++
++    release_rollback_name = "rollback_release_rejected"
++    release_rollback = observed_object(release_rollback_name)
++    required_bool(release_rollback_name, release_rollback, "rejected", True)
++    required_bool(release_rollback_name, release_rollback, "output_exists", False)
++    required_bool(release_rollback_name, release_rollback, "ledger_quorum_valid", True)
++    if release_rollback.get("comparison") != "rollback_detected":
++        fail(release_rollback_name, "comparison must be rollback_detected")
++    required_text(release_rollback_name, release_rollback, "error_type")
++    if "rollback" not in required_text(release_rollback_name, release_rollback, "error").lower():
++        fail(release_rollback_name, "error must identify rollback")
++
++    trace_rollback_name = "rollback_trace_rejected"
++    trace_rollback = observed_object(trace_rollback_name)
++    required_bool(trace_rollback_name, trace_rollback, "rejected", True)
++    required_text(trace_rollback_name, trace_rollback, "error_type")
++    if "rollback" not in required_text(trace_rollback_name, trace_rollback, "error").lower():
++        fail(trace_rollback_name, "error must identify rollback")
++
++    for checkpoint_name, expected_existing in (
++        ("checkpoint_failure_no_publication", False),
++        ("checkpoint_failure_preserves_existing_output", True),
++    ):
++        checkpoint = observed_object(checkpoint_name)
++        required_bool(checkpoint_name, checkpoint, "rejected", True)
++        required_bool(checkpoint_name, checkpoint, "destination_preserved", True)
++        required_bool(
++            checkpoint_name, checkpoint, "existing_destination", expected_existing
++        )
++        before_length = required_int(checkpoint_name, checkpoint, "before_length")
++        after_length = required_int(checkpoint_name, checkpoint, "after_length")
++        if after_length != before_length + 1:
++            fail(checkpoint_name, "ledger length must increase by one committed record")
++        if checkpoint.get("comparison") != "unwitnessed_extension":
++            fail(checkpoint_name, "comparison must be unwitnessed_extension")
++        required_text(checkpoint_name, checkpoint, "error")
++        required_text(checkpoint_name, checkpoint, "error_type")
++
++
+ def validate_safeguard_evidence(evidence: dict) -> dict:
+     """Validate the fresh selection-safeguard report against current source.
+ 
+     The report is accepted only when it represents the exact reviewed scenario
+     set, every verdict and the real-PQC readiness check passed, and the required
+     source/test/runner hashes still match files in this workspace.
+     """
+     if not isinstance(evidence, dict):
+         raise ValueError("safeguard evidence must be an object")
+     if evidence.get("version") != SAFEGUARD_VERSION:
+@@ -94,36 +368,37 @@
+         names.append(name)
+     if len(names) != len(set(names)):
+         raise ValueError("safeguard scenario names contain duplicates")
+     expected = set(EXPECTED_SAFEGUARD_CASES)
+     actual = set(names)
+     if len(names) != len(EXPECTED_SAFEGUARD_CASES) or actual != expected:
+         raise ValueError(
+             "safeguard scenario coverage must be the exact 12 reviewed cases; "
+             f"missing={sorted(expected - actual)}, unexpected={sorted(actual - expected)}"
+         )
++    cases_by_name = {case["name"]: case for case in cases}
++    _validate_safeguard_observations(cases_by_name)
+ 
+     if evidence.get("pqc_ready") is not True:
+         raise ValueError("real PQC readiness must be true")
+     pqc = evidence.get("pqc_profile")
+     if not isinstance(pqc, dict):
+         raise ValueError("PQC profile must be an object")
+     if pqc.get("ml_kem_768") is not True:
+         raise ValueError("PQC profile must confirm ML-KEM-768")
+     if pqc.get("ml_dsa_65") is not True:
+         raise ValueError("PQC profile must confirm ML-DSA-65")
+     if not isinstance(pqc.get("openssl_version"), str) or not pqc["openssl_version"].strip():
+         raise ValueError("PQC profile must record a nonempty OpenSSL version")
+     if not isinstance(evidence.get("command"), str) or not evidence["command"].strip():
+         raise ValueError("safeguard evidence command must be a nonempty string")
+-    if not isinstance(evidence.get("profile"), dict):
+-        raise ValueError("safeguard evidence profile must be an object")
++    _validate_safeguard_profile(evidence.get("profile"))
+     limitations = evidence.get("limitations")
+     if (
+         not isinstance(limitations, list)
+         or not limitations
+         or any(not isinstance(item, str) or not item.strip() for item in limitations)
+     ):
+         raise ValueError("safeguard evidence limitations must be nonempty strings")
+ 
+     hashes = evidence.get("code_sha256")
+     if not isinstance(hashes, dict):
+@@ -402,20 +677,21 @@
+             f"P10: Physical evidence is historical shipped-threshold {physical['historical_recovered']}/{physical['captures']} and exploratory {physical['baseline_recovered']}/{physical['captures']} in each profile, with the same akshay3 capture recovered in both—not two recovered captures. Latest akshay3 is {latest['expected_score']:.3f} vs {latest['conditional_null']['threshold']:.3f}; baseline is {baseline['expected_score']:.3f} vs {baseline['conditional_null']['threshold']:.3f}. akshay2 latest is {akshay2['expected_score']:.3f} vs {akshay2['conditional_null']['threshold']:.3f}; the first two refined-profile captures are boundary failures. This is one printed single-page public fixture, not end-to-end signed physical attribution.",
+             f"P11: The {digital['jpeg_exact']}/{digital['jpeg_trials']} end-to-end JPEG-Q55 runs use one recipient identity across {digital['issued_session_count']} accumulated issued sessions (rows {digital['issued_row_min']}..{digital['issued_row_max']}); other-issued score is null {digital['other_score_null']} time and non-null {digital['other_score_nonnull']} times, not a multi-person test.",
+             f"P12: All {digital['jpeg_trials']} end-to-end trials reuse the same document, authority secret and codebook; no independent-document or independent-authority inference follows.",
+             f"P13: The {digital['codebooks']}-codebook × {digital['strategy_count']}-strategy study has {digital['code_cases']} code-level cases; it is not carrier, PDF or physical evidence.",
+             "P14: Signed-PDF preservation is an expected compatibility issue because changed bytes normally invalidate signatures; damage to tagged PDF structure is untested, not demonstrated.",
+             "P15: Main published experiments are single-page. Page loops exist in code, but there is no validated multi-page benchmark.",
+             "P16: This selection update corrects deck, notes, verifier, paste-ready prose and runbook semantics; historical evidence artifacts and prototype code are not rewritten by Task 2.",
+             f"P19: Registration and {digital['roster_rows']:,}-row scoring do not prove photo robustness; physical synchronization and useful capacity remain unresolved.",
+             "P20: Co-located validator and witness administration remains a material limitation; the local quorum is not administrator-resistant DLT.",
+             "P21: No Git repository was initialized. Local version history and publishing are distinct actions; controller backups are retained.",
++            "Feasibility context (unnumbered): a confirmed six-person team has an existing offline laptop prototype, repeatable tests and saved evidence; neither GPU nor ESP32 is required for this measured workflow.",
+             "Sources: demo/results.json; artifacts/nishan/end-to-end-jpeg-trials.json; artifacts/nishan/tardos-independent-codebook-study.json; research/evidence/nishan-bias-physical-2026-09-10/scores.json.",
+         ]),
+         "\n".join([
+             "Slide 5 — impact, judge demo and next-round gates",
+             "R11: Verifiable associated recipient/event — signature and ledger checks support a source-copy/session association; authority framing and copy-to-human inference limits remain.",
+             "R12: Offline/air-gapped operation — demonstrated in a local architecture, not an audited hardened deployment.",
+             "R13: No cloud KMS — the implemented workflow has no required external KMS dependency.",
+             "R14: No public blockchain — the local demonstrator has no public-chain dependency.",
+             "P9: Evidence identifies a released session/copy association, not which human intentionally disclosed it, received it successfully or read it.",
+             "Five-minute judge flow: create a fresh demo output root; issue two recipients plus a repeated/third session; trace a clean PDF; show raster transplant and low-capacity PDF abstention; show wrong-pin release rejection and rollback rejection on both release and trace; inject checkpoint failure and show no new publication while explaining the committed authorization record.",
+--- before/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py
++++ current/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py
+@@ -233,20 +233,59 @@
+         mutations = (
+             lambda data: data.__setitem__("version", "wrong/version"),
+             lambda data: data.__setitem__("cases", {}),
+             lambda data: data.__setitem__("code_sha256", []),
+         )
+         for mutate in mutations:
+             with self.subTest(mutate=mutate):
+                 evidence = copy.deepcopy(self.source)
+                 mutate(evidence)
+                 with self.assertRaises(ValueError):
++                    self.deck_evidence.validate_safeguard_evidence(evidence)
++
++    def test_required_profile_fields_and_types_are_strict(self) -> None:
++        mutations = (
++            lambda data: data["profile"].pop("roster_size"),
++            lambda data: data["profile"].__setitem__("coalition_limit", True),
++            lambda data: data["profile"].__setitem__("familywise_epsilon", "1e-6"),
++            lambda data: data["profile"].__setitem__("fusion_policy", "legacy"),
++            lambda data: data["profile"].__setitem__("fixture", "production corpus"),
++            lambda data: data["profile"].__setitem__("pin_provisioning", None),
++        )
++        for mutate in mutations:
++            with self.subTest(mutate=mutate):
++                evidence = copy.deepcopy(self.source)
++                mutate(evidence)
++                with self.assertRaisesRegex(ValueError, "profile"):
++                    self.deck_evidence.validate_safeguard_evidence(evidence)
++
++    def test_each_case_observation_enforces_claim_invariants(self) -> None:
++        mutations = {
++            "concurrent_distinct_sessions_rows": lambda observed: observed.__setitem__("rows", [0, 0]),
++            "third_release_row": lambda observed: observed.__setitem__("row", "2"),
++            "signed_copy_hash_match": lambda observed: observed[0].__setitem__("actual", "0" * 64),
++            "clean_pdf_trace": lambda observed: observed["decision"].__setitem__("decision", "visual_only"),
++            "trace_read_only": lambda observed: observed.pop("after_sha256"),
++            "rendered_transplant_abstains": lambda observed: observed.__setitem__("attribution", [{}]),
++            "low_capacity_pdf_abstains": lambda observed: observed.__setitem__("attribution", None),
++            "wrong_pin_rejected": lambda observed: observed.__setitem__("output_exists", True),
++            "rollback_release_rejected": lambda observed: observed.__setitem__("comparison", "consistent"),
++            "rollback_trace_rejected": lambda observed: observed.__setitem__("rejected", "true"),
++            "checkpoint_failure_no_publication": lambda observed: observed.__setitem__("destination_preserved", False),
++            "checkpoint_failure_preserves_existing_output": lambda observed: observed.__setitem__("existing_destination", False),
++        }
++        for case_name, mutate in mutations.items():
++            with self.subTest(case_name=case_name):
++                evidence = copy.deepcopy(self.source)
++                case = next(item for item in evidence["cases"] if item["name"] == case_name)
++                mutate(case["observed"])
++                with self.assertRaisesRegex(ValueError, case_name):
+                     self.deck_evidence.validate_safeguard_evidence(evidence)
+ 
+ 
+ class DeckAndVerifierTests(unittest.TestCase):
+     maxDiff = None
+ 
+     @classmethod
+     def setUpClass(cls) -> None:
+         cls.build_deck = importlib.import_module("build_deck")
+         cls.deck_evidence = importlib.import_module("deck_evidence")
+@@ -349,20 +388,24 @@
+         self.assertIn("0/4", combined)
+         self.assertIn("1/4", combined)
+         self.assertIn("12/12", combined)
+         self.assertIn("59/59 final-code tests", combined)
+         self.assertIn("19 hashes verified", combined)
+         self.assertIn("JPEG-Q55 visual-channel trials", combined)
+         self.assertIn("same 1/4 capture", combined)
+         self.assertIn("Digital PDF corroboration; raster-only matches are research leads", combined)
+         self.assertIn("Portable independent evidence verifier", combined)
+         self.assertIn("source-copy evidence—not a claim about which human", combined)
++        self.assertIn("checks signed witness state under a caller-provisioned key pin", combined)
++        self.assertIn("Wrap key", combined)
++        self.assertNotIn("Authorize\nML-KEM-768", combined)
++        self.assertIn("Six-person team · existing offline laptop prototype", combined)
+ 
+     def test_build_rejects_safeguard_code_hash_drift(self) -> None:
+         evidence = json.loads(SAFEGUARDS.read_text())
+         evidence["code_sha256"]["prototypes/nishan_pq/nishan/core.py"] = "0" * 64
+         bad_path = self.root / "stale-safeguards.json"
+         bad_path.write_text(json.dumps(evidence))
+         with self.assertRaisesRegex(ValueError, "SHA-256 drift"):
+             self.build_deck.build(
+                 ROOT / "resources" / "SIH2026-IDEA-Presentation-Format.pptx",
+                 ROOT / "artifacts" / "nishan" / "attribution-scores.png",
+@@ -371,20 +414,44 @@
+                 ROOT / "artifacts" / "nishan" / "tardos-independent-codebook-study.json",
+                 ROOT / "artifacts" / "nishan" / "end-to-end-jpeg-trials.json",
+                 self.root / "must-not-build.pptx",
+                 self.team_id,
+                 self.team_name,
+                 physical_path=PHYSICAL,
+                 safeguard_path=bad_path,
+                 repository_url=self.repository_url,
+             )
+ 
++    def test_build_rejects_counterfactual_safeguard_observation(self) -> None:
++        evidence = json.loads(SAFEGUARDS.read_text())
++        wrong_pin = next(
++            item for item in evidence["cases"] if item["name"] == "wrong_pin_rejected"
++        )
++        wrong_pin["observed"]["output_exists"] = True
++        bad_path = self.root / "counterfactual-safeguards.json"
++        bad_path.write_text(json.dumps(evidence))
++        with self.assertRaisesRegex(ValueError, "wrong_pin_rejected"):
++            self.build_deck.build(
++                ROOT / "resources" / "SIH2026-IDEA-Presentation-Format.pptx",
++                ROOT / "artifacts" / "nishan" / "attribution-scores.png",
++                ROOT / "artifacts" / "nishan" / "measured-results.json",
++                ROOT / "artifacts" / "nishan" / "tardos-pdf-benchmark.json",
++                ROOT / "artifacts" / "nishan" / "tardos-independent-codebook-study.json",
++                ROOT / "artifacts" / "nishan" / "end-to-end-jpeg-trials.json",
++                self.root / "must-not-build-counterfactual.pptx",
++                self.team_id,
++                self.team_name,
++                physical_path=PHYSICAL,
++                safeguard_path=bad_path,
++                repository_url=self.repository_url,
++            )
++
+     def test_displayed_counts_follow_mutated_json_copies(self) -> None:
+         end_to_end = json.loads(
+             (ROOT / "artifacts" / "nishan" / "end-to-end-jpeg-trials.json").read_text()
+         )
+         extra_trial = copy.deepcopy(end_to_end["trials"][-1])
+         extra_trial["trial"] = 30
+         extra_trial["tardos_user_index"] = 30
+         extra_trial["session_id"] = "mutated-test-session-30"
+         end_to_end["trials"].append(extra_trial)
+         end_to_end["parameters"]["trials"] = 31
+@@ -494,39 +561,57 @@
+ 
+     def test_verifier_rejects_failed_safeguard_evidence(self) -> None:
+         self.prepare_verifier_root()
+         safeguard = self.root / "research" / "evidence" / "nishan-selection-2026-09-12" / "demo" / "results.json"
+         evidence = json.loads(safeguard.read_text())
+         evidence["cases"][0]["passed"] = False
+         safeguard.write_text(json.dumps(evidence))
+         result = self.verify_submission.verify(self.root, allow_placeholders=True)
+         self.assertFalse(result["ok"])
+         self.assertTrue(any("safeguard evidence" in error.lower() for error in result["errors"]))
++
++    def test_verifier_rejects_malformed_safeguard_observation(self) -> None:
++        self.prepare_verifier_root()
++        safeguard = self.root / "research" / "evidence" / "nishan-selection-2026-09-12" / "demo" / "results.json"
++        evidence = json.loads(safeguard.read_text())
++        trace = next(item for item in evidence["cases"] if item["name"] == "trace_read_only")
++        trace["observed"].pop("after_sha256")
++        safeguard.write_text(json.dumps(evidence))
++        result = self.verify_submission.verify(self.root, allow_placeholders=True)
++        self.assertFalse(result["ok"])
++        self.assertTrue(any(
++            "safeguard evidence" in error.lower() and "trace_read_only" in error
++            for error in result["errors"]
++        ))
+ 
+     def test_handoff_prose_and_runbook_use_current_boundaries(self) -> None:
+         submission = (PACKAGE / "paste_ready_submission.md").read_text()
+         runbook = (PACKAGE / "DEMO_RUNBOOK.md").read_text()
+         combined = submission + "\n" + runbook
+         normalized = " ".join(combined.split()).lower()
+         for phrase in (
+             "All 12 named offline safeguard scenarios passed",
+             "59/59 tests",
+             "All 19 code hashes",
+             "shipped historical threshold recovered 0/4",
+             "same one capture",
+             "configured release rejected a wrong pin",
+             "signed release-authorization record remains",
+             "portable independent evidence verifier remain future work",
+         ):
+             self.assertIn(phrase.lower(), normalized)
+         for name in self.deck_evidence.EXPECTED_SAFEGUARD_CASES:
+             self.assertIn(name, runbook)
++        self.assertEqual(runbook.count("/tmp/nishan-judges-run-01"), 3)
++        self.assertNotIn("demo-judges-run-01", runbook.replace("/tmp/nishan-judges-run-01", ""))
++        self.assertNotIn("rm ", runbook.lower())
++        self.assertNotIn("trash", runbook.lower())
+         for stale in (
+             "real physical captures pending",
+             "witness is not enforced",
+             "allocation is not atomic",
+             "30/30 attribution success",
+         ):
+             self.assertNotIn(stale.lower(), normalized)
+ 
+ 
+ if __name__ == "__main__":

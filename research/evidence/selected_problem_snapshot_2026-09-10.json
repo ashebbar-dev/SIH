@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-09-10T01:57:27+05:30",
+  "source": "https://www.sih.gov.in/sih2026PS",
+  "portal_problem_statement_count": 237,
+  "selected": [
+    {
+      "id": "SIH26237",
+      "organization": "Ministry of Defence",
+      "department": "Indian Navy (WESEE)",
+      "title": "Cryptographic Attribution and Immutable Decryption Provenance for Multi-Recipient Encrypted Document Distribution",
+      "category": "Software",
+      "theme": "Blockchain & Cybersecurity",
+      "idea_counter": "0/500",
+      "portal_deadline": "30 September 2026"
+    },
+    {
+      "id": "SIH26168",
+      "organization": "Indian Space Research Organisation (ISRO)",
+      "title": "AI-ML based Intelligent Dead Reckoning system for seamless navigation",
+      "category": "Software",
+      "theme": "Smart Vehicles",
+      "idea_counter": "2/500",
+      "portal_deadline": "30 September 2026"
+    }
+  ],
+  "field_total": {
+    "problem_statements": 237,
+    "ideas_across_all_counters": 793,
+    "problem_statements_with_nonzero_counter": 188
+  },
+  "deadline_conflict": {
+    "live_portal": "30 September 2026",
+    "guidelines_page_15": [
+      "15 September 2026",
+      "30 August 2026"
+    ],
+    "operational_decision": "Confirm the SPOC dashboard immediately and submit by 14 September unless the internal deadline is earlier."
+  }
+}

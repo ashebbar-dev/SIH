@@ -1,0 +1,8 @@
+{
+  "completed": true,
+  "schema": "nishan.bias-physical-commitment/v1",
+  "sha256": {
+    "preparation.json": "cb32f3941581f20e1b49bc253b50a11b122a9dad3c823a97ed21fb61c114a7b2",
+    "prepared.npz": "bc41f6e32739b1fb4e454a19c47d0aae3877999f37f20f5b28bcd69f245b5f9d"
+  }
+}

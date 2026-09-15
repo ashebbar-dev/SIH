@@ -1,0 +1,51 @@
+test_build_has_six_editable_slides_and_complete_matching_notes (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_has_six_editable_slides_and_complete_matching_notes) ... ok
+test_build_rejects_counterfactual_safeguard_observation (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_rejects_counterfactual_safeguard_observation) ... ok
+test_build_rejects_safeguard_code_hash_drift (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_rejects_safeguard_code_hash_drift) ... ok
+test_displayed_counts_follow_mutated_json_copies (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_displayed_counts_follow_mutated_json_copies) ... ok
+test_handoff_prose_and_runbook_use_current_boundaries (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_handoff_prose_and_runbook_use_current_boundaries) ... ok
+test_slide_claims_are_evidence_derived (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_slide_claims_are_evidence_derived) ... ok
+test_verifier_accepts_matching_generated_package (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_accepts_matching_generated_package) ... ok
+test_verifier_rejects_failed_safeguard_evidence (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_failed_safeguard_evidence) ... ok
+test_verifier_rejects_malformed_safeguard_observation (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_malformed_safeguard_observation) ... ok
+test_verifier_rejects_missing_physical_evidence (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_missing_physical_evidence) ... ok
+test_verifier_rejects_missing_safeguard_evidence (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_missing_safeguard_evidence) ... ok
+test_verifier_rejects_stale_pdf_claim (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_stale_pdf_claim) ... ok
+test_verifier_rejects_stale_pptx_claim (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_stale_pptx_claim) ... ok
+test_duplicate_record_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_duplicate_record_is_rejected) ... ok
+test_exact_physical_summary (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_exact_physical_summary) ... ok
+test_false_counted_success_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_false_counted_success_is_rejected) ... ok
+test_malformed_identity_names_raise_explicit_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_malformed_identity_names_raise_explicit_value_error) ... ok
+test_missing_input_is_explicit (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_missing_input_is_explicit) ... ok
+test_missing_profile_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_missing_profile_is_rejected) ... ok
+test_recovery_swapped_to_wrong_capture_is_rejected_explicitly (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_recovery_swapped_to_wrong_capture_is_rejected_explicitly) ... ok
+test_renamed_capture_is_rejected_explicitly (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_renamed_capture_is_rejected_explicitly) ... ok
+test_scored_record_requires_finite_threshold (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_scored_record_requires_finite_threshold) ... ok
+test_unaccused_competing_score_above_historical_threshold_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.PhysicalEvidenceTests.test_unaccused_competing_score_above_historical_threshold_is_rejected) ... ok
+test_code_hash_drift_and_missing_required_coverage_are_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_code_hash_drift_and_missing_required_coverage_are_rejected) ... ok
+test_current_safeguard_evidence_is_valid (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_current_safeguard_evidence_is_valid) ... ok
+test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) ... ok
+test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) ... ok
+test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) ... ok
+test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) ... ok
+test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) ... ok
+test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) ... ok
+test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 5.123s
+
+OK
+/tmp/tmpbdksifal/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmphmqhegbg/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmpby2aevog/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmp1pvqhhyr/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmp1pvqhhyr/mutated/mutated.pptx
+/tmp/tmptx89ttn8/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmpggwu32f3/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmpimvgol41/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmpj6osoznn/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmp169knr6d/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmpvmz926wz/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmpo1pjwa52/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmptyg1v49j/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmpqal7fwml/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx

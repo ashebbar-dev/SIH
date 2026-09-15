@@ -1,0 +1,20 @@
+Command:
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/experiments/compact_carrier_v1 .venv/bin/python -m unittest discover -s research/experiments/compact_carrier_v1 -p 'test_*.py' -v
+
+Exit code: 0
+
+test_fixed_matrix_count_and_identity (test_profiles.FrozenProfileTests.test_fixed_matrix_count_and_identity) ... ok
+test_profile_constants_and_matched_area (test_profiles.FrozenProfileTests.test_profile_constants_and_matched_area) ... ok
+test_profiles_mapping_is_immutable (test_profiles.FrozenProfileTests.test_profiles_mapping_is_immutable) ... ok
+test_no_overwrite_output_guard (test_profiles.ReplayAndGuardTests.test_no_overwrite_output_guard) ... ok
+test_replay_state_hash_rejection_happens_before_npz_load (test_profiles.ReplayAndGuardTests.test_replay_state_hash_rejection_happens_before_npz_load) ... ok
+test_collapse_validates_shape_and_finiteness (test_profiles.SymmetricScoreTests.test_collapse_validates_shape_and_finiteness) ... ok
+test_repetition_sums_analog_correlations_before_threshold (test_profiles.SymmetricScoreTests.test_repetition_sums_analog_correlations_before_threshold) ... ok
+test_symmetric_uses_both_output_symbols (test_profiles.SymmetricScoreTests.test_symmetric_uses_both_output_symbols) ... ok
+test_symmetric_validates_shape_binary_and_finiteness (test_profiles.SymmetricScoreTests.test_symmetric_validates_shape_binary_and_finiteness) ... ok
+test_zero_correlation_tie_is_zero (test_profiles.SymmetricScoreTests.test_zero_correlation_tie_is_zero) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.138s
+
+OK

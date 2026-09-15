@@ -1,0 +1,229 @@
+{
+  "schema": "nishan.capture-channel-diagnostic/v1",
+  "script_sha256": "77e70d0c43720f25ed9078dacd1e7791d1c4016b33a1871002cf41d40521152b",
+  "source_sha256": "5b347ce904b224a0b33602b12b905d0534d7f626c7319cec960f8bf2e7ed5b06",
+  "marked_sha256": "7f85ad7ae5d65334ad9d055a26af0b434c71980628747e74d017a6431c86e9e5",
+  "code_length": 52500,
+  "threshold": 2100.0,
+  "roster_size": 1000,
+  "conditions_fixed_before_run": [
+    "identity",
+    "affine_0.85_plus15",
+    "gamma_1.5",
+    "white_clip_250",
+    "binary_threshold_200",
+    "gaussian_sigma0.75",
+    "gaussian_sigma1.5",
+    "gaussian_sigma2.5"
+  ],
+  "limitations": [
+    "One synthetic public document/codebook; not independent-document or physical capture evidence.",
+    "Known deterministic distortions, no calibrated real print/camera model.",
+    "Oracle source transformation is unavailable to a real investigator and is not a candidate algorithm.",
+    "Fixed historical threshold is a diagnostic operating point, not a certified physical false-accusation rate.",
+    "All1000 rows scored, but one codebook cannot establish a rare-event error probability.",
+    "Raster arrays share exact geometry; no registration-improvement claim."
+  ],
+  "results": [
+    {
+      "condition": "identity",
+      "existing_source_residual": {
+        "bit_error_fraction": 0.0,
+        "median_abs_correlation": 54.0,
+        "zero_correlation_fraction": 0.0,
+        "expected_score": 17271.76836566745,
+        "highest_other_score": 462.33582401011614,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "oracle_matched_source_residual": {
+        "bit_error_fraction": 0.0,
+        "median_abs_correlation": 54.0,
+        "zero_correlation_fraction": 0.0,
+        "expected_score": 17271.76836566745,
+        "highest_other_score": 462.33582401011614,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "remaining_mark_rms": 2.055887460708618
+    },
+    {
+      "condition": "affine_0.85_plus15",
+      "existing_source_residual": {
+        "bit_error_fraction": 0.029276190476190476,
+        "median_abs_correlation": 53.999725341796875,
+        "zero_correlation_fraction": 0.0,
+        "expected_score": 16311.435894822276,
+        "highest_other_score": 477.1028414290527,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "oracle_matched_source_residual": {
+        "bit_error_fraction": 0.0,
+        "median_abs_correlation": 53.999725341796875,
+        "zero_correlation_fraction": 0.0,
+        "expected_score": 17271.76836566745,
+        "highest_other_score": 462.33582401011614,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "remaining_mark_rms": 2.0508134365081787
+    },
+    {
+      "condition": "gamma_1.5",
+      "existing_source_residual": {
+        "bit_error_fraction": 0.022247619047619047,
+        "median_abs_correlation": 72.0,
+        "zero_correlation_fraction": 3.809523809523809e-05,
+        "expected_score": 16538.021098208043,
+        "highest_other_score": 455.9152987876594,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "oracle_matched_source_residual": {
+        "bit_error_fraction": 1.9047619047619046e-05,
+        "median_abs_correlation": 72.0,
+        "zero_correlation_fraction": 1.9047619047619046e-05,
+        "expected_score": 17268.592731924775,
+        "highest_other_score": 462.65072178518454,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "remaining_mark_rms": 2.7107107639312744
+    },
+    {
+      "condition": "white_clip_250",
+      "existing_source_residual": {
+        "bit_error_fraction": 0.4585714285714286,
+        "median_abs_correlation": 0.0,
+        "zero_correlation_fraction": 0.9145333333333333,
+        "expected_score": 1374.9072871931794,
+        "highest_other_score": 152.59300870563823,
+        "accused_rows": [],
+        "expected_only_recovered": false
+      },
+      "oracle_matched_source_residual": {
+        "bit_error_fraction": 0.45843809523809526,
+        "median_abs_correlation": 0.0,
+        "zero_correlation_fraction": 0.9146666666666666,
+        "expected_score": 1378.9186492407998,
+        "highest_other_score": 154.3263479952342,
+        "accused_rows": [],
+        "expected_only_recovered": false
+      },
+      "remaining_mark_rms": 0.3822626769542694
+    },
+    {
+      "condition": "binary_threshold_200",
+      "existing_source_residual": {
+        "bit_error_fraction": 0.49998095238095236,
+        "median_abs_correlation": 0.0,
+        "zero_correlation_fraction": 0.9252952380952381,
+        "expected_score": -53.19770071449064,
+        "highest_other_score": 141.10379677334245,
+        "accused_rows": [],
+        "expected_only_recovered": false
+      },
+      "oracle_matched_source_residual": {
+        "bit_error_fraction": 0.49906666666666666,
+        "median_abs_correlation": 0.0,
+        "zero_correlation_fraction": 0.9963047619047619,
+        "expected_score": 51.83513184011222,
+        "highest_other_score": 27.754365091214083,
+        "accused_rows": [],
+        "expected_only_recovered": false
+      },
+      "remaining_mark_rms": 2.17246675491333
+    },
+    {
+      "condition": "gaussian_sigma0.75",
+      "existing_source_residual": {
+        "bit_error_fraction": 0.03798095238095238,
+        "median_abs_correlation": 33.00018310546875,
+        "zero_correlation_fraction": 0.0,
+        "expected_score": 15969.507974653263,
+        "highest_other_score": 480.6672901506311,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "oracle_matched_source_residual": {
+        "bit_error_fraction": 0.0002666666666666667,
+        "median_abs_correlation": 33.00016784667969,
+        "zero_correlation_fraction": 1.9047619047619046e-05,
+        "expected_score": 17254.894916801026,
+        "highest_other_score": 465.62807658578095,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "remaining_mark_rms": 1.7530643939971924
+    },
+    {
+      "condition": "gaussian_sigma1.5",
+      "existing_source_residual": {
+        "bit_error_fraction": 0.04963809523809524,
+        "median_abs_correlation": 21.000198364257812,
+        "zero_correlation_fraction": 1.9047619047619046e-05,
+        "expected_score": 15544.553616334106,
+        "highest_other_score": 462.38308556681534,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "oracle_matched_source_residual": {
+        "bit_error_fraction": 0.0041333333333333335,
+        "median_abs_correlation": 20.000213623046875,
+        "zero_correlation_fraction": 3.809523809523809e-05,
+        "expected_score": 17134.000091452897,
+        "highest_other_score": 485.7169105644159,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "remaining_mark_rms": 1.5611801147460938
+    },
+    {
+      "condition": "gaussian_sigma2.5",
+      "existing_source_residual": {
+        "bit_error_fraction": 0.13784761904761905,
+        "median_abs_correlation": 11.000167846679688,
+        "zero_correlation_fraction": 0.08927619047619048,
+        "expected_score": 12465.89398005298,
+        "highest_other_score": 469.6128737390387,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "oracle_matched_source_residual": {
+        "bit_error_fraction": 0.09337142857142858,
+        "median_abs_correlation": 9.000137329101562,
+        "zero_correlation_fraction": 0.08992380952380952,
+        "expected_score": 14057.534090705332,
+        "highest_other_score": 473.0805107038877,
+        "accused_rows": [
+          0
+        ],
+        "expected_only_recovered": true
+      },
+      "remaining_mark_rms": 1.456519603729248
+    }
+  ]
+}

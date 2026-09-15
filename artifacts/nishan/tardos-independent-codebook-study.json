@@ -1,0 +1,1934 @@
+{
+  "claim_boundary": {
+    "measured": "Code-level outcomes across deterministic, independently derived keyed codebooks, random coalition members, and four named marking-condition attacks.",
+    "not_measured": "A real PDF-collusion workflow, a physical carrier success rate, a cryptographic proof of generator independence, or rare false-accusation probability.",
+    "statistics": "Wilson intervals describe only this finite trial population. The Tardos theorem, not the empirical interval, supplies the conditional code-level error bound."
+  },
+  "date": "2026-09-10",
+  "parameters": {
+    "coalition_limit": 5,
+    "code_length": 52500,
+    "familywise_epsilon": 1e-06,
+    "roster_size": 1000,
+    "seed": 20260910,
+    "threshold": 2100.0,
+    "trials": 30
+  },
+  "runtime_seconds": 47.868629,
+  "schema": "nishan.tardos.independent-codebook-study/v1",
+  "summary": {
+    "coin_flip": {
+      "all_colluders_rate": 1.0,
+      "all_colluders_rate_wilson_95pct": [
+        0.886487,
+        1.0
+      ],
+      "all_colluders_recovered": 30,
+      "any_innocent_rate": 0.0,
+      "any_innocent_rate_wilson_95pct": [
+        0.0,
+        0.113513
+      ],
+      "at_least_one_colluder_recovered": 30,
+      "at_least_one_rate": 1.0,
+      "at_least_one_rate_wilson_95pct": [
+        0.886487,
+        1.0
+      ],
+      "colluder_score_min_across_trials": 2969.197791,
+      "innocent_score_max_across_trials": 730.932633,
+      "total_innocent_accusations": 0,
+      "trials": 30,
+      "trials_with_any_innocent_accusation": 0
+    },
+    "interleaving": {
+      "all_colluders_rate": 1.0,
+      "all_colluders_rate_wilson_95pct": [
+        0.886487,
+        1.0
+      ],
+      "all_colluders_recovered": 30,
+      "any_innocent_rate": 0.0,
+      "any_innocent_rate_wilson_95pct": [
+        0.0,
+        0.113513
+      ],
+      "at_least_one_colluder_recovered": 30,
+      "at_least_one_rate": 1.0,
+      "at_least_one_rate_wilson_95pct": [
+        0.886487,
+        1.0
+      ],
+      "colluder_score_min_across_trials": 3084.390669,
+      "innocent_score_max_across_trials": 585.000843,
+      "total_innocent_accusations": 0,
+      "trials": 30,
+      "trials_with_any_innocent_accusation": 0
+    },
+    "majority": {
+      "all_colluders_rate": 1.0,
+      "all_colluders_rate_wilson_95pct": [
+        0.886487,
+        1.0
+      ],
+      "all_colluders_recovered": 30,
+      "any_innocent_rate": 0.0,
+      "any_innocent_rate_wilson_95pct": [
+        0.0,
+        0.113513
+      ],
+      "at_least_one_colluder_recovered": 30,
+      "at_least_one_rate": 1.0,
+      "at_least_one_rate_wilson_95pct": [
+        0.886487,
+        1.0
+      ],
+      "colluder_score_min_across_trials": 3148.404626,
+      "innocent_score_max_across_trials": 609.025173,
+      "total_innocent_accusations": 0,
+      "trials": 30,
+      "trials_with_any_innocent_accusation": 0
+    },
+    "minority": {
+      "all_colluders_rate": 1.0,
+      "all_colluders_rate_wilson_95pct": [
+        0.886487,
+        1.0
+      ],
+      "all_colluders_recovered": 30,
+      "any_innocent_rate": 0.0,
+      "any_innocent_rate_wilson_95pct": [
+        0.0,
+        0.113513
+      ],
+      "at_least_one_colluder_recovered": 30,
+      "at_least_one_rate": 1.0,
+      "at_least_one_rate_wilson_95pct": [
+        0.886487,
+        1.0
+      ],
+      "colluder_score_min_across_trials": 3008.427273,
+      "innocent_score_max_across_trials": 697.515282,
+      "total_innocent_accusations": 0,
+      "trials": 30,
+      "trials_with_any_innocent_accusation": 0
+    }
+  },
+  "theorem_bounds": {
+    "combined_error_upper": 9.990056234132518e-07,
+    "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+    "scope": "random code construction; coalition obeys the marking condition",
+    "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+    "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+  },
+  "trials": {
+    "coin_flip": [
+      {
+        "coalition_user_indices": [
+          660,
+          776,
+          793,
+          839,
+          932
+        ],
+        "colluder_score_max": 3601.821888,
+        "colluder_score_min": 3095.880845,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 617.981514,
+        "trial": 0
+      },
+      {
+        "coalition_user_indices": [
+          214,
+          276,
+          354,
+          711,
+          744
+        ],
+        "colluder_score_max": 3653.878061,
+        "colluder_score_min": 2969.197791,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 500.503146,
+        "trial": 1
+      },
+      {
+        "coalition_user_indices": [
+          538,
+          722,
+          810,
+          905,
+          982
+        ],
+        "colluder_score_max": 3457.641931,
+        "colluder_score_min": 3182.718283,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 566.109381,
+        "trial": 2
+      },
+      {
+        "coalition_user_indices": [
+          128,
+          131,
+          408,
+          752,
+          896
+        ],
+        "colluder_score_max": 3518.674636,
+        "colluder_score_min": 3154.925173,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 586.655575,
+        "trial": 3
+      },
+      {
+        "coalition_user_indices": [
+          439,
+          525,
+          537,
+          576,
+          579
+        ],
+        "colluder_score_max": 3567.225283,
+        "colluder_score_min": 3208.056216,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 458.89363,
+        "trial": 4
+      },
+      {
+        "coalition_user_indices": [
+          192,
+          215,
+          776,
+          822,
+          831
+        ],
+        "colluder_score_max": 3658.696654,
+        "colluder_score_min": 3148.799586,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 496.739095,
+        "trial": 5
+      },
+      {
+        "coalition_user_indices": [
+          420,
+          501,
+          628,
+          918,
+          989
+        ],
+        "colluder_score_max": 3679.143527,
+        "colluder_score_min": 3137.461141,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 497.622369,
+        "trial": 6
+      },
+      {
+        "coalition_user_indices": [
+          110,
+          126,
+          372,
+          814,
+          919
+        ],
+        "colluder_score_max": 3623.249713,
+        "colluder_score_min": 3042.791848,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 504.91798,
+        "trial": 7
+      },
+      {
+        "coalition_user_indices": [
+          138,
+          299,
+          555,
+          779,
+          997
+        ],
+        "colluder_score_max": 3712.819314,
+        "colluder_score_min": 3375.231267,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 576.140614,
+        "trial": 8
+      },
+      {
+        "coalition_user_indices": [
+          683,
+          721,
+          792,
+          826,
+          956
+        ],
+        "colluder_score_max": 3570.222029,
+        "colluder_score_min": 3332.29454,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 596.007748,
+        "trial": 9
+      },
+      {
+        "coalition_user_indices": [
+          304,
+          353,
+          372,
+          441,
+          479
+        ],
+        "colluder_score_max": 3733.014174,
+        "colluder_score_min": 3112.769419,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 398.386978,
+        "trial": 10
+      },
+      {
+        "coalition_user_indices": [
+          485,
+          535,
+          868,
+          978,
+          989
+        ],
+        "colluder_score_max": 3581.095147,
+        "colluder_score_min": 3324.993764,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 730.932633,
+        "trial": 11
+      },
+      {
+        "coalition_user_indices": [
+          129,
+          174,
+          382,
+          414,
+          969
+        ],
+        "colluder_score_max": 3784.35469,
+        "colluder_score_min": 3162.188844,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 458.386022,
+        "trial": 12
+      },
+      {
+        "coalition_user_indices": [
+          70,
+          196,
+          411,
+          676,
+          778
+        ],
+        "colluder_score_max": 3653.715419,
+        "colluder_score_min": 3243.619676,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 460.880373,
+        "trial": 13
+      },
+      {
+        "coalition_user_indices": [
+          246,
+          607,
+          611,
+          663,
+          989
+        ],
+        "colluder_score_max": 3610.308513,
+        "colluder_score_min": 3327.537496,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 510.816239,
+        "trial": 14
+      },
+      {
+        "coalition_user_indices": [
+          376,
+          454,
+          527,
+          570,
+          591
+        ],
+        "colluder_score_max": 3517.530738,
+        "colluder_score_min": 3258.350353,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 525.73492,
+        "trial": 15
+      },
+      {
+        "coalition_user_indices": [
+          415,
+          473,
+          909,
+          933,
+          976
+        ],
+        "colluder_score_max": 3640.951634,
+        "colluder_score_min": 3101.435635,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 601.956766,
+        "trial": 16
+      },
+      {
+        "coalition_user_indices": [
+          305,
+          310,
+          623,
+          728,
+          928
+        ],
+        "colluder_score_max": 3567.364882,
+        "colluder_score_min": 3291.557572,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 602.149534,
+        "trial": 17
+      },
+      {
+        "coalition_user_indices": [
+          279,
+          307,
+          337,
+          515,
+          574
+        ],
+        "colluder_score_max": 3631.250457,
+        "colluder_score_min": 3386.192793,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 505.884982,
+        "trial": 18
+      },
+      {
+        "coalition_user_indices": [
+          151,
+          250,
+          349,
+          534,
+          793
+        ],
+        "colluder_score_max": 3660.327371,
+        "colluder_score_min": 3291.819993,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 449.368471,
+        "trial": 19
+      },
+      {
+        "coalition_user_indices": [
+          355,
+          372,
+          566,
+          590,
+          910
+        ],
+        "colluder_score_max": 3512.186522,
+        "colluder_score_min": 3229.527928,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 604.307272,
+        "trial": 20
+      },
+      {
+        "coalition_user_indices": [
+          72,
+          170,
+          316,
+          472,
+          706
+        ],
+        "colluder_score_max": 3555.380245,
+        "colluder_score_min": 3364.333243,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 532.68185,
+        "trial": 21
+      },
+      {
+        "coalition_user_indices": [
+          264,
+          433,
+          527,
+          533,
+          829
+        ],
+        "colluder_score_max": 3683.292793,
+        "colluder_score_min": 3433.558129,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 566.748013,
+        "trial": 22
+      },
+      {
+        "coalition_user_indices": [
+          131,
+          262,
+          477,
+          514,
+          547
+        ],
+        "colluder_score_max": 3596.007022,
+        "colluder_score_min": 3216.09746,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 488.656923,
+        "trial": 23
+      },
+      {
+        "coalition_user_indices": [
+          123,
+          129,
+          492,
+          615,
+          714
+        ],
+        "colluder_score_max": 3537.991537,
+        "colluder_score_min": 3138.346655,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 442.231171,
+        "trial": 24
+      },
+      {
+        "coalition_user_indices": [
+          67,
+          383,
+          482,
+          650,
+          975
+        ],
+        "colluder_score_max": 3790.691774,
+        "colluder_score_min": 3404.397676,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 550.864543,
+        "trial": 25
+      },
+      {
+        "coalition_user_indices": [
+          71,
+          191,
+          626,
+          634,
+          790
+        ],
+        "colluder_score_max": 3588.614597,
+        "colluder_score_min": 3098.820618,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 483.051651,
+        "trial": 26
+      },
+      {
+        "coalition_user_indices": [
+          10,
+          50,
+          352,
+          652,
+          839
+        ],
+        "colluder_score_max": 3581.607338,
+        "colluder_score_min": 3174.918876,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 478.26396,
+        "trial": 27
+      },
+      {
+        "coalition_user_indices": [
+          143,
+          186,
+          205,
+          843,
+          953
+        ],
+        "colluder_score_max": 3543.612169,
+        "colluder_score_min": 3248.722863,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 509.248258,
+        "trial": 28
+      },
+      {
+        "coalition_user_indices": [
+          60,
+          61,
+          307,
+          497,
+          776
+        ],
+        "colluder_score_max": 3657.768796,
+        "colluder_score_min": 3363.991862,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 642.006908,
+        "trial": 29
+      }
+    ],
+    "interleaving": [
+      {
+        "coalition_user_indices": [
+          660,
+          776,
+          793,
+          839,
+          932
+        ],
+        "colluder_score_max": 3466.808025,
+        "colluder_score_min": 3303.547904,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 523.193502,
+        "trial": 0
+      },
+      {
+        "coalition_user_indices": [
+          214,
+          276,
+          354,
+          711,
+          744
+        ],
+        "colluder_score_max": 3660.044496,
+        "colluder_score_min": 3219.667149,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 578.484393,
+        "trial": 1
+      },
+      {
+        "coalition_user_indices": [
+          538,
+          722,
+          810,
+          905,
+          982
+        ],
+        "colluder_score_max": 3736.22313,
+        "colluder_score_min": 3161.165209,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 479.027556,
+        "trial": 2
+      },
+      {
+        "coalition_user_indices": [
+          128,
+          131,
+          408,
+          752,
+          896
+        ],
+        "colluder_score_max": 3642.291096,
+        "colluder_score_min": 3136.249721,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 504.45562,
+        "trial": 3
+      },
+      {
+        "coalition_user_indices": [
+          439,
+          525,
+          537,
+          576,
+          579
+        ],
+        "colluder_score_max": 3482.062804,
+        "colluder_score_min": 3222.9227,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 552.059563,
+        "trial": 4
+      },
+      {
+        "coalition_user_indices": [
+          192,
+          215,
+          776,
+          822,
+          831
+        ],
+        "colluder_score_max": 3728.612421,
+        "colluder_score_min": 3285.086142,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 460.538251,
+        "trial": 5
+      },
+      {
+        "coalition_user_indices": [
+          420,
+          501,
+          628,
+          918,
+          989
+        ],
+        "colluder_score_max": 3580.798442,
+        "colluder_score_min": 3371.506294,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 573.054131,
+        "trial": 6
+      },
+      {
+        "coalition_user_indices": [
+          110,
+          126,
+          372,
+          814,
+          919
+        ],
+        "colluder_score_max": 3599.639091,
+        "colluder_score_min": 3084.390669,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 489.110863,
+        "trial": 7
+      },
+      {
+        "coalition_user_indices": [
+          138,
+          299,
+          555,
+          779,
+          997
+        ],
+        "colluder_score_max": 3736.502455,
+        "colluder_score_min": 3445.151268,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 539.983479,
+        "trial": 8
+      },
+      {
+        "coalition_user_indices": [
+          683,
+          721,
+          792,
+          826,
+          956
+        ],
+        "colluder_score_max": 3691.62482,
+        "colluder_score_min": 3285.578332,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 456.195874,
+        "trial": 9
+      },
+      {
+        "coalition_user_indices": [
+          304,
+          353,
+          372,
+          441,
+          479
+        ],
+        "colluder_score_max": 3767.337663,
+        "colluder_score_min": 3102.355893,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 468.425687,
+        "trial": 10
+      },
+      {
+        "coalition_user_indices": [
+          485,
+          535,
+          868,
+          978,
+          989
+        ],
+        "colluder_score_max": 3559.91409,
+        "colluder_score_min": 3378.962598,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 585.000843,
+        "trial": 11
+      },
+      {
+        "coalition_user_indices": [
+          129,
+          174,
+          382,
+          414,
+          969
+        ],
+        "colluder_score_max": 3872.029114,
+        "colluder_score_min": 3410.33936,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 485.049147,
+        "trial": 12
+      },
+      {
+        "coalition_user_indices": [
+          70,
+          196,
+          411,
+          676,
+          778
+        ],
+        "colluder_score_max": 3614.482484,
+        "colluder_score_min": 3365.332721,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 514.902218,
+        "trial": 13
+      },
+      {
+        "coalition_user_indices": [
+          246,
+          607,
+          611,
+          663,
+          989
+        ],
+        "colluder_score_max": 3568.452579,
+        "colluder_score_min": 3284.083609,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 423.375454,
+        "trial": 14
+      },
+      {
+        "coalition_user_indices": [
+          376,
+          454,
+          527,
+          570,
+          591
+        ],
+        "colluder_score_max": 3708.418607,
+        "colluder_score_min": 3176.522376,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 566.093116,
+        "trial": 15
+      },
+      {
+        "coalition_user_indices": [
+          415,
+          473,
+          909,
+          933,
+          976
+        ],
+        "colluder_score_max": 3568.111487,
+        "colluder_score_min": 3225.793499,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 562.195973,
+        "trial": 16
+      },
+      {
+        "coalition_user_indices": [
+          305,
+          310,
+          623,
+          728,
+          928
+        ],
+        "colluder_score_max": 3699.845778,
+        "colluder_score_min": 3393.481583,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 476.099033,
+        "trial": 17
+      },
+      {
+        "coalition_user_indices": [
+          279,
+          307,
+          337,
+          515,
+          574
+        ],
+        "colluder_score_max": 3595.723065,
+        "colluder_score_min": 3259.511753,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 568.49094,
+        "trial": 18
+      },
+      {
+        "coalition_user_indices": [
+          151,
+          250,
+          349,
+          534,
+          793
+        ],
+        "colluder_score_max": 3664.346377,
+        "colluder_score_min": 3350.322028,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 468.451676,
+        "trial": 19
+      },
+      {
+        "coalition_user_indices": [
+          355,
+          372,
+          566,
+          590,
+          910
+        ],
+        "colluder_score_max": 3586.607752,
+        "colluder_score_min": 3380.774609,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 475.81447,
+        "trial": 20
+      },
+      {
+        "coalition_user_indices": [
+          72,
+          170,
+          316,
+          472,
+          706
+        ],
+        "colluder_score_max": 3805.532063,
+        "colluder_score_min": 3395.364399,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 439.17022,
+        "trial": 21
+      },
+      {
+        "coalition_user_indices": [
+          264,
+          433,
+          527,
+          533,
+          829
+        ],
+        "colluder_score_max": 3768.662215,
+        "colluder_score_min": 3231.091155,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 451.482126,
+        "trial": 22
+      },
+      {
+        "coalition_user_indices": [
+          131,
+          262,
+          477,
+          514,
+          547
+        ],
+        "colluder_score_max": 3534.480408,
+        "colluder_score_min": 3265.72843,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 481.060705,
+        "trial": 23
+      },
+      {
+        "coalition_user_indices": [
+          123,
+          129,
+          492,
+          615,
+          714
+        ],
+        "colluder_score_max": 3610.801548,
+        "colluder_score_min": 3289.014457,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 401.293473,
+        "trial": 24
+      },
+      {
+        "coalition_user_indices": [
+          67,
+          383,
+          482,
+          650,
+          975
+        ],
+        "colluder_score_max": 3841.938954,
+        "colluder_score_min": 3295.173504,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 515.542864,
+        "trial": 25
+      },
+      {
+        "coalition_user_indices": [
+          71,
+          191,
+          626,
+          634,
+          790
+        ],
+        "colluder_score_max": 3669.151353,
+        "colluder_score_min": 3322.254314,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 428.11187,
+        "trial": 26
+      },
+      {
+        "coalition_user_indices": [
+          10,
+          50,
+          352,
+          652,
+          839
+        ],
+        "colluder_score_max": 3415.511811,
+        "colluder_score_min": 3296.238252,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 481.871299,
+        "trial": 27
+      },
+      {
+        "coalition_user_indices": [
+          143,
+          186,
+          205,
+          843,
+          953
+        ],
+        "colluder_score_max": 3577.500329,
+        "colluder_score_min": 3355.871434,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 551.077201,
+        "trial": 28
+      },
+      {
+        "coalition_user_indices": [
+          60,
+          61,
+          307,
+          497,
+          776
+        ],
+        "colluder_score_max": 3666.221755,
+        "colluder_score_min": 3377.901039,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 492.259185,
+        "trial": 29
+      }
+    ],
+    "majority": [
+      {
+        "coalition_user_indices": [
+          660,
+          776,
+          793,
+          839,
+          932
+        ],
+        "colluder_score_max": 3561.526037,
+        "colluder_score_min": 3330.563026,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 411.142297,
+        "trial": 0
+      },
+      {
+        "coalition_user_indices": [
+          214,
+          276,
+          354,
+          711,
+          744
+        ],
+        "colluder_score_max": 3595.222302,
+        "colluder_score_min": 3155.386918,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 504.100477,
+        "trial": 1
+      },
+      {
+        "coalition_user_indices": [
+          538,
+          722,
+          810,
+          905,
+          982
+        ],
+        "colluder_score_max": 3595.869887,
+        "colluder_score_min": 3226.928059,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 447.067591,
+        "trial": 2
+      },
+      {
+        "coalition_user_indices": [
+          128,
+          131,
+          408,
+          752,
+          896
+        ],
+        "colluder_score_max": 3677.151824,
+        "colluder_score_min": 3148.404626,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 535.817806,
+        "trial": 3
+      },
+      {
+        "coalition_user_indices": [
+          439,
+          525,
+          537,
+          576,
+          579
+        ],
+        "colluder_score_max": 3489.305271,
+        "colluder_score_min": 3197.016267,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 522.187561,
+        "trial": 4
+      },
+      {
+        "coalition_user_indices": [
+          192,
+          215,
+          776,
+          822,
+          831
+        ],
+        "colluder_score_max": 3633.925407,
+        "colluder_score_min": 3265.554389,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 512.776821,
+        "trial": 5
+      },
+      {
+        "coalition_user_indices": [
+          420,
+          501,
+          628,
+          918,
+          989
+        ],
+        "colluder_score_max": 3792.219935,
+        "colluder_score_min": 3198.457466,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 500.588856,
+        "trial": 6
+      },
+      {
+        "coalition_user_indices": [
+          110,
+          126,
+          372,
+          814,
+          919
+        ],
+        "colluder_score_max": 3719.014597,
+        "colluder_score_min": 3282.340839,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 606.519004,
+        "trial": 7
+      },
+      {
+        "coalition_user_indices": [
+          138,
+          299,
+          555,
+          779,
+          997
+        ],
+        "colluder_score_max": 3737.14032,
+        "colluder_score_min": 3414.954368,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 564.192697,
+        "trial": 8
+      },
+      {
+        "coalition_user_indices": [
+          683,
+          721,
+          792,
+          826,
+          956
+        ],
+        "colluder_score_max": 3692.781266,
+        "colluder_score_min": 3235.487925,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 463.920265,
+        "trial": 9
+      },
+      {
+        "coalition_user_indices": [
+          304,
+          353,
+          372,
+          441,
+          479
+        ],
+        "colluder_score_max": 3798.221072,
+        "colluder_score_min": 3312.02309,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 456.745938,
+        "trial": 10
+      },
+      {
+        "coalition_user_indices": [
+          485,
+          535,
+          868,
+          978,
+          989
+        ],
+        "colluder_score_max": 3545.484859,
+        "colluder_score_min": 3380.520875,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 574.225565,
+        "trial": 11
+      },
+      {
+        "coalition_user_indices": [
+          129,
+          174,
+          382,
+          414,
+          969
+        ],
+        "colluder_score_max": 3846.580872,
+        "colluder_score_min": 3355.862153,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 477.35409,
+        "trial": 12
+      },
+      {
+        "coalition_user_indices": [
+          70,
+          196,
+          411,
+          676,
+          778
+        ],
+        "colluder_score_max": 3551.988687,
+        "colluder_score_min": 3296.570229,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 495.719323,
+        "trial": 13
+      },
+      {
+        "coalition_user_indices": [
+          246,
+          607,
+          611,
+          663,
+          989
+        ],
+        "colluder_score_max": 3793.349469,
+        "colluder_score_min": 3284.038191,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 437.109584,
+        "trial": 14
+      },
+      {
+        "coalition_user_indices": [
+          376,
+          454,
+          527,
+          570,
+          591
+        ],
+        "colluder_score_max": 3771.312595,
+        "colluder_score_min": 3287.004532,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 609.025173,
+        "trial": 15
+      },
+      {
+        "coalition_user_indices": [
+          415,
+          473,
+          909,
+          933,
+          976
+        ],
+        "colluder_score_max": 3623.406746,
+        "colluder_score_min": 3321.406297,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 552.819711,
+        "trial": 16
+      },
+      {
+        "coalition_user_indices": [
+          305,
+          310,
+          623,
+          728,
+          928
+        ],
+        "colluder_score_max": 3666.742383,
+        "colluder_score_min": 3277.573464,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 548.035439,
+        "trial": 17
+      },
+      {
+        "coalition_user_indices": [
+          279,
+          307,
+          337,
+          515,
+          574
+        ],
+        "colluder_score_max": 3535.787557,
+        "colluder_score_min": 3359.271535,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 401.646152,
+        "trial": 18
+      },
+      {
+        "coalition_user_indices": [
+          151,
+          250,
+          349,
+          534,
+          793
+        ],
+        "colluder_score_max": 3766.109087,
+        "colluder_score_min": 3268.806338,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 488.657778,
+        "trial": 19
+      },
+      {
+        "coalition_user_indices": [
+          355,
+          372,
+          566,
+          590,
+          910
+        ],
+        "colluder_score_max": 3531.59937,
+        "colluder_score_min": 3291.61337,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 468.042497,
+        "trial": 20
+      },
+      {
+        "coalition_user_indices": [
+          72,
+          170,
+          316,
+          472,
+          706
+        ],
+        "colluder_score_max": 3752.400312,
+        "colluder_score_min": 3335.365607,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 446.217151,
+        "trial": 21
+      },
+      {
+        "coalition_user_indices": [
+          264,
+          433,
+          527,
+          533,
+          829
+        ],
+        "colluder_score_max": 3779.617912,
+        "colluder_score_min": 3332.207856,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 445.008645,
+        "trial": 22
+      },
+      {
+        "coalition_user_indices": [
+          131,
+          262,
+          477,
+          514,
+          547
+        ],
+        "colluder_score_max": 3534.181621,
+        "colluder_score_min": 3203.256098,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 559.308288,
+        "trial": 23
+      },
+      {
+        "coalition_user_indices": [
+          123,
+          129,
+          492,
+          615,
+          714
+        ],
+        "colluder_score_max": 3472.346673,
+        "colluder_score_min": 3249.880667,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 467.777089,
+        "trial": 24
+      },
+      {
+        "coalition_user_indices": [
+          67,
+          383,
+          482,
+          650,
+          975
+        ],
+        "colluder_score_max": 3767.157636,
+        "colluder_score_min": 3477.437545,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 556.545783,
+        "trial": 25
+      },
+      {
+        "coalition_user_indices": [
+          71,
+          191,
+          626,
+          634,
+          790
+        ],
+        "colluder_score_max": 3577.64529,
+        "colluder_score_min": 3340.365162,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 477.519525,
+        "trial": 26
+      },
+      {
+        "coalition_user_indices": [
+          10,
+          50,
+          352,
+          652,
+          839
+        ],
+        "colluder_score_max": 3443.74237,
+        "colluder_score_min": 3220.797632,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 451.277922,
+        "trial": 27
+      },
+      {
+        "coalition_user_indices": [
+          143,
+          186,
+          205,
+          843,
+          953
+        ],
+        "colluder_score_max": 3435.946276,
+        "colluder_score_min": 3276.115394,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 565.186371,
+        "trial": 28
+      },
+      {
+        "coalition_user_indices": [
+          60,
+          61,
+          307,
+          497,
+          776
+        ],
+        "colluder_score_max": 3604.845137,
+        "colluder_score_min": 3383.298097,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 494.470925,
+        "trial": 29
+      }
+    ],
+    "minority": [
+      {
+        "coalition_user_indices": [
+          660,
+          776,
+          793,
+          839,
+          932
+        ],
+        "colluder_score_max": 3392.759202,
+        "colluder_score_min": 3304.617422,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 521.710502,
+        "trial": 0
+      },
+      {
+        "coalition_user_indices": [
+          214,
+          276,
+          354,
+          711,
+          744
+        ],
+        "colluder_score_max": 3667.74539,
+        "colluder_score_min": 3202.407755,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 472.219739,
+        "trial": 1
+      },
+      {
+        "coalition_user_indices": [
+          538,
+          722,
+          810,
+          905,
+          982
+        ],
+        "colluder_score_max": 3478.222094,
+        "colluder_score_min": 3299.291691,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 491.1244,
+        "trial": 2
+      },
+      {
+        "coalition_user_indices": [
+          128,
+          131,
+          408,
+          752,
+          896
+        ],
+        "colluder_score_max": 3308.067287,
+        "colluder_score_min": 3069.892523,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 660.524294,
+        "trial": 3
+      },
+      {
+        "coalition_user_indices": [
+          439,
+          525,
+          537,
+          576,
+          579
+        ],
+        "colluder_score_max": 3523.337047,
+        "colluder_score_min": 3344.881028,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 555.480573,
+        "trial": 4
+      },
+      {
+        "coalition_user_indices": [
+          192,
+          215,
+          776,
+          822,
+          831
+        ],
+        "colluder_score_max": 3771.459849,
+        "colluder_score_min": 3441.19792,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 528.523827,
+        "trial": 5
+      },
+      {
+        "coalition_user_indices": [
+          420,
+          501,
+          628,
+          918,
+          989
+        ],
+        "colluder_score_max": 3601.183363,
+        "colluder_score_min": 3179.002632,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 530.280233,
+        "trial": 6
+      },
+      {
+        "coalition_user_indices": [
+          110,
+          126,
+          372,
+          814,
+          919
+        ],
+        "colluder_score_max": 3496.718856,
+        "colluder_score_min": 3187.812308,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 513.048984,
+        "trial": 7
+      },
+      {
+        "coalition_user_indices": [
+          138,
+          299,
+          555,
+          779,
+          997
+        ],
+        "colluder_score_max": 3694.163211,
+        "colluder_score_min": 3251.766754,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 512.788284,
+        "trial": 8
+      },
+      {
+        "coalition_user_indices": [
+          683,
+          721,
+          792,
+          826,
+          956
+        ],
+        "colluder_score_max": 3492.517045,
+        "colluder_score_min": 3008.427273,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 676.48426,
+        "trial": 9
+      },
+      {
+        "coalition_user_indices": [
+          304,
+          353,
+          372,
+          441,
+          479
+        ],
+        "colluder_score_max": 3441.194471,
+        "colluder_score_min": 3271.820227,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 468.97718,
+        "trial": 10
+      },
+      {
+        "coalition_user_indices": [
+          485,
+          535,
+          868,
+          978,
+          989
+        ],
+        "colluder_score_max": 3626.007601,
+        "colluder_score_min": 3369.032598,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 598.990604,
+        "trial": 11
+      },
+      {
+        "coalition_user_indices": [
+          129,
+          174,
+          382,
+          414,
+          969
+        ],
+        "colluder_score_max": 3574.263832,
+        "colluder_score_min": 3209.351121,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 550.168453,
+        "trial": 12
+      },
+      {
+        "coalition_user_indices": [
+          70,
+          196,
+          411,
+          676,
+          778
+        ],
+        "colluder_score_max": 3586.185624,
+        "colluder_score_min": 3262.865478,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 468.531413,
+        "trial": 13
+      },
+      {
+        "coalition_user_indices": [
+          246,
+          607,
+          611,
+          663,
+          989
+        ],
+        "colluder_score_max": 3601.080622,
+        "colluder_score_min": 3162.525968,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 560.841065,
+        "trial": 14
+      },
+      {
+        "coalition_user_indices": [
+          376,
+          454,
+          527,
+          570,
+          591
+        ],
+        "colluder_score_max": 3656.400966,
+        "colluder_score_min": 3108.781225,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 577.123221,
+        "trial": 15
+      },
+      {
+        "coalition_user_indices": [
+          415,
+          473,
+          909,
+          933,
+          976
+        ],
+        "colluder_score_max": 3566.990298,
+        "colluder_score_min": 3010.049158,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 581.194357,
+        "trial": 16
+      },
+      {
+        "coalition_user_indices": [
+          305,
+          310,
+          623,
+          728,
+          928
+        ],
+        "colluder_score_max": 3526.176297,
+        "colluder_score_min": 3223.587174,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 586.238667,
+        "trial": 17
+      },
+      {
+        "coalition_user_indices": [
+          279,
+          307,
+          337,
+          515,
+          574
+        ],
+        "colluder_score_max": 3486.583139,
+        "colluder_score_min": 3276.398508,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 479.884806,
+        "trial": 18
+      },
+      {
+        "coalition_user_indices": [
+          151,
+          250,
+          349,
+          534,
+          793
+        ],
+        "colluder_score_max": 3618.829009,
+        "colluder_score_min": 3421.960064,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 510.27382,
+        "trial": 19
+      },
+      {
+        "coalition_user_indices": [
+          355,
+          372,
+          566,
+          590,
+          910
+        ],
+        "colluder_score_max": 3701.798963,
+        "colluder_score_min": 3189.297976,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 635.687652,
+        "trial": 20
+      },
+      {
+        "coalition_user_indices": [
+          72,
+          170,
+          316,
+          472,
+          706
+        ],
+        "colluder_score_max": 3507.157241,
+        "colluder_score_min": 3347.10059,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 577.138789,
+        "trial": 21
+      },
+      {
+        "coalition_user_indices": [
+          264,
+          433,
+          527,
+          533,
+          829
+        ],
+        "colluder_score_max": 3667.706773,
+        "colluder_score_min": 3204.905646,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 519.800456,
+        "trial": 22
+      },
+      {
+        "coalition_user_indices": [
+          131,
+          262,
+          477,
+          514,
+          547
+        ],
+        "colluder_score_max": 3583.630574,
+        "colluder_score_min": 3381.027624,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 515.953241,
+        "trial": 23
+      },
+      {
+        "coalition_user_indices": [
+          123,
+          129,
+          492,
+          615,
+          714
+        ],
+        "colluder_score_max": 3519.589223,
+        "colluder_score_min": 3185.844279,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 481.193222,
+        "trial": 24
+      },
+      {
+        "coalition_user_indices": [
+          67,
+          383,
+          482,
+          650,
+          975
+        ],
+        "colluder_score_max": 3867.905261,
+        "colluder_score_min": 3358.729967,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 551.219474,
+        "trial": 25
+      },
+      {
+        "coalition_user_indices": [
+          71,
+          191,
+          626,
+          634,
+          790
+        ],
+        "colluder_score_max": 3613.432579,
+        "colluder_score_min": 3232.255265,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 552.157038,
+        "trial": 26
+      },
+      {
+        "coalition_user_indices": [
+          10,
+          50,
+          352,
+          652,
+          839
+        ],
+        "colluder_score_max": 3631.308897,
+        "colluder_score_min": 3179.751375,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 508.306908,
+        "trial": 27
+      },
+      {
+        "coalition_user_indices": [
+          143,
+          186,
+          205,
+          843,
+          953
+        ],
+        "colluder_score_max": 3699.602507,
+        "colluder_score_min": 3290.57732,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 518.140152,
+        "trial": 28
+      },
+      {
+        "coalition_user_indices": [
+          60,
+          61,
+          307,
+          497,
+          776
+        ],
+        "colluder_score_max": 3682.460102,
+        "colluder_score_min": 3290.630137,
+        "colluders_recovered_count": 5,
+        "innocent_accusations_count": 0,
+        "innocent_score_max": 697.515282,
+        "trial": 29
+      }
+    ]
+  }
+}

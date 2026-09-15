@@ -1,0 +1,75 @@
+{
+  "command_exit_code": 0,
+  "verification": {
+    "ok": true,
+    "pdf_pages": 6,
+    "pptx_slides": 6,
+    "measured_jpeg_score": 13729.946864,
+    "measured_jpeg_score_display": "13,730",
+    "tardos_profile": {
+      "n": 1000,
+      "c": 5,
+      "m": 52500,
+      "Z": 2100
+    },
+    "five_copy_recovered": 5,
+    "overlay_removal_recovered": 0,
+    "dual_carrier_direct_decision": "corroborated_channels",
+    "transplant_decision": "abstain_channel_conflict",
+    "attack_matrix_cases": 25,
+    "code_level_trial_pairs": 120,
+    "code_level_all_five_recovered": 120,
+    "end_to_end_exact_sessions": 30,
+    "end_to_end_score_mean": 13433.336725466668,
+    "end_to_end_score_population_sd": 128.2157769430804,
+    "coalition_recipients": [
+      "alice",
+      "bob"
+    ],
+    "three_copy_recipients": [
+      "alice",
+      "bob",
+      "charlie"
+    ],
+    "physical_summary": {
+      "captures": 4,
+      "historical_recovered": 0,
+      "historical_recovered_captures": [],
+      "baseline_recovered": 1,
+      "baseline_recovered_captures": [
+        "akshay3.jpeg"
+      ],
+      "refined_recovered": 1,
+      "refined_recovered_captures": [
+        "akshay3.jpeg"
+      ],
+      "boundary_failures": 2,
+      "boundary_failure_keys": [
+        [
+          "akshay.jpeg",
+          "affine_bias_translation"
+        ],
+        [
+          "akshay1.jpeg",
+          "affine_bias_translation"
+        ]
+      ]
+    },
+    "fresh_safeguards": {
+      "cases": 12,
+      "all_passed": true,
+      "pqc_ready": true,
+      "verified_code_hashes": 19
+    },
+    "placeholders": [
+      "[ENTER REGISTERED TEAM NAME]",
+      "[ENTER TEAM ID]",
+      "[INSERT PUBLIC REPOSITORY LINK BEFORE UPLOAD]",
+      "[TEAM NAME]"
+    ],
+    "warnings": [
+      "replace before upload: [ENTER REGISTERED TEAM NAME], [ENTER TEAM ID], [INSERT PUBLIC REPOSITORY LINK BEFORE UPLOAD], [TEAM NAME]"
+    ],
+    "errors": []
+  }
+}

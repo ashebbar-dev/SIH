@@ -1,0 +1,1562 @@
+# Final whole-plan review package
+
+Scope: all four new experiment source files plus controller decision memo. Requirements, ledger, report, independent literature memo and raw evidence are supplied separately. Frozen production and presentation are unchanged.
+
+# Task 1 complete net diff
+
+Base: experiment directory absent at preflight. No Git repository. All four source files are new; frozen production/deck inputs are tracked separately.
+
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/auth_orthogonal_v1/carrier.py	2026-09-12 12:33:27.423865522 +0530
+@@ -0,0 +1,396 @@
++"""Isolated orthogonal authenticator carrier for the prospective study.
++
++This module is experiment code, not a production authentication protocol.  It
++implements the fixed profile in ``NISHAN_AUTH_ORTHOGONAL_SPEC_2026-09-12.md``.
++"""
++
++from __future__ import annotations
++
++import hashlib
++import hmac
++import math
++from dataclasses import dataclass
++from pathlib import Path
++
++import numpy as np
++import pymupdf as fitz
++
++from nishan import layout_tag, registration, tardos_carrier, watermark
++
++
++DPI = 144
++BLOCK_SIZE = 6
++STRENGTH = 4.0
++SYMBOLS = 52_500
++TAG_RAW_BITS = 72
++TAG_ENCODED_BITS = 126
++REPEATS = 200
++PLACEMENTS = TAG_ENCODED_BITS * REPEATS
++PROTOCOL = "nishan-auth-carrier-study/v1"
++PROFILE = "orthogonal-144-6-4-exact72"
++
++
++@dataclass(frozen=True)
++class AuthPlan:
++    raw_bits: np.ndarray
++    encoded_bits: np.ndarray
++    positions: np.ndarray
++    orientations: np.ndarray
++    polarities: np.ndarray
++
++
++def _require_ascii(value: object, name: str, *, nonempty: bool = True) -> str:
++    if not isinstance(value, str):
++        raise TypeError(f"{name} must be a string")
++    if nonempty and not value:
++        raise ValueError(f"{name} must not be empty")
++    try:
++        value.encode("ascii")
++    except UnicodeEncodeError as exc:
++        raise ValueError(f"{name} must contain only ASCII characters") from exc
++    return value
++
++
++def _require_sha3_hex(value: object, name: str) -> str:
++    text = _require_ascii(value, name)
++    if len(text) != 64 or any(character not in "0123456789abcdef" for character in text):
++        raise ValueError(f"{name} must be a lowercase 64-character hexadecimal digest")
++    return text
++
++
++def _require_secret(secret: object) -> bytes:
++    if not isinstance(secret, bytes):
++        raise TypeError("secret must be bytes")
++    if len(secret) < 32:
++        raise ValueError("secret must contain at least 32 bytes")
++    return secret
++
++
++def canonical_context(
++    source_hash: str,
++    recipient_key_hash: str,
++    session_id: str,
++    row: int,
++) -> str:
++    """Return the fixed, canonical ASCII JSON context for one issued row."""
++
++    import json
++
++    source = _require_sha3_hex(source_hash, "source_hash")
++    recipient = _require_sha3_hex(recipient_key_hash, "recipient_key_hash")
++    session = _require_ascii(session_id, "session_id")
++    if isinstance(row, bool) or not isinstance(row, int):
++        raise TypeError("row must be an integer")
++    if row < 0:
++        raise ValueError("row must be non-negative")
++    return json.dumps(
++        {
++            "profile": PROFILE,
++            "protocol": PROTOCOL,
++            "recipient_public_key_sha3_256": recipient,
++            "row": row,
++            "session_id": session,
++            "source_sha3_256": source,
++        },
++        sort_keys=True,
++        separators=(",", ":"),
++        ensure_ascii=True,
++    )
++
++
++def auth_bits(secret: bytes, context: str) -> np.ndarray:
++    key = _require_secret(secret)
++    canonical = _require_ascii(context, "context")
++    payload = hmac.new(
++        key,
++        b"NISHAN-RECIPIENT-AUTH/v1|" + canonical.encode("ascii"),
++        hashlib.sha3_256,
++    ).digest()[: TAG_RAW_BITS // 8]
++    return np.unpackbits(np.frombuffer(payload, dtype=np.uint8)).copy()
++
++
++def make_plan(
++    secret: bytes,
++    context: str,
++    tardos_order: np.ndarray,
++    tardos_orientation: np.ndarray,
++) -> AuthPlan:
++    """Create the fixed authenticator plan from a full Tardos carrier plan."""
++
++    key = _require_secret(secret)
++    canonical = _require_ascii(context, "context")
++    order = np.asarray(tardos_order)
++    orientation = np.asarray(tardos_orientation)
++    if order.ndim != 1 or order.size != SYMBOLS:
++        raise ValueError(f"tardos_order must contain exactly {SYMBOLS} positions")
++    if orientation.shape != (SYMBOLS,):
++        raise ValueError(f"tardos_orientation must contain exactly {SYMBOLS} values")
++    if not np.issubdtype(order.dtype, np.integer):
++        raise ValueError("tardos_order must be an integer array")
++    order = order.astype(np.int64, copy=False)
++    if np.any(order < 0) or np.unique(order).size != SYMBOLS:
++        raise ValueError("tardos_order positions must be non-negative and unique")
++    if not np.all(np.isin(orientation, (0, 1))):
++        raise ValueError("tardos_orientation must be binary")
++    orientation = orientation.astype(np.uint8, copy=False)
++
++    raw = auth_bits(key, canonical)
++    encoded = layout_tag.hamming74_encode(raw)
++    selection_keys = np.frombuffer(
++        tardos_carrier._prf_bytes(
++            key, canonical, b"auth-symbol-order", SYMBOLS * 8
++        ),
++        dtype="<u8",
++    )
++    selected_indices = np.argsort(selection_keys, kind="stable")[:PLACEMENTS]
++    positions = order[selected_indices].astype(np.int64, copy=True)
++    orientations = (1 - orientation[selected_indices]).astype(np.uint8, copy=True)
++    polarity_bits = np.unpackbits(
++        np.frombuffer(
++            tardos_carrier._prf_bytes(
++                key,
++                canonical,
++                b"auth-polarities",
++                math.ceil(PLACEMENTS / 8),
++            ),
++            dtype=np.uint8,
++        )
++    )[:PLACEMENTS]
++    polarities = (2 * polarity_bits.astype(np.int8) - 1).astype(np.int8, copy=False)
++    return AuthPlan(
++        raw_bits=raw,
++        encoded_bits=encoded,
++        positions=positions,
++        orientations=orientations,
++        polarities=polarities,
++    )
++
++
++def _validate_plan(plan: AuthPlan) -> None:
++    if not isinstance(plan, AuthPlan):
++        raise TypeError("plan must be an AuthPlan")
++    if plan.raw_bits.shape != (TAG_RAW_BITS,) or not np.all(np.isin(plan.raw_bits, (0, 1))):
++        raise ValueError("plan raw bits do not match the fixed profile")
++    if plan.encoded_bits.shape != (TAG_ENCODED_BITS,) or not np.all(
++        np.isin(plan.encoded_bits, (0, 1))
++    ):
++        raise ValueError("plan encoded bits do not match the fixed profile")
++    if plan.positions.shape != (PLACEMENTS,) or not np.issubdtype(
++        plan.positions.dtype, np.integer
++    ):
++        raise ValueError("plan positions do not match the fixed profile")
++    if np.unique(plan.positions).size != PLACEMENTS:
++        raise ValueError("plan positions must be unique")
++    if plan.orientations.shape != (PLACEMENTS,) or not np.all(
++        np.isin(plan.orientations, (0, 1))
++    ):
++        raise ValueError("plan orientations do not match the fixed profile")
++    if plan.polarities.shape != (PLACEMENTS,) or not np.all(
++        np.isin(plan.polarities, (-1, 1))
++    ):
++        raise ValueError("plan polarities do not match the fixed profile")
++
++
++def embed_auth(
++    base: Path,
++    destination: Path,
++    plan: AuthPlan,
++    shapes: list[tuple[int, int]],
++) -> None:
++    """Add the fixed-strength authenticator as full-page transparent images."""
++
++    _validate_plan(plan)
++    base = Path(base)
++    destination = Path(destination)
++    if base.suffix.lower() != ".pdf" or destination.suffix.lower() != ".pdf":
++        raise ValueError("authenticator embedding requires PDF input and output")
++    if not isinstance(shapes, list) or not shapes:
++        raise ValueError("shapes must be a non-empty page-shape list")
++    normalized_shapes: list[tuple[int, int]] = []
++    for shape in shapes:
++        if (
++            not isinstance(shape, tuple)
++            or len(shape) != 2
++            or any(isinstance(value, bool) or not isinstance(value, int) or value <= 0 for value in shape)
++        ):
++            raise ValueError("each shape must be a positive integer (height, width) tuple")
++        normalized_shapes.append(shape)
++    rendered, _ = watermark.load_pages(base, dpi=DPI)
++    actual_shapes = [page.shape[:2] for page in rendered]
++    if actual_shapes != normalized_shapes:
++        raise ValueError("supplied shapes do not match the rendered base PDF")
++    capacities = [
++        (height // BLOCK_SIZE) * (width // BLOCK_SIZE)
++        for height, width in normalized_shapes
++    ]
++    capacity = sum(capacities)
++    if capacity != SYMBOLS:
++        # The fixed plan addresses a permutation of the first 52,500 blocks.  A
++        # page may offer more blocks; it may not offer fewer.
++        if capacity < SYMBOLS:
++            raise ValueError(
++                f"fixed profile needs at least {SYMBOLS} blocks but PDF capacity is {capacity}"
++            )
++    if int(plan.positions.min()) < 0 or int(plan.positions.max()) >= capacity:
++        raise ValueError("plan positions exceed rendered PDF capacity")
++
++    templates = tardos_carrier._templates(BLOCK_SIZE)
++    payload = np.tile(plan.encoded_bits, REPEATS)
++    encoded_blocks = (
++        (2 * payload.astype(np.int8) - 1)[:, None, None]
++        * plan.polarities[:, None, None]
++        * templates[plan.orientations]
++    ).astype(np.float32)
++    all_blocks = np.zeros((capacity, BLOCK_SIZE, BLOCK_SIZE), dtype=np.float32)
++    all_blocks[plan.positions] = encoded_blocks
++
++    patterns: list[np.ndarray] = []
++    offset = 0
++    for (height, width), page_capacity in zip(
++        normalized_shapes, capacities, strict=True
++    ):
++        rows = height // BLOCK_SIZE
++        columns = width // BLOCK_SIZE
++        page_blocks = all_blocks[offset : offset + page_capacity]
++        crop = (
++            page_blocks.reshape(rows, columns, BLOCK_SIZE, BLOCK_SIZE)
++            .transpose(0, 2, 1, 3)
++            .reshape(rows * BLOCK_SIZE, columns * BLOCK_SIZE)
++        )
++        pattern = np.zeros((height, width), dtype=np.float32)
++        pattern[: crop.shape[0], : crop.shape[1]] = crop
++        patterns.append(pattern)
++        offset += page_capacity
++
++    document = fitz.open(base)
++    try:
++        if document.page_count != len(patterns):
++            raise ValueError("base PDF page count changed during embedding")
++        for page, pattern in zip(document, patterns, strict=True):
++            page.insert_image(
++                page.rect,
++                stream=tardos_carrier._transparent_overlay(pattern, STRENGTH),
++                overlay=True,
++                keep_proportion=False,
++            )
++        destination.parent.mkdir(parents=True, exist_ok=True)
++        document.save(destination, garbage=0, clean=False, deflate=True)
++    finally:
++        document.close()
++
++
++def residual_blocks(reference: Path, suspect: Path) -> np.ndarray:
++    """Render, align and subtract a suspect into fixed 6-by-6 luma blocks."""
++
++    reference_pages, _ = watermark.load_pages(Path(reference), dpi=DPI)
++    suspect_pages, _ = watermark.load_pages(Path(suspect), dpi=DPI)
++    if len(reference_pages) != len(suspect_pages):
++        raise ValueError("reference and suspect must have the same page count")
++    if not reference_pages:
++        raise ValueError("reference and suspect must contain at least one page")
++    all_blocks: list[np.ndarray] = []
++    for original, observed in zip(reference_pages, suspect_pages, strict=True):
++        aligned, _ = registration.align_page(original, observed)
++        if aligned.shape != original.shape:
++            raise ValueError("aligned suspect geometry does not match the reference")
++        residual = watermark._luma(aligned) - watermark._luma(original)
++        height, width = original.shape[:2]
++        rows = height // BLOCK_SIZE
++        columns = width // BLOCK_SIZE
++        cropped = residual[: rows * BLOCK_SIZE, : columns * BLOCK_SIZE]
++        all_blocks.append(
++            cropped.reshape(rows, BLOCK_SIZE, columns, BLOCK_SIZE)
++            .transpose(0, 2, 1, 3)
++            .reshape(rows * columns, BLOCK_SIZE, BLOCK_SIZE)
++        )
++    return np.concatenate(all_blocks, axis=0)
++
++
++def decode(blocks: np.ndarray, plan: AuthPlan) -> dict[str, object]:
++    """Decode one candidate and return the complete fixed-rule observation."""
++
++    _validate_plan(plan)
++    values = np.asarray(blocks)
++    if values.ndim != 3 or values.shape[1:] != (BLOCK_SIZE, BLOCK_SIZE):
++        raise ValueError("blocks must have shape (capacity, 6, 6)")
++    if not np.issubdtype(values.dtype, np.number) or not np.all(np.isfinite(values)):
++        raise ValueError("blocks must contain only finite numbers")
++    if int(plan.positions.min()) < 0 or int(plan.positions.max()) >= values.shape[0]:
++        raise ValueError("plan positions exceed block capacity")
++    templates = tardos_carrier._templates(BLOCK_SIZE)
++    correlations = np.sum(
++        values[plan.positions]
++        * templates[plan.orientations]
++        * plan.polarities[:, None, None],
++        axis=(1, 2),
++    ).reshape(REPEATS, TAG_ENCODED_BITS)
++    raw_sums = correlations.sum(axis=0)
++    observed_encoded = (raw_sums > 0).astype(np.uint8)
++    decoded = layout_tag.hamming74_decode(observed_encoded)
++    return {
++        "exact_match": bool(np.array_equal(decoded.bits, plan.raw_bits)),
++        "decoded_bit_distance": int(np.count_nonzero(decoded.bits != plan.raw_bits)),
++        "encoded_bit_distance": int(
++            np.count_nonzero(observed_encoded != plan.encoded_bits)
++        ),
++        "corrected_blocks": int(decoded.corrected_blocks),
++        "raw_sums": [float(value) for value in raw_sums],
++        "decoded_bits": decoded.bits.astype(int).tolist(),
++        "observed_encoded_bits": observed_encoded.astype(int).tolist(),
++    }
++
++
++def copy_observed_overlays(donor: Path, target: Path, destination: Path) -> None:
++    """Copy observed donor image objects, including soft masks, onto a target.
++
++    Deliberately accepts no carrier key or plan.  This models an attacker who
++    can inspect the marked PDF's image objects but has no experimental secrets.
++    """
++
++    donor = Path(donor)
++    target = Path(target)
++    destination = Path(destination)
++    if any(path.suffix.lower() != ".pdf" for path in (donor, target, destination)):
++        raise ValueError("observed-overlay copying requires PDF inputs and output")
++    donor_document = fitz.open(donor)
++    target_document = fitz.open(target)
++    try:
++        if donor_document.page_count != target_document.page_count:
++            raise ValueError("donor and target page counts differ")
++        for page_index in range(donor_document.page_count):
++            donor_page = donor_document[page_index]
++            target_page = target_document[page_index]
++            if donor_page.rect != target_page.rect:
++                raise ValueError("donor and target page geometry differs")
++            image_entries = donor_page.get_images(full=True)
++            for entry in image_entries:
++                xref, smask = int(entry[0]), int(entry[1])
++                rectangles = donor_page.get_image_rects(xref)
++                if not rectangles:
++                    raise ValueError(f"donor image xref {xref} has no page placement")
++                base_pixmap = fitz.Pixmap(donor_document, xref)
++                try:
++                    if smask:
++                        mask_pixmap = fitz.Pixmap(donor_document, smask)
++                        try:
++                            combined = fitz.Pixmap(base_pixmap, mask_pixmap)
++                        finally:
++                            mask_pixmap = None
++                    else:
++                        combined = base_pixmap
++                    stream = combined.tobytes("png")
++                finally:
++                    combined = None
++                    base_pixmap = None
++                for rectangle in rectangles:
++                    target_page.insert_image(
++                        rectangle,
++                        stream=stream,
++                        overlay=True,
++                        keep_proportion=False,
++                    )
++        destination.parent.mkdir(parents=True, exist_ok=True)
++        target_document.save(destination, garbage=0, clean=False, deflate=True)
++    finally:
++        donor_document.close()
++        target_document.close()
+
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/auth_orthogonal_v1/run_study.py	2026-09-12 12:37:25.907273269 +0530
+@@ -0,0 +1,852 @@
++#!/usr/bin/env python3
++"""Run the frozen prospective orthogonal-authenticator carrier study once."""
++
++from __future__ import annotations
++
++import argparse
++import hashlib
++import importlib.metadata
++import json
++import os
++import platform
++import secrets
++import shutil
++import sys
++import time
++import traceback
++import uuid
++from dataclasses import asdict, dataclass
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any
++
++import cv2
++import numpy as np
++import PIL
++import pymupdf as fitz
++from PIL import Image
++
++from carrier import (
++    BLOCK_SIZE,
++    DPI,
++    PLACEMENTS,
++    PROFILE,
++    PROTOCOL,
++    REPEATS,
++    STRENGTH,
++    SYMBOLS,
++    AuthPlan,
++    canonical_context,
++    copy_observed_overlays,
++    decode,
++    embed_auth,
++    make_plan,
++    residual_blocks,
++)
++from nishan import layout_tag, pqc, registration, tardos, tardos_carrier, watermark
++
++
++WORKSPACE = Path(__file__).resolve().parents[3]
++SOURCE_A = WORKSPACE / "artifacts/nishan/synthetic-source.pdf"
++COALITIONS = (1, 2, 3, 5)
++ROWS = tuple(range(5))
++TARDOS_CONTEXT_PREFIX = "nishan-auth-carrier-study/tardos/v1|"
++FIXED_Z = 2100.0
++
++
++@dataclass
++class DocumentState:
++    name: str
++    source: Path
++    source_sha3_256: str
++    authority_secret: bytes
++    tardos_context: str
++    config: tardos.Parameters
++    biases: np.ndarray
++    codebook: np.ndarray
++    tardos_order: np.ndarray
++    tardos_orientation: np.ndarray
++    auth_secrets: list[bytes]
++    public_key_hashes: list[str]
++    sessions: list[str]
++    contexts: list[str]
++    plans: list[AuthPlan]
++    wrong_secrets: list[bytes]
++    changed_session: str
++    shapes: list[tuple[int, int]]
++
++
++def _sha256(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def _sha3_file(path: Path) -> str:
++    digest = hashlib.sha3_256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def _sha3_bytes(value: bytes) -> str:
++    return hashlib.sha3_256(value).hexdigest()
++
++
++def _array_sha3(array: np.ndarray, dtype: str) -> str:
++    return _sha3_bytes(np.ascontiguousarray(array, dtype=dtype).tobytes())
++
++
++def _utc_now() -> str:
++    return datetime.now(timezone.utc).isoformat()
++
++
++def _finite_json(value: Any) -> Any:
++    if isinstance(value, dict):
++        return {str(key): _finite_json(item) for key, item in value.items()}
++    if isinstance(value, (list, tuple)):
++        return [_finite_json(item) for item in value]
++    if isinstance(value, np.generic):
++        return _finite_json(value.item())
++    if isinstance(value, float) and not np.isfinite(value):
++        if np.isnan(value):
++            return "unavailable:nan"
++        return "unavailable:+infinity" if value > 0 else "unavailable:-infinity"
++    return value
++
++
++def _write_json(path: Path, value: Any, *, private: bool = False) -> None:
++    payload = json.dumps(
++        _finite_json(value), sort_keys=True, indent=2, allow_nan=False
++    ) + "\n"
++    path.write_text(payload, encoding="utf-8")
++    if private:
++        os.chmod(path, 0o600)
++
++
++def _pdf_text(path: Path) -> str:
++    with fitz.open(path) as document:
++        return "\f".join(page.get_text() for page in document)
++
++
++def _text_observation(path: Path) -> dict[str, Any]:
++    text = _pdf_text(path)
++    return {
++        "file_sha256": _sha256(path),
++        "text_sha3_256": _sha3_bytes(text.encode("utf-8")),
++        "text": text,
++    }
++
++
++def _create_fixture_b(path: Path, extracted_text_path: Path) -> None:
++    document = fitz.open()
++    page = document.new_page(width=fitz.paper_rect("a4").width, height=fitz.paper_rect("a4").height)
++    page.insert_text((48, 48), "AUTHENTICATOR RESEARCH FIXTURE B", fontname="helv", fontsize=16)
++    page.insert_text(
++        (48, 72),
++        "Synthetic logistics record - not operational data",
++        fontname="helv",
++        fontsize=11,
++    )
++    for number in range(1, 25):
++        if number % 2:
++            line = f"Item {number:02d} | quantity 120 | bay 04 | release 09:30"
++        else:
++            line = f"Check {number:02d}: verify seal, reference number, and dispatch count."
++        page.insert_text((48, 100 + (number - 1) * 17), line, fontname="helv", fontsize=10)
++    left, top, right, bottom = 48.0, 525.0, 547.0, 735.0
++    for x in np.linspace(left, right, 5):
++        page.draw_line((float(x), top), (float(x), bottom), width=0.7)
++    for y in np.linspace(top, bottom, 8):
++        page.draw_line((left, float(y)), (right, float(y)), width=0.7)
++    headings = ("Record", "Status", "Owner", "Checkpoint")
++    for index, heading in enumerate(headings):
++        page.insert_text((left + index * (right - left) / 4 + 5, top + 18), heading, fontname="helv", fontsize=9)
++    for row in range(1, 7):
++        values = (f"R-{row:02d}", "research", "unassigned", f"C-{row:02d}")
++        for column, value in enumerate(values):
++            page.insert_text(
++                (left + column * (right - left) / 4 + 5, top + 18 + row * 27),
++                value,
++                fontname="helv",
++                fontsize=8,
++            )
++    document.save(path, deflate=True)
++    document.close()
++    extracted_text_path.write_text(_pdf_text(path), encoding="utf-8")
++
++
++def _write_secret(path: Path, value: bytes) -> None:
++    path.write_bytes(value)
++    os.chmod(path, 0o600)
++
++
++def _plan_manifest(plan: AuthPlan) -> dict[str, str]:
++    return {
++        "raw_bits_sha3_256": _array_sha3(plan.raw_bits, "u1"),
++        "encoded_bits_sha3_256": _array_sha3(plan.encoded_bits, "u1"),
++        "positions_sha3_256": _array_sha3(plan.positions, "<i8"),
++        "orientations_sha3_256": _array_sha3(plan.orientations, "u1"),
++        "polarities_sha3_256": _array_sha3(plan.polarities, "i1"),
++    }
++
++
++def _prepare_document(
++    name: str,
++    source: Path,
++    root: Path,
++) -> tuple[DocumentState, dict[str, Any]]:
++    print(f"[{name}] generating fixed inputs and fresh material", flush=True)
++    material_dir = root / "material" / name
++    material_dir.mkdir(parents=True)
++    source_hash = _sha3_file(source)
++    authority = secrets.token_bytes(32)
++    _write_secret(material_dir / "authority-secret.bin", authority)
++    config = tardos.parameters(1000, 5, 1e-6)
++    if config.code_length != SYMBOLS or config.threshold != FIXED_Z:
++        raise RuntimeError("current Tardos helper does not match the frozen profile")
++    tardos_context = TARDOS_CONTEXT_PREFIX + source_hash
++    biases, codebook = tardos.generate_keyed(config, authority, tardos_context)
++    pages, _ = watermark.load_pages(source, dpi=DPI)
++    shapes = [page.shape[:2] for page in pages]
++    capacity = sum((height // BLOCK_SIZE) * (width // BLOCK_SIZE) for height, width in shapes)
++    if len(pages) != 1:
++        raise ValueError(f"{name} must be exactly one page")
++    if capacity < SYMBOLS:
++        raise ValueError(f"{name} capacity {capacity} is below {SYMBOLS}")
++    order, orientation, _ = tardos_carrier._plan(
++        authority, tardos_context, capacity, SYMBOLS
++    )
++
++    auth_secrets: list[bytes] = []
++    public_key_hashes: list[str] = []
++    sessions: list[str] = []
++    contexts: list[str] = []
++    plans: list[AuthPlan] = []
++    row_material: list[dict[str, Any]] = []
++    for row in ROWS:
++        recipient_secret = secrets.token_bytes(32)
++        secret_path = material_dir / f"auth-secret-row-{row}.bin"
++        _write_secret(secret_path, recipient_secret)
++        private_key = material_dir / f"ml-dsa-65-row-{row}-private.pem"
++        public_key = material_dir / f"ml-dsa-65-row-{row}-public.pem"
++        pqc.generate_keypair("ML-DSA-65", private_key, public_key)
++        recipient_hash = _sha3_file(public_key)
++        session = str(uuid.uuid4())
++        context = canonical_context(source_hash, recipient_hash, session, row)
++        plan = make_plan(recipient_secret, context, order, orientation)
++        auth_secrets.append(recipient_secret)
++        public_key_hashes.append(recipient_hash)
++        sessions.append(session)
++        contexts.append(context)
++        plans.append(plan)
++        row_material.append(
++            {
++                "row": row,
++                "session_id": session,
++                "context": context,
++                "auth_secret_sha3_256": _sha3_bytes(recipient_secret),
++                "private_key_sha256": _sha256(private_key),
++                "public_key_sha256": _sha256(public_key),
++                "public_key_sha3_256": recipient_hash,
++                "plan": _plan_manifest(plan),
++            }
++        )
++    wrong_secrets = [secrets.token_bytes(32) for _ in range(100)]
++    _write_secret(material_dir / "wrong-secrets.bin", b"".join(wrong_secrets))
++    changed_session = str(uuid.uuid4())
++    private_material = {
++        "warning": "NON-PRODUCTION RESEARCH MATERIAL. DO NOT SUBMIT OR PUBLISH. CONTAINS ALL EXPERIMENTAL SECRETS.",
++        "document": name,
++        "source_sha3_256": source_hash,
++        "authority_secret_sha3_256": _sha3_bytes(authority),
++        "tardos_context": tardos_context,
++        "changed_session_control": changed_session,
++        "rows": row_material,
++        "wrong_secret_sha3_256": [_sha3_bytes(value) for value in wrong_secrets],
++    }
++    _write_json(material_dir / "material.json", private_material, private=True)
++    (material_dir / "DO_NOT_SHARE.txt").write_text(
++        "NON-PRODUCTION RESEARCH MATERIAL. DO NOT SUBMIT OR PUBLISH.\n",
++        encoding="ascii",
++    )
++    state = DocumentState(
++        name=name,
++        source=source,
++        source_sha3_256=source_hash,
++        authority_secret=authority,
++        tardos_context=tardos_context,
++        config=config,
++        biases=biases,
++        codebook=codebook,
++        tardos_order=order,
++        tardos_orientation=orientation,
++        auth_secrets=auth_secrets,
++        public_key_hashes=public_key_hashes,
++        sessions=sessions,
++        contexts=contexts,
++        plans=plans,
++        wrong_secrets=wrong_secrets,
++        changed_session=changed_session,
++        shapes=shapes,
++    )
++    public_manifest = {
++        "name": name,
++        "source_path": str(source.relative_to(root)),
++        "source_sha256": _sha256(source),
++        "source_sha3_256": source_hash,
++        "source_text_sha3_256": _sha3_bytes(_pdf_text(source).encode("utf-8")),
++        "page_shapes_hwc": [list(page.shape) for page in pages],
++        "capacity_blocks": capacity,
++        "authority_secret_sha3_256": _sha3_bytes(authority),
++        "tardos_context": tardos_context,
++        "biases_sha3_256": _array_sha3(biases, "<f8"),
++        "codebook_sha3_256": _array_sha3(codebook, "u1"),
++        "tardos_order_sha3_256": _array_sha3(order, "<i8"),
++        "tardos_orientation_sha3_256": _array_sha3(orientation, "u1"),
++        "changed_session_control": changed_session,
++        "rows": row_material,
++        "wrong_secret_sha3_256": private_material["wrong_secret_sha3_256"],
++    }
++    return state, public_manifest
++
++
++def _source_code_hashes() -> dict[str, str]:
++    files = [
++        Path(__file__).with_name("carrier.py"),
++        Path(__file__),
++        Path(__file__).with_name("test_carrier.py"),
++        Path(__file__).with_name("README.md"),
++        Path(tardos_carrier.__file__),
++        Path(layout_tag.__file__),
++        Path(watermark.__file__),
++        Path(registration.__file__),
++        Path(pqc.__file__),
++        Path(tardos.__file__),
++    ]
++    return {str(path.relative_to(WORKSPACE)): _sha256(path) for path in files}
++
++
++def _pair_metrics(source: Path, marked: Path) -> dict[str, Any]:
++    return asdict(tardos_carrier.measure_pdf_pair(source, marked, dpi=DPI))
++
++
++def _score_tardos(
++    state: DocumentState,
++    artifact: Path,
++    participating: list[int],
++) -> dict[str, Any]:
++    word, correlations, diagnostics = tardos_carrier.decode_word_with_diagnostics(
++        state.source,
++        artifact,
++        SYMBOLS,
++        state.authority_secret,
++        state.tardos_context,
++        dpi=DPI,
++        block_size=BLOCK_SIZE,
++    )
++    scores = tardos.accusation_scores(state.biases, state.codebook, word)
++    selected = tardos.accuse(scores, state.config).astype(int).tolist()
++    selected_set = set(selected)
++    participating_set = set(participating)
++    return {
++        "fixed_threshold_z": FIXED_Z,
++        "selected_rows": selected,
++        "participating_rows": participating,
++        "selected_participating_rows": sorted(selected_set & participating_set),
++        "selected_nonparticipating_rows": sorted(selected_set - participating_set),
++        "all_1000_scores": scores.tolist(),
++        "correlations_sha3_256": _array_sha3(correlations, "<f8"),
++        "marking_condition": tardos_carrier.marking_condition_errors(
++            word, state.codebook[participating]
++        ),
++        "registration": diagnostics,
++    }
++
++
++def _auth_candidates(blocks: np.ndarray, plans: list[AuthPlan]) -> list[dict[str, Any]]:
++    return [{"row": row, **decode(blocks, plan)} for row, plan in enumerate(plans)]
++
++
++def _make_png(source: Path, destination: Path) -> None:
++    pages, _ = watermark.load_pages(source, dpi=DPI)
++    if len(pages) != 1:
++        raise ValueError("transform inputs must be one page")
++    Image.fromarray(pages[0]).save(destination, format="PNG")
++
++
++def _make_jpeg(source: Path, destination: Path) -> None:
++    pages, _ = watermark.load_pages(source, dpi=DPI)
++    if len(pages) != 1:
++        raise ValueError("transform inputs must be one page")
++    Image.fromarray(pages[0]).save(
++        destination, format="JPEG", quality=55, optimize=True
++    )
++
++
++def _artifact_record(path: Path) -> dict[str, Any]:
++    return {"path": str(path), "sha256": _sha256(path)}
++
++
++def _run_document(state: DocumentState, root: Path) -> dict[str, Any]:
++    started = time.monotonic()
++    document_dir = root / "documents" / state.name
++    copies_dir = document_dir / "copies"
++    attacks_dir = document_dir / "transforms"
++    copies_dir.mkdir(parents=True)
++    attacks_dir.mkdir(parents=True)
++    baselines: list[Path] = []
++    auth_copies: list[Path] = []
++    fidelity: list[dict[str, Any]] = []
++    print(f"[{state.name}] embedding ten matched copies", flush=True)
++    for row in ROWS:
++        baseline = copies_dir / f"row-{row}-tardos-only.pdf"
++        marked = copies_dir / f"row-{row}-tardos-plus-auth.pdf"
++        tardos_carrier.embed_pdf(
++            state.source,
++            baseline,
++            state.codebook[row],
++            state.authority_secret,
++            state.tardos_context,
++            strength=STRENGTH,
++            dpi=DPI,
++            block_size=BLOCK_SIZE,
++        )
++        embed_auth(baseline, marked, state.plans[row], state.shapes)
++        baselines.append(baseline)
++        auth_copies.append(marked)
++        fidelity.extend(
++            [
++                {
++                    "row": row,
++                    "channel": "tardos-only",
++                    "artifact": _artifact_record(baseline),
++                    "measurement": _pair_metrics(state.source, baseline),
++                },
++                {
++                    "row": row,
++                    "channel": "tardos-plus-auth",
++                    "artifact": _artifact_record(marked),
++                    "measurement": _pair_metrics(state.source, marked),
++                },
++            ]
++        )
++
++    cases: list[dict[str, Any]] = []
++    for count in COALITIONS:
++        participating = list(range(count))
++        for channel, copies in (("tardos-only", baselines), ("tardos-plus-auth", auth_copies)):
++            average = attacks_dir / f"{channel}-coalition-{count}-average.png"
++            jpeg = attacks_dir / f"{channel}-coalition-{count}-average-q55.jpg"
++            if count == 1:
++                _make_png(copies[0], average)
++            else:
++                watermark.average_collusion(copies[:count], average, dpi=DPI)
++            _make_jpeg(average, jpeg)
++            for transform, artifact in (("average-png", average), ("average-jpeg-q55", jpeg)):
++                case_started = time.monotonic()
++                print(
++                    f"[{state.name}] {channel} coalition={count} {transform}",
++                    flush=True,
++                )
++                record: dict[str, Any] = {
++                    "case_id": f"{channel}/coalition-{count}/{transform}",
++                    "channel": channel,
++                    "coalition_size": count,
++                    "participating_rows": participating,
++                    "transform": transform,
++                    "artifact": _artifact_record(artifact),
++                    "tardos": _score_tardos(state, artifact, participating),
++                }
++                if channel == "tardos-plus-auth":
++                    blocks = residual_blocks(state.source, artifact)
++                    record["auth_candidates"] = _auth_candidates(blocks, state.plans)
++                    record["expected_auth_rows"] = participating
++                    record["extra_exact_auth_rows"] = [
++                        item["row"]
++                        for item in record["auth_candidates"]
++                        if item["exact_match"] and item["row"] not in participating
++                    ]
++                record["runtime_seconds"] = round(time.monotonic() - case_started, 6)
++                cases.append(record)
++
++    print(f"[{state.name}] direct, changed-context and 100 wrong-key controls", flush=True)
++    direct_controls: list[dict[str, Any]] = []
++    for label, artifact in [("unmarked-source", state.source)] + [
++        (f"tardos-only-row-{row}", path) for row, path in enumerate(baselines)
++    ]:
++        blocks = residual_blocks(state.source, artifact)
++        direct_controls.append(
++            {
++                "artifact_label": label,
++                "artifact": _artifact_record(artifact),
++                "auth_candidates": _auth_candidates(blocks, state.plans),
++            }
++        )
++
++    row_zero_blocks = residual_blocks(state.source, auth_copies[0])
++    other_source_hash = None  # filled by the caller before this function
++    changed_context_controls: list[dict[str, Any]] = []
++    # The source-hash value is injected on the state for an actual other fixture hash.
++    changed_source_hash = getattr(state, "changed_source_hash")
++    changed_definitions = [
++        (
++            "changed-source-hash",
++            canonical_context(
++                changed_source_hash,
++                state.public_key_hashes[0],
++                state.sessions[0],
++                0,
++            ),
++        ),
++        (
++            "fresh-session-id",
++            canonical_context(
++                state.source_sha3_256,
++                state.public_key_hashes[0],
++                state.changed_session,
++                0,
++            ),
++        ),
++        (
++            "another-recipient-public-key",
++            canonical_context(
++                state.source_sha3_256,
++                state.public_key_hashes[1],
++                state.sessions[0],
++                0,
++            ),
++        ),
++    ]
++    for label, context in changed_definitions:
++        candidate_plan = make_plan(
++            state.auth_secrets[0], context, state.tardos_order, state.tardos_orientation
++        )
++        changed_context_controls.append(
++            {"control": label, "context": context, "observation": decode(row_zero_blocks, candidate_plan)}
++        )
++
++    wrong_key_controls: list[dict[str, Any]] = []
++    for index, wrong_secret in enumerate(state.wrong_secrets):
++        wrong_plan = make_plan(
++            wrong_secret,
++            state.contexts[0],
++            state.tardos_order,
++            state.tardos_orientation,
++        )
++        wrong_key_controls.append(
++            {
++                "wrong_key_index": index,
++                "secret_sha3_256": _sha3_bytes(wrong_secret),
++                "observation": decode(row_zero_blocks, wrong_plan),
++            }
++        )
++    return {
++        "name": state.name,
++        "fidelity": fidelity,
++        "positive_transform_cases": cases,
++        "negative_controls": {
++            "direct": direct_controls,
++            "changed_context": changed_context_controls,
++            "wrong_key": wrong_key_controls,
++        },
++        "copy_paths": {
++            "baselines": [str(path) for path in baselines],
++            "auth": [str(path) for path in auth_copies],
++        },
++        "runtime_seconds": round(time.monotonic() - started, 6),
++    }
++
++
++def _modify_fixture(source: Path, destination: Path) -> dict[str, Any]:
++    document = fitz.open(source)
++    try:
++        page = document[0]
++        matches = page.search_for("quantity 120")
++        if not matches:
++            raise RuntimeError("fixture B contains no quantity 120 text to modify")
++        rectangle = matches[0]
++        page.add_redact_annot(rectangle, fill=(1, 1, 1))
++        page.apply_redactions()
++        page.insert_text(
++            (rectangle.x0, rectangle.y1 - 1.5),
++            "quantity 920",
++            fontname="helv",
++            fontsize=10,
++        )
++        destination.parent.mkdir(parents=True, exist_ok=True)
++        document.save(destination, garbage=0, clean=False, deflate=True)
++    finally:
++        document.close()
++    source_text = _pdf_text(source)
++    target_text = _pdf_text(destination)
++    if source_text == target_text or "quantity 920" not in target_text:
++        raise RuntimeError("modified fixture did not produce the required text change")
++    if source.read_bytes() == destination.read_bytes():
++        raise RuntimeError("modified fixture bytes unexpectedly equal source bytes")
++    return {
++        "changed_occurrences": 1,
++        "source": _text_observation(source),
++        "target": _text_observation(destination),
++        "extracted_text_differs": source_text != target_text,
++        "file_bytes_differ": source.read_bytes() != destination.read_bytes(),
++    }
++
++
++def _copied_overlay_attack(
++    state: DocumentState,
++    document_results: dict[str, Any],
++    root: Path,
++) -> dict[str, Any]:
++    print("[source-b] copied-overlay falsification attack", flush=True)
++    attack_dir = root / "documents/source-b/copied-overlay-attack"
++    attack_dir.mkdir(parents=True)
++    donor = Path(document_results["copy_paths"]["auth"][0])
++    target = attack_dir / "content-modified-target.pdf"
++    copied_pdf = attack_dir / "observed-overlays-on-modified-target.pdf"
++    copied_jpeg = attack_dir / "observed-overlays-on-modified-target-q55.jpg"
++    modification = _modify_fixture(state.source, target)
++    # The helper invocation below intentionally carries only three paths.
++    copy_observed_overlays(donor, target, copied_pdf)
++    _make_jpeg(copied_pdf, copied_jpeg)
++    with fitz.open(donor) as donor_document, fitz.open(copied_pdf) as copied_document:
++        donor_image_counts = [len(page.get_images(full=True)) for page in donor_document]
++        copied_image_counts = [len(page.get_images(full=True)) for page in copied_document]
++
++    changed_source_context = canonical_context(
++        _sha3_file(target),
++        state.public_key_hashes[0],
++        state.sessions[0],
++        0,
++    )
++    changed_source_plan = make_plan(
++        state.auth_secrets[0],
++        changed_source_context,
++        state.tardos_order,
++        state.tardos_orientation,
++    )
++    artifact_results: list[dict[str, Any]] = []
++    for transform, artifact in (("copied-pdf", copied_pdf), ("copied-jpeg-q55", copied_jpeg)):
++        case_started = time.monotonic()
++        print(f"[source-b] copied-overlay {transform}", flush=True)
++        blocks = residual_blocks(state.source, artifact)
++        candidates = _auth_candidates(blocks, state.plans)
++        artifact_results.append(
++            {
++                "transform": transform,
++                "artifact": _artifact_record(artifact),
++                "tardos": _score_tardos(state, artifact, [0]),
++                "auth_candidates_under_issued_donor_contexts": candidates,
++                "exact_auth_rows": [item["row"] for item in candidates if item["exact_match"]],
++                "donor_row_exact_match": bool(candidates[0]["exact_match"]),
++                "donor_secret_changed_source_context": {
++                    "context": changed_source_context,
++                    "observation": decode(blocks, changed_source_plan),
++                },
++                "runtime_seconds": round(time.monotonic() - case_started, 6),
++            }
++        )
++    donor_observation = _text_observation(donor)
++    target_observation = _text_observation(target)
++    output_observation = _text_observation(copied_pdf)
++    distinctions = {
++        "donor_vs_target_file_hash_mismatch": donor_observation["file_sha256"] != target_observation["file_sha256"],
++        "donor_vs_output_file_hash_mismatch": donor_observation["file_sha256"] != output_observation["file_sha256"],
++        "target_vs_output_file_hash_mismatch": target_observation["file_sha256"] != output_observation["file_sha256"],
++        "donor_vs_target_text_mismatch": donor_observation["text_sha3_256"] != target_observation["text_sha3_256"],
++        "donor_vs_output_text_mismatch": donor_observation["text_sha3_256"] != output_observation["text_sha3_256"],
++        "target_vs_output_text_equal": target_observation["text_sha3_256"] == output_observation["text_sha3_256"],
++    }
++    return {
++        "helper_inputs": [str(donor), str(target), str(copied_pdf)],
++        "helper_received_secrets_or_plans": False,
++        "modification": modification,
++        "donor": donor_observation,
++        "target": target_observation,
++        "copied_pdf": output_observation,
++        "image_object_counts": {"donor": donor_image_counts, "copied_pdf": copied_image_counts},
++        "distinctions": distinctions,
++        "artifacts": artifact_results,
++    }
++
++
++def _gate_results(document_results: list[dict[str, Any]], attack: dict[str, Any]) -> dict[str, Any]:
++    participating: list[bool] = []
++    nonparticipating: list[bool] = []
++    direct: list[bool] = []
++    changed: list[bool] = []
++    wrong: list[bool] = []
++    positive_artifacts = 0
++    for document in document_results:
++        for case in document["positive_transform_cases"]:
++            if case["channel"] != "tardos-plus-auth":
++                continue
++            positive_artifacts += 1
++            expected = set(case["expected_auth_rows"])
++            for candidate in case["auth_candidates"]:
++                if candidate["row"] in expected:
++                    participating.append(bool(candidate["exact_match"]))
++                else:
++                    nonparticipating.append(not bool(candidate["exact_match"]))
++        controls = document["negative_controls"]
++        direct.extend(
++            not bool(candidate["exact_match"])
++            for artifact in controls["direct"]
++            for candidate in artifact["auth_candidates"]
++        )
++        changed.extend(
++            not bool(control["observation"]["exact_match"])
++            for control in controls["changed_context"]
++        )
++        wrong.extend(
++            not bool(control["observation"]["exact_match"])
++            for control in controls["wrong_key"]
++        )
++    gate_a = all(participating + nonparticipating + direct + changed + wrong)
++    transplant_rejections = [
++        not bool(item["donor_row_exact_match"]) for item in attack["artifacts"]
++    ]
++    return {
++        "gate_a": gate_a,
++        "gate_a_components": {
++            "positive_artifacts": positive_artifacts,
++            "participating_exact": sum(participating),
++            "participating_total": len(participating),
++            "nonparticipating_rejected": sum(nonparticipating),
++            "nonparticipating_total": len(nonparticipating),
++            "direct_negative_rejected": sum(direct),
++            "direct_negative_total": len(direct),
++            "changed_context_rejected": sum(changed),
++            "changed_context_total": len(changed),
++            "wrong_key_rejected": sum(wrong),
++            "wrong_key_total": len(wrong),
++        },
++        "gate_b": all(transplant_rejections),
++        "gate_b_components": {
++            "copied_overlay_donor_tag_rejected": sum(transplant_rejections),
++            "copied_overlay_artifacts": len(transplant_rejections),
++        },
++    }
++
++
++def _all_existing_hashes(root: Path) -> dict[str, str]:
++    return {
++        str(path.relative_to(root)): _sha256(path)
++        for path in sorted(root.rglob("*"))
++        if path.is_file() and path.name not in {"results.json", "failure.json"}
++    }
++
++
++def run(output: Path) -> None:
++    overall_started = time.monotonic()
++    support = pqc.support()
++    if not support.ml_dsa_65:
++        raise RuntimeError(
++            f"ML-DSA-65 is unavailable in {support.openssl_version}; study cannot run"
++        )
++    sources_dir = output / "sources"
++    sources_dir.mkdir(parents=True)
++    if not SOURCE_A.is_file():
++        raise FileNotFoundError(f"missing required source {SOURCE_A}")
++    source_a = sources_dir / "source-a-synthetic.pdf"
++    source_b = sources_dir / "source-b-fixed-fixture.pdf"
++    shutil.copyfile(SOURCE_A, source_a)
++    _create_fixture_b(source_b, sources_dir / "source-b-extracted-text.txt")
++
++    states: list[DocumentState] = []
++    document_manifests: list[dict[str, Any]] = []
++    for name, source in (("source-a", source_a), ("source-b", source_b)):
++        state, document_manifest = _prepare_document(name, source, output)
++        states.append(state)
++        document_manifests.append(document_manifest)
++    # Use the other actual fixed fixture hash for each changed-source control.
++    states[0].changed_source_hash = states[1].source_sha3_256
++    states[1].changed_source_hash = states[0].source_sha3_256
++
++    manifest = {
++        "study": "NISHAN orthogonal authenticator prospective carrier falsification gate",
++        "scope": "isolated carrier-only research; not production security integration",
++        "created_at_utc": _utc_now(),
++        "configuration": {
++            "dpi": DPI,
++            "block_size": BLOCK_SIZE,
++            "tardos": {"n": 1000, "c": 5, "epsilon": 1e-6, "symbols": SYMBOLS, "strength": STRENGTH, "fixed_z": FIXED_Z},
++            "auth": {"strength": STRENGTH, "hmac": "HMAC-SHA3-256", "raw_bits": 72, "encoded_bits": 126, "repeats": REPEATS, "placements": PLACEMENTS, "decision": "summed correlation > 0 then Hamming(7,4), exact 72-bit equality"},
++            "coalition_prefixes": list(COALITIONS),
++            "jpeg_quality": 55,
++            "jpeg_optimize": True,
++            "protocol": PROTOCOL,
++            "profile": PROFILE,
++        },
++        "documents": document_manifests,
++        "source_code_sha256": _source_code_hashes(),
++        "environment": {
++            "python": sys.version,
++            "platform": platform.platform(),
++            "openssl": support.openssl_version,
++            "packages": {
++                "numpy": np.__version__,
++                "pymupdf": fitz.VersionBind,
++                "pillow": PIL.__version__,
++                "opencv": cv2.__version__,
++                "cryptography": importlib.metadata.version("cryptography"),
++            },
++        },
++        "premeasurement_manifest_written_at_utc": _utc_now(),
++    }
++    _write_json(output / "manifest.json", manifest)
++    print("[study] premeasurement manifest written", flush=True)
++
++    document_results = [_run_document(state, output) for state in states]
++    attack = _copied_overlay_attack(states[1], document_results[1], output)
++    gates = _gate_results(document_results, attack)
++    results = {
++        "study": manifest["study"],
++        "completed_at_utc": _utc_now(),
++        "documents": document_results,
++        "copied_overlay_attack": attack,
++        "gates": gates,
++        "generated_artifact_sha256": _all_existing_hashes(output),
++        "runtime_seconds": round(time.monotonic() - overall_started, 6),
++        "interpretation": {
++            "gate_a": "limited digital replication only",
++            "gate_b": "content-binding hypothesis under observed overlay transplantation",
++            "changed_context_boundary": "Rejection under a changed candidate context does not establish rejection of edited content evaluated under the genuine donor context.",
++            "security_boundary": "No enrollment, independent custody, escrow, ledger, signature protocol, adjudicator, asymmetric carrier security, physical recovery, population estimate, novelty, superiority, or production claim is established.",
++        },
++    }
++    _write_json(output / "results.json", results)
++    print(
++        f"[study] complete Gate A={gates['gate_a']} Gate B={gates['gate_b']} runtime={results['runtime_seconds']}s",
++        flush=True,
++    )
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", required=True, type=Path)
++    arguments = parser.parse_args()
++    output = arguments.output
++    if output.exists():
++        parser.error(f"refusing to overwrite existing output directory: {output}")
++    output.mkdir(parents=True)
++    try:
++        run(output)
++    except BaseException as exc:
++        _write_json(
++            output / "failure.json",
++            {
++                "failed_at_utc": _utc_now(),
++                "exception_type": type(exc).__name__,
++                "exception": str(exc),
++                "traceback": traceback.format_exc(),
++            },
++        )
++        raise
++
++
++if __name__ == "__main__":
++    main()
+
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/auth_orthogonal_v1/test_carrier.py	2026-09-12 12:30:44.583967518 +0530
+@@ -0,0 +1,178 @@
++from __future__ import annotations
++
++import dataclasses
++import io
++import subprocess
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++import numpy as np
++import pymupdf as fitz
++
++from carrier import (
++    BLOCK_SIZE,
++    REPEATS,
++    SYMBOLS,
++    TAG_ENCODED_BITS,
++    auth_bits,
++    canonical_context,
++    copy_observed_overlays,
++    decode,
++    make_plan,
++)
++from nishan import tardos_carrier
++
++
++def _one_page_pdf(path: Path, text: str) -> None:
++    document = fitz.open()
++    page = document.new_page(width=300, height=300)
++    page.insert_text((36, 50), text, fontsize=12)
++    document.save(path)
++    document.close()
++
++
++class CarrierTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.secret = b"x" * 32
++        self.context = canonical_context("a" * 64, "b" * 64, "session-0", 0)
++        self.order = np.arange(SYMBOLS, dtype=np.int64)
++        self.tardos_orientation = np.arange(SYMBOLS, dtype=np.uint8) % 2
++
++    def test_context_is_canonical_and_each_field_binds(self) -> None:
++        original = self.context
++        self.assertEqual(
++            original, canonical_context("a" * 64, "b" * 64, "session-0", 0)
++        )
++        altered_contexts = [
++            canonical_context("c" * 64, "b" * 64, "session-0", 0),
++            canonical_context("a" * 64, "c" * 64, "session-0", 0),
++            canonical_context("a" * 64, "b" * 64, "session-1", 0),
++            canonical_context("a" * 64, "b" * 64, "session-0", 1),
++        ]
++        for altered in altered_contexts:
++            self.assertNotEqual(original, altered)
++            self.assertFalse(
++                np.array_equal(auth_bits(self.secret, original), auth_bits(self.secret, altered))
++            )
++
++    def test_context_and_secret_validation(self) -> None:
++        with self.assertRaises(ValueError):
++            canonical_context("not-a-hash", "b" * 64, "session-0", 0)
++        with self.assertRaises(ValueError):
++            canonical_context("a" * 64, "b" * 64, "session-0", -1)
++        with self.assertRaises(ValueError):
++            auth_bits(b"short", self.context)
++        with self.assertRaises(ValueError):
++            auth_bits(self.secret, "non-ascii-€")
++
++    def test_plan_rejects_wrong_profile_capacity(self) -> None:
++        with self.assertRaises(ValueError):
++            make_plan(
++                self.secret,
++                self.context,
++                self.order[:-1],
++                self.tardos_orientation[:-1],
++            )
++        bad_order = self.order.copy()
++        bad_order[-1] = 0
++        with self.assertRaises(ValueError):
++            make_plan(self.secret, self.context, bad_order, self.tardos_orientation)
++
++    def test_plan_has_unique_placements_and_orthogonal_orientations(self) -> None:
++        plan = make_plan(self.secret, self.context, self.order, self.tardos_orientation)
++        self.assertEqual(plan.raw_bits.shape, (72,))
++        self.assertEqual(plan.encoded_bits.shape, (TAG_ENCODED_BITS,))
++        self.assertEqual(plan.positions.shape, (TAG_ENCODED_BITS * REPEATS,))
++        self.assertEqual(np.unique(plan.positions).size, plan.positions.size)
++        np.testing.assert_array_equal(
++            plan.orientations, 1 - self.tardos_orientation[plan.positions]
++        )
++        self.assertTrue(np.all(np.isin(plan.polarities, (-1, 1))))
++
++    def test_exact_decode_and_intentional_expected_tag_mismatch(self) -> None:
++        plan = make_plan(self.secret, self.context, self.order, self.tardos_orientation)
++        templates = tardos_carrier._templates(BLOCK_SIZE)
++        blocks = np.zeros((SYMBOLS, BLOCK_SIZE, BLOCK_SIZE), dtype=np.float32)
++        payload = np.tile(plan.encoded_bits, REPEATS)
++        blocks[plan.positions] = (
++            (2 * payload.astype(np.int8) - 1)[:, None, None]
++            * plan.polarities[:, None, None]
++            * templates[plan.orientations]
++        )
++        observation = decode(blocks, plan)
++        self.assertTrue(observation["exact_match"])
++        self.assertEqual(observation["decoded_bit_distance"], 0)
++        self.assertEqual(observation["encoded_bit_distance"], 0)
++        self.assertEqual(len(observation["raw_sums"]), TAG_ENCODED_BITS)
++
++        mismatch = dataclasses.replace(plan, raw_bits=1 - plan.raw_bits)
++        rejected = decode(blocks, mismatch)
++        self.assertFalse(rejected["exact_match"])
++        self.assertEqual(rejected["decoded_bit_distance"], 72)
++
++    def test_copy_observed_overlays_preserves_changed_target_text_and_masks(self) -> None:
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            base = root / "base.pdf"
++            target = root / "target.pdf"
++            donor = root / "donor.pdf"
++            copied = root / "copied.pdf"
++            _one_page_pdf(base, "quantity 120")
++            _one_page_pdf(target, "quantity 920")
++
++            document = fitz.open(base)
++            page = document[0]
++            for sign in (1.0, -1.0):
++                pattern = np.zeros((600, 600), dtype=np.float32)
++                pattern[:, :300] = sign
++                page.insert_image(
++                    page.rect,
++                    stream=tardos_carrier._transparent_overlay(pattern, 4.0),
++                    overlay=True,
++                    keep_proportion=False,
++                )
++            document.save(donor, deflate=True)
++            document.close()
++
++            copy_observed_overlays(donor, target, copied)
++            with fitz.open(donor) as donor_doc, fitz.open(copied) as copied_doc:
++                donor_images = donor_doc[0].get_images(full=True)
++                copied_images = copied_doc[0].get_images(full=True)
++                self.assertEqual(len(donor_images), 2)
++                self.assertEqual(len(copied_images), 2)
++                self.assertTrue(all(image[1] > 0 for image in donor_images))
++                self.assertTrue(all(image[1] > 0 for image in copied_images))
++                self.assertIn("quantity 920", copied_doc[0].get_text())
++                self.assertNotIn("quantity 120", copied_doc[0].get_text())
++
++    def test_copy_rejects_page_geometry_mismatch(self) -> None:
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            donor = root / "donor.pdf"
++            target = root / "target.pdf"
++            destination = root / "copied.pdf"
++            _one_page_pdf(donor, "donor")
++            document = fitz.open()
++            document.new_page(width=301, height=300)
++            document.save(target)
++            document.close()
++            with self.assertRaises(ValueError):
++                copy_observed_overlays(donor, target, destination)
++
++    def test_cli_refuses_existing_output_directory(self) -> None:
++        with tempfile.TemporaryDirectory() as directory:
++            command = [
++                sys.executable,
++                str(Path(__file__).with_name("run_study.py")),
++                "--output",
++                directory,
++            ]
++            completed = subprocess.run(command, text=True, capture_output=True)
++            self.assertNotEqual(completed.returncode, 0)
++            self.assertIn("refus", (completed.stdout + completed.stderr).lower())
++
++
++if __name__ == "__main__":
++    unittest.main()
+
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/auth_orthogonal_v1/README.md	2026-09-12 12:37:49.083119568 +0530
+@@ -0,0 +1,57 @@
++# Orthogonal authenticator carrier falsification study
++
++This directory contains an isolated, prospective carrier experiment. It is not
++production security integration and must not be used to authenticate releases
++or accuse a recipient.
++
++Run the focused suite:
++
++```bash
++PYTHONPATH=prototypes/nishan_pq:research/experiments/auth_orthogonal_v1 .venv/bin/python -m unittest discover -s research/experiments/auth_orthogonal_v1 -p 'test_*.py' -v
++```
++
++Run the preregistered study exactly once into a new directory:
++
++```bash
++PYTHONPATH=prototypes/nishan_pq:research/experiments/auth_orthogonal_v1 .venv/bin/python research/experiments/auth_orthogonal_v1/run_study.py --output research/evidence/nishan-auth-orthogonal-2026-09-12/run-01
++```
++
++The destination must not already exist. The runner writes `manifest.json`
++before measurement, retains all artifacts, then writes `results.json`. A crash
++leaves partial evidence plus `failure.json`; do not overwrite it or select a
++more favorable rerun.
++
++## Sensitive local material
++
++Every run retains authority secrets, authenticator secrets, wrong-key controls,
++and ML-DSA-65 private keys under `material/` for reproducibility. Secret and
++private manifest files are mode 0600. The material is non-production research
++data: do not submit, publish, upload, or treat it as independently held key
++material.
++
++## Security and interpretation boundaries
++
++- The harness owns every key. There is no recipient enrollment, independent
++  custody, escrow, ledger, signature protocol, adjudicator, or public
++  verification.
++- This carrier is a full-page PDF image object and is separately removable and
++  copyable. A changed-context rejection does not show that edited content will
++  reject when tested under the genuine donor context. The observed-object copy
++  attack directly measures that gap without receiving a key or plan.
++- Exact 72-bit recovery is a fixed experimental decision rule, not proof of a
++  false-attribution rate. The wrong-key candidates are correlated convenience
++  controls, not a population estimate.
++- Tardos accusation bounds require their theorem assumptions, including the
++  marking condition. The runner records observed marking-condition violations
++  and does not extend the theorem to this visual channel.
++- PSNR and extracted-text equality do not establish human invisibility,
++  accessibility, document semantics, or preservation of digital signatures.
++- Two synthetic one-page fixtures, digital averaging, and JPEG Q55 do not
++  establish physical print/scan recovery or deployment generalization.
++- Gate A only measures limited digital replication. Gate B only tests the
++  specified overlay transplantation hypothesis. Even both passing would not
++  establish asymmetric security, malicious-distributor resistance, novelty,
++  superiority, or readiness for the product or presentation.
++- A scientific gate failure is a valid result. The fixed strength, profile,
++  cases, exact threshold, and randomness must not be retuned or rerun to select
++  favorable outcomes.
+
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/NISHAN_AUTH_ORTHOGONAL_DECISION_2026-09-12.md	2026-09-12 12:48:01.020099899 +0530
+@@ -0,0 +1,52 @@
++# Orthogonal authenticator: first-run decision
++
++12 September 2026. **Scientific decision: retain as a digital carrier experiment; do not promote as anti-framing or content-authentication protection.** Implementation review is pending. Production NISHAN and the selection PPTX/PDF remain unchanged.
++
++## What was newly established
++
++The recovered Sol Ultra probe has now been prospectively reimplemented with a frozen profile, fresh random keys, actual generated recipient public-key fingerprints, real source hashes and fresh sessions. The sole run used two synthetic one-page PDFs, five issued recipients per source, and coalition sizes 1, 2, 3 and 5, rendered as PNG and JPEG Q55. It was not an exact reproduction of the deleted September 10 artifacts.
++
++| Predeclared test | Observed result | Meaning |
++|---|---|---|
++| Exact auth recovery | 44/44 participating tags; expected match set on all 16 auth artifacts | The extra channel worked in this small digital sample |
++| Other-issued candidates | 0/36 extra matches | No extra issued tag matched in these correlated observations |
++| Tardos-only/unmarked, changed-context and fresh wrong-key controls | 0/60, 0/6 and 0/200 matches respectively | Tested key/context discrimination; not a calibrated deployment false-attribution bound |
++| Copied observed overlay on changed content | Donor tag matched in 2/2 artifacts: PDF and JPEG Q55 | A genuine tag can survive transplantation onto edited content |
++| Matched Tardos baseline comparison | Exact expected sets on all 16 Tardos-only artifacts and all 16 added-auth artifacts | No additional identification accuracy was demonstrated over this baseline |
++
++All 20 marked PDFs retained the source's extracted text. Tardos-only PSNR was 41.863–41.927 dB; added-auth PSNR was 38.577–38.640 dB. The additional channel therefore costs visual fidelity in this comparison. PSNR and text extraction do not establish perceptual invisibility, accessibility, or preservation of existing PDF signatures.
++
++The eight unit tests passed. The one full study completed in 114.054313 seconds. This is whole-study runtime, not release latency. The controller independently checked all 97 manifest-listed artifact hashes and all 10 study source/import hashes. It also visually confirmed the attack JPEG displays `quantity 920` where the original fixture had `quantity 120`.
++
++## The decisive distinction
++
++The attack helper took only the observed marked PDF, the modified target PDF and an output path. It copied both image objects and their alpha masks, without a key, plan, codeword or regenerated overlay. Both Tardos and the second tag still selected donor row 0 under the genuine donor context; the modified PDF's text and file hash differed from the donor.
++
++Using a *changed candidate context* rejected the tag, but using the *genuine donor context* on the edited content accepted it. Including the original source hash in a repeated visual payload does not, by itself, verify the received artifact's local content. This is not a newly demonstrated bypass of production NISHAN: the experiment does not invoke its release ledger, structural channel or strict attribution policy.
++
++The narrow surviving interpretation is **association with a copied donor pattern**, not proof that the edited content was the signed output, that the recipient produced it, or that the recipient leaked it. Exact-file hash verification can reject the altered PDF as an exact output; transformed artifacts need a separately justified association policy.
++
++## Why this is not the missing breakthrough
++
++Asymmetric Tardos work already addresses provider-controlled fingerprints and manipulated accusation state through a protocol involving protected generation/embedding and adjudication. A new random HMAC key inside the same harness does not provide those properties. [Charpentier et al., 2010](https://arxiv.org/html/1010.2621v1)
++
++Hybrid robust/fragile watermarking has also combined separate identity and content-authentication channels, with copy-attack rejection. The robust, transformation-tolerant content-binding problem is distinct from simply naming the pristine source in a payload. This is close conceptual prior art, not an apples-to-apples performance comparison with NISHAN. [Deguillaume et al., 2002](https://cvml.unige.ch/publications/postscript/2002/DeguillaumeVoloshynovskiyPun_EUSIPCO2002.pdf)
++
++The present run has no independent recipient custody, enrollment, recipient-signature protocol, escrow, ledger or adjudicator. It supplies no physical print/scan/camera result, no externally held-out population, and no competitive superiority result. The Tardos extraction reports also contain marking-condition violations for JPEG and combined-layer cases; empirical row recovery is not a proof of collusion completeness for that image channel. Formal code-level soundness and completeness have distinct assumptions and should not be conflated.
++
++## Submission decision
++
++Keep the reviewed selection deck unchanged. Do not advertise this as a fix for operator framing, real photographs or general transplantation. Preserve the code and results as research evidence; do not export its private experimental material with the submission.
++
++Further recipient/adjudicator implementation is not justified by these results alone. It needs a distinct, literature-informed threat model and a protocol that actually changes who can construct the accepted artifact. Physical watermark improvement remains a separate unresolved experiment requiring fresh captures of whichever new carrier is tested.
++
++## Reproducibility pointers
++
++- [Frozen specification](/home/user_end4/MySpace/SIH/research/NISHAN_AUTH_ORTHOGONAL_SPEC_2026-09-12.md)
++- [Implementation and run instructions](/home/user_end4/MySpace/SIH/research/experiments/auth_orthogonal_v1/README.md)
++- [Full task report](/home/user_end4/MySpace/SIH/research/evidence/nishan-auth-orthogonal-2026-09-12/task-1-report.md)
++- [Premeasurement manifest](/home/user_end4/MySpace/SIH/research/evidence/nishan-auth-orthogonal-2026-09-12/run-01/manifest.json)
++- [Complete observations](/home/user_end4/MySpace/SIH/research/evidence/nishan-auth-orthogonal-2026-09-12/run-01/results.json)
++- [Independent prior-art review](/home/user_end4/MySpace/SIH/research/NISHAN_AUTH_ORTHOGONAL_PRIOR_ART_2026-09-12.md)
++
++`results.json` SHA256: `1e9d8c827bf987bf101a2107940351b5c8cf0ef5b1fd463c330ee1ecce4e2e80`.

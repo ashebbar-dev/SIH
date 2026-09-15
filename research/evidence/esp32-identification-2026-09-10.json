@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-10",
+  "scope": "Read-only ROM bootloader identification; board reset, no flash erase or firmware write",
+  "tool": "esptool 5.4.0",
+  "command": ".venv-kws/bin/python -m esptool --port /dev/ttyUSB0 --no-stub --connect-attempts 2 flash-id",
+  "exit_code": 0,
+  "usb_bridge": "Silicon Labs CP2102 USB to UART Bridge Controller",
+  "usb_vid_pid": "10c4:ea60",
+  "serial_port": "/dev/ttyUSB0",
+  "chip": "ESP32-D0WD-V3",
+  "revision": "v3.1",
+  "features_reported": "Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None",
+  "crystal_mhz": 40,
+  "flash_manufacturer_hex": "5e",
+  "flash_device_hex": "4016",
+  "detected_flash_size": "4MB",
+  "flash_voltage_v": 3.3,
+  "limitations": [
+    "Flash capacity is not RAM capacity.",
+    "No microphone capture, inference, CPU, RAM or latency measurements performed on board.",
+    "No firmware installed or overwritten.",
+    "User has earbuds and earphones; the ESP32 kit has no microphone. A stage microphone is only available on stage, not owned or available for development. No board-compatible microphone is confirmed."
+  ]
+}

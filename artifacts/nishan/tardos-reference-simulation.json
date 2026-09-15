@@ -1,0 +1,154 @@
+{
+  "attacks": {
+    "coin_flip": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3865.1763375452524,
+      "colluder_score_min": 3324.0006398385244,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 493.565570888811,
+      "marking_condition_checked": true,
+      "threshold": 2100.0
+    },
+    "interleaving": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3726.5820000427398,
+      "colluder_score_min": 3375.3888632355865,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 481.5794610836211,
+      "marking_condition_checked": true,
+      "threshold": 2100.0
+    },
+    "majority": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3799.163095299723,
+      "colluder_score_min": 3242.043334336236,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 488.8401188896554,
+      "marking_condition_checked": true,
+      "threshold": 2100.0
+    },
+    "minority": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3505.4358302505398,
+      "colluder_score_min": 3220.5114906065196,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 634.9126043457063,
+      "marking_condition_checked": true,
+      "threshold": 2100.0
+    }
+  },
+  "claim_boundary": {
+    "carrier": "No claim is made here that the current PDF watermark carrier realizes 52,500 independent symbols or preserves the marking condition after distortion.",
+    "simulation": "Each named attack result is one reproducible codebook fixture, not a measured probability or a theorem.",
+    "theorem": "The error bounds apply to the original randomized Tardos construction for coalitions up to c that obey the marking condition."
+  },
+  "coalition_user_indices": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "manifest": {
+    "biases_sha3_256": "ef282cdb37732106f12ac92aa73629d344132daf36538f39fe4a17e03853b761",
+    "codebook_sha3_256": "2f11ffb3d90d8ed17920afacf958376e62f190a18efdea1b314f6ca6ac0cc991",
+    "codebook_shape": [
+      1000,
+      52500
+    ],
+    "commitment_encoding": "biases=<f8 row-major; codebook=u1 row-major",
+    "implementation_note": "Reproducible research generator; deployment requires protected state and an audited cryptographic DRBG.",
+    "parameters": {
+      "coalition_limit": 5,
+      "code_length": 52500,
+      "cutoff": 0.0006666666666666666,
+      "familywise_epsilon": 1e-06,
+      "k": 21,
+      "marking_assumption_required": true,
+      "per_user_epsilon": 9.999999999999999e-10,
+      "roster_size": 1000,
+      "theorem_profile": "Tardos F_(n,c,epsilon/n), original conservative constants",
+      "threshold": 2100.0
+    },
+    "theorem_bounds": {
+      "combined_error_upper": 9.990056234132518e-07,
+      "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+      "scope": "random code construction; coalition obeys the marking condition",
+      "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+      "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+    }
+  },
+  "runtime": {
+    "bias_vector_bytes": 420000,
+    "codebook_bytes": 52500000,
+    "four_attack_scoring_seconds": 2.086333944229409,
+    "generation_seconds": 3.6043210939969867
+  },
+  "schema": "nishan.tardos.reference-simulation/v1",
+  "seed": 20260910,
+  "source": {
+    "construction": "original asymmetric score and conservative constants",
+    "doi": "10.1145/1346330.1346335",
+    "paper": "Gabor Tardos, Optimal probabilistic fingerprint codes, JACM 2008"
+  }
+}

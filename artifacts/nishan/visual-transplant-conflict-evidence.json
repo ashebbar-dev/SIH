@@ -1,0 +1,162 @@
+{
+  "accused_codebook_rows": [
+    0
+  ],
+  "attribution": [],
+  "channel_decision": {
+    "conflict": true,
+    "decision": "abstain_channel_conflict",
+    "editable_pdf_corroboration_required": true,
+    "layout_authenticated_indices": [
+      1
+    ],
+    "layout_observation": {
+      "carrier_symbols_read": 133,
+      "encoded_bits": 126,
+      "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+      "read_error": null,
+      "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+      "suspect_is_pdf": true,
+      "tag_bits": 72
+    },
+    "reason": "The visual Tardos and text-layout identity sets differ. Even an overlapping candidate is withheld because extra candidates are consistent with carrier transplantation or recombination.",
+    "screening_lead_indices": [],
+    "selected_indices": [],
+    "tardos_issued_indices": [
+      0
+    ],
+    "unissued_tardos_indices": []
+  },
+  "decoder": {
+    "decoded_one_fraction": 0.5003047619047619,
+    "decoded_symbols": 52500,
+    "median_absolute_block_correlation": 4590.0,
+    "preprocessing": {
+      "pages": [
+        {
+          "applied": false,
+          "baseline_similarity": 0.003008,
+          "homography_suspect_to_reference": null,
+          "method": "resize-only",
+          "ransac_inlier_ratio": 0.0,
+          "ransac_inliers": 0,
+          "ratio_test_matches": 1,
+          "reference_height": 1684,
+          "reference_keypoints": 8013,
+          "reference_width": 1190,
+          "registered_similarity": 0.003008,
+          "rejection_reason": "only 1 ratio-test matches",
+          "suspect_height": 1684,
+          "suspect_keypoints": 8449,
+          "suspect_width": 1190
+        }
+      ],
+      "registration_mode": "auto"
+    }
+  },
+  "detection_threshold": 2100.0,
+  "fingerprint_scheme": "NISHAN dual carrier: Tardos visual code + HMAC layout tag",
+  "generated_at": "2026-09-10T13:57:50.248661+00:00",
+  "interpretation": "The engine returns a signed release candidate only under the recorded fail-closed channel policy. A visual/layout disagreement or an unissued Tardos threshold crossing causes abstention. The Tardos reference bound still requires its coalition and marking assumptions; it is not asserted automatically for a physical carrier input.",
+  "ledger": {
+    "canonical_head": "4785701bd7071572bf3cba4203aaf00d709ac5ba2793be200597d9a98c0bb0e4",
+    "canonical_length": 3,
+    "divergent_replicas": [],
+    "identity_registry_sha3_256": "9dda55cdb40b5c2fed8d0bb678e43cb76686aa9e417f7c54df6f72222f045778",
+    "quorum_valid": true,
+    "trust_root_hash": "e1a6287963a83f0f6b624fe110f2246016cff15e4147c02b9ac52bcdaf56c2a8",
+    "trust_root_valid": true
+  },
+  "ranking": [
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 0,
+      "layout_tag": {
+        "corrected_blocks": 15,
+        "hamming_blocks": 18,
+        "match": false,
+        "release_channel_available": true,
+        "status": "tag mismatch",
+        "suspect_carrier_symbols": 133,
+        "suspect_is_pdf": true
+      },
+      "ledger_block_hash": "d76e0aa741738fca12373d91492f33502d1568798c5347d54c1eba40d366af32",
+      "ledger_block_index": 0,
+      "recipient_display_name": "Commander Alice Rao",
+      "recipient_id": "alice",
+      "recipient_signature_valid": true,
+      "score": 17383.212254,
+      "selected_by_fusion": false,
+      "session_id": "bb966d27-87ca-465e-a31f-08937e56e74c",
+      "tardos_above_threshold": true
+    },
+    {
+      "above_threshold": false,
+      "fingerprint_user_index": 1,
+      "layout_tag": {
+        "corrected_blocks": 0,
+        "hamming_blocks": 18,
+        "match": true,
+        "release_channel_available": true,
+        "status": "authenticated tag matched",
+        "suspect_carrier_symbols": 133,
+        "suspect_is_pdf": true
+      },
+      "ledger_block_hash": "cd171eaecf3a010f43e9a49bbd623f729193b4d5dbb5e0f781326201119452d7",
+      "ledger_block_index": 1,
+      "recipient_display_name": "Lieutenant Bob Singh",
+      "recipient_id": "bob",
+      "recipient_signature_valid": true,
+      "score": 171.967476,
+      "selected_by_fusion": false,
+      "session_id": "ed2a7c0a-be3b-4dbc-b4b3-929934d418b5",
+      "tardos_above_threshold": false
+    },
+    {
+      "above_threshold": false,
+      "fingerprint_user_index": 2,
+      "layout_tag": {
+        "corrected_blocks": 15,
+        "hamming_blocks": 18,
+        "match": false,
+        "release_channel_available": true,
+        "status": "tag mismatch",
+        "suspect_carrier_symbols": 133,
+        "suspect_is_pdf": true
+      },
+      "ledger_block_hash": "4785701bd7071572bf3cba4203aaf00d709ac5ba2793be200597d9a98c0bb0e4",
+      "ledger_block_index": 2,
+      "recipient_display_name": "Analyst Charlie Devi",
+      "recipient_id": "charlie",
+      "recipient_signature_valid": true,
+      "score": -74.983467,
+      "selected_by_fusion": false,
+      "session_id": "2e04044e-acaa-486d-b498-bf96f10766ef",
+      "tardos_above_threshold": false
+    }
+  ],
+  "reference_sha3_256": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb",
+  "suspect_sha3_256": "9206811582d145ed05eda6a989c4294c6fceee2b285a7e7187ff4f20f2f8482c",
+  "threshold_calibration": {
+    "coalition_limit": 5,
+    "code_length": 52500,
+    "decision_role": "binary fingerprint accusation threshold",
+    "familywise_epsilon_target": 1e-06,
+    "formal_code_bound_available": true,
+    "formal_familywise_bound_established": false,
+    "formal_familywise_bound_established_for_this_physical_attack": false,
+    "reference_theorem_bounds": {
+      "combined_error_upper": 9.990056234132518e-07,
+      "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+      "scope": "random code construction; coalition obeys the marking condition",
+      "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+      "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+    },
+    "roster_size": 1000,
+    "threshold": 2100.0,
+    "version": "original-tardos-reference-profile/v1",
+    "why_not_automatic": "The theorem requires a coalition of at most c and a decoded pirate word that obeys the marking condition. Those facts cannot be established from an unknown leak alone; named attack fixtures test the carrier condition separately. The keyed generator also uses documented finite-precision discretization."
+  },
+  "unissued_accused_codebook_rows": [],
+  "version": "nishan-evidence/v3-dual-carrier"
+}

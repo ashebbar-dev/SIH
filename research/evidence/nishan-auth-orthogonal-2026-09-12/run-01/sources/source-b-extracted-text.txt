@@ -1,0 +1,54 @@
+AUTHENTICATOR RESEARCH FIXTURE B
+Synthetic logistics record - not operational data
+Item 01 | quantity 120 | bay 04 | release 09:30
+Check 02: verify seal, reference number, and dispatch count.
+Item 03 | quantity 120 | bay 04 | release 09:30
+Check 04: verify seal, reference number, and dispatch count.
+Item 05 | quantity 120 | bay 04 | release 09:30
+Check 06: verify seal, reference number, and dispatch count.
+Item 07 | quantity 120 | bay 04 | release 09:30
+Check 08: verify seal, reference number, and dispatch count.
+Item 09 | quantity 120 | bay 04 | release 09:30
+Check 10: verify seal, reference number, and dispatch count.
+Item 11 | quantity 120 | bay 04 | release 09:30
+Check 12: verify seal, reference number, and dispatch count.
+Item 13 | quantity 120 | bay 04 | release 09:30
+Check 14: verify seal, reference number, and dispatch count.
+Item 15 | quantity 120 | bay 04 | release 09:30
+Check 16: verify seal, reference number, and dispatch count.
+Item 17 | quantity 120 | bay 04 | release 09:30
+Check 18: verify seal, reference number, and dispatch count.
+Item 19 | quantity 120 | bay 04 | release 09:30
+Check 20: verify seal, reference number, and dispatch count.
+Item 21 | quantity 120 | bay 04 | release 09:30
+Check 22: verify seal, reference number, and dispatch count.
+Item 23 | quantity 120 | bay 04 | release 09:30
+Check 24: verify seal, reference number, and dispatch count.
+Record
+Status
+Owner
+Checkpoint
+R-01
+research
+unassigned
+C-01
+R-02
+research
+unassigned
+C-02
+R-03
+research
+unassigned
+C-03
+R-04
+research
+unassigned
+C-04
+R-05
+research
+unassigned
+C-05
+R-06
+research
+unassigned
+C-06

@@ -1,0 +1,6 @@
+test_workspace_destination_can_be_on_another_filesystem (test_release_safeguards.ReleaseSafeguardsTests.test_workspace_destination_can_be_on_another_filesystem) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 7.843s
+
+OK

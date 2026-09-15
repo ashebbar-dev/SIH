@@ -1,0 +1,16 @@
+test_actual_pin_rechecked_after_append_before_checkpoint (test_release_safeguards.ReleaseSafeguardsTests.test_actual_pin_rechecked_after_append_before_checkpoint) ... ok
+test_bad_arguments_fail_before_decryption_and_locks_are_released (test_release_safeguards.ReleaseSafeguardsTests.test_bad_arguments_fail_before_decryption_and_locks_are_released) ... ok
+test_checkpoint_failure_commits_but_never_publishes_and_requires_recovery (test_release_safeguards.ReleaseSafeguardsTests.test_checkpoint_failure_commits_but_never_publishes_and_requires_recovery) ... ok
+test_concurrent_issuance_has_distinct_rows_and_third_release_succeeds (test_release_safeguards.ReleaseSafeguardsTests.test_concurrent_issuance_has_distinct_rows_and_third_release_succeeds) ... ok
+test_coordinated_rollback_rejected_by_release_and_trace (test_release_safeguards.ReleaseSafeguardsTests.test_coordinated_rollback_rejected_by_release_and_trace) ... ok
+test_empty_missing_and_replaced_witness_rejected (test_release_safeguards.ReleaseSafeguardsTests.test_empty_missing_and_replaced_witness_rejected) ... ok
+test_foreign_ledger_root_and_invalid_witness_signature_rejected (test_release_safeguards.ReleaseSafeguardsTests.test_foreign_ledger_root_and_invalid_witness_signature_rejected) ... ok
+test_noop_or_corrupt_checkpoint_never_publishes (test_release_safeguards.ReleaseSafeguardsTests.test_noop_or_corrupt_checkpoint_never_publishes) ... ok
+test_pinned_happy_path_and_read_only_trace (test_release_safeguards.ReleaseSafeguardsTests.test_pinned_happy_path_and_read_only_trace) ... ok
+test_rendered_transplant_retains_leads_without_attribution (test_release_safeguards.ReleaseSafeguardsTests.test_rendered_transplant_retains_leads_without_attribution) ... ok
+test_short_pdf_abstains_with_signed_capacity_limitation (test_release_safeguards.ReleaseSafeguardsTests.test_short_pdf_abstains_with_signed_capacity_limitation) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 82.796s
+
+OK

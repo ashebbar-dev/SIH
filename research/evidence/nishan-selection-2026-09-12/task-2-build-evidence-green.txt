@@ -1,0 +1,7 @@
+test_build_rejects_safeguard_code_hash_drift (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_rejects_safeguard_code_hash_drift) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.636s
+
+OK
+/tmp/tmpt3q6w1p6/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx

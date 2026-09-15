@@ -1,0 +1,1470 @@
+# Review package: research/evidence/nishan-selection-2026-09-12/before.tar.gz -> working files
+No Git repository; complete net snapshot diff, 10 lines of context.
+## Changed files
+prototypes/nishan_pq/README.md: 12294 -> 16493 bytes; SHA256 4be91d4dd630d25f38dc45c3fd4fdec2c6bfc3b9e09bf791c8a8454380c689ee -> 3e5091e407e9539c43bd9a40807e7b2a5fecc5133748a2b6bcdebe46a7d458b1
+prototypes/nishan_pq/nishan/cli.py: 5737 -> 6531 bytes; SHA256 3261769dfaf9e0295e2f86565c204ff402fe6f34c1575bf63447c6c3a8b327dd -> fc8a61c1613ecb9a1d4c67bb32794430e61776872943a03a39be1c0e051648b4
+prototypes/nishan_pq/nishan/core.py: 41620 -> 47036 bytes; SHA256 997aa293e6bd349c296e76623e4a3dd499f5db22099012488f76880d159ffc9f -> 6d57d5a974b877707a2710ecdbe8f39d9c28626caa7f0844adbba1673dcc7fb9
+prototypes/nishan_pq/nishan/witness.py: 9357 -> 11771 bytes; SHA256 12f906575d100c3f5fb8043caa4257c205d075ddf3f7a24433dfb4b6f379908f -> 24097dab503ee2f0e18d706d62a15690270b95092f202860690c21c7ef3f8990
+prototypes/nishan_pq/tests/test_pdf_format_policy.py: 4146 -> 4242 bytes; SHA256 4a3afa6a80d82f4ce7b70b29cf33341fd892488fd84b18fc753837c8b6d4c94e -> f18140142a867adbd0469c1eed584d295dce44906090cc9a62ad904f8e6b363f
+prototypes/nishan_pq/tests/test_release_safeguards.py: 0 -> 16148 bytes; SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 -> 69e32880b3d1942065bc96764066a49495df8d6aa219852c55acb87d9c7e3c65
+prototypes/nishan_pq/tools/demo_release_safeguards.py: 0 -> 14824 bytes; SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 -> dc60f61e4671042d3e692c09bc71614809ca424a45cbdda75b69818726f28854
+
+## Diff
+--- before/prototypes/nishan_pq/README.md
++++ current/prototypes/nishan_pq/README.md
+@@ -1,57 +1,121 @@
+ # NISHAN-PQ
+ 
+ **Target:** Smart India Hackathon 2026, SIH26237  
+ **Problem owner:** Ministry of Defence, Indian Navy (WESEE)  
+ **Pitch:** Give authorized users the same encrypted document. If a copy leaks,
+ identify the release session through two separately encoded, domain-separated PDF carriers, reject
+-transplanted or incomplete editable-PDF evidence, and return the signed,
++transplanted or incomplete PDF-source evidence, and return the signed,
+ quorum-committed result without leaving the air-gapped network.
+ 
+ This is an evidence prototype. Its PDF path now performs the complete sequence:
+ 
+ 1. Encrypt one document with AES-256-GCM.
+ 2. Wrap the same document key for each authorized recipient using ML-KEM-768
+    (NIST FIPS 203).
+ 3. At decryption, assign the session one row from a per-document binary Tardos
+    codebook declared for 1,000 rows, coalitions up to five, and family-wide target
+    `epsilon = 10^-6`.
+ 4. Carry all 52,500 symbols in a subtle rendered-page overlay and a separate
+    72-bit HMAC session authenticator in 126 error-corrected text-layout positions,
+    while retaining the original PDF text, fonts and vector objects.
+ 5. Bind each recipient ID to its KEM and signature public-key hashes in a
+    validator-signed enrollment trust root; reject self-asserted substitute keys.
+ 6. Have the enrolled recipient key sign the canonical decryption event using
+    ML-DSA-65 (NIST FIPS 204).
+-7. Commit the signed event to four offline replicas with a three-validator
+-   endorsement quorum before releasing the marked copy.
++7. Serialize validation, row allocation, signing and commit across local processes.
++   Commit to four offline replicas with a three-validator endorsement quorum.
++   In explicitly pinned witness mode, verify and checkpoint the new head before
++   publishing the marked copy.
+ 8. Decode a leaked rendering, score all 1,000 codebook rows using the original
+    Tardos accusation score, and connect positive rows to signed ledger sessions.
+-9. Require both channels to agree for editable PDFs. Treat a single surviving
+-   channel as a lead and abstain; also abstain on a conflict or an unissued row.
++9. Require both channels to agree for every PDF-source trace, including raster
++   suspects and releases too short for the layout tag. Treat a single surviving
++   channel as a research lead and abstain; also abstain on a conflict or an unissued row.
+ 
+ OpenSSL supplies the real ML-KEM and ML-DSA implementations. The program stops
+ if they are unavailable; it has no RSA or elliptic-curve fallback hidden behind
+ post-quantum labels.
+ 
+ ## Run the proof
+ 
+ From the repository root:
+ 
+ ```bash
+ .venv/bin/python -m nishan doctor
+ .venv/bin/python -m nishan demo --work-dir demo-run
+ .venv/bin/python -m unittest discover -s prototypes/nishan_pq/tests -v
+ .venv/bin/python -m nishan init-witness --root external-witness
+ .venv/bin/python -m nishan checkpoint-witness --root external-witness --ledger demo-run/ledger
+ .venv/bin/python -m nishan audit-witness --root external-witness --ledger demo-run/ledger
+ ```
++
++The `demo` command and frozen artifacts predate the current strict PDF policy.
++For the fresh release safeguards demonstration, use a new output directory:
++
++```bash
++.venv/bin/python prototypes/nishan_pq/tools/demo_release_safeguards.py \
++  --output research/evidence/nishan-selection-2026-09-12/demo
++```
++
++This runner refuses a populated directory, requires real PQC, and records twelve
++observed security scenarios, code hashes and explicit limitations in `results.json`.
++Its cases are protocol scenarios, not independent population trials.
++
++### Explicit pinned-witness operation
++
++`init-witness` creates a key and an empty chain; it does not establish a trusted
++ledger head. An operator must review a healthy signed ledger and run
++`checkpoint-witness` explicitly, as above. At provisioning, securely retain the
++SHA3-256 digest of the actual witness `public.pem` bytes outside the ledger and
++witness directories. The initialization command prints that digest. For local
++demonstration this is co-located provisioning, with no independent administration
++or hardware isolation. A real verifier must receive its pin independently, not
++read a claimed digest from a suspect directory when verifying it.
++
++Set `WITNESS_PIN` to that independently provisioned 64-character hexadecimal
++digest, then provide both arguments for every strict release and trace:
++
++```bash
++.venv/bin/python -m nishan decrypt \
++  --package demo-run/broadcast.nishan.json --identities demo-run/identities \
++  --recipient alice --authority-secret demo-run/authority/watermark-secret.bin \
++  --ledger demo-run/ledger --output strict-alice.pdf \
++  --witness-root external-witness --witness-public-key-sha3-256 "$WITNESS_PIN"
++.venv/bin/python -m nishan trace \
++  --reference demo-run/source.pdf --suspect strict-alice.pdf \
++  --authority-secret demo-run/authority/watermark-secret.bin --ledger demo-run/ledger \
++  --evidence strict-evidence.json --witness-root external-witness \
++  --witness-public-key-sha3-256 "$WITNESS_PIN"
++```
++
++Adjust the package, source and secret paths to your fixture. Both flags are
++required together; wrong/malformed pins, empty/missing history, forks, rollback
++and unwitnessed extensions fail before decryption. The comparison uses the
++actual public-key bytes and requires an exactly consistent checkpoint.
++Without these options, existing APIs remain usable and explicitly report
++`release_assurance.mode = "unwitnessed"`. Generic-image attribution remains
++research screening; the two-channel rule applies to PDF-source Tardos tracing.
++
++Locks are acquired in ledger-then-witness order. Release holds them through
++publication; trace audits a consistent snapshot under them and releases them
++before extraction. `ledger_witness` identifies that snapshot, not perpetual
++freshness. All writers must cooperate with these local advisory locks.
++
++If a checkpoint fails after append, the signed release authorization remains
++committed but no new output is published, and any existing destination is
++preserved. Strict release and trace then reject the unwitnessed extension. After
++deliberately reviewing the ledger, witness and intended release, an operator may
++run `checkpoint-witness` to recover, then retry release (which allocates a new
++session/row). There is no automatic rollback or repair. A crash after checkpoint
++but before publication can also leave an authorized record without delivery;
++receipts never prove delivery or reading.
+ 
+ Generate the public evidence and the full five-colluder carrier benchmark:
+ 
+ ```bash
+ .venv/bin/python prototypes/nishan_pq/tools/export_submission_evidence.py
+ .venv/bin/python prototypes/nishan_pq/tools/benchmark_tardos.py
+ .venv/bin/python prototypes/nishan_pq/tools/benchmark_tardos_trials.py
+ .venv/bin/python prototypes/nishan_pq/tools/benchmark_end_to_end_trials.py --trials 30
+ .venv/bin/python prototypes/nishan_pq/tools/benchmark_tardos_pdf.py
+ .venv/bin/python prototypes/nishan_pq/tools/score_physical_capture.py \
+@@ -68,27 +132,30 @@
+ decision checks.
+ 
+ ## Measured evidence on the synthetic one-page fixture
+ 
+ - The original conservative profile produces `m = 52,500` symbols and accusation
+   threshold `Z = 2,100` for `n = 1,000`, `c = 5`, and family target `10^-6`.
+ - One 595 x 842 point page rendered at 144 DPI provides 55,440 non-overlapping
+   6 x 6 blocks, enough to carry the full profile.
+ - Five generated marked copies retain byte-for-byte identical extracted text and
+   measure 41.867–41.870 dB rendered PSNR in the deterministic fixture.
+-- The end-to-end run uniquely attributes the JPEG-Q55 leak and recovers all known
++- The historical visual-channel end-to-end run selects the JPEG-Q55 session and recovers all known
+   participants in its two- and three-copy averages; every returned ledger event
+   has a valid ML-DSA signature.
+-- Across 30 successive fresh releases, the JPEG-Q55 path selects the exact signed
++- Across 30 historical successive releases, the JPEG-Q55 visual-channel path selects the exact signed
+   session 30/30 times with zero extra codebook rows. The correct-row score is
+   13,433.3 ± 128.2 (population SD) against `Z = 2,100`; the 95% Wilson interval
+-  for the observed exact-session rate is 88.65–100%.
++  for the observed exact-session rate is 88.65–100%. These repeated sessions use
++  one document/codebook, not independent document trials or physical captures.
++  The current strict PDF-source policy abstains on such raster-only evidence
++  while retaining these scores as research leads.
+ - A deliberately corrupted recipient signature is rejected even after the
+   generic replica layer endorses its record: tracing and the next plaintext
+   release both fail closed, and no output file is created.
+ - A valid ML-DSA signature made with a substitute key cannot claim Alice: the
+   key hash disagrees with Alice's validator-signed enrollment entry, so tracing
+   and the next release stop. Editing the registry itself invalidates its trust
+   root and also blocks release.
+ - Replaying an otherwise valid signed receipt creates a duplicate session and
+   document-row assignment; tracing and the next release both stop, and no
+   plaintext output is created.
+@@ -146,47 +213,50 @@
+ whether those assumptions held. Every known attack fixture therefore records
+ unanimous-position violations. The AES-CTR keyed codebook generator is a
+ finite-precision engineering construction and has not received an independent
+ DRBG or cryptographic review.
+ 
+ ## Current boundary and known failures
+ 
+ The PDF's visual mark remains a separately addressable overlay and the layout tag
+ remains removable by content-stream normalization. Redundancy does not make
+ either primitive non-removable. It creates a second observation and a safe
+-decision state: editable PDFs are attributed only when both channels agree.
++decision state: PDF-source leaks are attributed only when both channels agree.
+ Removal of one becomes a flagged lead, removal of both still defeats attribution,
+ and copying both of Alice's carriers simply makes the object an Alice-derived
+ copy. A controlled viewer remains necessary to limit editable export and capture
+ unmarked plaintext.
+ 
+ Detection is non-blind: the authority retains the source to calculate the page
+ residual. JPEG, resize, rotation, crop and one synthetic perspective transformation
+-now have measured fixture outcomes; real print/scan, phone photography, OCR and
+-re-pagination remain unmeasured. Only the named attacks may be described as
+-measured.
++have measured synthetic fixture outcomes. The historical shipped physical
++threshold recovered 0/4 captures; experimental profiles recovered the same 1/4
++capture. That small exploratory set does not establish robust print/scan or phone
++recovery. OCR and re-pagination remain open boundaries. Only named, saved attacks
++may be described as measured.
+ 
+ The four demo replicas, validator private keys, and external-witness private key
+ live on one machine. The ledger demonstration proves that an unendorsed edit is
+ detected and one changed replica is outvoted by three unchanged replicas. The
+ separately signed checkpoint detects a coordinated rollback to a valid prefix,
+-provided the checkpoint and key really remain outside ledger administration. An
++provided the retained checkpoint and provisioned key cannot also be rolled back. An
+ operator holding both a validator quorum and the local demo witness key can still
+ build another valid history. Production needs separately administered peers,
+ hardware-backed keys and an externally retained checkpoint.
+ 
+ Recipient signatures are mechanism evidence. The demo process owns the synthetic
+ private keys. The signed enrollment root now proves that each accepted receipt
+ used the key registered for that synthetic identity; it does not prove a real
+ employee exclusively controlled that key. Deployment needs an offline CA,
+-employee binding and HSM/TPM-backed custody. Session-row assignment also needs
+-transactional locking before concurrent deployment.
++employee binding and HSM/TPM-backed custody. Session-row assignment is now
++transactionally serialized for cooperating processes on this one filesystem;
++distributed consensus-backed allocation remains future work.
+ 
+ The distributor currently controls the codebook and both carrier secrets. It can
+ therefore manufacture a copy that points to an enrolled session. Recipient
+ signatures bind the recorded release event; they do not solve dishonest-provider
+ framing. A production accusation path needs a buyer-involved asymmetric
+ fingerprinting protocol and an independent adjudicator, as described in the
+ asymmetric Tardos literature.
+ 
+ ## Finale gates
+ 
+@@ -197,14 +267,14 @@
+ 3. Repeat coalition tests across independent codebooks and source documents;
+    distinguish empirical rates from the theorem at every step.
+ 4. Validate tagged PDFs, complex fonts, scanned documents, forms, signatures,
+    links and multi-page files without claiming properties the fixture lacks.
+ 5. Separate validator control, bind recipient keys to identities, and refuse
+    release when the quorum or identity hardware is unavailable.
+ 
+ The project does not claim that Tardos codes, dual watermarking, text-layout
+ marks, PDF watermarking, PQ signatures or DLTs are new. Its defensible
+ contribution is a measured conflict-aware protocol: both carriers bind to one
+-signed session, editable PDFs require identity agreement, raster leaks retain the
+-collusion-code path, and transplantation/removal states are exercised instead of
++signed session, all PDF-source traces require identity agreement, raster leaks retain
++collusion-code research leads, and transplantation/removal states are exercised instead of
+ being silently turned into accusations. The complete prior-art boundary is in
+ `research/NISHAN_NOVELTY_AND_PRIOR_ART.md`.
+--- before/prototypes/nishan_pq/nishan/cli.py
++++ current/prototypes/nishan_pq/nishan/cli.py
+@@ -1,18 +1,18 @@
+ from __future__ import annotations
+ 
+ import argparse
+ import json
+ from pathlib import Path
+ 
+ from . import ledger, pqc, watermark, witness
+-from .core import decrypt_and_attribute, encrypt_once, trace_leak
++from .core import _require_healthy_signed_history, decrypt_and_attribute, encrypt_once, trace_leak
+ from .demo import run as run_demo
+ from .identity import create_identity
+ from .util import write_private
+ 
+ 
+ def _path(value: str) -> Path:
+     return Path(value).expanduser().resolve()
+ 
+ 
+ def parser() -> argparse.ArgumentParser:
+@@ -41,29 +41,33 @@
+     encrypt.add_argument("--recipient", action="append", required=True)
+     encrypt.add_argument("--output", type=_path, required=True)
+ 
+     decrypt = commands.add_parser("decrypt")
+     decrypt.add_argument("--package", type=_path, required=True)
+     decrypt.add_argument("--identities", type=_path, required=True)
+     decrypt.add_argument("--recipient", required=True)
+     decrypt.add_argument("--authority-secret", type=_path, required=True)
+     decrypt.add_argument("--ledger", type=_path, required=True)
+     decrypt.add_argument("--output", type=_path, required=True)
++    decrypt.add_argument("--witness-root", type=_path)
++    decrypt.add_argument("--witness-public-key-sha3-256")
+ 
+     trace = commands.add_parser("trace")
+     trace.add_argument("--reference", type=_path, required=True)
+     trace.add_argument("--suspect", type=_path, required=True)
+     trace.add_argument("--authority-secret", type=_path, required=True)
+     trace.add_argument("--ledger", type=_path, required=True)
+     trace.add_argument("--evidence", type=_path)
+     trace.add_argument("--null-samples", type=int, default=400)
+     trace.add_argument("--familywise-alpha", type=float, default=0.01)
++    trace.add_argument("--witness-root", type=_path)
++    trace.add_argument("--witness-public-key-sha3-256")
+ 
+     audit = commands.add_parser("audit-ledger")
+     audit.add_argument("--root", type=_path, required=True)
+ 
+     init_witness = commands.add_parser(
+         "init-witness", help="create a separately administered PQ ledger-head witness"
+     )
+     init_witness.add_argument("--root", type=_path, required=True)
+ 
+     checkpoint_witness = commands.add_parser(
+@@ -101,39 +105,46 @@
+             arguments.source, arguments.identities, arguments.recipient, arguments.output
+         )
+     elif arguments.command == "decrypt":
+         payload = decrypt_and_attribute(
+             arguments.package,
+             arguments.identities,
+             arguments.recipient,
+             arguments.authority_secret,
+             arguments.ledger,
+             arguments.output,
++            witness_root=arguments.witness_root,
++            witness_public_key_sha3_256=arguments.witness_public_key_sha3_256,
+         )
+     elif arguments.command == "trace":
+         payload = trace_leak(
+             arguments.reference,
+             arguments.suspect,
+             arguments.authority_secret,
+             arguments.ledger,
+             arguments.evidence,
+             null_samples=arguments.null_samples,
+             familywise_alpha=arguments.familywise_alpha,
++            witness_root=arguments.witness_root,
++            witness_public_key_sha3_256=arguments.witness_public_key_sha3_256,
+         )
+     elif arguments.command == "audit-ledger":
+         payload = ledger.audit(arguments.root)
+     elif arguments.command == "init-witness":
+         payload = witness.initialize(arguments.root)
+     elif arguments.command == "checkpoint-witness":
+-        payload = witness.checkpoint(
+-            arguments.root, ledger.audit(arguments.ledger)
+-        )
++        if arguments.root.resolve() == arguments.ledger.resolve():
++            raise ValueError("witness root must differ from ledger root")
++        with ledger.exclusive(arguments.ledger):
++            with witness.exclusive(arguments.root):
++                payload = witness.checkpoint(arguments.root,
++                    _require_healthy_signed_history(arguments.ledger), lock_held=True)
+     elif arguments.command == "audit-witness":
+         payload = witness.audit(
+             arguments.root, ledger.audit(arguments.ledger)
+         )
+     else:  # pragma: no cover
+         raise AssertionError(arguments.command)
+     print(json.dumps(payload, indent=2, sort_keys=True))
+ 
+ 
+ if __name__ == "__main__":
+--- before/prototypes/nishan_pq/nishan/core.py
++++ current/prototypes/nishan_pq/nishan/core.py
+@@ -1,31 +1,32 @@
+ from __future__ import annotations
+ 
+ import hashlib
+ import hmac
+ import math
+ import os
+ import tempfile
+ import uuid
+ from dataclasses import asdict
++from contextlib import nullcontext
+ from datetime import datetime, timezone
+ from functools import lru_cache
+ from pathlib import Path
+ from statistics import NormalDist, fmean, pstdev
+ from typing import Any
+ 
+ import numpy as np
+ from cryptography.hazmat.primitives import hashes
+ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+ 
+-from . import layout_tag, ledger, live_pdf, pqc, tardos, tardos_carrier, watermark
++from . import layout_tag, ledger, live_pdf, pqc, tardos, tardos_carrier, watermark, witness
+ from .identity import load_identity
+ from .util import b64d, b64e, canonical_json, read_json, sha3_bytes, sha3_file, write_json
+ 
+ 
+ DEFAULT_NULL_SAMPLES = 400
+ DEFAULT_FAMILYWISE_ALPHA = 0.01
+ TARDOS_ROSTER_SIZE = 1_000
+ TARDOS_COALITION_LIMIT = 5
+ TARDOS_FAMILYWISE_EPSILON = 1e-6
+ TARDOS_SCHEME = "nishan-tardos-live-pdf/v1"
+@@ -145,37 +146,86 @@
+         },
+         "key_distribution": {
+             "algorithm": "ML-KEM-768 + HKDF-SHA3-256 + AES-256-GCM",
+             "envelopes": envelopes,
+         },
+     }
+     write_json(package_path, package)
+     return package
+ 
+ 
++def _validate_witness_arguments(
++    ledger_root: Path, witness_root: Path | None, pin: str | None,
++) -> str | None:
++    if (witness_root is None) != (pin is None):
++        raise ValueError("witness_root and witness_public_key_sha3_256 must be supplied together")
++    if witness_root is None:
++        return None
++    if witness_root.resolve() == ledger_root.resolve():
++        raise ValueError("witness root must differ from ledger root")
++    return witness.validate_pin(pin)
++
++
+ def decrypt_and_attribute(
+     package_path: Path,
+     identities_root: Path,
+     recipient_id: str,
+     authority_secret_path: Path,
+     ledger_root: Path,
+     output_path: Path,
+     watermark_strength: float = 2.2,
++    *,
++    witness_root: Path | None = None,
++    witness_public_key_sha3_256: str | None = None,
++) -> dict[str, Any]:
++    pin = _validate_witness_arguments(ledger_root, witness_root, witness_public_key_sha3_256)
++    with ledger.exclusive(ledger_root):
++        with witness.exclusive(witness_root) if witness_root is not None else nullcontext():
++            return _decrypt_and_attribute_locked(
++                package_path, identities_root, recipient_id, authority_secret_path,
++                ledger_root, output_path, watermark_strength,
++                witness_root=witness_root, witness_public_key_sha3_256=pin,
++            )
++
++
++def _decrypt_and_attribute_locked(
++    package_path: Path,
++    identities_root: Path,
++    recipient_id: str,
++    authority_secret_path: Path,
++    ledger_root: Path,
++    output_path: Path,
++    watermark_strength: float,
++    *,
++    witness_root: Path | None,
++    witness_public_key_sha3_256: str | None,
+ ) -> dict[str, Any]:
+     package = read_json(package_path)
+     envelope = package["key_distribution"]["envelopes"].get(recipient_id)
+     if envelope is None:
+         raise PermissionError(f"{recipient_id!r} is not an authorized recipient")
+     # Validator endorsements do not replace the recipient's own signed receipt.
+     # Refuse to decrypt while any canonical receipt is invalid, for every media
+     # type, before plaintext is materialized on disk.
+     ledger_state = _require_healthy_signed_history(ledger_root)
++    assurance = {
++        "version": "nishan-release-assurance/v1",
++        "mode": "pinned_witness" if witness_root is not None else "unwitnessed",
++        "witness_enforced": witness_root is not None,
++        "record_meaning": "release authorized; not proof of delivery or reading",
++    }
++    checked_witness = None
++    if witness_root is not None:
++        checked_witness = witness.require_consistent(
++            witness_root, ledger_state, witness_public_key_sha3_256
++        )
++        assurance["witness_public_key_sha3_256"] = witness_public_key_sha3_256
+     identity = load_identity(identities_root, recipient_id)
+     enrollment = _require_enrolled_identity(ledger_state, identity)
+     if envelope.get("kem_public_key_sha3_256") != enrollment["kem_public_key_sha3_256"]:
+         raise RuntimeError("package KEM envelope is not bound to the enrolled recipient key")
+     shared_secret = pqc.decapsulate(
+         identity["kem_private"], b64d(envelope["kem_ciphertext"])
+     )
+     kek = _derive_kek(shared_secret, package["document_id"], recipient_id)
+     dek = AESGCM(kek).decrypt(
+         b64d(envelope["wrap_nonce"]),
+@@ -186,21 +236,24 @@
+         b64d(package["content_cipher"]["nonce"]),
+         b64d(package["content_cipher"]["ciphertext"]),
+         package["document_id"].encode("ascii"),
+     )
+     if sha3_bytes(plaintext) != package["source"]["sha3_256"]:
+         raise ValueError("decrypted source hash does not match the package")
+ 
+     session_id = str(uuid.uuid4())
+     authority_secret = authority_secret_path.read_bytes()
+     destination_suffix = Path(package["source"]["filename"]).suffix or output_path.suffix
+-    with tempfile.TemporaryDirectory(prefix="nishan-release-") as directory:
++    # Atomic publication requires staging on the destination filesystem. The
++    # private 0700 directory is created only after history/pin/enrollment checks.
++    output_path.parent.mkdir(parents=True, exist_ok=True)
++    with tempfile.TemporaryDirectory(prefix=".nishan-release-", dir=output_path.parent) as directory:
+         root = Path(directory)
+         plaintext_path = root / f"source{destination_suffix}"
+         marked_path = root / f"marked{destination_suffix}"
+         plaintext_path.write_bytes(plaintext)
+         fingerprint: dict[str, Any]
+         if package["source"]["media_type"] == "application/pdf":
+             config, _, codebook, codebook_manifest = _tardos_material(
+                 authority_secret, package["document_id"]
+             )
+             user_index = _next_tardos_index(
+@@ -271,24 +324,27 @@
+                 "theorem_bounds": tardos.theorem_bounds(config),
+                 "codebook_sha3_256": codebook_manifest["codebook_sha3_256"],
+                 "biases_sha3_256": codebook_manifest["biases_sha3_256"],
+                 "generator": codebook_manifest["generator"],
+                 "generator_assurance": codebook_manifest["generator_assurance"],
+                 "carrier_scope": (
+                     "The theorem is conditional on the decoded pirate word obeying the marking condition; "
+                     "the carrier must be evaluated separately for each attack."
+                 ),
+                 "layout_tag": layout_metadata,
++                "fusion_policy_version": "pdf-all-formats-corroboration/v1",
++                "corroboration_required": True,
+                 "fusion_policy": (
+-                    "require visual/layout corroboration for editable PDFs; use the Tardos "
+-                    "channel for rasterized leaks; abstain on channel disagreement, a missing "
+-                    "editable-PDF channel, or any unissued Tardos accusation"
++                    "All PDF-source traces require visual/layout set-equality corroboration, "
++                    "including rasterized suspects and releases with insufficient layout capacity. "
++                    "Single-channel scores are research leads only; missing channels, inadequate "
++                    "release capacity, disagreement or any unissued accusation cause abstention."
+                 ),
+             }
+             watermark_commitment_material = (
+                 str(codebook_manifest["codebook_sha3_256"])
+                 + "|"
+                 + str(user_index)
+                 + "|"
+                 + session_id
+                 + "|"
+                 + layout_metadata["tag_commitment_sha3_256"]
+@@ -317,33 +373,52 @@
+             "source_sha3_256": package["source"]["sha3_256"],
+             "recipient_id": recipient_id,
+             "recipient_display_name": identity["profile"]["display_name"],
+             "recipient_sign_public_key": b64e(identity["sign_public"].read_bytes()),
+             "recipient_sign_public_key_sha3_256": identity["profile"]["sign_public_key_sha3_256"],
+             "decrypted_at": datetime.now(timezone.utc).isoformat(),
+             "watermark_commitment_sha3_256": watermark_commitment,
+             "released_copy_sha3_256": output_hash,
+             "watermark_metrics": metrics,
+             "fingerprint": fingerprint,
++            "release_assurance": assurance,
+         }
+         signature = pqc.sign(identity["sign_private"], canonical_json(event))
+         record = {
+             "event": event,
+             "recipient_signature_algorithm": "ML-DSA-65 (FIPS 204)",
+             "recipient_signature": b64e(signature),
+         }
+         if not _verify_event(record, ledger_state["identity_registry"]):
+             raise RuntimeError("recipient signature self-check failed; plaintext not released")
+-        block = ledger.append(ledger_root, record)
+-        output_path.parent.mkdir(parents=True, exist_ok=True)
++        block = ledger.append(ledger_root, record, lock_held=True)
++        committed_state = _require_healthy_signed_history(ledger_root)
++        if (committed_state["canonical_length"] != ledger_state["canonical_length"] + 1
++                or committed_state["canonical_head"] != block["block_hash"]):
++            raise RuntimeError("committed ledger head does not match this authorized release")
++        if witness_root is not None:
++            extending = witness.require_extension(
++                witness_root, committed_state, witness_public_key_sha3_256
++            )
++            if not hmac.compare_digest(
++                extending["latest_checkpoint_hash"], checked_witness["latest_checkpoint_hash"]
++            ):
++                raise RuntimeError("witness anchor changed during release")
++            # A failure leaves the signed authorization committed, with no new
++            # output published. Explicit operator review/checkpoint is recovery.
++            witness.checkpoint(witness_root, committed_state, lock_held=True)
++            checked_witness = witness.require_consistent(
++                witness_root, committed_state, witness_public_key_sha3_256
++            )
+         os.replace(marked_path, output_path)
+-    return {"event": event, "ledger_block_hash": block["block_hash"], "output": str(output_path)}
++    return {"event": event, "ledger_block_hash": block["block_hash"], "output": str(output_path),
++            "release_assurance": {**assurance, "checkpoint": checked_witness}}
+ 
+ 
+ def _verify_event(
+     record: dict[str, Any],
+     identity_registry: dict[str, dict[str, str]],
+ ) -> bool:
+     try:
+         event = record["event"]
+         recipient_id = event["recipient_id"]
+         enrollment = identity_registry.get(recipient_id)
+@@ -764,22 +839,32 @@
+                 "ledger_block_hash": block["block_hash"],
+             }
+         )
+     candidates.sort(key=lambda item: item["score"], reverse=True)
+     issued_tardos_matches = accused_set & set(issued)
+     unissued_accusations = accused_set - set(issued)
+     fusion = fuse_channel_indices(
+         issued_tardos_matches,
+         layout_matches,
+         unissued_accusations,
+-        require_corroboration=suspect_is_pdf and layout_expected,
++        require_corroboration=True,
+     )
++    if not layout_expected or not suspect_is_pdf:
++        fusion = {
++            **fusion,
++            "selected_indices": [],
++            "decision": ("abstain_inadequate_release_capacity" if not layout_expected
++                         else "abstain_missing_layout_channel"),
++            "reason": ("The signed release has inadequate layout capacity for corroborated attribution."
++                       if not layout_expected else
++                       "The raster suspect has no digital PDF layout channel; visual scores are research leads only."),
++        }
+     selected = set(fusion["selected_indices"])
+     for candidate in candidates:
+         candidate["selected_by_fusion"] = (
+             candidate["fingerprint_user_index"] in selected
+         )
+     positives = [item for item in candidates if item["selected_by_fusion"]]
+     reference_bounds = tardos.theorem_bounds(config)
+     result = {
+         "version": "nishan-evidence/v3-dual-carrier",
+         "generated_at": datetime.now(timezone.utc).isoformat(),
+@@ -801,28 +886,31 @@
+             "formal_familywise_bound_established": False,
+             "why_not_automatic": (
+                 "The theorem requires a coalition of at most c and a decoded pirate word that obeys "
+                 "the marking condition. Those facts cannot be established from an unknown leak alone; "
+                 "named attack fixtures test the carrier condition separately. The keyed generator also "
+                 "uses documented finite-precision discretization."
+             ),
+         },
+         "attribution": positives,
+         "ranking": candidates,
++        "visual_only_research_leads": [item for item in candidates
++                                       if item["tardos_above_threshold"] and not item["selected_by_fusion"]],
+         "accused_codebook_rows": accused_indices.tolist(),
+         "unissued_accused_codebook_rows": sorted(unissued_accusations),
+         "channel_decision": {
+             **fusion,
+             "tardos_issued_indices": sorted(issued_tardos_matches),
+             "layout_authenticated_indices": sorted(layout_matches),
+             "unissued_tardos_indices": sorted(unissued_accusations),
+             "editable_pdf_corroboration_required": suspect_is_pdf and layout_expected,
++            "corroboration_required": True,
+             "layout_observation": {
+                 "suspect_is_pdf": suspect_is_pdf,
+                 "carrier_symbols_read": (
+                     None if layout_carrier is None else int(layout_carrier.size)
+                 ),
+                 "read_error": layout_read_error,
+                 "tag_bits": layout_tag.TAG_BITS,
+                 "encoded_bits": layout_tag.ENCODED_BITS,
+                 "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+                 "scope": (
+@@ -864,24 +952,43 @@
+ 
+ def trace_leak(
+     reference: Path,
+     suspect: Path,
+     authority_secret_path: Path,
+     ledger_root: Path,
+     evidence_path: Path | None = None,
+     detection_threshold: float | None = None,
+     null_samples: int = DEFAULT_NULL_SAMPLES,
+     familywise_alpha: float = DEFAULT_FAMILYWISE_ALPHA,
++    *,
++    witness_root: Path | None = None,
++    witness_public_key_sha3_256: str | None = None,
+ ) -> dict[str, Any]:
+-    state = ledger.audit(ledger_root)
+-    if not state["quorum_valid"]:
+-        raise RuntimeError("ledger has no quorum-valid canonical history")
++    pin = _validate_witness_arguments(ledger_root, witness_root, witness_public_key_sha3_256)
++    with ledger.exclusive(ledger_root):
++        with witness.exclusive(witness_root) if witness_root is not None else nullcontext():
++            state = _require_healthy_signed_history(ledger_root)
++            checked_witness = ({"witness_enforced": False, "mode": "unwitnessed"}
++                if witness_root is None else witness.require_consistent(witness_root, state, pin))
++    # Extraction uses the captured, verified snapshot after releasing both locks.
++    result = _trace_leak_snapshot(reference, suspect, authority_secret_path, state,
++                                  detection_threshold, null_samples, familywise_alpha)
++    result["ledger_witness"] = checked_witness
++    if evidence_path is not None:
++        write_json(evidence_path, result)
++    return result
++
++
++def _trace_leak_snapshot(
++    reference: Path, suspect: Path, authority_secret_path: Path, state: dict[str, Any],
++    detection_threshold: float | None, null_samples: int, familywise_alpha: float,
++) -> dict[str, Any]:
+     source_hash = sha3_file(reference)
+     suspect_hash = sha3_file(suspect)
+     secret = authority_secret_path.read_bytes()
+     candidate_records: list[tuple[dict[str, Any], dict[str, Any]]] = []
+     for block in state["blocks"]:
+         record = block["core"]["record"]
+         event = record["event"]
+         if event["source_sha3_256"] != source_hash:
+             continue
+         candidate_records.append((block, record))
+@@ -913,21 +1020,21 @@
+         if detection_threshold is not None:
+             raise ValueError("a caller threshold cannot override the declared Tardos profile")
+         return _trace_tardos_pdf(
+             reference,
+             suspect,
+             secret,
+             source_hash,
+             suspect_hash,
+             state,
+             candidate_records,
+-            evidence_path,
++            None,
+         )
+     if TARDOS_SCHEME in schemes:
+         raise RuntimeError("mixed legacy and Tardos fingerprints for one document")
+ 
+     candidates: list[dict[str, Any]] = []
+     prepared = watermark.prepare_score(reference, suspect)
+ 
+     issued_session_ids = {
+         record["event"]["session_id"] for _, record in candidate_records
+     }
+@@ -989,13 +1096,11 @@
+             ],
+             "canonical_length": state["canonical_length"],
+             "canonical_head": state["canonical_head"],
+             "divergent_replicas": state["divergent_replicas"],
+         },
+         "interpretation": (
+             "one positive is a candidate single-copy attribution; multiple positives may indicate an averaged coalition. "
+             "The current empirical threshold is suitable for prototype screening, not a formal evidentiary accusation."
+         ),
+     }
+-    if evidence_path is not None:
+-        write_json(evidence_path, result)
+     return result
+--- before/prototypes/nishan_pq/nishan/witness.py
++++ current/prototypes/nishan_pq/nishan/witness.py
+@@ -2,39 +2,84 @@
+ 
+ A hash-linked ledger cannot detect coordinated truncation to an older valid
+ prefix by itself. This module records the latest canonical head under a separate
+ ML-DSA-65 witness key. The demonstrator stores that key on the same machine; a
+ deployment must put it under a separately administered HSM or witness service.
+ """
+ 
+ from __future__ import annotations
+ 
+ import json
++import hmac
+ import os
+ import tempfile
+ from contextlib import contextmanager
+ from datetime import datetime, timezone
+ import fcntl
+ from pathlib import Path
+ from typing import Any
+ 
+ from . import pqc
+ from .util import b64d, b64e, canonical_json, read_json, sha3_bytes, sha3_file, write_json
+ 
+ 
+ VERSION = "nishan-external-head-witness/v1"
+ GENESIS_CHECKPOINT = "0" * 64
+ 
+ 
++def validate_pin(pin: str) -> str:
++    """Normalize an explicitly provisioned SHA3-256 public-key pin."""
++    if not isinstance(pin, str) or len(pin) != 64 or any(
++        character not in "0123456789abcdefABCDEF" for character in pin
++    ):
++        raise ValueError("witness pin must be a 64-character hexadecimal SHA3-256 digest")
++    return pin.lower()
++
++
++def _pinned_audit(root: Path, state: dict[str, Any], pin: str) -> dict[str, Any]:
++    pin = validate_pin(pin)
++    try:
++        config = read_json(root / "config.json")
++        actual = sha3_file(root / config["public_key"])
++        if not hmac.compare_digest(actual, pin):
++            raise RuntimeError("witness public key does not match the provisioned pin")
++        result = audit(root, state)
++    except (KeyError, OSError, TypeError, ValueError) as error:
++        raise RuntimeError(f"pinned witness is unavailable or malformed: {error}") from error
++    if not result.get("valid") or not result.get("verified_checkpoints"):
++        raise RuntimeError("pinned witness requires a valid, nonempty, explicitly bootstrapped checkpoint chain")
++    return {"witness_enforced": True, "witness_public_key_sha3_256": pin, **result}
++
++
++def require_consistent(root: Path, state: dict[str, Any], pin: str) -> dict[str, Any]:
++    """Check the actual pinned key and a nonempty chain at exactly this head.
++
++    Callers hold ledger then witness locks when comparing a live snapshot.
++    This function never creates or repairs a checkpoint.
++    """
++    result = _pinned_audit(root, state, pin)
++    if result.get("ledger_comparison") != "consistent":
++        raise RuntimeError(f"pinned witness is not consistent: {result.get('ledger_comparison')}")
++    return result
++
++
++def require_extension(root: Path, state: dict[str, Any], pin: str) -> dict[str, Any]:
++    """Validate the pinned anchor again after this locked transaction appended."""
++    result = _pinned_audit(root, state, pin)
++    if result.get("ledger_comparison") != "unwitnessed_extension":
++        raise RuntimeError(f"pinned witness does not anchor the new release: {result.get('ledger_comparison')}")
++    return result
++
++
+ @contextmanager
+ def exclusive(root: Path):
+-    """Serialize updates to the independently administered checkpoint log."""
++    """Serialize local checkpoint access; administration is a deployment boundary."""
+ 
+     lock_path = root / ".transaction.lock"
+     descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+     try:
+         fcntl.flock(descriptor, fcntl.LOCK_EX)
+         yield
+     finally:
+         fcntl.flock(descriptor, fcntl.LOCK_UN)
+         os.close(descriptor)
+ 
+@@ -94,21 +139,22 @@
+ def _read(root: Path) -> list[dict[str, Any]]:
+     path = root / "checkpoints.jsonl"
+     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+ 
+ 
+ def audit(root: Path, ledger_state: dict[str, Any] | None = None) -> dict[str, Any]:
+     config = read_json(root / "config.json")
+     public_key = root / config["public_key"]
+     if config.get("version") != VERSION:
+         return {"valid": False, "failure": "unsupported witness version"}
+-    if sha3_file(public_key) != config.get("public_key_sha3_256"):
++    configured_hash = config.get("public_key_sha3_256")
++    if not isinstance(configured_hash, str) or not hmac.compare_digest(sha3_file(public_key), configured_hash):
+         return {"valid": False, "failure": "witness public-key hash mismatch"}
+ 
+     previous = GENESIS_CHECKPOINT
+     verified: list[dict[str, Any]] = []
+     failure: str | None = None
+     try:
+         for expected_index, checkpoint in enumerate(_read(root)):
+             payload = checkpoint.get("payload")
+             if not isinstance(payload, dict):
+                 failure = f"checkpoint {expected_index}: missing payload"
+@@ -188,20 +234,22 @@
+     if not ledger_state.get("quorum_valid") or not ledger_state.get("trust_root_valid"):
+         raise RuntimeError("cannot witness a ledger without a valid quorum and trust root")
+     if ledger_state.get("divergent_replicas"):
+         raise RuntimeError("cannot witness a ledger while replicas diverge")
+     current = audit(root)
+     if not current["valid"]:
+         raise RuntimeError(f"witness history is invalid: {current['failure']}")
+     latest = current["latest"]
+     observed_length = int(ledger_state["canonical_length"])
+     if latest is not None:
++        if latest["ledger_trust_root_hash"] != ledger_state["trust_root_hash"]:
++            raise RuntimeError("refusing to checkpoint a replaced ledger trust root")
+         previous_length = int(latest["canonical_length"])
+         if observed_length < previous_length:
+             raise RuntimeError("refusing to checkpoint a rolled-back ledger")
+         if observed_length == previous_length:
+             if ledger_state["canonical_head"] != latest["canonical_head"]:
+                 raise RuntimeError("refusing to checkpoint a same-length fork")
+             return {
+                 "idempotent": True,
+                 "checkpoint_hash": current["latest_checkpoint_hash"],
+                 "payload": latest,
+--- before/prototypes/nishan_pq/tests/test_pdf_format_policy.py
++++ current/prototypes/nishan_pq/tests/test_pdf_format_policy.py
+@@ -68,16 +68,17 @@
+                 for prefix, suffix in ((b"", ".pdf"), (b"\n", ".pdf"),
+                                        (b"\n", ".bin")):
+                     with self.subTest(fixture=fixture.name, prefix=prefix, suffix=suffix):
+                         suspect = root / ("variant" + suffix)
+                         suspect.write_bytes(prefix + fixture.read_bytes())
+                         with fitz.open(suspect) as parsed:
+                             self.assertTrue(parsed.is_pdf)
+                             self.assertGreater(len(parsed[0].get_text()), 0)
+                         evidence = trace_leak(source, suspect, secret, ledger_root)
+                         self.assertTrue(evidence["channel_decision"]["editable_pdf_corroboration_required"])
++                        self.assertTrue(evidence["channel_decision"]["corroboration_required"])
+                         self.assertEqual(evidence["channel_decision"]["decision"], decision)
+                         self.assertEqual([row["recipient_id"] for row in evidence["attribution"]], recipients)
+ 
+ 
+ if __name__ == "__main__":
+     unittest.main()
+--- before/prototypes/nishan_pq/tests/test_release_safeguards.py
++++ current/prototypes/nishan_pq/tests/test_release_safeguards.py
+@@ -0,0 +1,319 @@
++from __future__ import annotations
++
++import multiprocessing as mp
++import os
++import queue
++import tempfile
++import traceback
++import unittest
++from contextlib import contextmanager
++from pathlib import Path
++from unittest.mock import patch
++
++import pymupdf as fitz
++
++from nishan import core, ledger, pqc, witness
++from nishan.demo import _sample_pdf, _transplant_first_image
++from nishan.identity import create_identity
++from nishan.util import sha3_file, write_private
++
++
++def issuance_worker(root_string, number, barrier, allocated, attempted, resume, results):
++    """Hold the first allocation while the second independently enters release."""
++    root = Path(root_string)
++    original_allocate = core._next_tardos_index
++    original_exclusive = ledger.exclusive
++
++    def allocate(*args, **kwargs):
++        value = original_allocate(*args, **kwargs)
++        if number == 1:
++            allocated.set()
++            if not resume.wait(120):
++                raise TimeoutError("allocation hold was not released")
++        return value
++
++    @contextmanager
++    def exclusive(*args, **kwargs):
++        if number == 2:
++            attempted.set()
++        with original_exclusive(*args, **kwargs):
++            yield
++
++    try:
++        barrier.wait(timeout=120)
++        if number == 2 and not allocated.wait(120):
++            raise TimeoutError("first allocation was not observed")
++        with patch.object(core, "_next_tardos_index", allocate), patch.object(ledger, "exclusive", exclusive):
++            result = core.decrypt_and_attribute(root / "package.json", root / "identities",
++                "alice", root / "secret.bin", root / "ledger", root / f"concurrent-{number}.pdf")
++        results.put({"result": result})
++    except BaseException:
++        results.put({"error": traceback.format_exc()})
++
++
++def concurrent_releases(root):
++    context = mp.get_context("spawn")
++    barrier = context.Barrier(2)
++    allocated, attempted, resume = (context.Event() for _ in range(3))
++    results = context.Queue()
++    workers = [context.Process(target=issuance_worker, args=(str(root), number, barrier,
++        allocated, attempted, resume, results)) for number in (1, 2)]
++    try:
++        for worker in workers:
++            worker.start()
++        if not allocated.wait(120) or not attempted.wait(120):
++            raise AssertionError("deterministic allocation/lock overlap was not reached")
++        resume.set()
++        outputs = []
++        for _ in workers:
++            try:
++                item = results.get(timeout=120)
++            except queue.Empty as error:
++                raise AssertionError("release worker produced no result") from error
++            if "error" in item:
++                raise AssertionError(item["error"])
++            outputs.append(item["result"])
++        for worker in workers:
++            worker.join(120)
++            if worker.is_alive() or worker.exitcode != 0:
++                raise AssertionError(f"release worker failed: {worker.exitcode}")
++        return outputs
++    finally:
++        resume.set()
++        for worker in workers:
++            if worker.is_alive():
++                worker.terminate()
++            worker.join(5)
++        results.close()
++
++
++@unittest.skipUnless(pqc.support().ready, "OpenSSL PQC provider is unavailable")
++class ReleaseSafeguardsTests(unittest.TestCase):
++    def setUp(self):
++        self.directory = tempfile.TemporaryDirectory()
++        self.addCleanup(self.directory.cleanup)
++        self.root = Path(self.directory.name)
++        self.source = self.root / "source.pdf"
++        _sample_pdf(self.source)
++        self.identities = self.root / "identities"
++        for name in ("alice", "bob"):
++            create_identity(self.identities, name, name.title())
++        self.ledger = self.root / "ledger"
++        ledger.initialize(self.ledger, validator_count=4, quorum=3, identities_root=self.identities)
++        self.secret = self.root / "secret.bin"
++        write_private(self.secret, os.urandom(32))
++        self.package = self.root / "package.json"
++        core.encrypt_once(self.source, self.identities, ["alice", "bob"], self.package)
++        self.witness = self.root / "witness"
++        self.pin = witness.initialize(self.witness)["public_key_sha3_256"]
++        witness.checkpoint(self.witness, ledger.audit(self.ledger))
++
++    def release(self, output=None, **kwargs):
++        return core.decrypt_and_attribute(self.package, self.identities, "alice", self.secret,
++            self.ledger, output or self.root / "out.pdf", **kwargs)
++
++    def strict(self):
++        return {"witness_root": self.witness, "witness_public_key_sha3_256": self.pin}
++
++    def trace(self, suspect=None, **kwargs):
++        return core.trace_leak(self.source, suspect or self.root / "out.pdf", self.secret,
++                               self.ledger, **kwargs)
++
++    def test_pinned_happy_path_and_read_only_trace(self):
++        result = self.release(**self.strict())
++        assurance = result["release_assurance"]
++        self.assertTrue(assurance["witness_enforced"])
++        self.assertEqual(result["event"]["release_assurance"]["witness_public_key_sha3_256"], self.pin)
++        self.assertEqual(result["event"]["released_copy_sha3_256"], sha3_file(self.root / "out.pdf"))
++        before = (self.witness / "checkpoints.jsonl").read_bytes()
++        with patch.object(witness, "checkpoint", side_effect=AssertionError("trace must not checkpoint")):
++            evidence = self.trace(**self.strict())
++        self.assertEqual(evidence["ledger_witness"]["ledger_comparison"], "consistent")
++        self.assertEqual(evidence["ledger_witness"]["observed_ledger_head"], evidence["ledger"]["canonical_head"])
++        self.assertEqual(evidence["channel_decision"]["decision"], "corroborated_channels")
++        self.assertEqual([item["recipient_id"] for item in evidence["attribution"]], ["alice"])
++        self.assertEqual(before, (self.witness / "checkpoints.jsonl").read_bytes())
++
++    def test_workspace_destination_can_be_on_another_filesystem(self):
++        # /tmp and the workspace are different mounts in the demonstration
++        # environment. This also exercises destination staging on single-mount hosts.
++        with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[3],
++                                         prefix=".release-destination-test-") as directory:
++            output = Path(directory) / "released.pdf"
++            result = self.release(output, **self.strict())
++            self.assertEqual(result["event"]["released_copy_sha3_256"], sha3_file(output))
++
++    def test_bad_arguments_fail_before_decryption_and_locks_are_released(self):
++        cases = ({"witness_root": self.witness}, {"witness_public_key_sha3_256": self.pin},
++                 {**self.strict(), "witness_public_key_sha3_256": "0" * 64},
++                 {**self.strict(), "witness_public_key_sha3_256": "z" * 64},
++                 {**self.strict(), "witness_public_key_sha3_256": "abcd"},
++                 {**self.strict(), "witness_root": self.ledger},
++                 {**self.strict(), "witness_root": self.root / "absent"})
++        for kwargs in cases:
++            with self.subTest(kwargs=kwargs), patch.object(pqc, "decapsulate", side_effect=AssertionError("plaintext path reached")):
++                with self.assertRaises((RuntimeError, ValueError, OSError)):
++                    self.release(**kwargs)
++                self.assertFalse((self.root / "out.pdf").exists())
++                with self.assertRaises((RuntimeError, ValueError, OSError)):
++                    self.trace(**kwargs)
++        # A separate process must be able to acquire both locks after errors.
++        import subprocess
++        check = subprocess.run([os.sys.executable, "-c",
++            "from pathlib import Path; from nishan import ledger,witness; import sys; "
++            "exec('with ledger.exclusive(Path(sys.argv[1])):\\n with witness.exclusive(Path(sys.argv[2])):\\n  pass')",
++            str(self.ledger), str(self.witness)], capture_output=True, text=True, timeout=15)
++        self.assertEqual(check.returncode, 0, check.stderr)
++        self.release(**self.strict())
++
++    def test_empty_missing_and_replaced_witness_rejected(self):
++        checkpoint = self.witness / "checkpoints.jsonl"
++        original = checkpoint.read_bytes()
++        for missing in (False, True):
++            if missing:
++                checkpoint.unlink()
++            else:
++                checkpoint.write_bytes(b"")
++            with self.assertRaises((RuntimeError, OSError)):
++                self.release(**self.strict())
++            self.assertFalse((self.root / "out.pdf").exists())
++            checkpoint.write_bytes(original)
++        replacement = self.root / "replacement"
++        witness.initialize(replacement)
++        witness.checkpoint(replacement, ledger.audit(self.ledger))
++        with self.assertRaises(RuntimeError):
++            self.release(**{**self.strict(), "witness_root": replacement})
++
++    def test_coordinated_rollback_rejected_by_release_and_trace(self):
++        self.release(**self.strict())
++        for replica in (self.ledger / "replicas").glob("*/ledger.jsonl"):
++            replica.write_bytes(b"")
++        self.assertTrue(ledger.audit(self.ledger)["quorum_valid"])
++        output = self.root / "rollback.pdf"
++        with self.assertRaises(RuntimeError):
++            self.release(output, **self.strict())
++        self.assertFalse(output.exists())
++        with self.assertRaises(RuntimeError):
++            self.trace(**self.strict())
++
++    def test_checkpoint_failure_commits_but_never_publishes_and_requires_recovery(self):
++        for preexisting in (False, True):
++            with self.subTest(preexisting=preexisting):
++                output = self.root / f"failure-{preexisting}.pdf"
++                if preexisting:
++                    output.write_bytes(b"existing destination")
++                length = ledger.audit(self.ledger)["canonical_length"]
++                with patch.object(witness, "checkpoint", side_effect=RuntimeError("injected checkpoint failure")):
++                    with self.assertRaisesRegex(RuntimeError, "injected"):
++                        self.release(output, **self.strict())
++                self.assertEqual(ledger.audit(self.ledger)["canonical_length"], length + 1)
++                self.assertEqual(output.read_bytes() if output.exists() else None,
++                                 b"existing destination" if preexisting else None)
++                with self.assertRaises(RuntimeError):
++                    self.release(**self.strict())
++                with self.assertRaises(RuntimeError):
++                    self.trace(output, **self.strict())
++                witness.checkpoint(self.witness, ledger.audit(self.ledger))
++        self.release(**self.strict())
++
++    def test_concurrent_issuance_has_distinct_rows_and_third_release_succeeds(self):
++        results = concurrent_releases(self.root)
++        self.assertEqual(sorted(item["event"]["fingerprint"]["user_index"] for item in results), [0, 1])
++        self.assertEqual(len({item["event"]["session_id"] for item in results}), 2)
++        third = self.release()
++        self.assertEqual(third["event"]["fingerprint"]["user_index"], 2)
++        self.assertFalse(third["release_assurance"]["witness_enforced"])
++
++    def test_noop_or_corrupt_checkpoint_never_publishes(self):
++        original_checkpoint = witness.checkpoint
++        for corrupt in (False, True):
++            with self.subTest(corrupt=corrupt):
++                checkpoint_path = self.witness / "checkpoints.jsonl"
++                before = checkpoint_path.read_bytes()
++
++                def checkpoint(*args, **kwargs):
++                    result = original_checkpoint(*args, **kwargs) if corrupt else None
++                    if corrupt:
++                        import json
++                        lines = checkpoint_path.read_text().splitlines()
++                        last = json.loads(lines[-1])
++                        last["signature"] = "AAAA"
++                        lines[-1] = json.dumps(last)
++                        checkpoint_path.write_text("\n".join(lines) + "\n")
++                    return result
++
++                with patch.object(witness, "checkpoint", checkpoint):
++                    with self.assertRaises(RuntimeError):
++                        self.release(**self.strict())
++                self.assertFalse((self.root / "out.pdf").exists())
++                checkpoint_path.write_bytes(before)
++                original_checkpoint(self.witness, ledger.audit(self.ledger))
++
++    def test_actual_pin_rechecked_after_append_before_checkpoint(self):
++        replacement = self.root / "replacement"
++        witness.initialize(replacement)
++        original_append = ledger.append
++
++        def append(*args, **kwargs):
++            result = original_append(*args, **kwargs)
++            (self.witness / "public.pem").write_bytes((replacement / "public.pem").read_bytes())
++            return result
++
++        with patch.object(ledger, "append", append), patch.object(witness, "checkpoint") as checkpoint:
++            with self.assertRaisesRegex(RuntimeError, "provisioned pin"):
++                self.release(**self.strict())
++            checkpoint.assert_not_called()
++        self.assertFalse((self.root / "out.pdf").exists())
++        self.assertEqual(ledger.audit(self.ledger)["canonical_length"], 1)
++
++    def test_foreign_ledger_root_and_invalid_witness_signature_rejected(self):
++        foreign = self.root / "foreign-ledger"
++        ledger.initialize(foreign, validator_count=4, quorum=3, identities_root=self.identities)
++        with self.assertRaisesRegex(RuntimeError, "foreign_or_replaced_trust_root"):
++            core.decrypt_and_attribute(self.package, self.identities, "alice", self.secret,
++                                       foreign, self.root / "foreign.pdf", **self.strict())
++        self.assertFalse((self.root / "foreign.pdf").exists())
++        import json
++        checkpoint = self.witness / "checkpoints.jsonl"
++        record = json.loads(checkpoint.read_text())
++        record["signature"] = "AAAA"
++        checkpoint.write_text(json.dumps(record) + "\n")
++        with self.assertRaises(RuntimeError):
++            self.release(**self.strict())
++        with self.assertRaises(RuntimeError):
++            self.trace(**self.strict())
++        self.assertFalse((self.root / "out.pdf").exists())
++
++    def test_rendered_transplant_retains_leads_without_attribution(self):
++        self.release()
++        core.decrypt_and_attribute(self.package, self.identities, "bob", self.secret,
++                                   self.ledger, self.root / "bob.pdf")
++        transplant = self.root / "transplant.pdf"
++        _transplant_first_image(self.root / "out.pdf", self.root / "bob.pdf", transplant)
++        raster = self.root / "transplant.png"
++        with fitz.open(transplant) as document:
++            document[0].get_pixmap(dpi=144).save(raster)
++        evidence = self.trace(raster)
++        self.assertEqual(evidence["attribution"], [])
++        self.assertTrue(evidence["channel_decision"]["corroboration_required"])
++        self.assertEqual(evidence["channel_decision"]["decision"], "abstain_missing_layout_channel")
++        self.assertTrue(evidence["visual_only_research_leads"])
++
++    def test_short_pdf_abstains_with_signed_capacity_limitation(self):
++        with fitz.open() as document:
++            page = document.new_page(width=595, height=842)
++            page.insert_text((60, 90), "Short synthetic fixture")
++            document.save(self.root / "short.pdf", no_new_id=True, reproducible=True)
++        self.source = self.root / "short.pdf"
++        core.encrypt_once(self.source, self.identities, ["alice"], self.package)
++        result = self.release()
++        self.assertFalse(result["event"]["fingerprint"]["layout_tag"]["available"])
++        self.assertEqual(result["event"]["fingerprint"]["fusion_policy_version"], "pdf-all-formats-corroboration/v1")
++        evidence = self.trace()
++        self.assertEqual(evidence["attribution"], [])
++        self.assertEqual(evidence["channel_decision"]["decision"], "abstain_inadequate_release_capacity")
++        self.assertTrue(evidence["visual_only_research_leads"])
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- before/prototypes/nishan_pq/tools/demo_release_safeguards.py
++++ current/prototypes/nishan_pq/tools/demo_release_safeguards.py
+@@ -0,0 +1,248 @@
++"""Fresh public synthetic safeguard scenarios; real PQC is mandatory.
++
++Run from the workspace with its prepared .venv. Existing populated output roots
++are rejected. This is a protocol demonstration, not a population benchmark.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import multiprocessing as mp
++import os
++import queue
++import shutil
++import sys
++import traceback
++from dataclasses import asdict
++from pathlib import Path
++from unittest.mock import patch
++
++import pymupdf as fitz
++
++from nishan import core, ledger, pqc, witness
++from nishan.demo import _sample_pdf, _transplant_first_image
++from nishan.identity import create_identity
++from nishan.util import sha3_file, write_json, write_private
++
++
++def _release_worker(root_string, recipient, pin, barrier, results):
++    root = Path(root_string)
++    try:
++        barrier.wait(timeout=120)
++        result = core.decrypt_and_attribute(root / "package.json", root / "identities",
++            recipient, root / "secret.bin", root / "ledger", root / f"{recipient}.pdf",
++            witness_root=root / "witness", witness_public_key_sha3_256=pin)
++        results.put({"result": result})
++    except BaseException:
++        results.put({"error": traceback.format_exc()})
++
++
++def _concurrent(root, pin):
++    context = mp.get_context("spawn")
++    barrier, results = context.Barrier(2), context.Queue()
++    workers = [context.Process(target=_release_worker,
++        args=(str(root), name, pin, barrier, results)) for name in ("alice", "bob")]
++    try:
++        for worker in workers:
++            worker.start()
++        outputs = []
++        for _ in workers:
++            try:
++                item = results.get(timeout=180)
++            except queue.Empty as error:
++                raise RuntimeError("concurrent worker timeout") from error
++            if "error" in item:
++                raise RuntimeError(item["error"])
++            outputs.append(item["result"])
++        for worker in workers:
++            worker.join(20)
++            if worker.is_alive() or worker.exitcode != 0:
++                raise RuntimeError(f"concurrent worker exit: {worker.exitcode}")
++        return sorted(outputs, key=lambda item: item["event"]["recipient_id"])
++    finally:
++        for worker in workers:
++            if worker.is_alive():
++                worker.terminate()
++            worker.join(5)
++        results.close()
++
++
++def _rejection(action):
++    try:
++        action()
++    except RuntimeError as error:
++        return {"rejected": True, "error_type": type(error).__name__, "error": str(error)}
++    return {"rejected": False}
++
++
++def run(output: Path) -> dict:
++    if output.exists() and any(output.iterdir()):
++        raise FileExistsError(f"refusing populated output root: {output}")
++    output.mkdir(parents=True, exist_ok=True)
++    workspace = Path(__file__).resolve().parents[3]
++    source_files = sorted((workspace / "prototypes/nishan_pq/nishan").glob("*.py"))
++    source_files += [Path(__file__).resolve(),
++        workspace / "prototypes/nishan_pq/tests/test_release_safeguards.py",
++        workspace / "prototypes/nishan_pq/tests/test_pdf_format_policy.py"]
++    readiness = pqc.support()
++    report = {
++        "version": "nishan-selection-safeguards/v1",
++        "command": ".venv/bin/python prototypes/nishan_pq/tools/demo_release_safeguards.py --output " + str(output),
++        "pqc_ready": bool(readiness.ready),
++        "pqc_profile": asdict(readiness),
++        "profile": {"fixture": "nishan.demo._sample_pdf; public synthetic one-page PDF",
++            "roster_size": core.TARDOS_ROSTER_SIZE, "coalition_limit": core.TARDOS_COALITION_LIMIT,
++            "familywise_epsilon": core.TARDOS_FAMILYWISE_EPSILON,
++            "fusion_policy": "pdf-all-formats-corroboration/v1",
++            "pin_provisioning": "fresh local witness initialization in this demo; independent provisioning remains a deployment requirement"},
++        "cases": [], "all_passed": False,
++        "code_sha256": {str(path.relative_to(workspace)): hashlib.sha256(path.read_bytes()).hexdigest()
++                        for path in source_files},
++        "limitations": [
++            "Scenario checks on public synthetic fixtures, not independent population trials or production certification.",
++            "Witness and validator administration and private keys are co-located; no hardware isolation or independent-admin claim.",
++            "Pinned state detects ledger rollback only while the provisioned key and retained witness state remain trustworthy; rollback of the witness too is outside this local guarantee.",
++            "The authority can reproduce carriers and frame a session; software/key custody is trusted. A release session is not proof of human guilt, delivery or reading.",
++            "Tracing is non-blind. Removal/retyping can defeat both carriers; raster and low-capacity PDF leads never become corroborated attribution.",
++            "Historical JPEG-Q55 30/30 was a visual-channel experiment on one document/codebook with repeated sessions, not this strict verdict or physical performance.",
++            "Historical shipped physical threshold recovered 0/4; experimental profiles recovered the same 1/4 capture.",
++            "A committed authorization survives checkpoint/publication failure; explicit review and checkpoint recovery are required.",
++            "Fresh keys and secrets are synthetic demo-only material and must not be reused for real documents.",
++        ],
++    }
++
++    def case(name, passed, observed):
++        report["cases"].append({"name": name, "passed": bool(passed), "observed": observed})
++
++    try:
++        if not readiness.ready:
++            raise RuntimeError("real PQC is unavailable; not a pass")
++        root = output / "fixture"
++        root.mkdir()
++        source = root / "source.pdf"
++        _sample_pdf(source)
++        identities = root / "identities"
++        for name in ("alice", "bob"):
++            create_identity(identities, name, name.title())
++        ledger_root = root / "ledger"
++        ledger.initialize(ledger_root, validator_count=4, quorum=3, identities_root=identities)
++        secret = root / "secret.bin"
++        write_private(secret, os.urandom(32))
++        package = root / "package.json"
++        core.encrypt_once(source, identities, ["alice", "bob"], package)
++        witness_root = root / "witness"
++        pin = witness.initialize(witness_root)["public_key_sha3_256"]
++        witness.checkpoint(witness_root, ledger.audit(ledger_root))
++        strict = {"witness_root": witness_root, "witness_public_key_sha3_256": pin}
++        copies = _concurrent(root, pin)
++        rows = [item["event"]["fingerprint"]["user_index"] for item in copies]
++        sessions = [item["event"]["session_id"] for item in copies]
++        case("concurrent_distinct_sessions_rows", sorted(rows) == [0, 1] and len(set(sessions)) == 2,
++             {"rows": rows, "sessions": sessions, "processes": 2, "barrier_before_decrypt": True})
++        third = core.decrypt_and_attribute(package, identities, "alice", secret,
++                                          ledger_root, root / "third.pdf", **strict)
++        case("third_release_row", third["event"]["fingerprint"]["user_index"] == 2,
++             {"row": third["event"]["fingerprint"]["user_index"], "session": third["event"]["session_id"]})
++        copies.append(third)
++        write_json(output / "release-results.json", copies)
++        hashes = [{"session": item["event"]["session_id"],
++                   "signed": item["event"]["released_copy_sha3_256"],
++                   "actual": sha3_file(Path(item["output"]))} for item in copies]
++        case("signed_copy_hash_match", all(item["signed"] == item["actual"] for item in hashes), hashes)
++        before = (witness_root / "checkpoints.jsonl").read_bytes()
++        with patch.object(witness, "checkpoint", side_effect=AssertionError("trace attempted checkpoint")):
++            clean = core.trace_leak(source, root / "alice.pdf", secret, ledger_root,
++                                   output / "clean-evidence.json", **strict)
++        case("clean_pdf_trace", clean["channel_decision"]["decision"] == "corroborated_channels"
++             and [row["session_id"] for row in clean["attribution"]] == [copies[0]["event"]["session_id"]],
++             {"decision": clean["channel_decision"], "attribution": clean["attribution"],
++              "ledger_witness": clean["ledger_witness"]})
++        case("trace_read_only", before == (witness_root / "checkpoints.jsonl").read_bytes(),
++             {"before_sha256": hashlib.sha256(before).hexdigest(),
++              "after_sha256": hashlib.sha256((witness_root / "checkpoints.jsonl").read_bytes()).hexdigest()})
++        transplant, raster = root / "transplant.pdf", root / "transplant.png"
++        _transplant_first_image(root / "alice.pdf", root / "bob.pdf", transplant)
++        with fitz.open(transplant) as document:
++            document[0].get_pixmap(dpi=144).save(raster)
++        rendered = core.trace_leak(source, raster, secret, ledger_root,
++                                  output / "rendered-transplant-evidence.json", **strict)
++        case("rendered_transplant_abstains", not rendered["attribution"]
++             and bool(rendered["visual_only_research_leads"])
++             and rendered["channel_decision"]["decision"] == "abstain_missing_layout_channel",
++             {"decision": rendered["channel_decision"], "attribution": rendered["attribution"],
++              "visual_only_research_leads": rendered["visual_only_research_leads"]})
++        short, short_package, short_copy = root / "short.pdf", root / "short-package.json", root / "short-copy.pdf"
++        with fitz.open() as document:
++            page = document.new_page(width=595, height=842)
++            page.insert_text((60, 90), "Short synthetic fixture")
++            document.save(short, no_new_id=True, reproducible=True)
++        core.encrypt_once(short, identities, ["alice"], short_package)
++        low_release = core.decrypt_and_attribute(short_package, identities, "alice", secret,
++                                                ledger_root, short_copy, **strict)
++        low = core.trace_leak(short, short_copy, secret, ledger_root,
++                             output / "low-capacity-evidence.json", **strict)
++        case("low_capacity_pdf_abstains", not low["attribution"] and bool(low["visual_only_research_leads"])
++             and low["channel_decision"]["decision"] == "abstain_inadequate_release_capacity"
++             and not low_release["event"]["fingerprint"]["layout_tag"]["available"],
++             {"decision": low["channel_decision"], "attribution": low["attribution"],
++              "signed_fingerprint_policy": low_release["event"]["fingerprint"],
++              "visual_only_research_leads": low["visual_only_research_leads"]})
++        wrong_output = root / "wrong-pin.pdf"
++        wrong = _rejection(lambda: core.decrypt_and_attribute(package, identities, "alice", secret,
++            ledger_root, wrong_output, **{**strict, "witness_public_key_sha3_256": "0" * 64}))
++        wrong["output_exists"] = wrong_output.exists()
++        case("wrong_pin_rejected", wrong["rejected"] and not wrong["output_exists"], wrong)
++        rollback = output / "rollback-ledger"
++        shutil.copytree(ledger_root, rollback)
++        for replica in (rollback / "replicas").glob("*/ledger.jsonl"):
++            lines = replica.read_bytes().splitlines(keepends=True)
++            replica.write_bytes(b"".join(lines[:-1]))
++        rollback_state = ledger.audit(rollback)
++        rollback_output = root / "rollback.pdf"
++        rejected = _rejection(lambda: core.decrypt_and_attribute(package, identities, "alice", secret,
++                                rollback, rollback_output, **strict))
++        rejected.update({"output_exists": rollback_output.exists(), "ledger_quorum_valid": rollback_state["quorum_valid"],
++                         "comparison": witness.audit(witness_root, rollback_state)["ledger_comparison"]})
++        case("rollback_release_rejected", rejected["rejected"] and not rejected["output_exists"]
++             and rejected["ledger_quorum_valid"] and rejected["comparison"] == "rollback_detected", rejected)
++        rejected = _rejection(lambda: core.trace_leak(source, root / "alice.pdf", secret, rollback, **strict))
++        case("rollback_trace_rejected", rejected["rejected"], rejected)
++        for existing in (False, True):
++            failure_ledger, failure_witness = output / f"failure-{existing}-ledger", output / f"failure-{existing}-witness"
++            shutil.copytree(ledger_root, failure_ledger)
++            shutil.copytree(witness_root, failure_witness)
++            destination = root / f"checkpoint-failure-{existing}.pdf"
++            if existing:
++                destination.write_bytes(b"existing destination")
++            before_length = ledger.audit(failure_ledger)["canonical_length"]
++            with patch.object(witness, "checkpoint", side_effect=RuntimeError("injected checkpoint failure")):
++                rejected = _rejection(lambda: core.decrypt_and_attribute(package, identities, "alice", secret,
++                    failure_ledger, destination, witness_root=failure_witness, witness_public_key_sha3_256=pin))
++            after_state = ledger.audit(failure_ledger)
++            preserved = destination.read_bytes() == b"existing destination" if destination.exists() and existing else not destination.exists() and not existing
++            rejected.update({"existing_destination": existing, "destination_preserved": preserved,
++                "before_length": before_length, "after_length": after_state["canonical_length"],
++                "comparison": witness.audit(failure_witness, after_state)["ledger_comparison"]})
++            case("checkpoint_failure_preserves_existing_output" if existing else "checkpoint_failure_no_publication",
++                 rejected["rejected"] and preserved and after_state["canonical_length"] == before_length + 1
++                 and rejected["comparison"] == "unwitnessed_extension", rejected)
++    except Exception as error:
++        case("harness_error", False, {"error": str(error), "traceback": traceback.format_exc()})
++    report["all_passed"] = report["pqc_ready"] and len(report["cases"]) == 12 and all(case["passed"] for case in report["cases"])
++    write_json(output / "results.json", report)
++    return report
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, required=True)
++    arguments = parser.parse_args()
++    result = run(arguments.output)
++    print(json.dumps({"results": str(arguments.output / "results.json"), "pqc_ready": result["pqc_ready"],
++                      "cases": len(result["cases"]), "all_passed": result["all_passed"]}, indent=2))
++    return 0 if result["all_passed"] else 1
++
++
++if __name__ == "__main__":
++    sys.exit(main())

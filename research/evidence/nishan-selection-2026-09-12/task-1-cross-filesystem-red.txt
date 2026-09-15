@@ -1,0 +1,28 @@
+test_workspace_destination_can_be_on_another_filesystem (test_release_safeguards.ReleaseSafeguardsTests.test_workspace_destination_can_be_on_another_filesystem) ... ERROR
+
+======================================================================
+ERROR: test_workspace_destination_can_be_on_another_filesystem (test_release_safeguards.ReleaseSafeguardsTests.test_workspace_destination_can_be_on_another_filesystem)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_release_safeguards.py", line 143, in test_workspace_destination_can_be_on_another_filesystem
+    result = self.release(output, **self.strict())
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_release_safeguards.py", line 112, in release
+    return core.decrypt_and_attribute(self.package, self.identities, "alice", self.secret,
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.ledger, output or self.root / "out.pdf", **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py", line 183, in decrypt_and_attribute
+    return _decrypt_and_attribute_locked(
+        package_path, identities_root, recipient_id, authority_secret_path,
+        ledger_root, output_path, watermark_strength,
+        witness_root=witness_root, witness_public_key_sha3_256=pin,
+    )
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py", line 410, in _decrypt_and_attribute_locked
+    os.replace(marked_path, output_path)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 18] Invalid cross-device link: '/tmp/nishan-release-4zh8kxve/marked.pdf' -> '/home/user_end4/MySpace/SIH/.release-destination-test-9f78xs9e/released.pdf'
+
+----------------------------------------------------------------------
+Ran 1 test in 8.219s
+
+FAILED (errors=1)

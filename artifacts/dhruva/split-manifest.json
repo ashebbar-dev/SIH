@@ -1,0 +1,14 @@
+{
+  "source": "https://github.com/onyekpeu/IO-VNBD",
+  "phone_file": "/tmp/iovnbd/Synchronised V abd S datasets/Categorised IOVNB Dataset/S (Driver A)/S1/S-S1.csv",
+  "phone_sha256": "e79a2eea18143b825438f9a11c7d724a97c9e18329776defd4d9291d03d4aaca",
+  "reference_file": "/tmp/iovnbd/Synchronised V abd S datasets/Categorised IOVNB Dataset/S (Driver A)/S1/V-S1.csv",
+  "reference_sha256": "29e92ed9bcb2d711e651246675c435b3f9499c040cfcad367624e8720c0dc891",
+  "rows_after_alignment": 51744,
+  "split_indices_determined_before_model_fit": true,
+  "manifest_written_after_run": true,
+  "immutable_pre_fit_commit_exists": false,
+  "train_end_exclusive": 20697,
+  "test_start_inclusive": 20697,
+  "random_state": 42
+}

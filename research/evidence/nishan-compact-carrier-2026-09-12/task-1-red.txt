@@ -1,0 +1,28 @@
+Command:
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/experiments/compact_carrier_v1 .venv/bin/python -m unittest discover -s research/experiments/compact_carrier_v1 -p 'test_*.py' -v
+
+Exit code: 1
+
+test_profiles (unittest.loader._FailedTest.test_profiles) ... ERROR
+
+======================================================================
+ERROR: test_profiles (unittest.loader._FailedTest.test_profiles)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_profiles
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/unittest/loader.py", line 433, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib/python3.14/unittest/loader.py", line 374, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/home/user_end4/MySpace/SIH/research/experiments/compact_carrier_v1/test_profiles.py", line 10, in <module>
+    from profiles import (
+    ...<4 lines>...
+    )
+ModuleNotFoundError: No module named 'profiles'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (errors=1)

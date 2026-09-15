@@ -1,0 +1,32 @@
+{
+  "schema": "nishan.physical-capture-provenance/v1",
+  "capture_path": "/home/user_end4/Downloads/akshay.jpeg",
+  "sha256": "858871144523664edd1cb2a03c89f0863a2249d9984757f7b3e13852c52b6f3c",
+  "size_bytes": 197184,
+  "width_pixels": 2093,
+  "height_pixels": 2937,
+  "format": "JPEG",
+  "mode": "RGB",
+  "embedded_dpi": null,
+  "embedded_exif": {},
+  "reported_by_user": {
+    "printed_then_scanned": true,
+    "capture_method": "phone scanning app",
+    "app_name_as_supplied": "doc scanner"
+  },
+  "expected_print_file": "artifacts/nishan/dual-carrier-user-0000-live-text.pdf",
+  "expected_print_file_basis": "Previously requested print file; visible content matches. Exact printed file/settings have not been independently verified.",
+  "unknown": ["printer model", "print scale and quality", "phone model", "exact app vendor/version", "enhancement settings"],
+  "source_capture_modified": false,
+  "baseline_evidence": "research/evidence/nishan-akshay-scan-2026-09-10.json",
+  "diagnostic_observations": {
+    "zero_carrier_correlation_fraction": 0.8659809523809524,
+    "active_decoded_symbols": 3547,
+    "raw_capture_exact_white_pixel_fraction": 0.9254175233657402,
+    "original_white_region_pixel_count": 1930897,
+    "digital_marked_exact_white_fraction_in_original_white_region": 0.5287879156682102,
+    "aligned_scan_exact_white_fraction_in_original_white_region": 0.9546904884103088,
+    "white_region_definition": "minimum RGB source intensity >=254, at 144 DPI; not eroded to exclude registration errors near ink",
+    "interpretation_limit": "Consistent with loss of faint carrier variations, but printing, app processing and residual geometric misalignment are not isolated by one capture."
+  }
+}

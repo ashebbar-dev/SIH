@@ -1,0 +1,2221 @@
+{
+  "code_sha256": {
+    "prototypes/nishan_pq/nishan/tardos.py": "cf0fe3bb08bbb6aa4daaa56cbd6f356c86a98cfddaba5c64297668adf2623bd0",
+    "prototypes/nishan_pq/nishan/tardos_carrier.py": "ea818369f5fd73975fdd66380352d3d3afb75e42cd0de3dc841e4243a8a2a0f9",
+    "prototypes/nishan_pq/nishan/watermark.py": "f52b1aa480393ff8baae407b31f2400a1476571bb38eaeb9248c6761bdca006c",
+    "prototypes/nishan_pq/tests/test_bias_registration.py": "437d029022c2b567a4d746cac0885440b5866a4a76921ef75839987b65d17b4c",
+    "research/tools/check_nishan_bias_registration.py": "60488494e9b4c74d1b84150f7522c91a63a53497477e3e3e13ab4a01f9ee6269",
+    "research/tools/nishan_bias_registration.py": "2991323b8fbe9c8fc7e8a435dae9b777e2f739eda8d9353be8be574c6f6446eb",
+    "research/tools/probe_nishan_capture_channel.py": "c8cdb2e3cdf1302db465cf100fc05da7302df40d5e4ac16f1fda4c29b3c4bcd2"
+  },
+  "composition_cases": {
+    "half_pixel_shifts": [
+      [
+        0.5,
+        0
+      ],
+      [
+        -0.5,
+        0
+      ],
+      [
+        0,
+        0.5
+      ],
+      [
+        0,
+        -0.5
+      ]
+    ],
+    "rectangle_baseline": [
+      -5,
+      3
+    ],
+    "rectangle_residual": [
+      -2,
+      1
+    ]
+  },
+  "controls": {
+    "abstention_words": "baseline diagnostic only",
+    "edge_only": "source245 with one-pixel black line x=120, identical reference, no carrier",
+    "erasure": "source255 native endpoints251/255, map values>=250 to255 on endpoints and capture",
+    "gain": ".85*first_native_row+15, float64",
+    "names": [
+      "gain_0.85_plus15",
+      "planar_shading",
+      "near_white_quantization",
+      "unmarked_source",
+      "white_endpoint_clipping250",
+      "B_plus_W_only",
+      "independent_wrong_geometry",
+      "source_edge_only"
+    ],
+    "near_white": "source255 native strength4 first row, nearest4 levels, clip[0,255], uint8",
+    "shading": "first_native_row+8*x/width+5*y/height, float64",
+    "shared_only": "native B+W before fixed blur, no recipient residual",
+    "shift": [
+      1.0,
+      0.0
+    ],
+    "wrong_geometry": "fresh independent secret and context, first row"
+  },
+  "libraries": {
+    "numpy": "2.5.3",
+    "opencv": "5.0.0",
+    "pillow": "12.3.0",
+    "pymupdf": "1.28.2",
+    "python": "3.14.4",
+    "scipy": "1.18.1"
+  },
+  "null_p": [
+    0.01,
+    0.03,
+    0.08,
+    0.15,
+    0.25,
+    0.4,
+    0.6,
+    0.75,
+    0.85,
+    0.92,
+    0.97,
+    0.99
+  ],
+  "recovery_cases": [
+    {
+      "channel": "identity",
+      "row": 0,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 0,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 0,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 0,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 0,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 0,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 0,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 0,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 1,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 1,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 1,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 1,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 1,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 1,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 1,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 1,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 2,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 2,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 2,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 2,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 2,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 2,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 2,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 2,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 3,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 3,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 3,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 3,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 3,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 3,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 3,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 3,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 4,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 4,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 4,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 4,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 4,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 4,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 4,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 4,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 5,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 5,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 5,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 5,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 5,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 5,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 5,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 5,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 6,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 6,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 6,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 6,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 6,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 6,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 6,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 6,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 7,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 7,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 7,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 7,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 7,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 7,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 7,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 7,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 8,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 8,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 8,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 8,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 8,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 8,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 8,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 8,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 9,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 9,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 9,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 9,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 9,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 9,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 9,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 9,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 10,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 10,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 10,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 10,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 10,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 10,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 10,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 10,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 11,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 11,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 11,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 11,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 11,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 11,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 11,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 11,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 12,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 12,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 12,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 12,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 12,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 12,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 12,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 12,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 13,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 13,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 13,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 13,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 13,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 13,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 13,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 13,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 14,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 14,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 14,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 14,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 14,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 14,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 14,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 14,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 15,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 15,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 15,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 15,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 15,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 15,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 15,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 15,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 16,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 16,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 16,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 16,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 16,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 16,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 16,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 16,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 17,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 17,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 17,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 17,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 17,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 17,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 17,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 17,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 18,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 18,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 18,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 18,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 18,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 18,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 18,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 18,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 19,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 19,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 19,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 19,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 19,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 19,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 19,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 19,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 20,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 20,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 20,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 20,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 20,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 20,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 20,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 20,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 21,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 21,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 21,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 21,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 21,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 21,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 21,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 21,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 22,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 22,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 22,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 22,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 22,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 22,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 22,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 22,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 23,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 23,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 23,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 23,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 23,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 23,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 23,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 23,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 24,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 24,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 24,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 24,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 24,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 24,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 24,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 24,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 25,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 25,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 25,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 25,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 25,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 25,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 25,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 25,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 26,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 26,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 26,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 26,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 26,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 26,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 26,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 26,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 27,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 27,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 27,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 27,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 27,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 27,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 27,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 27,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 28,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 28,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 28,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 28,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 28,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 28,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 28,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 28,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 29,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 29,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 29,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 29,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 29,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 29,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 29,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 29,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 30,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 30,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 30,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 30,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 30,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 30,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 30,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 30,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 31,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 31,
+      "shift": [
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 31,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 31,
+      "shift": [
+        -1.0,
+        0.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 31,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 31,
+      "shift": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "channel": "identity",
+      "row": 31,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    },
+    {
+      "channel": "sigma0.75",
+      "row": 31,
+      "shift": [
+        0.0,
+        -1.0
+      ]
+    }
+  ],
+  "renderer_cases": {
+    "boundaries": "first/last pixel rows or columns of each6x6 block",
+    "orientations": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "polarities": [
+      1,
+      1,
+      -1,
+      -1
+    ],
+    "q": [
+      0.1,
+      0.3,
+      0.7,
+      0.9
+    ],
+    "ramp": "12 integer columns rint(linspace(0,255,12))",
+    "sources": [
+      "black",
+      "white",
+      "gray128",
+      "ramp"
+    ],
+    "strengths": [
+      4.0,
+      2.2
+    ],
+    "words": "all16"
+  },
+  "scope": "synthetic research only; no novelty/security/physical robustness claim",
+  "seed": 2026091007,
+  "settings": {
+    "block": 6,
+    "blur_sigma": 0.75,
+    "capture_support_margin": 4,
+    "coordinate_tolerance": 0.25,
+    "cutoff": 0.0006666666666666666,
+    "device": "CPU",
+    "dpi": 144,
+    "grid": [
+      -2.0,
+      -1.75,
+      -1.5,
+      -1.25,
+      -1.0,
+      -0.75,
+      -0.5,
+      -0.25,
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      1.75,
+      2.0
+    ],
+    "minimum_blocks": 1000,
+    "minimum_pilot_energy_fraction": 0.2,
+    "null_H": 1,
+    "null_epsilon": 0.05,
+    "null_mgf_relative_tolerance": 1e-10,
+    "null_theta": [
+      0.01,
+      0.1,
+      1.0
+    ],
+    "opencv_threads": 2,
+    "recovery_fraction_min": 0.95,
+    "renderer_max_error": 1.01,
+    "renderer_rms_error": 0.25,
+    "source_luma": 245,
+    "source_neighborhood": 18,
+    "source_range_max": 8,
+    "source_shape": [
+      240,
+      240
+    ],
+    "strength": 4.0,
+    "tile": 96
+  }
+}

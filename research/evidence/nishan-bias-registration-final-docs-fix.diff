@@ -1,0 +1,105 @@
+# Final documentation fix — scoped before/current diff
+
+No numerical source or experiment change.
+
+diff --git a/research/evidence/nishan-bias-final-docs-before/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md b/research/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md
+index 151ee3a..fe3f889 100644
+--- a/research/evidence/nishan-bias-final-docs-before/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md
++++ b/research/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md
+@@ -9,8 +9,9 @@ another physical recovery, alongside a modest score improvement.
+ 
+ The experiment started on 10 September and completed after midnight on
+ 11 September, Asia/Kolkata. Its predeclared evidence-directory name retains
+-10 September. The physical task's independent spec/quality review is pending;
+-the synthetic prerequisite has already passed independent review.
++10 September. The physical task's independent spec/quality review is complete;
++the final review found no Critical/Important issues. The synthetic prerequisite
++has already passed independent review.
+ 
+ ## All fixed outcomes
+ 
+@@ -62,6 +63,12 @@ The original RGB8→luma float32 hard-decoder arithmetic remains unchanged.
+ Prior score-bearing evidence is opened only in the scoring process for the
+ baseline comparison.
+ 
++Frozen-run reuse caveat: `load_prior_baselines` currently aborts when the prior
++evidence is absent. The frozen run had that prior evidence, its hashes matched,
++and all baseline comparisons passed. The runner is intentionally unchanged in
++this documentation-only fix; before reusing it without prior evidence, make
++and focused-test a separate fix for that missing-prior path.
++
+ Eight focused process-boundary tests passed. The prerequisite synthetic suite
+ passed13 focused tests,8 renderer cases and256/256 fixed shift recoveries,
+ plus null, composition, independence and erasure checks. These synthetic
+
+diff --git a/research/evidence/nishan-bias-final-docs-before/ORIGINAL_IDEAS_FIRST_2026-09-10.md b/research/ORIGINAL_IDEAS_FIRST_2026-09-10.md
+index f20c3b8..8a96960 100644
+--- a/research/evidence/nishan-bias-final-docs-before/ORIGINAL_IDEAS_FIRST_2026-09-10.md
++++ b/research/ORIGINAL_IDEAS_FIRST_2026-09-10.md
+@@ -104,7 +104,8 @@ shift recoveries and8/8 renderer cases. The
+ [fixed physical task](NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md) has now run:
+ akshay3's match strengthens but no additional capture is recovered; akshay2
+ still fails. Two other refinement profiles hit the search boundary. Its
+-independent implementation review is pending. The process froze all image/
++independent implementation review is complete; the final review found no
++Critical/Important issues. The process froze all image/
+ bias-only transforms and words before a separate process generated the roster.
+ Scientific gate failures must remain failures, not a reason to tune against
+ the known recipient.
+
+diff --git a/research/evidence/nishan-bias-final-docs-before/NISHAN_PHYSICAL_ALIGNMENT_FINDINGS_2026-09-10.md b/research/NISHAN_PHYSICAL_ALIGNMENT_FINDINGS_2026-09-10.md
+index 7ec83af..8644788 100644
+--- a/research/evidence/nishan-bias-final-docs-before/NISHAN_PHYSICAL_ALIGNMENT_FINDINGS_2026-09-10.md
++++ b/research/NISHAN_PHYSICAL_ALIGNMENT_FINDINGS_2026-09-10.md
+@@ -89,7 +89,8 @@ were recovered; this is not physical recovery evidence. The separate physical
+ preparation/scoring task has now produced
+ [physical results](NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md): a stronger
+ akshay3 match, no new recovery, and two retained boundary failures. Its
+-independent implementation review is pending. Settings were frozen before
++independent implementation review is complete; the final review found no
++Critical/Important issues. Settings were frozen before
+ recipient scores. A synchronization/pilot construction must still be compared with
+ existing work before making any novelty claim.
+ 
+
+diff --git a/research/evidence/nishan-bias-final-docs-before/nishan-bias-registration-task-2-report.md b/research/evidence/nishan-bias-registration-task-2-report.md
+index 75cf036..022c164 100644
+--- a/research/evidence/nishan-bias-final-docs-before/nishan-bias-registration-task-2-report.md
++++ b/research/evidence/nishan-bias-registration-task-2-report.md
+@@ -437,3 +437,34 @@ The source endpoint boundary and float32 sum boundary have direct focused checks
+ The commitment provides tamper detection against accidental changes; it is a local unsigned artifact, not an adversarial authenticated or externally timestamped commitment. The small scorer fixture has two mock roster rows; the actual process uses the fixed original 1000-row generator. The source fixture is explicitly constrained to one page, matching the supplied physical experiment.
+ 
+ This is exploratory evidence on the same source page with a public codebook, not independent confirmation or a production security guarantee. The conditional-independent innocent-bit model and finite numerical threshold arithmetic are not certified. The fixed global translation search cannot correct arbitrary local curvature, nonuniform scale or larger misalignment. No score-based retuning, rerun, image selection or profile selection is permitted.
++
++## Final documentation fix report
++
++This final fix wave changed documentation only. Exact edited files:
++
++- `research/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md`
++- `research/ORIGINAL_IDEAS_FIRST_2026-09-10.md`
++- `research/NISHAN_PHYSICAL_ALIGNMENT_FINDINGS_2026-09-10.md`
++- `research/evidence/nishan-bias-registration-task-2-report.md`
++
++The physical status notes now record that the independent Task 2
++spec/quality/implementation review is complete, with no Critical/Important
++issues. The physical findings also record the frozen-run reuse caveat: the
++runner aborts when prior evidence is absent, while this frozen run had matching
++prior evidence and passing comparisons. A focused code fix and test are
++required before future reuse without prior evidence; the runner was not
++modified here.
++
++Docs-only validation command and output:
++
++```text
++$ rg -n -i 'independent (spec/quality|implementation) review is pending|pending' research/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md research/ORIGINAL_IDEAS_FIRST_2026-09-10.md research/NISHAN_PHYSICAL_ALIGNMENT_FINDINGS_2026-09-10.md
++<no output>
++$ sha256sum research/tools/probe_nishan_bias_physical.py research/evidence/nishan-bias-physical-2026-09-10/commitment.json research/evidence/nishan-bias-physical-2026-09-10/scores.json
++572a54f4c791ad84fc20c902e1e723f0455abdfe13b7616d1b8860fbc9dff5c8  research/tools/probe_nishan_bias_physical.py
++956678e16fac26228029f6ab34e7bb5e4ef76264b00d4a98898907dc6463c76c  research/evidence/nishan-bias-physical-2026-09-10/commitment.json
++38ba1ddf81519415d56d70fa7c37fbee940eb1341a796d8cb9fc2ca5c3ad0b9b  research/evidence/nishan-bias-physical-2026-09-10/scores.json
++```
++
++These hashes remain unchanged from the pre-existing report. No experiment,
++test, code, artifact, or numerical claim was changed.
+
+

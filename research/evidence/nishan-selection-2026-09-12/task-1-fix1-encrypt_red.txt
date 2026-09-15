@@ -1,0 +1,32 @@
+test_encrypt_classifies_pdf_source_content_without_suffix_trust (test_pdf_format_policy.PdfFormatPolicyTests.test_encrypt_classifies_pdf_source_content_without_suffix_trust) ... 
+  test_encrypt_classifies_pdf_source_content_without_suffix_trust (test_pdf_format_policy.PdfFormatPolicyTests.test_encrypt_classifies_pdf_source_content_without_suffix_trust) (prefix=b'', suffix='.bin') ... FAIL
+  test_encrypt_classifies_pdf_source_content_without_suffix_trust (test_pdf_format_policy.PdfFormatPolicyTests.test_encrypt_classifies_pdf_source_content_without_suffix_trust) (prefix=b'\n', suffix='.bin') ... FAIL
+
+======================================================================
+FAIL: test_encrypt_classifies_pdf_source_content_without_suffix_trust (test_pdf_format_policy.PdfFormatPolicyTests.test_encrypt_classifies_pdf_source_content_without_suffix_trust) (prefix=b'', suffix='.bin')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_pdf_format_policy.py", line 51, in test_encrypt_classifies_pdf_source_content_without_suffix_trust
+    self.assertEqual(package["source"]["media_type"], "application/pdf")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'image' != 'application/pdf'
+- image
++ application/pdf
+
+
+======================================================================
+FAIL: test_encrypt_classifies_pdf_source_content_without_suffix_trust (test_pdf_format_policy.PdfFormatPolicyTests.test_encrypt_classifies_pdf_source_content_without_suffix_trust) (prefix=b'\n', suffix='.bin')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_pdf_format_policy.py", line 51, in test_encrypt_classifies_pdf_source_content_without_suffix_trust
+    self.assertEqual(package["source"]["media_type"], "application/pdf")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'image' != 'application/pdf'
+- image
++ application/pdf
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.808s
+
+FAILED (failures=2)

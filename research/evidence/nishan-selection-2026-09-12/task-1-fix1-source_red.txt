@@ -1,0 +1,28 @@
+test_pdf_source_label_tampering_before_first_strict_release_rejected (test_release_safeguards.ReleaseSafeguardsTests.test_pdf_source_label_tampering_before_first_strict_release_rejected) ... FAIL
+test_renamed_prefixed_pdf_source_uses_strict_pdf_policy (test_release_safeguards.ReleaseSafeguardsTests.test_renamed_prefixed_pdf_source_uses_strict_pdf_policy) ... FAIL
+
+======================================================================
+FAIL: test_pdf_source_label_tampering_before_first_strict_release_rejected (test_release_safeguards.ReleaseSafeguardsTests.test_pdf_source_label_tampering_before_first_strict_release_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_release_safeguards.py", line 151, in test_pdf_source_label_tampering_before_first_strict_release_rejected
+    with self.assertRaisesRegex(RuntimeError, "media type"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_renamed_prefixed_pdf_source_uses_strict_pdf_policy (test_release_safeguards.ReleaseSafeguardsTests.test_renamed_prefixed_pdf_source_uses_strict_pdf_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_release_safeguards.py", line 162, in test_renamed_prefixed_pdf_source_uses_strict_pdf_policy
+    self.assertEqual(package["source"]["media_type"], "application/pdf")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'image' != 'application/pdf'
+- image
++ application/pdf
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 13.502s
+
+FAILED (failures=2)

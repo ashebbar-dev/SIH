@@ -1,0 +1,403 @@
+{
+  "algorithms": [
+    "ML-KEM-768",
+    "ML-DSA-65",
+    "AES-256-GCM",
+    "SHA3-256"
+  ],
+  "coordinated_valid_prefix_rollback_attack": {
+    "baseline_witness_comparison": "consistent",
+    "boundary": "The ledger alone accepts a coordinated truncation to a valid prefix. A separately retained ML-DSA head checkpoint detects it. The demo witness key is local; production requires separate administration.",
+    "checkpoint_hash": "337d7e075333e92023fd6a323062e9fecba8a4396fabac42bcd58643917ac92b",
+    "external_witness_comparison": "rollback_detected",
+    "rolled_back_ledger_quorum_valid": true,
+    "rolled_back_length": 2,
+    "witnessed_length": 3
+  },
+  "decryption_events": {
+    "alice": {
+      "ledger_block_hash": "d76e0aa741738fca12373d91492f33502d1568798c5347d54c1eba40d366af32",
+      "session_id": "bb966d27-87ca-465e-a31f-08937e56e74c",
+      "watermark_psnr_db": 41.87
+    },
+    "bob": {
+      "ledger_block_hash": "cd171eaecf3a010f43e9a49bbd623f729193b4d5dbb5e0f781326201119452d7",
+      "session_id": "ed2a7c0a-be3b-4dbc-b4b3-929934d418b5",
+      "watermark_psnr_db": 41.867
+    },
+    "charlie": {
+      "ledger_block_hash": "4785701bd7071572bf3cba4203aaf00d709ac5ba2793be200597d9a98c0bb0e4",
+      "session_id": "2e04044e-acaa-486d-b498-bf96f10766ef",
+      "watermark_psnr_db": 41.868
+    }
+  },
+  "dual_carrier_attack_decisions": {
+    "alice_visual_transplanted_onto_bob_layout": {
+      "conflict": true,
+      "decision": "abstain_channel_conflict",
+      "editable_pdf_corroboration_required": true,
+      "layout_authenticated_indices": [
+        1
+      ],
+      "layout_observation": {
+        "carrier_symbols_read": 133,
+        "encoded_bits": 126,
+        "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+        "read_error": null,
+        "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "reason": "The visual Tardos and text-layout identity sets differ. Even an overlapping candidate is withheld because extra candidates are consistent with carrier transplantation or recombination.",
+      "screening_lead_indices": [],
+      "selected_indices": [],
+      "tardos_issued_indices": [
+        0
+      ],
+      "unissued_tardos_indices": []
+    },
+    "both_channels_removed": {
+      "conflict": false,
+      "decision": "no_attribution_signal",
+      "editable_pdf_corroboration_required": true,
+      "layout_authenticated_indices": [],
+      "layout_observation": {
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+        "read_error": null,
+        "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "reason": "Neither carrier produced a signed release candidate.",
+      "selected_indices": [],
+      "tardos_issued_indices": [],
+      "unissued_tardos_indices": []
+    },
+    "direct_pdf": {
+      "conflict": false,
+      "decision": "corroborated_channels",
+      "editable_pdf_corroboration_required": true,
+      "layout_authenticated_indices": [
+        0
+      ],
+      "layout_observation": {
+        "carrier_symbols_read": 133,
+        "encoded_bits": 126,
+        "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+        "read_error": null,
+        "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "reason": "Both separately encoded, domain-separated carriers identify the same release event set.",
+      "selected_indices": [
+        0
+      ],
+      "tardos_issued_indices": [
+        0
+      ],
+      "unissued_tardos_indices": []
+    },
+    "layout_tag_normalized": {
+      "conflict": true,
+      "decision": "abstain_single_channel_editable_pdf",
+      "editable_pdf_corroboration_required": true,
+      "layout_authenticated_indices": [],
+      "layout_observation": {
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+        "read_error": null,
+        "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+      "screening_lead_indices": [
+        0
+      ],
+      "selected_indices": [],
+      "tardos_issued_indices": [
+        0
+      ],
+      "unissued_tardos_indices": []
+    },
+    "visual_overlay_removed": {
+      "conflict": true,
+      "decision": "abstain_single_channel_editable_pdf",
+      "editable_pdf_corroboration_required": true,
+      "layout_authenticated_indices": [
+        0
+      ],
+      "layout_observation": {
+        "carrier_symbols_read": 133,
+        "encoded_bits": 126,
+        "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+        "read_error": null,
+        "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+      "screening_lead_indices": [
+        0
+      ],
+      "selected_indices": [],
+      "tardos_issued_indices": [],
+      "unissued_tardos_indices": []
+    }
+  },
+  "enrollment_registry_tamper_attack": {
+    "configuration_failure": "trust-root hash mismatch",
+    "future_plaintext_release_blocked": true,
+    "plaintext_output_created": false,
+    "quorum_valid": false,
+    "release_error": "ledger enrollment trust root is invalid: trust-root hash mismatch",
+    "trust_root_valid": false
+  },
+  "enrollment_trust_root": {
+    "enrolled_identity_ids": [
+      "alice",
+      "bob",
+      "charlie"
+    ],
+    "identity_registry_sha3_256": "9dda55cdb40b5c2fed8d0bb678e43cb76686aa9e417f7c54df6f72222f045778",
+    "trust_root_hash": "e1a6287963a83f0f6b624fe110f2246016cff15e4147c02b9ac52bcdaf56c2a8",
+    "trust_root_valid": true
+  },
+  "invalid_recipient_signature_attack": {
+    "boundary": "The portable replica layer signs arbitrary records; the application verifies every recipient ML-DSA receipt before tracing or release. Production endorsement policy must enforce the same validation.",
+    "future_plaintext_release_blocked": true,
+    "invalid_record_received_quorum_endorsement": true,
+    "plaintext_output_created": false,
+    "release_error": "canonical ledger contains invalid recipient signatures in blocks: 3",
+    "trace_blocked": true,
+    "trace_error": "canonical ledger contains invalid recipient signatures in blocks: 3"
+  },
+  "jpeg_attack_attribution": [
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 1,
+      "layout_tag": {
+        "corrected_blocks": null,
+        "match": false,
+        "release_channel_available": true,
+        "status": "suspect is not a supported digital PDF",
+        "suspect_carrier_symbols": null,
+        "suspect_is_pdf": false
+      },
+      "ledger_block_hash": "cd171eaecf3a010f43e9a49bbd623f729193b4d5dbb5e0f781326201119452d7",
+      "ledger_block_index": 1,
+      "recipient_display_name": "Lieutenant Bob Singh",
+      "recipient_id": "bob",
+      "recipient_signature_valid": true,
+      "score": 13729.946864,
+      "selected_by_fusion": true,
+      "session_id": "ed2a7c0a-be3b-4dbc-b4b3-929934d418b5",
+      "tardos_above_threshold": true
+    }
+  ],
+  "ledger_after_single_replica_attack": {
+    "divergent_replicas": [
+      "validator-1"
+    ],
+    "failure": "block 1: block hash mismatch",
+    "quorum_valid": true
+  },
+  "ledger_before_attack": {
+    "divergent_replicas": [],
+    "quorum_valid": true
+  },
+  "openssl": "OpenSSL 3.6.2 7 Apr 2026 (Library: OpenSSL 3.6.2 7 Apr 2026)",
+  "self_asserted_identity_key_attack": {
+    "boundary": "A valid signature under an attacker key cannot claim Alice because the event key hash must equal Alice's quorum-signed enrollment entry.",
+    "future_plaintext_release_blocked": true,
+    "invalid_record_received_quorum_endorsement": true,
+    "plaintext_output_created": false,
+    "release_error": "canonical ledger contains invalid recipient signatures in blocks: 3",
+    "substituted_signature_valid_under_attacker_key": true,
+    "trace_blocked": true,
+    "trace_error": "canonical ledger contains invalid recipient signatures in blocks: 3"
+  },
+  "three_copy_average_attribution": [
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 1,
+      "layout_tag": {
+        "corrected_blocks": null,
+        "match": false,
+        "release_channel_available": true,
+        "status": "suspect is not a supported digital PDF",
+        "suspect_carrier_symbols": null,
+        "suspect_is_pdf": false
+      },
+      "ledger_block_hash": "cd171eaecf3a010f43e9a49bbd623f729193b4d5dbb5e0f781326201119452d7",
+      "ledger_block_index": 1,
+      "recipient_display_name": "Lieutenant Bob Singh",
+      "recipient_id": "bob",
+      "recipient_signature_valid": true,
+      "score": 5961.441453,
+      "selected_by_fusion": true,
+      "session_id": "ed2a7c0a-be3b-4dbc-b4b3-929934d418b5",
+      "tardos_above_threshold": true
+    },
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 2,
+      "layout_tag": {
+        "corrected_blocks": null,
+        "match": false,
+        "release_channel_available": true,
+        "status": "suspect is not a supported digital PDF",
+        "suspect_carrier_symbols": null,
+        "suspect_is_pdf": false
+      },
+      "ledger_block_hash": "4785701bd7071572bf3cba4203aaf00d709ac5ba2793be200597d9a98c0bb0e4",
+      "ledger_block_index": 2,
+      "recipient_display_name": "Analyst Charlie Devi",
+      "recipient_id": "charlie",
+      "recipient_signature_valid": true,
+      "score": 5731.293653,
+      "selected_by_fusion": true,
+      "session_id": "2e04044e-acaa-486d-b498-bf96f10766ef",
+      "tardos_above_threshold": true
+    },
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 0,
+      "layout_tag": {
+        "corrected_blocks": null,
+        "match": false,
+        "release_channel_available": true,
+        "status": "suspect is not a supported digital PDF",
+        "suspect_carrier_symbols": null,
+        "suspect_is_pdf": false
+      },
+      "ledger_block_hash": "d76e0aa741738fca12373d91492f33502d1568798c5347d54c1eba40d366af32",
+      "ledger_block_index": 0,
+      "recipient_display_name": "Commander Alice Rao",
+      "recipient_id": "alice",
+      "recipient_signature_valid": true,
+      "score": 5723.167374,
+      "selected_by_fusion": true,
+      "session_id": "bb966d27-87ca-465e-a31f-08937e56e74c",
+      "tardos_above_threshold": true
+    }
+  ],
+  "threshold_calibration": {
+    "jpeg_q55": {
+      "coalition_limit": 5,
+      "code_length": 52500,
+      "decision_role": "binary fingerprint accusation threshold",
+      "familywise_epsilon_target": 1e-06,
+      "formal_code_bound_available": true,
+      "formal_familywise_bound_established": false,
+      "formal_familywise_bound_established_for_this_physical_attack": false,
+      "reference_theorem_bounds": {
+        "combined_error_upper": 9.990056234132518e-07,
+        "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+        "scope": "random code construction; coalition obeys the marking condition",
+        "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+        "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+      },
+      "roster_size": 1000,
+      "threshold": 2100.0,
+      "version": "original-tardos-reference-profile/v1",
+      "why_not_automatic": "The theorem requires a coalition of at most c and a decoded pirate word that obeys the marking condition. Those facts cannot be established from an unknown leak alone; named attack fixtures test the carrier condition separately. The keyed generator also uses documented finite-precision discretization."
+    },
+    "three_copy_average": {
+      "coalition_limit": 5,
+      "code_length": 52500,
+      "decision_role": "binary fingerprint accusation threshold",
+      "familywise_epsilon_target": 1e-06,
+      "formal_code_bound_available": true,
+      "formal_familywise_bound_established": false,
+      "formal_familywise_bound_established_for_this_physical_attack": false,
+      "reference_theorem_bounds": {
+        "combined_error_upper": 9.990056234132518e-07,
+        "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+        "scope": "random code construction; coalition obeys the marking condition",
+        "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+        "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+      },
+      "roster_size": 1000,
+      "threshold": 2100.0,
+      "version": "original-tardos-reference-profile/v1",
+      "why_not_automatic": "The theorem requires a coalition of at most c and a decoded pirate word that obeys the marking condition. Those facts cannot be established from an unknown leak alone; named attack fixtures test the carrier condition separately. The keyed generator also uses documented finite-precision discretization."
+    },
+    "two_copy_average": {
+      "coalition_limit": 5,
+      "code_length": 52500,
+      "decision_role": "binary fingerprint accusation threshold",
+      "familywise_epsilon_target": 1e-06,
+      "formal_code_bound_available": true,
+      "formal_familywise_bound_established": false,
+      "formal_familywise_bound_established_for_this_physical_attack": false,
+      "reference_theorem_bounds": {
+        "combined_error_upper": 9.990056234132518e-07,
+        "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+        "scope": "random code construction; coalition obeys the marking condition",
+        "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+        "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+      },
+      "roster_size": 1000,
+      "threshold": 2100.0,
+      "version": "original-tardos-reference-profile/v1",
+      "why_not_automatic": "The theorem requires a coalition of at most c and a decoded pirate word that obeys the marking condition. Those facts cannot be established from an unknown leak alone; named attack fixtures test the carrier condition separately. The keyed generator also uses documented finite-precision discretization."
+    }
+  },
+  "two_copy_average_attribution": [
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 1,
+      "layout_tag": {
+        "corrected_blocks": null,
+        "match": false,
+        "release_channel_available": true,
+        "status": "suspect is not a supported digital PDF",
+        "suspect_carrier_symbols": null,
+        "suspect_is_pdf": false
+      },
+      "ledger_block_hash": "cd171eaecf3a010f43e9a49bbd623f729193b4d5dbb5e0f781326201119452d7",
+      "ledger_block_index": 1,
+      "recipient_display_name": "Lieutenant Bob Singh",
+      "recipient_id": "bob",
+      "recipient_signature_valid": true,
+      "score": 8725.759498,
+      "selected_by_fusion": true,
+      "session_id": "ed2a7c0a-be3b-4dbc-b4b3-929934d418b5",
+      "tardos_above_threshold": true
+    },
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 0,
+      "layout_tag": {
+        "corrected_blocks": null,
+        "match": false,
+        "release_channel_available": true,
+        "status": "suspect is not a supported digital PDF",
+        "suspect_carrier_symbols": null,
+        "suspect_is_pdf": false
+      },
+      "ledger_block_hash": "d76e0aa741738fca12373d91492f33502d1568798c5347d54c1eba40d366af32",
+      "ledger_block_index": 0,
+      "recipient_display_name": "Commander Alice Rao",
+      "recipient_id": "alice",
+      "recipient_signature_valid": true,
+      "score": 8720.706423,
+      "selected_by_fusion": true,
+      "session_id": "bb966d27-87ca-465e-a31f-08937e56e74c",
+      "tardos_above_threshold": true
+    }
+  ],
+  "valid_receipt_replay_attack": {
+    "future_plaintext_release_blocked": true,
+    "plaintext_output_created": false,
+    "release_error": "canonical ledger contains replayed receipts: duplicate session ids=1; duplicate document-row assignments=1",
+    "replayed_record_received_quorum_endorsement": true,
+    "trace_blocked": true,
+    "trace_error": "canonical ledger contains replayed receipts for this source"
+  }
+}

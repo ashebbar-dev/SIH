@@ -1,0 +1,325 @@
+# Review package: research/evidence/nishan-selection-2026-09-12/task-1-after.tar.gz -> working files
+No Git repository; complete net snapshot diff, 10 lines of context.
+## Changed files
+prototypes/nishan_pq/README.md: 16493 -> 17070 bytes; SHA256 3e5091e407e9539c43bd9a40807e7b2a5fecc5133748a2b6bcdebe46a7d458b1 -> 2602b59897b6764225ce9c1ac549476618c9219d2cf308377cba7dfd829d5bdf
+prototypes/nishan_pq/nishan/core.py: 47036 -> 48162 bytes; SHA256 6d57d5a974b877707a2710ecdbe8f39d9c28626caa7f0844adbba1673dcc7fb9 -> da4ac2487aad358df7ff0e9512a1d22a006906934e51c188b3a6cae823534b99
+prototypes/nishan_pq/tests/test_end_to_end.py: 12123 -> 12364 bytes; SHA256 441c7bfff33c636ec68381ab6298ac07ad0f6a33ff6318d3a9305bb549bb491f -> 95e2404882344fcd61e5f72650b9602a74f4f52605b0318b5978dd86a0f19a4b
+prototypes/nishan_pq/tests/test_pdf_format_policy.py: 4242 -> 5055 bytes; SHA256 f18140142a867adbd0469c1eed584d295dce44906090cc9a62ad904f8e6b363f -> 70405e56a9b2cdcd58dfecf7ec8638bb56b3260b74da61dda389abb27313248d
+prototypes/nishan_pq/tests/test_release_safeguards.py: 16148 -> 20236 bytes; SHA256 69e32880b3d1942065bc96764066a49495df8d6aa219852c55acb87d9c7e3c65 -> 80d8af59bdb2703f508792865e7eb539abce4591c1c41d1db26036f0b6872b45
+
+## Diff
+--- before/prototypes/nishan_pq/README.md
++++ current/prototypes/nishan_pq/README.md
+@@ -88,20 +88,29 @@
+   --witness-public-key-sha3-256 "$WITNESS_PIN"
+ ```
+ 
+ Adjust the package, source and secret paths to your fixture. Both flags are
+ required together; wrong/malformed pins, empty/missing history, forks, rollback
+ and unwitnessed extensions fail before decryption. The comparison uses the
+ actual public-key bytes and requires an exactly consistent checkpoint.
+ Without these options, existing APIs remain usable and explicitly report
+ `release_assurance.mode = "unwitnessed"`. Generic-image attribution remains
+ research screening; the two-channel rule applies to PDF-source Tardos tracing.
++
++Source classification uses the existing content parser at encryption and again
++on authenticated plaintext before release-profile selection. Renaming a PDF or
++editing the package media-type label cannot select the generic-image profile;
++an inconsistent label is rejected before embedding, signing or append. Actual
++PDF references backed by legacy generic-image receipts are rejected before
++generic screening and require a new PDF-profile release. Genuine raster sources
++retain the existing screening path. This is a profile-selection guard, not a
++new signed-manifest protocol.
+ 
+ Locks are acquired in ledger-then-witness order. Release holds them through
+ publication; trace audits a consistent snapshot under them and releases them
+ before extraction. `ledger_witness` identifies that snapshot, not perpetual
+ freshness. All writers must cooperate with these local advisory locks.
+ 
+ If a checkpoint fails after append, the signed release authorization remains
+ committed but no new output is published, and any existing destination is
+ preserved. Strict release and trace then reject the unwitnessed extension. After
+ deliberately reviewing the ledger, witness and intended release, an operator may
+--- before/prototypes/nishan_pq/nishan/core.py
++++ current/prototypes/nishan_pq/nishan/core.py
+@@ -130,21 +130,21 @@
+             "wrap_nonce": b64e(wrap_nonce),
+             "wrapped_dek": b64e(wrapped_dek),
+             "kem_public_key_sha3_256": identity["profile"]["kem_public_key_sha3_256"],
+         }
+     package = {
+         "version": "nishan-package/v1",
+         "document_id": document_id,
+         "source": {
+             "filename": source.name,
+             "sha3_256": source_hash,
+-            "media_type": "application/pdf" if source.suffix.lower() == ".pdf" else "image",
++            "media_type": "application/pdf" if watermark.is_pdf_document(source) else "image",
+         },
+         "content_cipher": {
+             "algorithm": "AES-256-GCM",
+             "nonce": b64e(document_nonce),
+             "ciphertext": b64e(encrypted_document),
+         },
+         "key_distribution": {
+             "algorithm": "ML-KEM-768 + HKDF-SHA3-256 + AES-256-GCM",
+             "envelopes": envelopes,
+         },
+@@ -244,22 +244,35 @@
+     authority_secret = authority_secret_path.read_bytes()
+     destination_suffix = Path(package["source"]["filename"]).suffix or output_path.suffix
+     # Atomic publication requires staging on the destination filesystem. The
+     # private 0700 directory is created only after history/pin/enrollment checks.
+     output_path.parent.mkdir(parents=True, exist_ok=True)
+     with tempfile.TemporaryDirectory(prefix=".nishan-release-", dir=output_path.parent) as directory:
+         root = Path(directory)
+         plaintext_path = root / f"source{destination_suffix}"
+         marked_path = root / f"marked{destination_suffix}"
+         plaintext_path.write_bytes(plaintext)
++        # Package labels are not authenticated profile selectors. Classify the
++        # authenticated bytes themselves, including renamed/prefixed PDFs.
++        source_is_pdf = watermark.is_pdf_document(plaintext_path)
++        actual_media_type = "application/pdf" if source_is_pdf else "image"
++        if package["source"].get("media_type") != actual_media_type:
++            raise RuntimeError("package media type does not match authenticated plaintext")
+         fingerprint: dict[str, Any]
+-        if package["source"]["media_type"] == "application/pdf":
++        if source_is_pdf:
++            # The unchanged PDF carrier requires a .pdf staging filename;
++            # choosing it follows content validation, never the package suffix.
++            pdf_plaintext_path = root / "source.pdf"
++            if plaintext_path != pdf_plaintext_path:
++                os.replace(plaintext_path, pdf_plaintext_path)
++            plaintext_path = pdf_plaintext_path
++            marked_path = root / "marked.pdf"
+             config, _, codebook, codebook_manifest = _tardos_material(
+                 authority_secret, package["document_id"]
+             )
+             user_index = _next_tardos_index(
+                 ledger_root,
+                 package["document_id"],
+                 config.roster_size,
+                 state=ledger_state,
+             )
+             tardos_path = root / "tardos-overlay.pdf"
+@@ -1009,20 +1022,25 @@
+     ]
+     if len(candidate_session_ids) != len(set(candidate_session_ids)):
+         raise RuntimeError(
+             "canonical ledger contains replayed receipts for this source"
+         )
+ 
+     schemes = {
+         record["event"].get("fingerprint", {}).get("scheme")
+         for _, record in candidate_records
+     }
++    if watermark.is_pdf_document(reference) and schemes != {TARDOS_SCHEME}:
++        raise RuntimeError(
++            "PDF references with legacy generic or absent receipts cannot use generic screening; "
++            "a PDF-profile release with corroborating carriers is required"
++        )
+     if schemes == {TARDOS_SCHEME}:
+         if detection_threshold is not None:
+             raise ValueError("a caller threshold cannot override the declared Tardos profile")
+         return _trace_tardos_pdf(
+             reference,
+             suspect,
+             secret,
+             source_hash,
+             suspect_hash,
+             state,
+--- before/prototypes/nishan_pq/tests/test_end_to_end.py
++++ current/prototypes/nishan_pq/tests/test_end_to_end.py
+@@ -39,40 +39,43 @@
+             ledger_root = root / "ledger"
+             ledger.initialize(
+                 ledger_root,
+                 validator_count=4,
+                 quorum=3,
+                 identities_root=identities,
+             )
+             secret = root / "authority-secret.bin"
+             write_private(secret, os.urandom(32))
+             package = root / "broadcast.json"
+-            encrypt_once(source, identities, ["alice", "bob", "charlie"], package)
++            encrypted = encrypt_once(source, identities, ["alice", "bob", "charlie"], package)
++            self.assertEqual(encrypted["source"]["media_type"], "image")
+ 
+             unauthorized_output = root / "mallory.png"
+             with self.assertRaises(PermissionError):
+                 decrypt_and_attribute(
+                     package,
+                     identities,
+                     "mallory",
+                     secret,
+                     ledger_root,
+                     unauthorized_output,
+                 )
+             self.assertFalse(unauthorized_output.exists())
+ 
+             copies: dict[str, Path] = {}
+             for recipient in ["alice", "bob", "charlie"]:
+                 copy_path = root / f"{recipient}.png"
+-                decrypt_and_attribute(
++                release = decrypt_and_attribute(
+                     package, identities, recipient, secret, ledger_root, copy_path
+                 )
++                self.assertEqual(release["event"]["fingerprint"]["scheme"],
++                                 "nishan-spread-spectrum-session/v1")
+                 copies[recipient] = copy_path
+ 
+             attacked = root / "bob-q45.jpg"
+             watermark.jpeg_attack(copies["bob"], attacked, quality=45)
+             evidence = trace_leak(
+                 source, attacked, secret, ledger_root, null_samples=32
+             )
+             self.assertEqual([item["recipient_id"] for item in evidence["attribution"]], ["bob"])
+             self.assertTrue(evidence["attribution"][0]["recipient_signature_valid"])
+             self.assertFalse(
+--- before/prototypes/nishan_pq/tests/test_pdf_format_policy.py
++++ current/prototypes/nishan_pq/tests/test_pdf_format_policy.py
+@@ -29,20 +29,34 @@
+     def test_unrecognized_input_is_not_accepted_as_raster(self):
+         with tempfile.TemporaryDirectory() as directory:
+             path = Path(directory) / "invalid.pdf"
+             path.write_bytes(b"not a document or a raster image")
+             with self.assertRaises((fitz.FileDataError, UnidentifiedImageError)):
+                 watermark.is_pdf_document(path)
+ 
+ 
+ @unittest.skipUnless(pqc.support().ready, "OpenSSL PQC provider is unavailable")
+ class PdfFormatPolicyTests(unittest.TestCase):
++    def test_encrypt_classifies_pdf_source_content_without_suffix_trust(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            source = root / "source.pdf"
++            _sample_pdf(source)
++            identities = root / "identities"
++            create_identity(identities, "alice", "Alice")
++            for prefix, suffix in ((b"", ".bin"), (b"\n", ".pdf"), (b"\n", ".bin")):
++                with self.subTest(prefix=prefix, suffix=suffix):
++                    renamed = root / ("renamed" + suffix)
++                    renamed.write_bytes(prefix + source.read_bytes())
++                    package = encrypt_once(renamed, identities, ["alice"], root / "package.json")
++                    self.assertEqual(package["source"]["media_type"], "application/pdf")
++
+     def test_parser_accepted_pdfs_always_require_channel_corroboration(self):
+         with tempfile.TemporaryDirectory() as directory:
+             root = Path(directory)
+             source = root / "source.pdf"
+             _sample_pdf(source)
+             identities = root / "identities"
+             for name in ("alice", "bob"):
+                 create_identity(identities, name, name.title())
+             ledger_root = root / "ledger"
+             ledger.initialize(ledger_root, validator_count=4, quorum=3,
+--- before/prototypes/nishan_pq/tests/test_release_safeguards.py
++++ current/prototypes/nishan_pq/tests/test_release_safeguards.py
+@@ -7,22 +7,22 @@
+ import traceback
+ import unittest
+ from contextlib import contextmanager
+ from pathlib import Path
+ from unittest.mock import patch
+ 
+ import pymupdf as fitz
+ 
+ from nishan import core, ledger, pqc, witness
+ from nishan.demo import _sample_pdf, _transplant_first_image
+-from nishan.identity import create_identity
+-from nishan.util import sha3_file, write_private
++from nishan.identity import create_identity, load_identity
++from nishan.util import b64e, canonical_json, read_json, sha3_file, write_json, write_private
+ 
+ 
+ def issuance_worker(root_string, number, barrier, allocated, attempted, resume, results):
+     """Hold the first allocation while the second independently enters release."""
+     root = Path(root_string)
+     original_allocate = core._next_tardos_index
+     original_exclusive = ledger.exclusive
+ 
+     def allocate(*args, **kwargs):
+         value = original_allocate(*args, **kwargs)
+@@ -136,20 +136,82 @@
+ 
+     def test_workspace_destination_can_be_on_another_filesystem(self):
+         # /tmp and the workspace are different mounts in the demonstration
+         # environment. This also exercises destination staging on single-mount hosts.
+         with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[3],
+                                          prefix=".release-destination-test-") as directory:
+             output = Path(directory) / "released.pdf"
+             result = self.release(output, **self.strict())
+             self.assertEqual(result["event"]["released_copy_sha3_256"], sha3_file(output))
+ 
++    def test_pdf_source_label_tampering_before_first_strict_release_rejected(self):
++        package = read_json(self.package)
++        package["source"]["media_type"] = "image"
++        write_json(self.package, package)
++        before_checkpoint = (self.witness / "checkpoints.jsonl").read_bytes()
++        with self.assertRaisesRegex(RuntimeError, "media type"):
++            self.release(**self.strict())
++        self.assertFalse((self.root / "out.pdf").exists())
++        self.assertEqual(ledger.audit(self.ledger)["canonical_length"], 0)
++        self.assertEqual((self.witness / "checkpoints.jsonl").read_bytes(), before_checkpoint)
++
++    def test_renamed_prefixed_pdf_source_uses_strict_pdf_policy(self):
++        renamed = self.root / "prefixed-source.bin"
++        renamed.write_bytes(b"\n" + self.source.read_bytes())
++        self.source = renamed
++        package = core.encrypt_once(renamed, self.identities, ["alice"], self.package)
++        self.assertEqual(package["source"]["media_type"], "application/pdf")
++        result = self.release(**self.strict())
++        self.assertEqual(result["event"]["fingerprint"]["scheme"], core.TARDOS_SCHEME)
++        evidence = self.trace(**self.strict())
++        self.assertEqual(evidence["channel_decision"]["decision"], "corroborated_channels")
++        self.assertEqual([row["recipient_id"] for row in evidence["attribution"]], ["alice"])
++
++    def test_legacy_generic_pdf_receipt_rejected_before_screening(self):
++        # Reconstruct a genuine generic-carrier PDF and valid legacy-style
++        # receipt with the synthetic recipient key. Production release must no
++        # longer create this profile for actual PDF bytes.
++        event = self.release()["event"]
++        generic = self.root / "legacy-generic.pdf"
++        metrics = core.watermark.embed_document(self.source, generic, self.secret.read_bytes(),
++                                               event["session_id"])
++        event["fingerprint"] = {"scheme": "nishan-spread-spectrum-session/v1",
++                                "formal_familywise_bound": False}
++        event["watermark_metrics"] = metrics
++        event["released_copy_sha3_256"] = sha3_file(generic)
++        identity = load_identity(self.identities, "alice")
++        record = {"event": event, "recipient_signature_algorithm": "ML-DSA-65 (FIPS 204)",
++                  "recipient_signature": b64e(pqc.sign(identity["sign_private"], canonical_json(event)))}
++        legacy = self.root / "legacy-ledger"
++        ledger.initialize(legacy, validator_count=4, quorum=3, identities_root=self.identities)
++        ledger.append(legacy, record)
++        legacy_witness = self.root / "legacy-witness"
++        pin = witness.initialize(legacy_witness)["public_key_sha3_256"]
++        witness.checkpoint(legacy_witness, ledger.audit(legacy))
++        for prefix, suffix in ((b"", ".pdf"), (b"\n", ".bin")):
++            reference = self.root / ("legacy-reference" + suffix)
++            reference.write_bytes(prefix + self.source.read_bytes())
++            # A changed prefix changes the source commitment; use that same
++            # actual PDF source hash in a separately signed legacy receipt.
++            if prefix:
++                event["source_sha3_256"] = sha3_file(reference)
++                event["document_id"] = sha3_file(reference)
++                event["session_id"] = "legacy-prefixed-session"
++                record["recipient_signature"] = b64e(pqc.sign(identity["sign_private"], canonical_json(event)))
++                ledger.append(legacy, record)
++                witness.checkpoint(legacy_witness, ledger.audit(legacy))
++            with self.subTest(prefix=prefix, suffix=suffix), patch.object(core.watermark, "prepare_score",
++                    side_effect=AssertionError("legacy PDF reached generic screening")):
++                with self.assertRaisesRegex(RuntimeError, "legacy generic"):
++                    core.trace_leak(reference, generic, self.secret, legacy,
++                        witness_root=legacy_witness, witness_public_key_sha3_256=pin)
++
+     def test_bad_arguments_fail_before_decryption_and_locks_are_released(self):
+         cases = ({"witness_root": self.witness}, {"witness_public_key_sha3_256": self.pin},
+                  {**self.strict(), "witness_public_key_sha3_256": "0" * 64},
+                  {**self.strict(), "witness_public_key_sha3_256": "z" * 64},
+                  {**self.strict(), "witness_public_key_sha3_256": "abcd"},
+                  {**self.strict(), "witness_root": self.ledger},
+                  {**self.strict(), "witness_root": self.root / "absent"})
+         for kwargs in cases:
+             with self.subTest(kwargs=kwargs), patch.object(pqc, "decapsulate", side_effect=AssertionError("plaintext path reached")):
+                 with self.assertRaises((RuntimeError, ValueError, OSError)):

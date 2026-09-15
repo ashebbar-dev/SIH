@@ -1,0 +1,102 @@
+{
+  "empirical_extraction": true,
+  "highest_score": 8650.055030903923,
+  "highest_score_row": 0,
+  "highest_score_threshold_ratio": 10.331084602168605,
+  "identity_verdict": null,
+  "identity_verdict_reason": "Diagnostic scores are not an identity verdict or production attribution.",
+  "limitations": [
+    "Empirical extraction only; no theorem probability certification.",
+    "A generated clean raster is replay smoke, not physical evidence.",
+    "Registration is always enabled here and differs from the controlled synthetic study.",
+    "The local manifest is not independently signed provenance."
+  ],
+  "logical_correlation_maximum": 370.0541687011719,
+  "logical_correlation_minimum": -354.8139343261719,
+  "logical_one_count": 6239,
+  "physical_correlation_maximum": 370.0541687011719,
+  "physical_correlation_minimum": -354.8139343261719,
+  "profile": "symmetric-12-r1",
+  "registration": {
+    "pages": [
+      {
+        "applied": false,
+        "baseline_similarity": 0.999544,
+        "homography_suspect_to_reference": null,
+        "method": "identity/content-similarity guard",
+        "ransac_inlier_ratio": 0.0,
+        "ransac_inliers": 0,
+        "ratio_test_matches": 0,
+        "reference_height": 1684,
+        "reference_keypoints": 0,
+        "reference_width": 1190,
+        "registered_similarity": 0.999544,
+        "rejection_reason": null,
+        "suspect_height": 1684,
+        "suspect_keypoints": 0,
+        "suspect_width": 1190
+      }
+    ],
+    "registration_mode": "always"
+  },
+  "registration_mode": "always",
+  "schema_version": "nishan-compact-carrier-capture/v1",
+  "selected_count": 1,
+  "selected_rows": [
+    0
+  ],
+  "suspect": "research/evidence/nishan-compact-carrier-2026-09-12/run-01/rasters/symmetric-12-r1/row-0/clean.png",
+  "threshold": 837.2843088602898,
+  "top_ten_rows": [
+    {
+      "row": 0,
+      "score": 8650.055030903923,
+      "score_threshold_ratio": 10.331084602168605
+    },
+    {
+      "row": 140,
+      "score": 304.46945673831,
+      "score_threshold_ratio": 0.36363927224762327
+    },
+    {
+      "row": 501,
+      "score": 291.9279499801304,
+      "score_threshold_ratio": 0.34866048114230436
+    },
+    {
+      "row": 378,
+      "score": 290.2892250353935,
+      "score_threshold_ratio": 0.34670329058302163
+    },
+    {
+      "row": 218,
+      "score": 286.61099759876606,
+      "score_threshold_ratio": 0.34231024583382025
+    },
+    {
+      "row": 124,
+      "score": 280.69318109170956,
+      "score_threshold_ratio": 0.3352423760022312
+    },
+    {
+      "row": 405,
+      "score": 276.2666367107157,
+      "score_threshold_ratio": 0.32995558830759586
+    },
+    {
+      "row": 650,
+      "score": 265.64228267223194,
+      "score_threshold_ratio": 0.31726652447819526
+    },
+    {
+      "row": 11,
+      "score": 257.4494418553593,
+      "score_threshold_ratio": 0.3074815079310385
+    },
+    {
+      "row": 118,
+      "score": 257.412306974119,
+      "score_threshold_ratio": 0.30743715635195445
+    }
+  ]
+}

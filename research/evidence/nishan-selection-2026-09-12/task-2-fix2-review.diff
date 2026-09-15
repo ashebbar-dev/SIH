@@ -1,0 +1,77 @@
+# Review package: research/evidence/nishan-selection-2026-09-12/task-2-render-before.tar.gz -> working files
+No Git repository; complete net snapshot diff, 10 lines of context.
+## Changed files
+submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx: 694113 -> 694099 bytes; SHA256 f081f3cab7c13479945b39abb0bad3903092ddb92fb18339655678fa4c4386d1 -> 56a4bae2d60cfe255c48b1ab3ab8994438bb979fab55c1860719744fb40423a4
+submissions/SIH26237_NISHAN_PQ/build_deck.py: 34069 -> 34037 bytes; SHA256 2009665aad97988b9825adade34b1bf8b2a4bdf98dec27acb113e36b0cb2e607 -> f3459354579dc9ca44e33fdd805b33fc3e0ed7031c8788ffc20c87b235c675cc
+submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py: 29997 -> 30616 bytes; SHA256 96049161d4e8ab97aaab64b67cc366918f796c42cee574594b49e78e13ce7c3e -> 38eab18b1472ebc82b764338d1276dd3c576059bdf50528d42a2dc71dea79cfe
+
+## Diff
+
+Binary artifact changed: submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx (hashes above).
+--- before/submissions/SIH26237_NISHAN_PQ/build_deck.py
++++ current/submissions/SIH26237_NISHAN_PQ/build_deck.py
+@@ -400,23 +400,23 @@
+     physical: dict,
+     digital: dict,
+ ) -> None:
+     slide = prs.slides[1]
+     clear_slide_body(slide)
+     section_header(slide, "IDEA TITLE / PROPOSED SOLUTION", team_name, 2)
+     text(
+         slide,
+         2.30,
+         0.84,
+-        10.22,
++        8.00,
+         0.38,
+-        "One encrypted source. Every authorized release becomes a signed, session-specific copy.",
++        "One encrypted source. Signed, session-specific releases.",
+         size=15.2,
+         color=TEAL_DARK,
+         bold=True,
+     )
+     capabilities = [
+         (
+             "01",
+             "Session-specific release",
+             "Serialized row + session allocation. Marked output is signed before publication.",
+             TEAL,
+--- before/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py
++++ current/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py
+@@ -393,20 +393,36 @@
+         self.assertIn("JPEG-Q55 visual-channel trials", combined)
+         self.assertIn("same 1/4 capture", combined)
+         self.assertIn("Digital PDF corroboration; raster-only matches are research leads", combined)
+         self.assertIn("Portable independent evidence verifier", combined)
+         self.assertIn("source-copy evidence—not a claim about which human", combined)
+         self.assertIn("checks signed witness state under a caller-provisioned key pin", combined)
+         self.assertIn("Wrap key", combined)
+         self.assertNotIn("Authorize\nML-KEM-768", combined)
+         self.assertIn("Six-person team · existing offline laptop prototype", combined)
+ 
++    def test_slide_two_headline_clears_official_logo(self) -> None:
++        prs = Presentation(self.pptx)
++        headlines = [
++            shape
++            for shape in prs.slides[1].shapes
++            if getattr(shape, "text", "").startswith("One encrypted source.")
++        ]
++        self.assertEqual(len(headlines), 1)
++        headline = headlines[0]
++        right_edge_inches = (headline.left + headline.width) / Inches(1)
++        self.assertLessEqual(right_edge_inches, 10.3)
++        self.assertEqual(
++            headline.text,
++            "One encrypted source. Signed, session-specific releases.",
++        )
++
+     def test_build_rejects_safeguard_code_hash_drift(self) -> None:
+         evidence = json.loads(SAFEGUARDS.read_text())
+         evidence["code_sha256"]["prototypes/nishan_pq/nishan/core.py"] = "0" * 64
+         bad_path = self.root / "stale-safeguards.json"
+         bad_path.write_text(json.dumps(evidence))
+         with self.assertRaisesRegex(ValueError, "SHA-256 drift"):
+             self.build_deck.build(
+                 ROOT / "resources" / "SIH2026-IDEA-Presentation-Format.pptx",
+                 ROOT / "artifacts" / "nishan" / "attribution-scores.png",
+                 ROOT / "artifacts" / "nishan" / "measured-results.json",

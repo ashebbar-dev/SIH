@@ -1,0 +1,210 @@
+test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) ... 
+  test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a4050510>) ... FAIL
+  test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a40505c0>) ... FAIL
+  test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a4050670>) ... FAIL
+  test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a4050720>) ... FAIL
+  test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a40507d0>) ... FAIL
+  test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a4050880>) ... FAIL
+test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) ... 
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='concurrent_distinct_sessions_rows') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='third_release_row') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='signed_copy_hash_match') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='clean_pdf_trace') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='trace_read_only') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='rendered_transplant_abstains') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='low_capacity_pdf_abstains') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='wrong_pin_rejected') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='rollback_release_rejected') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='rollback_trace_rejected') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='checkpoint_failure_no_publication') ... FAIL
+  test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='checkpoint_failure_preserves_existing_output') ... FAIL
+test_build_rejects_counterfactual_safeguard_observation (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_rejects_counterfactual_safeguard_observation) ... FAIL
+test_verifier_rejects_malformed_safeguard_observation (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_malformed_safeguard_observation) ... FAIL
+
+======================================================================
+FAIL: test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a4050510>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 258, in test_required_profile_fields_and_types_are_strict
+    with self.assertRaisesRegex(ValueError, "profile"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a40505c0>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 258, in test_required_profile_fields_and_types_are_strict
+    with self.assertRaisesRegex(ValueError, "profile"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a4050670>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 258, in test_required_profile_fields_and_types_are_strict
+    with self.assertRaisesRegex(ValueError, "profile"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a4050720>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 258, in test_required_profile_fields_and_types_are_strict
+    with self.assertRaisesRegex(ValueError, "profile"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a40507d0>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 258, in test_required_profile_fields_and_types_are_strict
+    with self.assertRaisesRegex(ValueError, "profile"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) (mutate=<function SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict.<locals>.<lambda> at 0x7f17a4050880>)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 258, in test_required_profile_fields_and_types_are_strict
+    with self.assertRaisesRegex(ValueError, "profile"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='concurrent_distinct_sessions_rows')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='third_release_row')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='signed_copy_hash_match')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='clean_pdf_trace')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='trace_read_only')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='rendered_transplant_abstains')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='low_capacity_pdf_abstains')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='wrong_pin_rejected')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='rollback_release_rejected')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='rollback_trace_rejected')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='checkpoint_failure_no_publication')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) (case_name='checkpoint_failure_preserves_existing_output')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 281, in test_each_case_observation_enforces_claim_invariants
+    with self.assertRaisesRegex(ValueError, case_name):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_build_rejects_counterfactual_safeguard_observation (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_rejects_counterfactual_safeguard_observation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 428, in test_build_rejects_counterfactual_safeguard_observation
+    with self.assertRaisesRegex(ValueError, "wrong_pin_rejected"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_verifier_rejects_malformed_safeguard_observation (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_malformed_safeguard_observation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 576, in test_verifier_rejects_malformed_safeguard_observation
+    self.assertFalse(result["ok"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.948s
+
+FAILED (failures=20)
+/tmp/tmp2pmfo8a4/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmp2pmfo8a4/must-not-build-counterfactual.pptx
+/tmp/tmpb61ajwyi/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx

@@ -1,0 +1,57 @@
+{
+  "claim_boundary": {
+    "demonstrated": "Exact payload recovery from this unrewritten digital PDF while text, search, fonts, and vector drawing objects remain present.",
+    "not_demonstrated": "Robustness after PDF content-stream rewriting, print/scan, OCR, crop, photography, or collusion; accessibility-tag preservation on tagged PDFs.",
+    "not_novel_alone": "Text-layout marking is established prior art. This carrier is an engineering prerequisite, not the standalone research contribution."
+  },
+  "document_properties": {
+    "marked_font_references": 1,
+    "marked_image_objects": 0,
+    "marked_vector_drawings": 1,
+    "max_word_bbox_coordinate_shift_points": 1.0559234619140625,
+    "median_word_bbox_coordinate_shift_points": 0.1920166015625,
+    "page_count_equal": true,
+    "render_psnr_db_144dpi": 27.592636561489993,
+    "search_hits_in_marked_pdf": 1,
+    "search_query": "trusted offline viewer",
+    "source_font_references": 1,
+    "source_image_objects": 0,
+    "source_vector_drawings": 1,
+    "text_extraction_equal": true,
+    "word_sequence_equal": true
+  },
+  "embedding": {
+    "adjustment_magnitude": 8.0,
+    "capacity_bits": 133,
+    "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+    "modified_streams": 9,
+    "payload_bits": 96,
+    "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+    "text_preserved": true
+  },
+  "fixture_warning": "The embedded key and payload are deterministic test fixtures and must not be used as deployment secrets.",
+  "formal_profile_capacity_check": {
+    "fits": false,
+    "meaning": "The present one-page layout carrier cannot host the full conservative proof profile; the theorem and carrier are not yet integrated.",
+    "profile": "n=1000, c=5, familywise epsilon=1e-6",
+    "required_symbols_original_tardos": 52500,
+    "shortfall_symbols": 52367,
+    "supported_word_space_positions_this_document": 133
+  },
+  "marked": {
+    "bytes": 2971,
+    "path": "artifacts/nishan/live-text-marked.pdf",
+    "sha3_256": "acf1042977e08c924df66d179c2cc0dcc7a3067be6570f0c57217f1d748f8179"
+  },
+  "payload": {
+    "bit_error_rate": 0.0,
+    "bit_errors": 0,
+    "bits": 96
+  },
+  "schema": "nishan.live-text-pdf-fixture/v1",
+  "source": {
+    "bytes": 2786,
+    "path": "artifacts/nishan/synthetic-source.pdf",
+    "sha3_256": "d21817950e330c938f5b8c3c55fd0c94b045cfc0a4afc2102398d83ea1c4cd6a"
+  }
+}

@@ -1,0 +1,12 @@
+test_code_hash_drift_and_missing_required_coverage_are_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_code_hash_drift_and_missing_required_coverage_are_rejected) ... ok
+test_current_safeguard_evidence_is_valid (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_current_safeguard_evidence_is_valid) ... ok
+test_failed_or_inconsistent_verdict_is_rejected (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_failed_or_inconsistent_verdict_is_rejected) ... ok
+test_real_pqc_readiness_is_required (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_real_pqc_readiness_is_required) ... ok
+test_scenario_names_are_exact_and_unique (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_scenario_names_are_exact_and_unique) ... ok
+test_schema_and_top_level_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_schema_and_top_level_types_are_strict) ... ok
+test_unhashable_or_non_string_scenario_name_is_clean_value_error (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_unhashable_or_non_string_scenario_name_is_clean_value_error) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.027s
+
+OK

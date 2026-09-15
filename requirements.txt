@@ -1,0 +1,9 @@
+# One environment for both prototypes, evidence generation, and deck verification.
+cryptography>=46
+matplotlib>=3.10
+numpy>=2
+opencv-python-headless>=4.11
+Pillow>=11
+PyMuPDF>=1.26
+python-pptx>=1.0
+scikit-learn>=1.8

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "purpose": "Pre-inference controlled synthetic audio diagnostic; not a recall or superiority benchmark",
+  "model_repository_commit": "05b65922cc433c9df13e98e32a7fe520758c837e",
+  "model_relative_path": "models/v2/okay_nabu.tflite",
+  "model_sha256": "0689abe1912a95a3318a0d8cb2e67bad0cbcfe3e24dd6e050c75debddfb6f891",
+  "model_manifest_sha256": "6dd65604f70fe5ea9d1af73a7bf239529d1fbabc363807f45d2b22ce464ddbed",
+  "voice": "espeak-ng 1.52.0 en-us",
+  "processing": "ffmpeg mono PCM16 16000Hz; spoken clips have 3s leading and trailing silence",
+  "label_policy": "Positive event is the full constructed utterance envelope, including synthetic trailing silence; not manually aligned phoneme/word end. End tolerance fixed at0.5s.",
+  "recordings": [
+    {
+      "id": "synthetic-positive",
+      "path": "data/kws/diagnostic/positive-stream.wav",
+      "sha256": "72f69b82830b5fe5b444ac14ff69b7fa6a4a8a80956399ca21704949d68d20ee",
+      "text": "Okay Nabu",
+      "speech_rate": 145,
+      "duration_s": 7.320125,
+      "events": [{"start_s": 3.0, "end_s": 4.320125}]
+    },
+    {
+      "id": "synthetic-unrelated",
+      "path": "data/kws/diagnostic/unrelated-stream.wav",
+      "sha256": "5f011075b229bcc71e143eaada2cf67cd7ccc43411a7780e086329097feb9f93",
+      "text": "The train arrives tomorrow morning. Please leave the parcel beside the blue door. We should check the weather before going outside. The meeting has been moved to Friday. Could you help me find the notebook?",
+      "speech_rate": 165,
+      "duration_s": 18.1009375,
+      "events": []
+    },
+    {
+      "id": "synthetic-silence",
+      "path": "data/kws/diagnostic/silence-stream.wav",
+      "sha256": "2a06f8d2374fe51d472368c5862931797aea1dd693b6f6d1ba74a61c1ba9bc9e",
+      "duration_s": 60.0,
+      "events": []
+    }
+  ]
+}

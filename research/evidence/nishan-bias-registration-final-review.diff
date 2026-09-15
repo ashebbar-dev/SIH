@@ -1,0 +1,2208 @@
+# Final whole-plan review package
+
+New-file snapshots; Git initialization remains reserved.
+Files: research/tools/nishan_bias_registration.py, research/tools/check_nishan_bias_registration.py, prototypes/nishan_pq/tests/test_bias_registration.py, research/evidence/nishan-bias-registration-task-1-report.md, research/tools/probe_nishan_bias_physical.py, prototypes/nishan_pq/tests/test_bias_physical_boundary.py, research/evidence/nishan-bias-registration-task-2-report.md, research/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md
+
+diff --git a/research/tools/nishan_bias_registration.py b/research/tools/nishan_bias_registration.py
+new file mode 100644
+index 0000000..404df6c
+--- /dev/null
++++ b/research/tools/nishan_bias_registration.py
+@@ -0,0 +1,243 @@
++"""Research-only shared-bias response and translation registration.
++
++No recipient rows, roster access, accusation scores, or physical-file loading.
++Source/midpoint/pilot are reference-resolution scalar luma. Blocks are 6x6.
++"""
++from dataclasses import replace
++import hashlib
++import io
++import json
++import time
++
++import cv2
++import numpy as np
++import pymupdf as fitz
++from PIL import Image
++
++from nishan import tardos, tardos_carrier, watermark
++
++BLOCK = 6
++TILE = 96
++GRID = np.arange(-2., 2.0001, .25)
++
++
++def array_hash(array):
++    a = np.ascontiguousarray(array)
++    return hashlib.sha256(str((a.shape, a.dtype.str)).encode() + a.tobytes()).hexdigest()
++
++
++def keyed_biases(config, secret: bytes, context: str) -> np.ndarray:
++    """Zero-row research view; not a valid enrollment/theorem profile."""
++    p, empty = tardos.generate_keyed(replace(config, roster_size=0), secret, context)
++    assert empty.shape == (0, config.code_length)
++    if not np.all(np.isfinite(p) & (p > 0) & (p < 1)):
++        raise ValueError("biases must be finite and strictly between zero and one")
++    return p
++
++
++def endpoint_expectation(r0, r1, q_image):
++    r0, r1, q = (np.asarray(a, dtype=np.float64) for a in (r0, r1, q_image))
++    if r0.ndim != 2 or r0.shape != r1.shape or r0.shape != q.shape:
++        raise ValueError("endpoints and q_image must have the same scalar image shape")
++    if not all(np.isfinite(a).all() for a in (r0, r1, q)) or np.any((q < 0) | (q > 1)):
++        raise ValueError("finite endpoints and probabilities in [0,1] required")
++    return (r0 + r1) / 2, (2 * q - 1) * (r1 - r0) / 2
++
++
++def render_native(source, pattern, strength=4.0):
++    """Actual binary overlay through MuPDF at exact 144-DPI native geometry.
++
++    This synthetic raster-source helper deliberately does not replace Task2's
++    original source-PDF rendering and production _plan mapping.
++    """
++    source = np.asarray(source)
++    pattern = np.asarray(pattern)
++    if source.dtype != np.uint8 or source.ndim not in (2, 3) or source.shape[:2] != pattern.shape:
++        raise ValueError("native source must be uint8 scalar/RGB and match pattern")
++    if not np.isin(pattern, [-1, 0, 1]).all():
++        raise ValueError("only binary signed templates and unused zero pixels allowed")
++    height, width = pattern.shape
++    stream = io.BytesIO()
++    Image.fromarray(source).save(stream, format="PNG")
++    with fitz.open() as document:
++        page = document.new_page(width=width / 2, height=height / 2)
++        page.insert_image(page.rect, stream=stream.getvalue())
++        page.insert_image(page.rect, stream=tardos_carrier._transparent_overlay(pattern, strength))
++        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), colorspace=fitz.csRGB, alpha=False)
++        rgb = np.frombuffer(pix.samples, dtype=np.uint8).reshape(height, width, 3).copy()
++    return watermark._luma(rgb).astype(np.float64)
++
++
++def translation(dx, dy):
++    return np.array([[1., 0., dx], [0., 1., dy], [0., 0., 1.]])
++
++
++def render_capture(capture, combined, reference_shape):
++    """Warp original dtype/channels once, then apply existing RGB luma math."""
++    height, width = reference_shape
++    border = 255 if capture.ndim == 2 else (255, 255, 255)
++    rendered = cv2.warpPerspective(capture, combined, (width, height),
++                                   flags=cv2.INTER_LANCZOS4,
++                                   borderMode=cv2.BORDER_CONSTANT, borderValue=border)
++    return (rendered.astype(np.float64) if rendered.ndim == 2
++            else watermark._luma(rendered).astype(np.float64))
++
++
++def common_coverage(reference_shape, capture_shape, baseline):
++    """Intersection of original-capture support over all 289 fixed candidates."""
++    height, width = reference_shape
++    raw_height, raw_width = capture_shape[:2]
++    y, x = np.indices((height, width), dtype=np.float64)
++    support = np.ones((height, width), bool)
++    for dx in GRID:
++        for dy in GRID:
++            inv = np.linalg.inv(translation(dx, dy) @ baseline)
++            denominator = inv[2, 0] * x + inv[2, 1] * y + inv[2, 2]
++            with np.errstate(divide="ignore", invalid="ignore"):
++                rx = (inv[0, 0] * x + inv[0, 1] * y + inv[0, 2]) / denominator
++                ry = (inv[1, 0] * x + inv[1, 1] * y + inv[1, 2]) / denominator
++            support &= (np.isfinite(rx) & np.isfinite(ry) & (rx >= 4) &
++                        (rx <= raw_width - 1 - 4) & (ry >= 4) & (ry <= raw_height - 1 - 4))
++    return support
++
++
++def prepare_projection(source, pilot, coverage, active_blocks):
++    source, pilot = (np.asarray(a, np.float64) for a in (source, pilot))
++    coverage, active = np.asarray(coverage, bool), np.asarray(active_blocks, bool)
++    if source.ndim != 2 or source.shape != pilot.shape or source.shape != coverage.shape:
++        raise ValueError("source, pilot, coverage must have the same scalar image shape")
++    height, width = source.shape
++    rows, cols = height // BLOCK, width // BLOCK
++    if active.shape != (rows, cols):
++        raise ValueError("active_blocks must be a boolean grid of reference 6x6 blocks")
++    if not np.isfinite(source).all() or not np.isfinite(pilot).all():
++        raise ValueError("source and pilot must be finite")
++    kept = []
++    for by, bx in np.argwhere(active):
++        y, x = int(by * BLOCK), int(bx * BLOCK)
++        if y < 6 or x < 6 or y + 12 > height or x + 12 > width:
++            continue
++        if np.ptp(source[y - 6:y + 12, x - 6:x + 12]) > 8:
++            continue
++        if coverage[y:y + 6, x:x + 6].all():
++            kept.append((y, x))
++    # Discard rank-deficient tiles before building the reusable operator.
++    groups = {}
++    for y, x in kept:
++        groups.setdefault((y // TILE, x // TILE), []).append((y, x))
++    block_indices, tile_plans, discarded = [], [], 0
++    for tile, locations in sorted(groups.items()):
++        indices = np.array([[(y + dy) * width + x + dx for dy in range(6) for dx in range(6)]
++                            for y, x in locations], dtype=np.int64)
++        flat = indices.ravel()
++        design = np.column_stack((np.ones(flat.size), flat % width - tile[1] * TILE,
++                                  flat // width - tile[0] * TILE)).astype(np.float64)
++        if np.linalg.matrix_rank(design) < 3:
++            discarded += len(locations)
++            continue
++        start = len(block_indices) * 36
++        block_indices.extend(indices)
++        tile_plans.append((start, start + flat.size, design, np.linalg.pinv(design)))
++    indices = np.asarray(block_indices, dtype=np.int64).reshape(-1, 36)
++    mask = np.zeros(source.shape, bool)
++    mask.ravel()[indices.ravel()] = True
++    full_energy = float(np.sum(pilot * pilot))
++    masked_energy = float(np.sum(pilot[mask] ** 2))
++    return {"shape": source.shape, "indices": indices, "tiles": tile_plans, "mask": mask,
++            "blocks": len(indices), "masked_pixels": int(mask.sum()), "active_blocks": int(active.sum()),
++            "rank_discarded_blocks": discarded, "full_pilot_energy": full_energy,
++            "masked_pilot_energy": masked_energy,
++            "pilot_energy_fraction": masked_energy / full_energy if full_energy > 0 else 0.,
++            "projection_sha256": array_hash(indices) + ":" + hashlib.sha256(
++                b"".join(d.tobytes() + p.tobytes() for _, _, d, p in tile_plans)).hexdigest()}
++
++
++def project(values, prepared):
++    values = np.asarray(values, dtype=np.float64)
++    if values.shape != prepared["shape"]:
++        raise ValueError("projection image shape mismatch")
++    selected = values.ravel()[prepared["indices"].ravel()].copy()
++    for start, stop, design, pinv in prepared["tiles"]:
++        section = selected[start:stop]
++        coeff = np.einsum("ij,j->i", pinv, section)
++        section -= np.einsum("ij,j->i", design, coeff)
++    blocks = selected.reshape(-1, 36)
++    blocks -= blocks.mean(axis=1, keepdims=True)
++    return selected
++
++
++def search_translation(capture, source, baseline_raw_to_reference, midpoint, pilot, active_blocks):
++    started = time.perf_counter()
++    capture, source, midpoint, pilot = map(np.asarray, (capture, source, midpoint, pilot))
++    baseline = np.asarray(baseline_raw_to_reference, np.float64)
++    if source.ndim != 2 or midpoint.shape != source.shape or pilot.shape != source.shape:
++        raise ValueError("source, midpoint and pilot must be matching scalar images")
++    if capture.ndim not in (2, 3) or (capture.ndim == 3 and capture.shape[2] != 3):
++        raise ValueError("capture must be scalar or RGB")
++    if baseline.shape != (3, 3) or not np.isfinite(baseline).all() or np.linalg.det(baseline) == 0:
++        raise ValueError("baseline must be a finite nonsingular 3x3 transform")
++    if not np.isfinite(midpoint).all():
++        raise ValueError("midpoint must be finite")
++    coverage = common_coverage(source.shape, capture.shape, baseline)
++    prepared = prepare_projection(source, pilot, coverage, active_blocks)
++    w = project(pilot, prepared)
++    wn = float(np.sqrt(np.einsum("i,i->", w, w)))
++    reason = None
++    if prepared["blocks"] < 1000:
++        reason = "fewer_than_1000_blocks"
++    elif prepared["full_pilot_energy"] <= 0:
++        reason = "zero_full_pilot_energy"
++    elif prepared["pilot_energy_fraction"] < .2:
++        reason = "pilot_energy_below_20_percent"
++    elif not np.isfinite(wn) or wn == 0:
++        reason = "zero_or_nonfinite_projected_pilot"
++    objectives = []
++    for dx in GRID:
++        for dy in GRID:
++            candidate = {"dx": float(dx), "dy": float(dy), "objective": None,
++                         "valid": False, "invalid_reason": reason, "residual_norm": None}
++            if reason is None:
++                rendered = render_capture(capture, translation(dx, dy) @ baseline, source.shape)
++                r = project(rendered - midpoint, prepared)
++                rn = float(np.sqrt(np.einsum("i,i->", r, r)))
++                candidate["residual_norm"] = rn if np.isfinite(rn) else None
++                if np.isfinite(rn) and rn > 0:
++                    objective = float(np.einsum("i,i->", r, w) / (rn * wn))
++                    if np.isfinite(objective):
++                        candidate.update(objective=objective, valid=True, invalid_reason=None)
++                    else:
++                        candidate["invalid_reason"] = "nonfinite_objective"
++                else:
++                    candidate["invalid_reason"] = "zero_or_nonfinite_residual"
++            objectives.append(candidate)
++    ranked = sorted((c for c in objectives if c["valid"]),
++                    key=lambda c: (-c["objective"], c["dx"] ** 2 + c["dy"] ** 2, c["dx"], c["dy"]))
++    best = ranked[0] if ranked else None
++    status = "abstain"
++    if best is not None:
++        if best["objective"] <= 0:
++            reason = "nonpositive_best_objective"
++        elif abs(best["dx"]) == 2 or abs(best["dy"]) == 2:
++            status, reason = "boundary_failure", "maximum_on_search_boundary"
++        else:
++            status, reason = "accepted", None
++    elif reason is None:
++        reason = "all_candidates_invalid"
++    combined = translation(best["dx"], best["dy"]) @ baseline if best else None
++    result = {"status": status, "reason": reason, "dx": best["dx"] if best else None,
++              "dy": best["dy"] if best else None, "best_objective": best["objective"] if best else None,
++              "raw_to_reference": combined.tolist() if status == "accepted" else None,
++              "diagnostic_raw_to_reference": combined.tolist() if combined is not None else None,
++              "objectives": objectives, "valid_candidates": len(ranked),
++              "exact_best_ties": sum(c["objective"] == best["objective"] for c in ranked) if best else 0,
++              "runner_up": ranked[1] if len(ranked) > 1 else None,
++              "objective_gap": best["objective"] - ranked[1]["objective"] if len(ranked) > 1 else None,
++              "mask_sha256": array_hash(prepared["mask"]),
++              "projection_sha256": prepared["projection_sha256"],
++              "transform_sha256": array_hash(combined) if combined is not None else None,
++              "objectives_sha256": hashlib.sha256(json.dumps(objectives, sort_keys=True).encode()).hexdigest(),
++              "projected_pilot_energy": wn * wn,
++              "statistics": {k: prepared[k] for k in ("blocks", "masked_pixels", "active_blocks", "rank_discarded_blocks",
++                  "full_pilot_energy", "masked_pilot_energy", "pilot_energy_fraction")},
++              "elapsed_seconds": time.perf_counter() - started}
++    return result
+
+diff --git a/research/tools/check_nishan_bias_registration.py b/research/tools/check_nishan_bias_registration.py
+new file mode 100644
+index 0000000..f27b36b
+--- /dev/null
++++ b/research/tools/check_nishan_bias_registration.py
+@@ -0,0 +1,339 @@
++#!/usr/bin/env python3
++"""Frozen synthetic gates only. No physical captures or recipient scoring."""
++import argparse
++from dataclasses import replace
++import hashlib
++import itertools
++import json
++from pathlib import Path
++import platform
++import sys
++import time
++
++import cv2
++import numpy as np
++import PIL
++import pymupdf as fitz
++import scipy
++from scipy.special import logsumexp
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT / "prototypes/nishan_pq"))
++from nishan import tardos, tardos_carrier
++import nishan_bias_registration as reg
++from probe_nishan_capture_channel import conditional_null_threshold
++
++SEED = 2026091007
++SHIFTS = [(1., 0.), (-1., 0.), (0., 1.), (0., -1.)]
++CONTROL_NAMES = ["gain_0.85_plus15", "planar_shading", "near_white_quantization",
++                 "unmarked_source", "white_endpoint_clipping250", "B_plus_W_only",
++                 "independent_wrong_geometry", "source_edge_only"]
++
++
++def dump(path, value):
++    path.write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n")
++
++
++def digest(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def block_image(values, shape):
++    rows, cols = shape[0] // 6, shape[1] // 6
++    return np.asarray(values).reshape(rows, cols, 6, 6).transpose(0, 2, 1, 3).reshape(shape)
++
++
++def pattern(word, geometry, shape):
++    order, orientations, polarities = geometry
++    blocks = np.zeros((shape[0] // 6 * (shape[1] // 6), 6, 6))
++    blocks[order] = ((2 * np.asarray(word, dtype=np.int8) - 1)[:, None, None] *
++                     polarities[:, None, None] * tardos_carrier._templates(6)[orientations])
++    return block_image(blocks, shape)
++
++
++def q_pixels(q, geometry, shape):
++    blocks = np.full((shape[0] // 6 * (shape[1] // 6), 6, 6), .5)
++    blocks[geometry[0]] = q[:, None, None]
++    return block_image(blocks, shape)
++
++
++def endpoints(source, q, geometry, strength=4.):
++    r0 = reg.render_native(source, pattern(np.zeros(len(q), np.uint8), geometry, source.shape), strength)
++    r1 = reg.render_native(source, pattern(np.ones(len(q), np.uint8), geometry, source.shape), strength)
++    b, w = reg.endpoint_expectation(r0, r1, q_pixels(q, geometry, source.shape))
++    return r0, r1, b, w
++
++
++def blur(image):
++    return cv2.GaussianBlur(image, (0, 0), .75)
++
++
++def shifted(image, dx, dy):
++    return reg.render_capture(image, reg.translation(dx, dy), image.shape[:2])
++
++
++def decode(image, source, geometry):
++    """Unweighted production block-sign rule, with original-source subtraction."""
++    height, width = source.shape
++    blocks = (image - source).reshape(height // 6, 6, width // 6, 6).transpose(0, 2, 1, 3).reshape(-1, 6, 6)
++    order, orientations, polarities = geometry
++    signed = tardos_carrier._templates(6)[orientations] * polarities[:, None, None]
++    correlations = np.sum(blocks[order] * signed, axis=(1, 2))
++    return (correlations > 0).astype(np.uint8)
++
++
++def evaluate(capture, source, b, w, active, expected, geometry, baseline=None):
++    baseline = np.eye(3) if baseline is None else baseline
++    result = reg.search_translation(capture, source, baseline, b, w, active)
++    if result["dx"] is None:
++        error = None
++    else:
++        error = [abs(result["dx"] - expected[0]), abs(result["dy"] - expected[1])]
++    result["expected_correction"] = list(expected)
++    result["coordinate_absolute_error"] = error
++    result["recovered"] = result["status"] == "accepted" and error is not None and max(error) <= .25
++    matrix = np.asarray(result["raw_to_reference"]) if result["status"] == "accepted" else baseline
++    word = decode(reg.render_capture(capture, matrix, source.shape), source, geometry)
++    result["decoded_word"] = word.tolist()
++    result["decoded_word_sha256"] = reg.array_hash(word)
++    result["word_scope"] = "selected_accepted_transform" if result["status"] == "accepted" else "baseline_diagnostic_only"
++    return result
++
++
++def renderer_gate():
++    q = np.array([.1, .3, .7, .9])
++    geometry = (np.arange(4), np.array([0, 1, 0, 1]), np.array([1, 1, -1, -1]))
++    sources = {"black": np.zeros((12, 12), np.uint8), "white": np.full((12, 12), 255, np.uint8),
++               "gray128": np.full((12, 12), 128, np.uint8),
++               "ramp": np.tile(np.rint(np.linspace(0, 255, 12)).astype(np.uint8), (12, 1))}
++    y, x = np.indices((12, 12))
++    boundary = ((x % 6 == 0) | (x % 6 == 5) | (y % 6 == 0) | (y % 6 == 5))
++    cases = []
++    for name, source in sources.items():
++        for strength in (4., 2.2):
++            _, _, b, w = endpoints(source, q, geometry, strength)
++            actual = np.zeros(source.shape)
++            for bits in itertools.product((0, 1), repeat=4):
++                word = np.asarray(bits, np.uint8)
++                probability = float(np.prod(np.where(word, q, 1 - q)))
++                actual += probability * reg.render_native(source, pattern(word, geometry, source.shape), strength)
++            difference = actual - (b + w)
++            record = {"source": name, "strength": strength, "enumerated_words": 16}
++            for label, mask in (("all", np.ones((12, 12), bool)), ("block_interiors", ~boundary),
++                                ("block_boundaries", boundary)):
++                d = difference[mask]
++                record[label] = {"maximum_error": float(np.max(np.abs(d))),
++                                 "rms_error": float(np.sqrt(np.mean(d ** 2)))}
++            record["passed"] = record["all"]["maximum_error"] <= 1.01 and record["all"]["rms_error"] <= .25
++            cases.append(record)
++    return {"passed": all(c["passed"] for c in cases), "cases": cases}
++
++
++def null_gate(control_words):
++    p = np.array([.01, .03, .08, .15, .25, .4, .6, .75, .85, .92, .97, .99])
++    q = np.floor(p * 2**32) / 2**32
++    rows = np.array(list(itertools.product((0, 1), repeat=12)), np.uint8)
++    log_probability = np.sum(np.where(rows, np.log(q), np.log1p(-q)), axis=1)
++    words = {"all_one": np.ones(12, np.uint8), "all_zero": np.zeros(12, np.uint8),
++             "p_gt_half": (p > .5).astype(np.uint8), "p_lt_half": (p < .5).astype(np.uint8),
++             **{name: np.asarray(word[:12], np.uint8) for name, word in control_words.items()}}
++    cases = []
++    for name, word in words.items():
++        active = word.astype(bool)
++        pos, neg = np.sqrt((1 - p) / p), -np.sqrt(p / (1 - p))
++        scores = np.sum(np.where(rows[:, active], pos[active], neg[active]), axis=1)
++        mgfs = []
++        for theta in (.01, .1, 1.):
++            direct = float(logsumexp(log_probability + theta * scores))
++            product = float(np.logaddexp(np.log(q[active]) + theta * pos[active],
++                                         np.log1p(-q[active]) + theta * neg[active]).sum())
++            error = float(abs(np.expm1(direct - product)))
++            mgfs.append({"theta": theta, "direct_log_mgf": direct, "product_cgf": product,
++                         "relative_error": error, "passed": error <= 1e-10})
++        threshold = conditional_null_threshold(p, word, .05, 1)
++        if threshold["threshold"] is None:
++            tail, passed_tail = None, not active.any()
++        else:
++            tail = float(np.exp(logsumexp(log_probability[scores > threshold["threshold"]])))
++            passed_tail = tail <= threshold["modeled_per_hypothesis_upper"] + 1e-12 and tail <= .05 + 1e-12
++        cases.append({"name": name, "word": word.tolist(), "mgfs": mgfs, "threshold": threshold,
++                      "strict_tail_probability": tail, "tail_passed": bool(passed_tail),
++                      "passed": bool(passed_tail and all(m["passed"] for m in mgfs))})
++    return {"passed": all(c["passed"] for c in cases), "enumerated_rows": 4096,
++            "probability_sum": float(np.exp(logsumexp(log_probability))), "cases": cases,
++            "scope": "exact tiny ideal null enumeration, not a physical rare-event measurement"}
++
++
++def run(output):
++    start = time.perf_counter()
++    cv2.setNumThreads(2)
++    output.mkdir(parents=False, exist_ok=False)
++    code_paths = [Path(__file__), ROOT / "research/tools/nishan_bias_registration.py",
++                  ROOT / "prototypes/nishan_pq/tests/test_bias_registration.py",
++                  ROOT / "prototypes/nishan_pq/nishan/tardos.py",
++                  ROOT / "prototypes/nishan_pq/nishan/tardos_carrier.py",
++                  ROOT / "prototypes/nishan_pq/nishan/watermark.py",
++                  ROOT / "research/tools/probe_nishan_capture_channel.py"]
++    cases = [{"row": row, "shift": list(shift), "channel": channel}
++             for row in range(32) for shift in SHIFTS for channel in ("identity", "sigma0.75")]
++    manifest = {"seed": SEED, "code_sha256": {str(p.relative_to(ROOT)): digest(p) for p in code_paths},
++                "libraries": {"python": platform.python_version(), "numpy": np.__version__,
++                              "opencv": cv2.__version__, "pymupdf": fitz.VersionBind,
++                              "pillow": PIL.__version__, "scipy": scipy.__version__},
++                "settings": {"dpi": 144, "block": 6, "tile": 96, "source_shape": [240, 240],
++                             "source_luma": 245, "cutoff": 1 / 1500, "strength": 4.,
++                             "grid": reg.GRID.tolist(), "source_neighborhood": 18,
++                             "source_range_max": 8, "capture_support_margin": 4,
++                             "minimum_blocks": 1000, "minimum_pilot_energy_fraction": .2,
++                             "blur_sigma": .75, "recovery_fraction_min": .95,
++                             "coordinate_tolerance": .25, "renderer_max_error": 1.01,
++                             "renderer_rms_error": .25, "null_mgf_relative_tolerance": 1e-10,
++                             "null_theta": [.01, .1, 1.], "null_epsilon": .05, "null_H": 1,
++                             "opencv_threads": 2, "device": "CPU"},
++                "recovery_cases": cases,
++                "renderer_cases": {"sources": ["black", "white", "gray128", "ramp"],
++                                   "ramp": "12 integer columns rint(linspace(0,255,12))",
++                                   "strengths": [4., 2.2], "q": [.1, .3, .7, .9],
++                                   "orientations": [0, 1, 0, 1], "polarities": [1, 1, -1, -1],
++                                   "words": "all16", "boundaries": "first/last pixel rows or columns of each6x6 block"},
++                "controls": {"names": CONTROL_NAMES, "shift": [1., 0.],
++                             "gain": ".85*first_native_row+15, float64",
++                             "shading": "first_native_row+8*x/width+5*y/height, float64",
++                             "near_white": "source255 native strength4 first row, nearest4 levels, clip[0,255], uint8",
++                             "erasure": "source255 native endpoints251/255, map values>=250 to255 on endpoints and capture",
++                             "shared_only": "native B+W before fixed blur, no recipient residual",
++                             "wrong_geometry": "fresh independent secret and context, first row",
++                             "edge_only": "source245 with one-pixel black line x=120, identical reference, no carrier",
++                             "abstention_words": "baseline diagnostic only"},
++                "composition_cases": {"half_pixel_shifts": [[.5, 0], [-.5, 0], [0, .5], [0, -.5]],
++                                      "rectangle_baseline": [-5, 3], "rectangle_residual": [-2, 1]},
++                "null_p": [.01, .03, .08, .15, .25, .4, .6, .75, .85, .92, .97, .99],
++                "scope": "synthetic research only; no novelty/security/physical robustness claim"}
++    dump(output / "manifest.json", manifest)
++    rng = np.random.default_rng(SEED)
++    secret = rng.bytes(32)
++    geometry_secret = rng.bytes(32)
++    config = replace(tardos.parameters(5, 5, .05), code_length=1600)
++    p = reg.keyed_biases(config, secret, "bias-registration-synthetic-2026-09-10/p")
++    q = np.floor(p * 2**32) / 2**32
++    geometry = tardos_carrier._plan(geometry_secret, "bias-registration-synthetic-2026-09-10/geometry", 1600, 1600)
++    rows = (rng.random((32, 1600)) < q).astype(np.uint8)
++    source = np.full((240, 240), 245, np.uint8)
++    active = np.ones((40, 40), bool)
++    r0, r1, native_b, native_w = endpoints(source, q, geometry)
++    b, w = blur(native_b), blur(native_w)
++    prepared = reg.prepare_projection(source, w, reg.common_coverage(source.shape, source.shape, np.eye(3)), active)
++    np.savez_compressed(output / "synthetic_inputs.npz", p=p, q=q, rows=rows, source=source,
++                        order=geometry[0], orientations=geometry[1], polarities=geometry[2],
++                        r0=r0, r1=r1, midpoint=b, pilot=w, mask=prepared["mask"],
++                        bias_secret=np.frombuffer(secret, np.uint8), geometry_secret=np.frombuffer(geometry_secret, np.uint8))
++    results = {"completed": False, "physical_gate_passed": False, "renderer": renderer_gate(),
++               "recovery": {"cases": []}, "controls": [], "manifest_sha256": digest(output / "manifest.json")}
++    dump(output / "results.json", results)
++    print("renderer: " + json.dumps({"passed": results["renderer"]["passed"], "cases": len(results["renderer"]["cases"])}), flush=True)
++    native_rows = []
++    for row_index, row in enumerate(rows):
++        native = reg.render_native(source, pattern(row, geometry, source.shape))
++        native_rows.append(native)
++        for shift in SHIFTS:
++            for channel in ("identity", "sigma0.75"):
++                image = native if channel == "identity" else blur(native)
++                result = evaluate(shifted(image, *shift), source, b, w, active,
++                                  (-shift[0], -shift[1]), geometry)
++                result.update(row=row_index, shift=list(shift), channel=channel)
++                results["recovery"]["cases"].append(result)
++        dump(output / "results.json", results)
++        recovered = sum(c["recovered"] for c in results["recovery"]["cases"])
++        print(f"recovery: {len(results['recovery']['cases'])}/256 complete; {recovered} recovered; elapsed={time.perf_counter()-start:.3f}s", flush=True)
++    recovered = sum(c["recovered"] for c in results["recovery"]["cases"])
++    results["recovery"].update(total=256, recovered=recovered, fraction=recovered / 256,
++                               passed=recovered / 256 >= .95)
++    composition = []
++    for shift in ((.5, 0.), (-.5, 0.), (0., .5), (0., -.5)):
++        record = evaluate(shifted(native_rows[0], *shift), source, b, w, active, (-shift[0], -shift[1]), geometry)
++        record["shift"] = list(shift)
++        composition.append(record)
++    rectangle = np.full((64, 64), 255, np.uint8)
++    rectangle[20:32, 20:34] = 80
++    raw = shifted(rectangle, 7, -4)
++    combined = reg.translation(-2, 1) @ reg.translation(-5, 3)
++    rectangle_pass = np.array_equal(combined, reg.translation(-7, 4)) and np.array_equal(
++        reg.render_capture(raw, combined, rectangle.shape), rectangle)
++    results["composition"] = {"passed": bool(rectangle_pass and all(c["recovered"] for c in composition)),
++                              "half_pixel_cases": composition, "integer_rectangle_passed": bool(rectangle_pass),
++                              "integer_combined_transform": combined.tolist()}
++    capture = shifted(native_rows[0], 1, 0)
++    unused_roster = np.zeros((3, 12), np.uint8)
++    first = evaluate(capture, source, b, w, active, (-1., 0.), geometry)
++    unused_roster = np.ones((7, 12), np.uint8)
++    second = evaluate(capture, source, b, w, active, (-1., 0.), geometry)
++    fields = ["transform_sha256", "objectives_sha256", "mask_sha256", "projection_sha256", "decoded_word_sha256"]
++    results["independence"] = {"passed": all(first[k] == second[k] for k in fields),
++                               "before": {k: first[k] for k in fields}, "after": {k: second[k] for k in fields},
++                               "unused_roster_shapes": [[3, 12], list(unused_roster.shape)],
++                               "scope": "mechanical input isolation, not a cryptographic independence proof"}
++    white = np.full(source.shape, 255, np.uint8)
++    wr0, wr1, wb, ww = endpoints(white, q, geometry)
++    white_native = reg.render_native(white, pattern(rows[0], geometry, source.shape))
++    clipped0, clipped1 = np.where(wr0 >= 250, 255., wr0), np.where(wr1 >= 250, 255., wr1)
++    erased_b, erased_w = reg.endpoint_expectation(clipped0, clipped1, q_pixels(q, geometry, source.shape))
++    y, x = np.indices(source.shape)
++    edge_source = source.copy()
++    edge_source[:, 120] = 0
++    _, _, eb, ew = endpoints(edge_source, q, geometry)
++    wrong_secret = rng.bytes(32)
++    wrong_geometry = tardos_carrier._plan(wrong_secret, "bias-registration-synthetic-2026-09-10/wrong-geometry", 1600, 1600)
++    wrong = reg.render_native(source, pattern(rows[0], wrong_geometry, source.shape))
++    control_specs = [
++        ("gain_0.85_plus15", native_rows[0] * .85 + 15, source, b, w, False),
++        ("planar_shading", native_rows[0] + 8 * x / 240 + 5 * y / 240, source, b, w, False),
++        ("near_white_quantization", np.clip(np.rint(white_native / 4) * 4, 0, 255).astype(np.uint8), white, blur(wb), blur(ww), False),
++        ("unmarked_source", source, source, b, w, True),
++        ("white_endpoint_clipping250", np.where(white_native >= 250, 255., white_native), white, blur(erased_b), blur(erased_w), True),
++        ("B_plus_W_only", native_b + native_w, source, b, w, True),
++        ("independent_wrong_geometry", wrong, source, b, w, False),
++        ("source_edge_only", edge_source, edge_source, blur(eb), blur(ew), True)]
++    source_words = {}
++    control_arrays = {}
++    for name, image, reference, cb, cw, source_only in control_specs:
++        control_capture = shifted(image, 1, 0)
++        record = evaluate(control_capture, reference, cb, cw, active, (-1., 0.), geometry)
++        record.update(name=name, source_only=source_only,
++                      limitation="Positive alignment objectives are not recipient evidence; this control does not establish physical robustness.")
++        if source_only:
++            source_words[name] = record["decoded_word"]
++        control_arrays[name + "_capture"] = control_capture
++        control_arrays[name + "_source"] = reference
++        control_arrays[name + "_midpoint"] = cb
++        control_arrays[name + "_pilot"] = cw
++        results["controls"].append(record)
++        print("control: " + json.dumps({"name": name, "status": record["status"], "dx": record["dx"],
++                                          "dy": record["dy"], "recovered": record["recovered"]}), flush=True)
++    np.savez_compressed(output / "control_inputs.npz", **control_arrays)
++    results["erasure"] = {"passed": bool(np.count_nonzero(erased_w) == 0 and
++        next(c for c in results["controls"] if c["name"] == "white_endpoint_clipping250")["status"] == "abstain"),
++        "native_pilot_energy": float(np.sum(erased_w ** 2)), "endpoint_values_before": [float(wr0.min()), float(wr0.max())]}
++    results["null"] = null_gate(source_words)
++    results["physical_gate_passed"] = all(results[k]["passed"] for k in
++        ("renderer", "recovery", "null", "composition", "independence"))
++    results["completed"] = True
++    results["elapsed_seconds"] = time.perf_counter() - start
++    results["artifact_sha256"] = {p.name: digest(p) for p in (output / "synthetic_inputs.npz", output / "control_inputs.npz")}
++    results["limitations"] = ["Synthetic result only; no photos loaded or physical scoring authorized by this runner.",
++        "Ideal row draws and tiny exact null enumeration do not certify deployed cryptographic independence or rare physical tails.",
++        "Threshold helper has numerical tolerance, not certified conservative arithmetic.",
++        "Native raster-source response must be adapted to original source PDF and production mapping only in separately authorized Task2.",
++        "Nuisance recovery outcomes cannot establish security, novelty, or print/camera robustness."]
++    dump(output / "results.json", results)
++    print("final: " + json.dumps({k: results[k]["passed"] for k in
++        ("renderer", "recovery", "null", "composition", "independence", "erasure")}), flush=True)
++    print("physical_gate_passed=" + str(results["physical_gate_passed"]) +
++          f"; elapsed={results['elapsed_seconds']:.3f}s; results_sha256={digest(output / 'results.json')}", flush=True)
++    return 0 if results["physical_gate_passed"] else 1
++
++
++if __name__ == "__main__":
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, required=True)
++    args = parser.parse_args()
++    raise SystemExit(run(args.output))
+
+diff --git a/prototypes/nishan_pq/tests/test_bias_registration.py b/prototypes/nishan_pq/tests/test_bias_registration.py
+new file mode 100644
+index 0000000..4c6a8a9
+--- /dev/null
++++ b/prototypes/nishan_pq/tests/test_bias_registration.py
+@@ -0,0 +1,151 @@
++"""Focused checks only; the fixed 256-case experiment is a separate CLI."""
++from dataclasses import replace
++from pathlib import Path
++import sys
++import unittest
++from unittest.mock import patch
++
++import cv2
++import numpy as np
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "research/tools"))
++import nishan_bias_registration as reg
++from nishan import tardos, watermark
++
++
++class BiasRegistrationTests(unittest.TestCase):
++    def setUp(self):
++        cv2.setNumThreads(2)
++
++    def test_keyed_biases_zero_rows_equal_existing_generator(self):
++        config = replace(tardos.parameters(4, 4, .05), code_length=12)
++        p = reg.keyed_biases(config, b"b" * 32, "tiny-test")
++        expected, rows = tardos.generate_keyed(config, b"b" * 32, "tiny-test")
++        np.testing.assert_array_equal(p, expected)
++        self.assertEqual(rows.shape, (4, 12))
++        self.assertTrue(np.all(np.isfinite(p) & (p > 0) & (p < 1)))
++
++    def test_endpoint_response_and_erasure(self):
++        b, w = reg.endpoint_expectation(np.array([[251., 255.]]),
++                                       np.array([[255., 251.]]), np.array([[.25, .75]]))
++        np.testing.assert_array_equal(b, [[253., 253.]])
++        np.testing.assert_array_equal(w, [[-1., -1.]])
++        _, w = reg.endpoint_expectation(np.full((2, 2), 255.),
++                                       np.full((2, 2), 255.), np.full((2, 2), .9))
++        np.testing.assert_array_equal(w, np.zeros((2, 2)))
++        for q in (np.full((2, 2), np.nan), np.full((2, 2), 1.1)):
++            with self.assertRaises(ValueError):
++                reg.endpoint_expectation(np.ones((2, 2)), np.ones((2, 2)), q)
++        with self.assertRaises(ValueError):
++            reg.endpoint_expectation(np.ones((2, 2)), np.ones((2, 3)), np.ones((2, 2)))
++
++    def fixture(self):
++        source = np.full((240, 240), 245.)
++        y, x = np.indices(source.shape)
++        pilot = np.sin(x * 1.3) + np.cos(y * .8)
++        return source, pilot, np.ones((40, 40), dtype=bool)
++
++    def test_projection_linearity_and_plane_then_block_dc(self):
++        source, pilot, active = self.fixture()
++        p = reg.prepare_projection(source, pilot, np.ones(source.shape, bool), active)
++        y, x = np.indices(source.shape)
++        plane = 4 + .02 * x - .03 * y
++        np.testing.assert_allclose(reg.project(plane, p), 0, atol=1e-12)
++        a, b = np.sin(x), np.cos(y)
++        np.testing.assert_allclose(reg.project(2 * a - 3 * b, p),
++                                   2 * reg.project(a, p) - 3 * reg.project(b, p), atol=1e-12)
++        blocks = reg.project(a, p).reshape(-1, 36)
++        np.testing.assert_allclose(blocks.mean(axis=1), 0, atol=1e-14)
++        with self.assertRaises(ValueError):
++            reg.project(a[:-1], p)
++
++    def test_edge_excludes_whole_block_and_neighborhood(self):
++        source, pilot, active = self.fixture()
++        source[:, 120] = 0
++        p = reg.prepare_projection(source, pilot, np.ones(source.shape, bool), active)
++        self.assertFalse(p["mask"][:, 114:132].any())
++        self.assertTrue(p["mask"][60:66, 102:108].all())
++
++    def test_no_active_and_zero_energy_abstain(self):
++        source, pilot, active = self.fixture()
++        for mask, w in ((active & False, pilot), (active, pilot * 0)):
++            result = reg.search_translation(source, source, np.eye(3), source, w, mask)
++            self.assertEqual(result["status"], "abstain")
++            self.assertIsNone(result["raw_to_reference"])
++            self.assertEqual(len(result["objectives"]), 289)
++            self.assertTrue(all(not c["valid"] for c in result["objectives"]))
++
++    def test_deterministic_exact_ties_and_roster_independence(self):
++        source, pilot, active = self.fixture()
++        unrelated = np.zeros((3, 12), dtype=np.uint8)
++        with patch.object(reg, "render_capture", return_value=source + pilot):
++            before = reg.search_translation(source, source, np.eye(3), source, pilot, active)
++            unrelated = np.ones((7, 12), dtype=np.uint8)
++            after = reg.search_translation(source, source, np.eye(3), source, pilot, active)
++        self.assertEqual(unrelated.shape, (7, 12))
++        self.assertEqual(before["status"], "accepted")
++        self.assertEqual((before["dx"], before["dy"]), (0., 0.))
++        self.assertEqual(before["exact_best_ties"], 289)
++        self.assertEqual((before["runner_up"]["dx"], before["runner_up"]["dy"]), (-.25, 0.))
++        for field in ("transform_sha256", "objectives_sha256", "mask_sha256", "projection_sha256"):
++            self.assertEqual(before[field], after[field])
++
++    def test_transform_composition_exact_rectangle(self):
++        reference = np.full((64, 64), 255, dtype=np.uint8)
++        reference[20:32, 20:34] = 80
++        raw = cv2.warpPerspective(reference, reg.translation(7, -4), (64, 64), borderValue=255)
++        combined = reg.translation(-2, 1) @ reg.translation(-5, 3)
++        np.testing.assert_array_equal(combined, reg.translation(-7, 4))
++        np.testing.assert_array_equal(reg.render_capture(raw, combined, reference.shape), reference)
++
++    def test_rgb8_warp_before_luma_different_capture_shape(self):
++        rgb = np.random.default_rng(7).integers(0, 256, (40, 50, 3), dtype=np.uint8)
++        h = reg.translation(.25, -.5)
++        expected = watermark._luma(cv2.warpPerspective(
++            rgb, h, (48, 36), flags=cv2.INTER_LANCZOS4,
++            borderMode=cv2.BORDER_CONSTANT, borderValue=(255, 255, 255))).astype(np.float64)
++        np.testing.assert_array_equal(reg.render_capture(rgb, h, (36, 48)), expected)
++
++    def test_common_support_margin(self):
++        coverage = reg.common_coverage((240, 240), (250, 260), reg.translation(-5, 3))
++        self.assertFalse(coverage[0].any())
++        self.assertTrue(coverage[20:220, 20:220].all())
++
++    def test_single_unsupported_pixel_excludes_entire_block(self):
++        source, pilot, active = self.fixture()
++        coverage = np.ones(source.shape, bool)
++        coverage[61, 61] = False
++        prepared = reg.prepare_projection(source, pilot, coverage, active)
++        self.assertFalse(prepared["mask"][60:66, 60:66].any())
++        self.assertTrue(prepared["mask"][60:66, 66:72].all())
++
++    def test_nonpositive_and_zero_residual_are_not_accepted(self):
++        source, pilot, active = self.fixture()
++        for image, reason in ((source - pilot, "nonpositive_best_objective"),
++                              (source, "all_candidates_invalid")):
++            with patch.object(reg, "render_capture", return_value=image):
++                result = reg.search_translation(source, source, np.eye(3), source, pilot, active)
++            self.assertEqual(result["status"], "abstain")
++            self.assertEqual(result["reason"], reason)
++
++    def test_boundary_maximum_is_failure_with_diagnostic_transform(self):
++        source, pilot, active = self.fixture()
++        _, x = np.indices(source.shape)
++        noise = np.cos(x * .3)
++        def rendered(capture, transform, shape):
++            return source + pilot + (2 - transform[0, 2]) * noise
++        with patch.object(reg, "render_capture", side_effect=rendered):
++            result = reg.search_translation(source, source, np.eye(3), source, pilot, active)
++        self.assertEqual(result["status"], "boundary_failure")
++        self.assertEqual((result["dx"], result["dy"]), (2., 0.))
++        self.assertIsNone(result["raw_to_reference"])
++        np.testing.assert_array_equal(result["diagnostic_raw_to_reference"], reg.translation(2, 0))
++
++    def test_native_unused_pixels_have_no_overlay(self):
++        source = np.full((12, 12), 128, np.uint8)
++        rendered = reg.render_native(source, np.zeros(source.shape))
++        np.testing.assert_allclose(rendered, source, atol=2e-5)
++
++
++if __name__ == "__main__":
++    unittest.main()
+
+diff --git a/research/evidence/nishan-bias-registration-task-1-report.md b/research/evidence/nishan-bias-registration-task-1-report.md
+new file mode 100644
+index 0000000..d865561
+--- /dev/null
++++ b/research/evidence/nishan-bias-registration-task-1-report.md
+@@ -0,0 +1,295 @@
++# NISHAN bias registration — Task1 implementation report
++
++Date: 2026-09-10. Synthetic research only; no physical images loaded, no Task2
++implementation, no production changes, no novelty or security claim.
++
++## Scope and fixed interpretation
++
++Implemented only `research/tools/nishan_bias_registration.py`,
++`research/tools/check_nishan_bias_registration.py`, and
++`prototypes/nishan_pq/tests/test_bias_registration.py`, plus this report and the
++fresh evidence directory. Existing codebook generation is called with a
++zero-row `dataclasses.replace` view; no cryptographic generator was copied.
++Registration exposes no recipient-row, roster, or score argument. Its math is
++float64; original capture channels/dtype are preserved through the single
++Lanczos warp, with existing RGB luma conversion afterward.
++
++The module uses complete smooth-source 6×6 blocks, common support across all
++289 candidate transforms including a four-pixel original-capture margin,
++rank-valid 96×96 tile plane projections followed by block DC removal, and the
++fixed feasibility/objective/tie/boundary rules. It retains all candidate values
++and invalid reasons even on feasibility abstention. Native synthetic responses
++use production `_transparent_overlay`, synthetic binary templates, and actual
++PyMuPDF rendering at exact 144-DPI geometry. An original source-PDF response
++path remains outside Task1 and must be handled in separately authorized Task2.
++
++Before controls were constructed, the controller ruled: use (+1,0) displacement
++for all controls; quantize the white255 source's native strength4 response to
++nearest four gray levels then clip to [0,255]; for erasure, map both white
++source endpoints (251/255) at or above250 to255; use independently generated
++wrong geometry; and define source-edge-only as a one-pixel black vertical
++line x=120 on source245 with that line also present in the reference mask.
++The B+W control uses the unquantized native expectation, before the fixed blur.
++Abstained controls retain only baseline diagnostic words, never successful
++selected words. These choices are recorded in the manifest before execution.
++
++## Exact TDD commands and output
++
++Red command, exit1:
++
++```sh
++env PYTHONPATH=prototypes/nishan_pq .venv/bin/python -m unittest discover -s prototypes/nishan_pq/tests -p 'test_bias_registration.py' -v
++```
++
++```text
++test_bias_registration (unittest.loader._FailedTest.test_bias_registration) ... ERROR
++
++======================================================================
++ERROR: test_bias_registration (unittest.loader._FailedTest.test_bias_registration)
++----------------------------------------------------------------------
++ImportError: Failed to import test module: test_bias_registration
++Traceback (most recent call last):
++  File "/usr/lib/python3.14/unittest/loader.py", line 426, in _find_test_path
++    module = self._get_module_from_name(name)
++  File "/usr/lib/python3.14/unittest/loader.py", line 367, in _get_module_from_name
++    __import__(name)
++    ~~~~~~~~~~^^^^^^
++  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_bias_registration.py", line 13, in <module>
++    import nishan_bias_registration as reg
++ModuleNotFoundError: No module named 'nishan_bias_registration'
++
++
++----------------------------------------------------------------------
++Ran 1 test in 0.001s
++
++FAILED (errors=1)
++```
++
++Initial green used the same command, exit0:
++
++```text
++test_common_support_margin (test_bias_registration.BiasRegistrationTests.test_common_support_margin) ... ok
++test_deterministic_exact_ties_and_roster_independence (test_bias_registration.BiasRegistrationTests.test_deterministic_exact_ties_and_roster_independence) ... ok
++test_edge_excludes_whole_block_and_neighborhood (test_bias_registration.BiasRegistrationTests.test_edge_excludes_whole_block_and_neighborhood) ... ok
++test_endpoint_response_and_erasure (test_bias_registration.BiasRegistrationTests.test_endpoint_response_and_erasure) ... ok
++test_keyed_biases_zero_rows_equal_existing_generator (test_bias_registration.BiasRegistrationTests.test_keyed_biases_zero_rows_equal_existing_generator) ... ok
++test_no_active_and_zero_energy_abstain (test_bias_registration.BiasRegistrationTests.test_no_active_and_zero_energy_abstain) ... ok
++test_projection_linearity_and_plane_then_block_dc (test_bias_registration.BiasRegistrationTests.test_projection_linearity_and_plane_then_block_dc) ... ok
++test_rgb8_warp_before_luma_different_capture_shape (test_bias_registration.BiasRegistrationTests.test_rgb8_warp_before_luma_different_capture_shape) ... ok
++test_transform_composition_exact_rectangle (test_bias_registration.BiasRegistrationTests.test_transform_composition_exact_rectangle) ... ok
++
++----------------------------------------------------------------------
++Ran 9 tests in 2.663s
++
++OK
++```
++
++Final focused suite expanded support/boundary/invalid-objective/native-unused
++coverage before the full gate began. Same command, exit0:
++
++```text
++test_boundary_maximum_is_failure_with_diagnostic_transform (test_bias_registration.BiasRegistrationTests.test_boundary_maximum_is_failure_with_diagnostic_transform) ... ok
++test_common_support_margin (test_bias_registration.BiasRegistrationTests.test_common_support_margin) ... ok
++test_deterministic_exact_ties_and_roster_independence (test_bias_registration.BiasRegistrationTests.test_deterministic_exact_ties_and_roster_independence) ... ok
++test_edge_excludes_whole_block_and_neighborhood (test_bias_registration.BiasRegistrationTests.test_edge_excludes_whole_block_and_neighborhood) ... ok
++test_endpoint_response_and_erasure (test_bias_registration.BiasRegistrationTests.test_endpoint_response_and_erasure) ... ok
++test_keyed_biases_zero_rows_equal_existing_generator (test_bias_registration.BiasRegistrationTests.test_keyed_biases_zero_rows_equal_existing_generator) ... ok
++test_native_unused_pixels_have_no_overlay (test_bias_registration.BiasRegistrationTests.test_native_unused_pixels_have_no_overlay) ... ok
++test_no_active_and_zero_energy_abstain (test_bias_registration.BiasRegistrationTests.test_no_active_and_zero_energy_abstain) ... ok
++test_nonpositive_and_zero_residual_are_not_accepted (test_bias_registration.BiasRegistrationTests.test_nonpositive_and_zero_residual_are_not_accepted) ... ok
++test_projection_linearity_and_plane_then_block_dc (test_bias_registration.BiasRegistrationTests.test_projection_linearity_and_plane_then_block_dc) ... ok
++test_rgb8_warp_before_luma_different_capture_shape (test_bias_registration.BiasRegistrationTests.test_rgb8_warp_before_luma_different_capture_shape) ... ok
++test_single_unsupported_pixel_excludes_entire_block (test_bias_registration.BiasRegistrationTests.test_single_unsupported_pixel_excludes_entire_block) ... ok
++test_transform_composition_exact_rectangle (test_bias_registration.BiasRegistrationTests.test_transform_composition_exact_rectangle) ... ok
++
++----------------------------------------------------------------------
++Ran 13 tests in 5.306s
++
++OK
++```
++
++## Fixed full synthetic gate
++
++Command:
++
++```sh
++env PYTHONPATH=prototypes/nishan_pq .venv/bin/python research/tools/check_nishan_bias_registration.py --output research/evidence/nishan-bias-registration-synthetic-2026-09-10
++```
++
++Completed once on the frozen source revision, exit0, elapsed553.164320565993s
++(about9.22 minutes). No failed full run or corrected-source rerun occurred.
++Exact CLI output:
++
++```text
++renderer: {"passed": true, "cases": 8}
++recovery: 8/256 complete; 8 recovered; elapsed=17.988s
++recovery: 16/256 complete; 16 recovered; elapsed=34.423s
++recovery: 24/256 complete; 24 recovered; elapsed=51.083s
++recovery: 32/256 complete; 32 recovered; elapsed=65.488s
++recovery: 40/256 complete; 40 recovered; elapsed=79.151s
++recovery: 48/256 complete; 48 recovered; elapsed=92.492s
++recovery: 56/256 complete; 56 recovered; elapsed=107.828s
++recovery: 64/256 complete; 64 recovered; elapsed=120.410s
++recovery: 72/256 complete; 72 recovered; elapsed=133.786s
++recovery: 80/256 complete; 80 recovered; elapsed=149.265s
++recovery: 88/256 complete; 88 recovered; elapsed=165.409s
++recovery: 96/256 complete; 96 recovered; elapsed=182.106s
++recovery: 104/256 complete; 104 recovered; elapsed=198.255s
++recovery: 112/256 complete; 112 recovered; elapsed=214.672s
++recovery: 120/256 complete; 120 recovered; elapsed=231.128s
++recovery: 128/256 complete; 128 recovered; elapsed=248.585s
++recovery: 136/256 complete; 136 recovered; elapsed=265.686s
++recovery: 144/256 complete; 144 recovered; elapsed=282.835s
++recovery: 152/256 complete; 152 recovered; elapsed=299.231s
++recovery: 160/256 complete; 160 recovered; elapsed=317.735s
++recovery: 168/256 complete; 168 recovered; elapsed=334.369s
++recovery: 176/256 complete; 176 recovered; elapsed=350.926s
++recovery: 184/256 complete; 184 recovered; elapsed=367.687s
++recovery: 192/256 complete; 192 recovered; elapsed=386.017s
++recovery: 200/256 complete; 200 recovered; elapsed=400.206s
++recovery: 208/256 complete; 208 recovered; elapsed=415.580s
++recovery: 216/256 complete; 216 recovered; elapsed=431.503s
++recovery: 224/256 complete; 224 recovered; elapsed=449.735s
++recovery: 232/256 complete; 232 recovered; elapsed=468.408s
++recovery: 240/256 complete; 240 recovered; elapsed=487.159s
++recovery: 248/256 complete; 248 recovered; elapsed=504.671s
++recovery: 256/256 complete; 256 recovered; elapsed=521.992s
++control: {"name": "gain_0.85_plus15", "status": "accepted", "dx": -1.0, "dy": 0.0, "recovered": true}
++control: {"name": "planar_shading", "status": "accepted", "dx": -1.0, "dy": 0.0, "recovered": true}
++control: {"name": "near_white_quantization", "status": "accepted", "dx": -1.0, "dy": 0.0, "recovered": true}
++control: {"name": "unmarked_source", "status": "accepted", "dx": 0.0, "dy": 0.0, "recovered": false}
++control: {"name": "white_endpoint_clipping250", "status": "abstain", "dx": null, "dy": null, "recovered": false}
++control: {"name": "B_plus_W_only", "status": "accepted", "dx": -1.0, "dy": 0.0, "recovered": true}
++control: {"name": "independent_wrong_geometry", "status": "boundary_failure", "dx": 2.0, "dy": 2.0, "recovered": false}
++control: {"name": "source_edge_only", "status": "accepted", "dx": 0.0, "dy": 0.0, "recovered": false}
++final: {"renderer": true, "recovery": true, "null": true, "composition": true, "independence": true, "erasure": true}
++physical_gate_passed=True; elapsed=553.164s; results_sha256=9941ec6b312e5bbd6481bcf0ad460191c681a60a7b1407387f5bc5402dd34aee
++```
++
++### Gate totals and retained failures
++
++Renderer8/8, recovery256/256 (100%, versus fixed95% requirement), null8/8
++selected words×3 MGFs each, half-pixel composition4/4, exact integer rectangle
++composition1/1, roster-swap invariance, and zero-pilot erasure all passed.
++All256 recovery cases have exactly zero coordinate error, with all73,984
++candidate records retained. Each case keeps its chosen transform, decoded
++word, mask/projection hashes, energy statistics, runner-up and elapsed time.
++All four half-pixel corrections are also exact. Integer baseline(-5,+3) and
++residual(-2,+1) compose to(-7,+4) and restore the shifted rectangle exactly.
++
++The flat-page common mask retains1444/1600 marked blocks (51,984 pixels), with
++full pilot squared energy59905.730254216396, masked energy53942.70699038887,
++and retention0.9004598852476583. No tile loses blocks through rank rejection.
++The independence check preserves transform, objective, mask, projection, and
++decoded-word hashes when unrelated local test rosters are replaced.
++
++| Control | Status | Selected(dx,dy) | Best objective | Coordinate error |
++|---|---|---|---:|---|
++| gain0.85+15 | accepted | (-1,0) | 0.6600587190591443 | (0,0) |
++| planar shading | accepted | (-1,0) | 0.6600587190591484 | (0,0) |
++| near-white quantization | accepted | (-1,0) | 0.6600587190591467 | (0,0) |
++| unmarked source | accepted by alignment rule | (0,0) | 0.01208844773804123 | (1,0) |
++| white endpoint clipping250 | abstain | none | none | undefined |
++| B+W only | accepted | (-1,0) | 0.9457801140214802 | (0,0) |
++| independent wrong geometry | boundary_failure | (2,2), diagnostic only | 0.0036151618664093917 | (3,2) |
++| source-edge-only | accepted by alignment rule | (0,0) | 0.007516841393649334 | (1,0) |
++
++Unmarked and edge-only inputs fail displacement recovery despite positive
++objectives. These positives are not recipient evidence. The wrong-geometry
++boundary result is a registration failure. Clipping correctly erases the
++white source's251/255 endpoints: supplied pilot squared energy is exactly0,
++and registration abstains. B+W synchronizes strongly despite containing no
++recipient residual. The fixed controls are not an empirical physical-noise
++distribution and establish no real capture robustness.
++
++Null enumeration uses all4096 rows with exact product probabilities for the
++declared finite-q model. Its maximum observed relative MGF discrepancy is
++3.5527136788004946e-15, below1e-10. Every strict tail is below the helper's
++modeled Chernoff bound and0.05. Empty active sets abstain.
++
++| Fixed/selected word | Threshold | Exact strict-tail probability |
++|---|---:|---:|
++| all-one | 10.585383596985247 | 0.005573842040253524 |
++| all-zero | abstain | not tested |
++| p>0.5 | 2.4201795979131777 | 0 |
++| p<0.5 | 9.671741363686309 | 0.007554789842541798 |
++| unmarked source | abstain | not tested |
++| clipped white | abstain | not tested |
++| B+W only, first12 symbols | 8.552668179782655 | 0.00907999979656655 |
++| source-edge-only | abstain | not tested |
++
++`physical_gate_passed` is true under the fixed conjunction of renderer,
++recovery, null, composition, and independence gates. Physical scoring remains
++unperformed and pending the controller's independent review; this Task1
++handoff is not an authorization to bypass that review.
++
++### Renderer details
++
++All eight cases passed the fixed maximum1.01/RMS0.25 gray-level gates.
++The renderer enumerates all16 words per case (128 probability-weighted
++renderings in total). Errors below reflect the native source-raster embedding
++geometry and do not establish a response model for an arbitrary source PDF.
++Boundary pixels are the first/last pixel row or column in each6×6 block.
++
++| Source | Strength | Maximum error | RMS error |
++|---|---:|---:|---:|
++| black | 4.0 | 4.440892098500626e-16 | 2.8643431294259467e-16 |
++| black | 2.2 | 1.1102230246251565e-16 | 5.928593550334434e-17 |
++| white | 4.0 | 5.684341886080802e-14 | 3.759838749409412e-14 |
++| white | 2.2 | 8.526512829121202e-14 | 6.029155041345696e-14 |
++| gray128 | 4.0 | 5.684341886080802e-14 | 2.842170943040401e-14 |
++| gray128 | 2.2 | 1.4210854715202004e-14 | 1.3293037379376718e-14 |
++| ramp | 4.0 | 5.684341886080802e-14 | 2.3386860201671365e-14 |
++| ramp | 2.2 | 8.526512829121202e-14 | 2.846793127927916e-14 |
++
++The results artifact retains maximum/RMS errors separately for block interiors
++and block boundaries for every case. Largest observed renderer error is
++8.526512829121202e-14; no strength fitting was performed.
++
++### Concerns and limits
++
++The tiny null enumeration checks the existing numerical Chernoff helper under
++an explicitly ideal conditional-independent model. Its `+1e-9` threshold margin
++is not a certified arithmetic bound. The seed and synthetic keys are public
++fixtures, not a security experiment. Mechanical roster-swap invariance is not
++a cryptographic independence proof. Positive image-correlation objectives are
++alignment criteria only and must never be reported as recipient evidence.
++
++The module's synthetic native renderer embeds a raster source at exact pixel
++geometry. Physical Task2 must preserve the original source PDF and existing
++`_plan` symbol mapping; Task1 does not implement that path. Illumination,
++nonlinear clipping, print/camera distortion, larger affine errors, and local
++page warps remain outside what these gates can establish. Source-only and
++shared-only words are retained solely to exercise the conditional null.
++
++No gate or assertion was removed. No downloads, installs, external writes,
++Git commands, GPU use, production edits, or physical-input reads were needed.
++
++## Artifacts and final hash audit
++
++Evidence directory:
++`research/evidence/nishan-bias-registration-synthetic-2026-09-10/`.
++The manifest precedes all gates and records RNG seed2026091007, all fixed case
++constructions/settings, code/dependency hashes and versions: Python3.14.4,
++NumPy2.5.3, OpenCV5.0.0 (two threads), PyMuPDF1.28.2, Pillow12.3.0,
++SciPy1.18.1. Final read-only hashing confirms every manifest code/dependency
++hash still matches its file. No full gate was repeated during that audit.
++
++| Artifact | SHA-256 |
++|---|---|
++| manifest.json | `703c640df2379a2f0096f70cd1a240237e946534eb137ec8757a16176b23fd48` |
++| results.json | `9941ec6b312e5bbd6481bcf0ad460191c681a60a7b1407387f5bc5402dd34aee` |
++| synthetic_inputs.npz | `79d0ce2024b8fa1fb5b9e21fb7b786746cff205b737fd6840f4b4a4319f0a9d6` |
++| control_inputs.npz | `3678992f2d420f7f2c2358cad99ea86eecf370ab0222dce29c99b801a2994234` |
++| research/tools/nishan_bias_registration.py | `2991323b8fbe9c8fc7e8a435dae9b777e2f739eda8d9353be8be574c6f6446eb` |
++| research/tools/check_nishan_bias_registration.py | `60488494e9b4c74d1b84150f7522c91a63a53497477e3e3e13ab4a01f9ee6269` |
++| prototypes/nishan_pq/tests/test_bias_registration.py | `437d029022c2b567a4d746cac0885440b5866a4a76921ef75839987b65d17b4c` |
++
++The input archive retains p/q, all32 synthetic ideal rows, native responses,
++blurred midpoint/pilot, geometry, source, common mask and reproducible public
++synthetic keys. The control archive retains every control capture/reference,
++midpoint and pilot. Full surfaces, words, exact null calculations and failure
++statuses remain in `results.json`; no best-row selection was performed.
++
++Handoff status: **DONE_WITH_CONCERNS** — fixed synthetic gates pass; positive
++source-only peaks and the limits above must remain visible in interpretation.
+
+diff --git a/research/tools/probe_nishan_bias_physical.py b/research/tools/probe_nishan_bias_physical.py
+new file mode 100644
+index 0000000..f5191ea
+--- /dev/null
++++ b/research/tools/probe_nishan_bias_physical.py
+@@ -0,0 +1,367 @@
++#!/usr/bin/env python3
++"""Frozen Task2 physical experiment: prepare pixels/words, score in a fresh CLI.
++
++Preparation has bias-only access through the reviewed zero-row generator. The
++only recipient-roster generation and prior physical score reads occur in score.
++"""
++from dataclasses import asdict
++from pathlib import Path
++import argparse
++import hashlib
++import json
++import sys
++import tempfile
++
++import cv2
++import numpy as np
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT))
++from research.tools import nishan_bias_registration as reg
++from research.tools.probe_nishan_capture_channel import conditional_null_threshold
++from research.tools.probe_nishan_physical_registration_single import refine, compose_and_render
++from nishan import registration, tardos, tardos_carrier, watermark
++
++CAPTURES = ('akshay.jpeg', 'akshay1.jpeg', 'akshay2.jpeg', 'akshay3.jpeg')
++PROFILES = ('affine_baseline', 'affine_bias_translation')
++SOURCE = ROOT / 'artifacts/nishan/synthetic-source.pdf'
++DOWNLOADS = Path('/home/user_end4/Downloads')
++SECRET = hashlib.sha3_256(b'NISHAN Tardos carrier public fixture v1').digest()
++BIAS_CONTEXT = 'public-benchmark-codebook/v1'
++CARRIER_CONTEXT = 'synthetic-source/full-tardos-profile-v1'
++PRIOR = ROOT / 'research/evidence/nishan-physical-registration-single-2026-09-10.json'
++DEPENDENCIES = (
++    'research/tools/probe_nishan_bias_physical.py',
++    'research/tools/nishan_bias_registration.py',
++    'research/tools/probe_nishan_physical_registration_single.py',
++    'research/tools/probe_nishan_capture_channel.py',
++    'prototypes/nishan_pq/nishan/registration.py',
++    'prototypes/nishan_pq/nishan/tardos.py',
++    'prototypes/nishan_pq/nishan/tardos_carrier.py',
++    'prototypes/nishan_pq/nishan/watermark.py',
++    'prototypes/nishan_pq/tests/test_bias_physical_boundary.py',
++)
++
++
++def digest(path):
++    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
++
++
++def dump(path, value):
++    with Path(path).open('x') as handle:
++        json.dump(value, handle, indent=2, sort_keys=True, allow_nan=False)
++        handle.write('\n')
++
++
++def settings():
++    return {'captures': list(CAPTURES), 'profiles': list(PROFILES),
++            'hypotheses': 8000, 'family_epsilon': 1e-6, 'historical_threshold': 2100,
++            'config': asdict(tardos.parameters(1000, 5, 1e-6)),
++            'bias_context': BIAS_CONTEXT, 'carrier_context': CARRIER_CONTEXT,
++            'fixture_secret': "sha3_256(b'NISHAN Tardos carrier public fixture v1')",
++            'strength': 4.0, 'dpi': 144, 'block_size': 6, 'blur_sigma': .75,
++            'blur_kernel': [0, 0], 'blur_border': 'BORDER_DEFAULT',
++            'translation_grid': reg.GRID.tolist(), 'tile_size': 96,
++            'minimum_blocks': 1000, 'minimum_pilot_energy_fraction': .2,
++            'source_range_limit': 8, 'source_dilation_pixels': 6,
++            'capture_support_margin': 4, 'ecc_motion': 'affine',
++            'ecc_max_iterations': 200, 'ecc_epsilon_stop': 1e-6, 'ecc_gaussian_size': 5,
++            'opencv_threads': 2, 'render': 'original RGB8 INTER_LANCZOS4, white border, then watermark._luma',
++            'decoder': 'float32 luma/residual/templates/block sum; strict corr>0',
++            'objective': 'Task1 float64 projection and normalized shared pilot correlation',
++            'content_similarity': 'existing gradient similarity on rounded source/candidate luma uint8',
++            'sample_probability': 'floor(p * 2^32) / 2^32'}
++
++
++def validate_code_hashes(recorded):
++    for name, expected in recorded.items():
++        path = (ROOT / name).resolve()
++        if not path.is_relative_to(ROOT.resolve()):
++            raise ValueError(f'code dependency escapes workspace: {name}')
++        if not path.is_file() or digest(path) != expected:
++            raise ValueError(f'code dependency hash mismatch: {name}')
++
++
++def validate_gate(gate_directory: Path) -> dict:
++    gate = Path(gate_directory)
++    results = json.loads((gate / 'results.json').read_text())
++    if results.get('completed') is not True or results.get('physical_gate_passed') is not True:
++        raise ValueError('synthetic physical gate did not pass')
++    if results.get('manifest_sha256') != digest(gate / 'manifest.json'):
++        raise ValueError('gate manifest hash mismatch')
++    manifest = json.loads((gate / 'manifest.json').read_text())
++    if not manifest.get('code_sha256'):
++        raise ValueError('gate has no code dependencies')
++    validate_code_hashes(manifest['code_sha256'])
++    return {'directory': str(gate.resolve()), 'results_sha256': digest(gate / 'results.json'),
++            'manifest_sha256': results['manifest_sha256'], 'physical_gate_passed': True,
++            'code_sha256': manifest['code_sha256']}
++
++
++def validate_prepared(prepared_directory: Path) -> dict:
++    directory = Path(prepared_directory)
++    commitment = json.loads((directory / 'commitment.json').read_text())
++    if commitment.get('completed') is not True:
++        raise ValueError('incomplete preparation commitment')
++    if set(commitment.get('sha256', {})) != {'preparation.json', 'prepared.npz'}:
++        raise ValueError('commitment must cover both preparation files')
++    for name, expected in commitment['sha256'].items():
++        if digest(directory / name) != expected:
++            raise ValueError(f'prepared file hash mismatch: {name}')
++    payload = json.loads((directory / 'preparation.json').read_text())
++    if payload.get('completed') is not True or payload.get('settings') != settings():
++        raise ValueError('incomplete or changed fixed preparation settings')
++    validate_code_hashes(payload['code_sha256'])
++    expected_pairs = [(c, p) for c in CAPTURES for p in PROFILES]
++    if [(r['capture'], r['profile']) for r in payload['records']] != expected_pairs:
++        raise ValueError('preparation must retain all eight ordered profiles')
++    with np.load(directory / 'prepared.npz', allow_pickle=False) as arrays:
++        if set(arrays.files) != set(payload['array_sha256']):
++            raise ValueError('prepared array inventory mismatch')
++        for key, expected in payload['array_sha256'].items():
++            if reg.array_hash(arrays[key]) != expected:
++                raise ValueError(f'prepared array hash mismatch: {key}')
++        p = arrays['p']
++        if p.ndim != 1 or not np.all(np.isfinite(p) & (p > 0) & (p < 1)):
++            raise ValueError('invalid stored biases')
++        for record in payload['records']:
++            if record['status'] == 'prepared':
++                word, corr = arrays[record['word_key']], arrays[record['correlations_key']]
++                if (word.shape != p.shape or corr.shape != p.shape or word.dtype != np.uint8
++                        or corr.dtype != np.float32 or not np.isfinite(corr).all()
++                        or not np.array_equal(word, (corr > 0).astype(np.uint8))):
++                    raise ValueError('invalid stored word/correlations')
++            elif 'word_key' in record or 'correlations_key' in record:
++                raise ValueError('failed profile cannot contain a successful word')
++    return payload
++
++
++def decode_luma(rendered, source_luma, order, templates):
++    residual = np.asarray(rendered, np.float32) - np.asarray(source_luma, np.float32)
++    rows, cols = residual.shape[0] // 6, residual.shape[1] // 6
++    blocks = (residual[:rows * 6, :cols * 6].reshape(rows, 6, cols, 6)
++              .transpose(0, 2, 1, 3).reshape(rows * cols, 6, 6))
++    correlations = np.sum(blocks[order] * np.asarray(templates, np.float32),
++                          axis=(1, 2), dtype=np.float32)
++    return correlations, (correlations > 0).astype(np.uint8)
++
++
++def source_response(source_path, source_shape, p, order):
++    """Render original vector/text PDF endpoints; no raster-source substitute."""
++    endpoints = []
++    with tempfile.TemporaryDirectory(prefix='nishan-bias-endpoints-') as temporary:
++        for bit in (0, 1):
++            output = Path(temporary) / f'endpoint-{bit}.pdf'
++            tardos_carrier.embed_pdf(source_path, output, np.full(len(p), bit, np.uint8),
++                                    SECRET, CARRIER_CONTEXT, strength=4., dpi=144, block_size=6)
++            endpoints.append(watermark._luma(watermark.load_pages(output, dpi=144)[0][0]).astype(np.float64))
++    height, width = source_shape
++    rows, cols = height // 6, width // 6
++    q = np.floor(p * 2**32) / 2**32
++    blocks = np.full(rows * cols, .5)
++    blocks[order] = q
++    q_image = np.full(source_shape, .5)
++    q_image[:rows * 6, :cols * 6] = np.repeat(np.repeat(blocks.reshape(rows, cols), 6, axis=0), 6, axis=1)
++    native_midpoint, native_pilot = reg.endpoint_expectation(*endpoints, q_image)
++    return {'r0': endpoints[0], 'r1': endpoints[1], 'q': q, 'q_image': q_image,
++            'native_midpoint': native_midpoint, 'native_pilot': native_pilot,
++            'midpoint': cv2.GaussianBlur(native_midpoint, (0, 0), .75),
++            'pilot': cv2.GaussianBlur(native_pilot, (0, 0), .75)}
++
++
++def prepare(gate_directory: Path, output_directory: Path) -> dict:
++    output = Path(output_directory)
++    if output.exists():
++        raise FileExistsError(output)
++    gate = validate_gate(gate_directory)
++    output.mkdir(parents=True, exist_ok=False)
++    cv2.setNumThreads(2)
++    source_pages = watermark.load_pages(SOURCE, dpi=144)[0]
++    if len(source_pages) != 1:
++        raise ValueError('fixed physical fixture requires exactly one source page')
++    source = source_pages[0]
++    source_luma = watermark._luma(source)
++    config = tardos.parameters(1000, 5, 1e-6)
++    if config.code_length != 52500:
++        raise ValueError('fixed profile must decode 52500 symbols')
++    p = reg.keyed_biases(config, SECRET, BIAS_CONTEXT)
++    rows, cols = source.shape[0] // 6, source.shape[1] // 6
++    order, orientation, polarity = tardos_carrier._plan(SECRET, CARRIER_CONTEXT, rows * cols, len(p))
++    templates = tardos_carrier._templates(6)[orientation] * polarity[:, None, None]
++    active = np.zeros(rows * cols, bool)
++    active[order] = True
++    active = active.reshape(rows, cols)
++    arrays = {'p': p, 'source_luma': source_luma, 'order': order, 'orientation': orientation,
++              'polarity': polarity, 'active_blocks': active}
++    arrays.update(source_response(SOURCE, source_luma.shape, p, order))
++    payload = {'schema': 'nishan.bias-physical-preparation/v1', 'completed': True,
++               'gate': gate, 'settings': settings(), 'opencv_version': cv2.__version__,
++               'numpy_version': np.__version__, 'source_path': str(SOURCE),
++               'source_sha256': digest(SOURCE), 'input_sha256': {},
++               'code_sha256': {name: digest(ROOT / name) for name in DEPENDENCIES},
++               'warnings': ['Exploratory same-page public fixture; no independent physical confirmation.',
++                            'Global bounded translation cannot establish recovery from local page curvature.',
++                            'No recipient roster or previous physical score JSON was loaded in preparation.',
++                            'Scientific search failures remain failures; no fallback or profile selection.'],
++               'records': []}
++    for capture_name in CAPTURES:
++        path = DOWNLOADS / capture_name
++        payload['input_sha256'][str(path)] = digest(path)
++        capture = watermark.load_pages(path, dpi=144)[0][0]
++        common = {'capture': capture_name, 'capture_sha256': payload['input_sha256'][str(path)]}
++        try:
++            aligned, metrics = registration.align_page(source, capture)
++            common['orb_registration'] = metrics.to_dict()
++            if metrics.homography_suspect_to_reference is None:
++                raise ValueError('initialization has no accepted ORB homography')
++            _, ecc = refine(source, aligned, cv2.MOTION_AFFINE)
++            baseline_rgb, baseline = compose_and_render(capture, source.shape,
++                metrics.homography_suspect_to_reference, ecc['inverse_warp'])
++            common['refinement'] = ecc
++            common['baseline_raw_to_reference'] = baseline.tolist()
++        except (cv2.error, ValueError, np.linalg.LinAlgError) as error:
++            for profile in PROFILES:
++                payload['records'].append(dict(common, profile=profile,
++                    status='initialization_failed', reason=str(error)))
++            print(json.dumps({'capture': capture_name, 'status': 'initialization_failed', 'reason': str(error)}), flush=True)
++            continue
++        search = reg.search_translation(capture, source_luma, baseline,
++                                        arrays['midpoint'], arrays['pilot'], active)
++        # Preserve the exact selected-pixel mask as well as Task1's hash/counts.
++        coverage = reg.common_coverage(source_luma.shape, capture.shape, baseline)
++        projection = reg.prepare_projection(source_luma, arrays['pilot'], coverage, active)
++        mask_key = f'capture_{CAPTURES.index(capture_name)}_mask'
++        arrays[mask_key] = projection['mask']
++        if reg.array_hash(arrays[mask_key]) != search['mask_sha256']:
++            raise ValueError('search mask reproduction mismatch')
++        zero_objective = next(c['objective'] for c in search['objectives'] if c['dx'] == 0 and c['dy'] == 0)
++        for profile in PROFILES:
++            record = dict(common, profile=profile, mask_key=mask_key)
++            if profile == 'affine_bias_translation':
++                record['search'] = search
++                if search['status'] != 'accepted':
++                    record.update(status=search['status'], reason=search['reason'],
++                                  objective=search['best_objective'], content_similarity=None)
++                    payload['records'].append(record)
++                    continue
++                matrix = np.asarray(search['raw_to_reference'])
++                rendered = reg.render_capture(capture, matrix, source_luma.shape)
++                objective = search['best_objective']
++            else:
++                matrix = baseline
++                rendered = watermark._luma(baseline_rgb)
++                objective = zero_objective
++            correlations, word = decode_luma(rendered, source_luma, order, templates)
++            key = f'record_{len(payload["records"])}'
++            arrays[key + '_word'], arrays[key + '_correlations'] = word, correlations
++            record.update(status='prepared', raw_to_reference=matrix.tolist(),
++                          transform_sha256=reg.array_hash(matrix), objective=objective,
++                          word_key=key + '_word', correlations_key=key + '_correlations',
++                          content_similarity=registration._similarity(
++                              np.rint(source_luma).astype(np.uint8), np.rint(rendered).astype(np.uint8)))
++            payload['records'].append(record)
++        print(json.dumps({'capture': capture_name, 'baseline': 'prepared',
++                          'bias_translation': search['status'], 'dx': search['dx'], 'dy': search['dy'],
++                          'objective': search['best_objective'], 'statistics': search['statistics']}), flush=True)
++    payload['array_sha256'] = {key: reg.array_hash(value) for key, value in arrays.items()}
++    with (output / 'prepared.npz').open('xb') as handle:
++        np.savez_compressed(handle, **arrays)
++    dump(output / 'preparation.json', payload)
++    dump(output / 'commitment.json', {'schema': 'nishan.bias-physical-commitment/v1', 'completed': True,
++        'sha256': {name: digest(output / name) for name in ('preparation.json', 'prepared.npz')}})
++    print(json.dumps({'completed': True, 'output': str(output),
++                      'commitment_sha256': digest(output / 'commitment.json')}), flush=True)
++    return payload
++
++
++def load_prior_baselines():
++    prior = json.loads(PRIOR.read_text())
++    return {r['capture']: r for r in prior['results'] if r['profile'] == 'orb_ecc_affine'}
++
++
++def compare_baseline(record, scores, prior):
++    if prior is None:
++        return {'status': 'missing_prior', 'scores_match': False, 'matrices_match': False}
++    result = {'status': 'compared', 'rtol': 0, 'atol': 1e-9, 'scores_match': False, 'matrices_match': False}
++    if record['status'] != 'scored' or prior.get('status') != 'scored':
++        result['status'] = 'profile_failure'
++        result['prepared_status'], result['prior_status'] = record['status'], prior.get('status')
++        return result
++    previous_scores = np.asarray(prior['all_scores'])
++    previous_matrix = np.asarray(prior['refinement']['composed_raw_to_reference'])
++    matrix = np.asarray(record['raw_to_reference'])
++    result['scores_match'] = bool(scores.shape == previous_scores.shape and np.allclose(scores, previous_scores, rtol=0, atol=1e-9))
++    result['matrices_match'] = bool(np.allclose(matrix, previous_matrix, rtol=0, atol=1e-9))
++    result['maximum_score_difference'] = float(np.max(np.abs(scores - previous_scores))) if scores.shape == previous_scores.shape else None
++    result['maximum_matrix_difference'] = float(np.max(np.abs(matrix - previous_matrix)))
++    return result
++
++
++def score(prepared_directory: Path, output_file: Path) -> dict:
++    output = Path(output_file)
++    if output.exists():
++        raise FileExistsError(output)
++    prepared = Path(prepared_directory)
++    payload = validate_prepared(prepared)
++    config = tardos.parameters(1000, 5, 1e-6)
++    p, codebook = tardos.generate_keyed(config, SECRET, BIAS_CONTEXT)
++    with np.load(prepared / 'prepared.npz', allow_pickle=False) as arrays:
++        if not np.array_equal(p, arrays['p']):
++            raise ValueError('roster biases differ from committed preparation biases')
++        prior = load_prior_baselines()
++        result = {'schema': 'nishan.bias-physical-scores/v1', 'completed': True,
++                  'settings': payload['settings'], 'preparation_sha256': digest(prepared / 'preparation.json'),
++                  'prepared_npz_sha256': digest(prepared / 'prepared.npz'),
++                  'commitment_sha256': digest(prepared / 'commitment.json'),
++                  'code_sha256': payload['code_sha256'], 'records': [],
++                  'prior_baseline_path': str(PRIOR), 'prior_baseline_sha256': digest(PRIOR) if PRIOR.exists() else None,
++                  'warnings': payload.get('warnings', []) + [
++                      'Row0 is evaluation only; no score feedback or profile selection.',
++                      'Conditional-independent innocent bits and finite arithmetic are not certified.',
++                      'No production security guarantee or global lifetime error budget.']}
++        for item in payload['records']:
++            record = {k: item[k] for k in ('capture', 'profile', 'status', 'reason', 'objective',
++                       'content_similarity', 'raw_to_reference') if k in item}
++            scores = None
++            if item['status'] == 'prepared':
++                word, corr = arrays[item['word_key']], arrays[item['correlations_key']]
++                scores = tardos.accusation_scores(p, codebook, word)
++                null = conditional_null_threshold(p, word, 1e-6, 8000)
++                accused = [] if null['threshold'] is None else np.flatnonzero(scores > null['threshold']).tolist()
++                record.update(status='scored', expected_row=0, expected_score=float(scores[0]),
++                    highest_other_score=float(scores[1:].max()), all_scores=scores.tolist(),
++                    conditional_null=null, conditional_accused=accused, row0_accused=0 in accused,
++                    historical_threshold=2100, historical_accused=np.flatnonzero(scores > 2100).tolist(),
++                    bit_error_fraction=float(np.mean(word != codebook[0])),
++                    zero_correlation_fraction=float(np.mean(corr == 0)),
++                    word_sha256=reg.array_hash(word), correlations_sha256=reg.array_hash(corr))
++            else:
++                record.update(conditional_accused=[], historical_accused=[], row0_accused=False,
++                              all_scores=None, conditional_null=None)
++            if item['profile'] == 'affine_baseline':
++                record['baseline_comparison'] = compare_baseline(record, scores, prior.get(item['capture']))
++            result['records'].append(record)
++            print(json.dumps({k: v for k, v in record.items() if k not in ('all_scores', 'raw_to_reference')}), flush=True)
++    result['all_baseline_controls_match'] = all(r['baseline_comparison']['scores_match'] and
++        r['baseline_comparison']['matrices_match'] for r in result['records'] if r['profile'] == 'affine_baseline')
++    output.parent.mkdir(parents=True, exist_ok=True)
++    dump(output, result)
++    print(json.dumps({'completed': True, 'output': str(output), 'sha256': digest(output),
++                      'all_baseline_controls_match': result['all_baseline_controls_match']}), flush=True)
++    return result
++
++
++if __name__ == '__main__':
++    parser = argparse.ArgumentParser(description=__doc__)
++    commands = parser.add_subparsers(dest='command', required=True)
++    preparation = commands.add_parser('prepare')
++    preparation.add_argument('--gate', required=True, type=Path)
++    preparation.add_argument('--output', required=True, type=Path)
++    scoring = commands.add_parser('score')
++    scoring.add_argument('--prepared', required=True, type=Path)
++    scoring.add_argument('--output', required=True, type=Path)
++    args = parser.parse_args()
++    if args.command == 'prepare':
++        prepare(args.gate, args.output)
++    else:
++        score(args.prepared, args.output)
+
+diff --git a/prototypes/nishan_pq/tests/test_bias_physical_boundary.py b/prototypes/nishan_pq/tests/test_bias_physical_boundary.py
+new file mode 100644
+index 0000000..d6adfa5
+--- /dev/null
++++ b/prototypes/nishan_pq/tests/test_bias_physical_boundary.py
+@@ -0,0 +1,208 @@
++"""Small process-boundary fixtures; never access physical captures or a real roster."""
++from contextlib import ExitStack
++import json
++from pathlib import Path
++import sys
++import tempfile
++import unittest
++from types import SimpleNamespace
++from unittest.mock import patch
++
++import numpy as np
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
++from research.tools import probe_nishan_bias_physical as physical
++
++
++class PhysicalBoundaryTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++
++    def gate(self):
++        gate = self.root / 'gate'
++        gate.mkdir()
++        dependency = physical.ROOT / 'research/tools/nishan_bias_registration.py'
++        physical.dump(gate / 'manifest.json', {'code_sha256': {
++            str(dependency.relative_to(physical.ROOT)): physical.digest(dependency)}})
++        physical.dump(gate / 'results.json', {'completed': True, 'physical_gate_passed': True,
++            'manifest_sha256': physical.digest(gate / 'manifest.json')})
++        return gate
++
++    def frozen(self):
++        directory = self.root / 'prepared'
++        directory.mkdir()
++        p = np.array([.2, .5, .8])
++        arrays = {'p': p}
++        records = []
++        for capture in physical.CAPTURES:
++            for profile in physical.PROFILES:
++                key = f'record_{len(records)}'
++                arrays[key + '_word'] = np.array([1, 0, 1], np.uint8)
++                arrays[key + '_correlations'] = np.array([1, -1, 2], np.float32)
++                records.append({'capture': capture, 'profile': profile, 'status': 'prepared',
++                    'word_key': key + '_word', 'correlations_key': key + '_correlations',
++                    'raw_to_reference': np.eye(3).tolist(), 'objective': .1,
++                    'content_similarity': .8})
++        payload = {'completed': True, 'settings': physical.settings(), 'records': records,
++                   'code_sha256': {}, 'array_sha256': {k: physical.reg.array_hash(v) for k, v in arrays.items()}}
++        with (directory / 'prepared.npz').open('xb') as handle:
++            np.savez_compressed(handle, **arrays)
++        physical.dump(directory / 'preparation.json', payload)
++        self.recommit(directory)
++        return directory, p
++
++    def recommit(self, directory):
++        path = directory / 'commitment.json'
++        if path.exists():
++            path.unlink()
++        physical.dump(path, {'completed': True, 'sha256': {
++            name: physical.digest(directory / name) for name in ('preparation.json', 'prepared.npz')}})
++
++    def test_prepare_rejects_failed_gate_before_loading_images(self):
++        gate = self.gate()
++        result = json.loads((gate / 'results.json').read_text())
++        result['physical_gate_passed'] = False
++        (gate / 'results.json').write_text(json.dumps(result))
++        with patch.object(physical.watermark, 'load_pages', side_effect=AssertionError('image read')):
++            with self.assertRaises(ValueError):
++                physical.prepare(gate, self.root / 'output')
++
++    def test_gate_rejects_manifest_hash_module_hash_and_escape(self):
++        gate = self.gate()
++        physical.validate_gate(gate)
++        manifest = json.loads((gate / 'manifest.json').read_text())
++        key = next(iter(manifest['code_sha256']))
++        for changed in ({key: '0' * 64}, {'/tmp/outside.py': '0' * 64}):
++            (gate / 'manifest.json').write_text(json.dumps({'code_sha256': changed}))
++            result = {'completed': True, 'physical_gate_passed': True,
++                      'manifest_sha256': physical.digest(gate / 'manifest.json')}
++            (gate / 'results.json').write_text(json.dumps(result))
++            with self.assertRaises(ValueError):
++                physical.validate_gate(gate)
++        (gate / 'manifest.json').write_text('{}')
++        with self.assertRaises(ValueError):
++            physical.validate_gate(gate)
++
++    def test_exclusive_outputs_preserve_existing_evidence(self):
++        existing = self.root / 'existing'
++        existing.mkdir()
++        with self.assertRaises(FileExistsError):
++            physical.prepare(self.root / 'absent', existing)
++        output = existing / 'scores.json'
++        output.write_text('retained')
++        with self.assertRaises(FileExistsError):
++            physical.score(self.root / 'absent', output)
++        self.assertEqual(output.read_text(), 'retained')
++
++    def test_scoring_rejects_changed_file_and_changed_word(self):
++        directory, _ = self.frozen()
++        physical.validate_prepared(directory)
++        with (directory / 'prepared.npz').open('ab') as handle:
++            handle.write(b'changed')
++        with self.assertRaises(ValueError):
++            physical.score(directory, self.root / 'scores.json')
++        self.recommit(directory)
++        with np.load(directory / 'prepared.npz') as stored:
++            arrays = {k: stored[k] for k in stored.files}
++        arrays['record_0_word'][0] = 0
++        with (directory / 'prepared.npz').open('wb') as handle:
++            np.savez_compressed(handle, **arrays)
++        self.recommit(directory)
++        with self.assertRaises(ValueError):
++            physical.validate_prepared(directory)
++
++    def test_score_uses_frozen_words_profiles_and_8000_without_registration(self):
++        directory, p = self.frozen()
++        roster = np.array([[1, 0, 1], [0, 1, 0]], np.uint8)
++        seen = []
++        def threshold(biases, word, epsilon, hypotheses):
++            seen.append((word.copy(), epsilon, hypotheses))
++            return {'threshold': 0.0, 'hypotheses': hypotheses}
++        with ExitStack() as stack:
++            stack.enter_context(patch('builtins.print'))
++            stack.enter_context(patch.object(physical, 'PRIOR', self.root / 'unused-prior.json'))
++            for target, method in ((physical.reg, 'search_translation'),
++                                   (physical.watermark, 'load_pages'),
++                                   (physical.registration, 'align_page')):
++                stack.enter_context(patch.object(target, method, side_effect=AssertionError('registration in score')))
++            stack.enter_context(patch.object(physical.tardos, 'generate_keyed', return_value=(p, roster)))
++            stack.enter_context(patch.object(physical, 'conditional_null_threshold', side_effect=threshold))
++            stack.enter_context(patch.object(physical, 'load_prior_baselines', return_value={}))
++            result = physical.score(directory, self.root / 'scores.json')
++        self.assertEqual(physical.PROFILES, ('affine_baseline', 'affine_bias_translation'))
++        self.assertEqual(result['settings']['hypotheses'], 8000)
++        self.assertEqual(len(result['records']), 8)
++        self.assertEqual({r['profile'] for r in result['records']}, set(physical.PROFILES))
++        self.assertEqual(len(seen), 8)
++        for word, epsilon, hypotheses in seen:
++            np.testing.assert_array_equal(word, [1, 0, 1])
++            self.assertEqual((epsilon, hypotheses), (1e-6, 8000))
++
++    def test_prepare_commits_both_profiles_and_failures_without_roster_or_prior(self):
++        gate = self.gate()
++        source = np.full((12, 12, 3), 245, np.uint8)
++        p = np.array([.2, .5, .8])
++        mask = np.zeros((12, 12), bool)
++        metrics = SimpleNamespace(homography_suspect_to_reference=np.eye(3).tolist(), to_dict=lambda: {})
++        search = {'status': 'boundary_failure', 'reason': 'maximum_on_search_boundary',
++                  'dx': 2., 'dy': 0., 'best_objective': .2, 'statistics': {},
++                  'mask_sha256': physical.reg.array_hash(mask),
++                  'objectives': [{'dx': 0., 'dy': 0., 'objective': .1}]}
++        with ExitStack() as stack:
++            stack.enter_context(patch('builtins.print'))
++            stack.enter_context(patch.object(physical, 'digest', return_value='fixture-hash'))
++            stack.enter_context(patch.object(physical, 'validate_gate', return_value={}))
++            stack.enter_context(patch.object(physical.watermark, 'load_pages', return_value=([source], {})))
++            stack.enter_context(patch.object(physical.reg, 'keyed_biases', return_value=p))
++            stack.enter_context(patch.object(physical.tardos, 'generate_keyed', side_effect=AssertionError('roster')))
++            stack.enter_context(patch.object(physical, 'load_prior_baselines', side_effect=AssertionError('prior scores')))
++            stack.enter_context(patch.object(physical.tardos_carrier, '_plan', return_value=(np.arange(3), np.zeros(3, int), np.ones(3, np.int8))))
++            stack.enter_context(patch.object(physical, 'source_response', return_value={'midpoint': mask.astype(float), 'pilot': mask.astype(float)}))
++            stack.enter_context(patch.object(physical.registration, 'align_page', return_value=(source, metrics)))
++            stack.enter_context(patch.object(physical, 'refine', return_value=(source, {'inverse_warp': np.eye(3)[:2].tolist()})))
++            stack.enter_context(patch.object(physical, 'compose_and_render', return_value=(source, np.eye(3))))
++            stack.enter_context(patch.object(physical.reg, 'search_translation', return_value=search))
++            stack.enter_context(patch.object(physical.reg, 'common_coverage', return_value=mask))
++            stack.enter_context(patch.object(physical.reg, 'prepare_projection', return_value={'mask': mask}))
++            result = physical.prepare(gate, self.root / 'output')
++        self.assertEqual(result['settings']['profiles'], list(physical.PROFILES))
++        self.assertEqual(result['settings']['hypotheses'], 8000)
++        self.assertEqual([r['status'] for r in result['records']], ['prepared', 'boundary_failure'] * 4)
++        for record in result['records'][1::2]:
++            self.assertNotIn('word_key', record)
++        self.assertEqual({p.name for p in (self.root / 'output').iterdir()},
++                         {'preparation.json', 'prepared.npz', 'commitment.json'})
++
++    def test_source_response_uses_original_pdf_binary_endpoints_and_blur(self):
++        source_path = self.root / 'original.pdf'
++        rgb0, rgb1 = np.full((6, 6, 3), 240, np.uint8), np.full((6, 6, 3), 244, np.uint8)
++        with patch.object(physical.tardos_carrier, 'embed_pdf') as embed, \
++             patch.object(physical.watermark, 'load_pages', side_effect=[([rgb0], {}), ([rgb1], {})]), \
++             patch.object(physical.reg, 'render_native', side_effect=AssertionError('raster replacement')):
++            response = physical.source_response(source_path, (6, 6), np.array([.25]), np.array([0]))
++        self.assertEqual(embed.call_count, 2)
++        for bit, call in enumerate(embed.call_args_list):
++            self.assertEqual(call.args[0], source_path)
++            np.testing.assert_array_equal(call.args[2], [bit])
++            self.assertEqual(call.kwargs, {'strength': 4., 'dpi': 144, 'block_size': 6})
++            self.assertFalse(call.args[1].parent.exists())
++        np.testing.assert_array_equal(response['q_image'], .25)
++        np.testing.assert_allclose(response['midpoint'], 242, atol=2e-5)
++        np.testing.assert_allclose(response['pilot'], -1, atol=2e-5)
++
++    def test_decoder_preserves_float32_cancellation_and_strict_sign(self):
++        source = np.zeros((6, 6), np.float32)
++        image = np.zeros((6, 6), np.float64)
++        image.flat[:3] = [2**24, 1, -(2**24)]
++        templates = np.ones((1, 6, 6), np.float32)
++        correlations, word = physical.decode_luma(image, source, np.array([0]), templates)
++        expected = np.sum(image.astype(np.float32)[None] * templates, axis=(1, 2), dtype=np.float32)
++        np.testing.assert_array_equal(correlations, expected)
++        np.testing.assert_array_equal(word, expected > 0)
++        self.assertEqual(correlations.dtype, np.float32)
++
++
++if __name__ == '__main__':
++    unittest.main()
+
+diff --git a/research/evidence/nishan-bias-registration-task-2-report.md b/research/evidence/nishan-bias-registration-task-2-report.md
+new file mode 100644
+index 0000000..75cf036
+--- /dev/null
++++ b/research/evidence/nishan-bias-registration-task-2-report.md
+@@ -0,0 +1,439 @@
++# Task 2: frozen physical shared-bias registration experiment
++
++Status: DONE_WITH_CONCERNS. The prescribed experiment date/name is 2026-09-10; execution crossed midnight into 2026-09-11 Asia/Kolkata. Implementation and the single preparation/scoring run completed; the bounded translation hypothesis did not newly recover akshay2.
++
++## Implementation and boundaries
++
++Created `research/tools/probe_nishan_bias_physical.py` and `prototypes/nishan_pq/tests/test_bias_physical_boundary.py`. Production modules, Task1 code, older evidence, and the Downloads images were not edited. No Git initialization or commits, downloads, installations, or external writes were used.
++
++The CLI exposes `validate_gate`, `validate_prepared`, `prepare`, and `score`. Preparation validates the completed successful Task1 gate, manifest digest, and every recorded workspace-contained code dependency before creating its exclusive output directory. The successful gate is `research/evidence/nishan-bias-registration-synthetic-2026-09-10/`.
++
++Bias-only preparation uses Task1's zero-row view of the unchanged keyed generator with the exact public fixture secret, contexts, config(1000,5,1e-6), strength 4, 144 DPI and 6-pixel blocks. All 52,500 symbols are retained. Only `affine_baseline` and `affine_bias_translation` are declared; H=8000 and epsilon=1e-6 are fixed.
++
++The physical response embeds artificial all-zero and all-one words using existing `tardos_carrier.embed_pdf` on the original source PDF in a scoped temporary directory. It loads the actual rendered RGB endpoints, applies existing luma arithmetic, forms Task1 endpoint expectation using q=floor(p*2^32)/2^32, then applies the fixed Gaussian sigma 0.75 blur. The endpoint PDF files are temporary; the actual luma endpoints, q image, native and blurred midpoint/pilot remain in the NPZ.
++
++Each capture independently recomputes ORB and the retained single-resampling runner's exact `refine` and `compose_and_render` helpers. The runner's `run` function is never called. The reviewed fixed 289-candidate search operates on original RGB8 captures; accepted transforms decode a direct original-pixel rendering. Failed initialization is represented for both profiles, and failed bias refinement has no word or accusation. Search objective surfaces, transforms, masks, mask/energy statistics, input/module hashes and settings are committed before any roster generation.
++
++Both hard decoders cast rendered luma to float32, subtract original source luma in float32, multiply existing float32 signed block templates, sum in float32, and use strict corr>0. The objective remains float64. The content metric is explicitly recorded as the existing gradient similarity applied to rounded luma uint8; it is diagnostic only and does not choose a transform.
++
++Preparation writes exactly `preparation.json`, `prepared.npz`, then `commitment.json` last. The final commitment hashes both preceding files. The JSON also hashes every individual stored array. Scoring validates this commitment, array digests, ordered eight-profile inventory, fixed settings, code dependencies, binary words and float32 correlations, then generates the original 1000-row roster and asserts exact bias equality. It consumes stored words only, retains all 1000 scores for each successful profile, and uses the existing conditional-null helper and strict score>threshold. Z=2100 is retained as a control. All failures are retained with no accusations.
++
++Only the separate scoring process opens the prior physical single-resampling JSON. It compares each affine-baseline score vector and composed matrix against the retained `orb_ecc_affine` record at rtol=0, atol=1e-9, with explicit mismatch/missing/failure states. It never selects a profile or feeds results into preparation.
++
++## Focused RED/GREEN tests
++
++Exact command for each test run:
++
++```sh
++env PYTHONPATH=prototypes/nishan_pq .venv/bin/python -m unittest discover -s prototypes/nishan_pq/tests -p 'test_bias_physical_boundary.py' -v
++```
++
++Initial RED, exit 1, before the CLI existed (six initial boundary cases):
++```text
++test_bias_physical_boundary (unittest.loader._FailedTest.test_bias_physical_boundary) ... ERROR
++
++======================================================================
++ERROR: test_bias_physical_boundary (unittest.loader._FailedTest.test_bias_physical_boundary)
++----------------------------------------------------------------------
++ImportError: Failed to import test module: test_bias_physical_boundary
++Traceback (most recent call last):
++  File "/usr/lib/python3.14/unittest/loader.py", line 426, in _find_test_path
++    module = self._get_module_from_name(name)
++  File "/usr/lib/python3.14/unittest/loader.py", line 367, in _get_module_from_name
++    __import__(name)
++    ~~~~~~~~~~^^^^^^
++  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_bias_physical_boundary.py", line 14, in <module>
++    from research.tools import probe_nishan_bias_physical as physical
++ImportError: cannot import name 'probe_nishan_bias_physical' from 'research.tools' (unknown location)
++
++
++----------------------------------------------------------------------
++Ran 1 test in 0.000s
++
++FAILED (errors=1)
++```
++
++Initial implementation GREEN: 6 tests passed in 0.028s. The test scored tiny mocked words and printed eight tiny fixture records. Two supplementary passing tests then covered original-PDF binary endpoints/blur and the actual preparation serialization path with explicit refinement failure. The final test adjustment kept even the mocked scorer's prior-evidence path local to its temporary directory. Final GREEN before the physical run, exit 0:
++
++```text
++test_decoder_preserves_float32_cancellation_and_strict_sign (test_bias_physical_boundary.PhysicalBoundaryTests.test_decoder_preserves_float32_cancellation_and_strict_sign) ... ok
++test_exclusive_outputs_preserve_existing_evidence (test_bias_physical_boundary.PhysicalBoundaryTests.test_exclusive_outputs_preserve_existing_evidence) ... ok
++test_gate_rejects_manifest_hash_module_hash_and_escape (test_bias_physical_boundary.PhysicalBoundaryTests.test_gate_rejects_manifest_hash_module_hash_and_escape) ... ok
++test_prepare_commits_both_profiles_and_failures_without_roster_or_prior (test_bias_physical_boundary.PhysicalBoundaryTests.test_prepare_commits_both_profiles_and_failures_without_roster_or_prior) ... ok
++test_prepare_rejects_failed_gate_before_loading_images (test_bias_physical_boundary.PhysicalBoundaryTests.test_prepare_rejects_failed_gate_before_loading_images) ... ok
++test_score_uses_frozen_words_profiles_and_8000_without_registration (test_bias_physical_boundary.PhysicalBoundaryTests.test_score_uses_frozen_words_profiles_and_8000_without_registration) ... ok
++test_scoring_rejects_changed_file_and_changed_word (test_bias_physical_boundary.PhysicalBoundaryTests.test_scoring_rejects_changed_file_and_changed_word) ... ok
++test_source_response_uses_original_pdf_binary_endpoints_and_blur (test_bias_physical_boundary.PhysicalBoundaryTests.test_source_response_uses_original_pdf_binary_endpoints_and_blur) ... ok
++
++----------------------------------------------------------------------
++Ran 8 tests in 0.038s
++
++OK
++```
++
++Tests use temporary directories, tiny arrays and mocked image/roster boundaries. The endpoint test rejects the raster replacement helper. The preparation fixture forbids roster generation and prior-baseline loading; the scorer fixture forbids image loading and both registration entry points. Tamper tests separately change a committed file and alter a word while renewing only the outer commitment, exercising the inner array digest check.
++
++## Real commands and output
++
++Preparation command, one process, one attempt:
++
++```sh
++env PYTHONPATH=prototypes/nishan_pq .venv/bin/python research/tools/probe_nishan_bias_physical.py prepare --gate research/evidence/nishan-bias-registration-synthetic-2026-09-10 --output research/evidence/nishan-bias-physical-2026-09-10
++```
++
++Preparation exited 0. Exact standard output:
++
++```text
++{"capture": "akshay.jpeg", "baseline": "prepared", "bias_translation": "boundary_failure", "dx": 1.75, "dy": 2.0, "objective": 0.001197773522248073, "statistics": {"blocks": 41539, "masked_pixels": 1495404, "active_blocks": 52500, "rank_discarded_blocks": 0, "full_pilot_energy": 1114617.5064160274, "masked_pilot_energy": 866305.264654841, "pilot_energy_fraction": 0.7772220153264804}}
++{"capture": "akshay1.jpeg", "baseline": "prepared", "bias_translation": "boundary_failure", "dx": -2.0, "dy": 2.0, "objective": 0.0023249855859585594, "statistics": {"blocks": 41403, "masked_pixels": 1490508, "active_blocks": 52500, "rank_discarded_blocks": 0, "full_pilot_energy": 1114617.5064160274, "masked_pilot_energy": 863747.1569937664, "pilot_energy_fraction": 0.7749269610622602}}
++{"capture": "akshay2.jpeg", "baseline": "prepared", "bias_translation": "accepted", "dx": -0.5, "dy": -0.25, "objective": 0.008898724754172988, "statistics": {"blocks": 42450, "masked_pixels": 1528200, "active_blocks": 52500, "rank_discarded_blocks": 0, "full_pilot_energy": 1114617.5064160274, "masked_pilot_energy": 885561.4433858276, "pilot_energy_fraction": 0.7944980572154181}}
++{"capture": "akshay3.jpeg", "baseline": "prepared", "bias_translation": "accepted", "dx": 0.0, "dy": 0.5, "objective": 0.01466169522074399, "statistics": {"blocks": 42405, "masked_pixels": 1526580, "active_blocks": 52500, "rank_discarded_blocks": 0, "full_pilot_energy": 1114617.5064160274, "masked_pilot_energy": 885103.477623903, "pilot_energy_fraction": 0.7940871846431783}}
++{"completed": true, "output": "research/evidence/nishan-bias-physical-2026-09-10", "commitment_sha256": "956678e16fac26228029f6ab34e7bb5e4ef76264b00d4a98898907dc6463c76c"}
++```
++
++Scoring command, one separate fresh process, one attempt:
++
++```sh
++env PYTHONPATH=prototypes/nishan_pq .venv/bin/python research/tools/probe_nishan_bias_physical.py score --prepared research/evidence/nishan-bias-physical-2026-09-10 --output research/evidence/nishan-bias-physical-2026-09-10/scores.json
++```
++
++Scoring exited 0. Exact standard output (full score vectors are retained in scores.json):
++
++```text
++{"capture": "akshay.jpeg", "profile": "affine_baseline", "status": "scored", "objective": -0.0027563887866063953, "content_similarity": 0.8061620593070984, "expected_row": 0, "expected_score": 66.06978081765759, "highest_other_score": 192.47211335862684, "conditional_null": {"threshold": 413.81226172851143, "theta": 0.10523400589455889, "cumulant": 20.744414611247443, "active_symbols": 3603, "hypotheses": 8000, "family_epsilon": 1e-06, "modeled_per_hypothesis_upper": 1.2499999998684636e-10, "sample_probability": "floor(p * 2^32) / 2^32"}, "conditional_accused": [], "row0_accused": false, "historical_threshold": 2100, "historical_accused": [], "bit_error_fraction": 0.4983238095238095, "zero_correlation_fraction": 0.8656380952380952, "word_sha256": "c5aaf371fdd8df4e574651b0e55299603ceaf01997f4ad1ec5caefc926e3a597", "correlations_sha256": "32e3b3f7eca69ab202dcc4f829e6986ba84410d4ce900bf41b47ec6758a609c3", "baseline_comparison": {"status": "compared", "rtol": 0, "atol": 1e-09, "scores_match": true, "matrices_match": true, "maximum_score_difference": 0.0, "maximum_matrix_difference": 0.0}}
++{"capture": "akshay.jpeg", "profile": "affine_bias_translation", "status": "boundary_failure", "reason": "maximum_on_search_boundary", "objective": 0.001197773522248073, "content_similarity": null, "conditional_accused": [], "historical_accused": [], "row0_accused": false, "conditional_null": null}
++{"capture": "akshay1.jpeg", "profile": "affine_baseline", "status": "scored", "objective": 0.0013215899889516241, "content_similarity": 0.7451120615005493, "expected_row": 0, "expected_score": -11.626798556863235, "highest_other_score": 209.1849144700953, "conditional_null": {"threshold": 441.88473123789174, "theta": 0.09897831162865278, "cumulant": 20.934297253682306, "active_symbols": 4125, "hypotheses": 8000, "family_epsilon": 1e-06, "modeled_per_hypothesis_upper": 1.2499999998762838e-10, "sample_probability": "floor(p * 2^32) / 2^32"}, "conditional_accused": [], "row0_accused": false, "historical_threshold": 2100, "historical_accused": [], "bit_error_fraction": 0.4998095238095238, "zero_correlation_fraction": 0.8441904761904762, "word_sha256": "005e7be6dec51ef4d5ac40d64c7ed5547607f8bd1ec38b685565828fabf94867", "correlations_sha256": "909f53c55c11fe3240bd855bb0e7efa2579920a2b5e414981e07ef7845287570", "baseline_comparison": {"status": "compared", "rtol": 0, "atol": 1e-09, "scores_match": true, "matrices_match": true, "maximum_score_difference": 0.0, "maximum_matrix_difference": 0.0}}
++{"capture": "akshay1.jpeg", "profile": "affine_bias_translation", "status": "boundary_failure", "reason": "maximum_on_search_boundary", "objective": 0.0023249855859585594, "content_similarity": null, "conditional_accused": [], "historical_accused": [], "row0_accused": false, "conditional_null": null}
++{"capture": "akshay2.jpeg", "profile": "affine_baseline", "status": "scored", "objective": 0.008447212689683457, "content_similarity": 0.6894306540489197, "expected_row": 0, "expected_score": 788.3151811509675, "highest_other_score": 534.0778020922854, "conditional_null": {"threshold": 1021.0715249035352, "theta": 0.04439422751488697, "cumulant": 22.526974206869472, "active_symbols": 22764, "hypotheses": 8000, "family_epsilon": 1e-06, "modeled_per_hypothesis_upper": 1.249999999944505e-10, "sample_probability": "floor(p * 2^32) / 2^32"}, "conditional_accused": [], "row0_accused": false, "historical_threshold": 2100, "historical_accused": [], "bit_error_fraction": 0.477847619047619, "zero_correlation_fraction": 0.13651428571428573, "word_sha256": "c48f0a81e50ccff92dc321159677b022a3390a12932406231b2207504a847a4e", "correlations_sha256": "726122618ca99f6a8d71992e7ea05cd90c91bfa78bd741452ffc724ce27b6b28", "baseline_comparison": {"status": "compared", "rtol": 0, "atol": 1e-09, "scores_match": true, "matrices_match": true, "maximum_score_difference": 0.0, "maximum_matrix_difference": 0.0}}
++{"capture": "akshay2.jpeg", "profile": "affine_bias_translation", "status": "scored", "objective": 0.008898724754172988, "content_similarity": 0.6801992058753967, "expected_row": 0, "expected_score": 835.1906332812098, "highest_other_score": 540.9860904492333, "conditional_null": {"threshold": 1021.6319256885182, "theta": 0.04437901686067527, "cumulant": 22.536313076864268, "active_symbols": 22798, "hypotheses": 8000, "family_epsilon": 1e-06, "modeled_per_hypothesis_upper": 1.2499999999445273e-10, "sample_probability": "floor(p * 2^32) / 2^32"}, "conditional_accused": [], "row0_accused": false, "historical_threshold": 2100, "historical_accused": [], "bit_error_fraction": 0.4765142857142857, "zero_correlation_fraction": 0.1368, "word_sha256": "6b0d29c2175b1eba552cd3dc18169a6d4bd28c2b192e8bf85080239f3cfd9382", "correlations_sha256": "8ebc93ec888fa612293fce93cdc7bebd4ad33cf7b5a3f0c8620b70ca544b8d21"}
++{"capture": "akshay3.jpeg", "profile": "affine_baseline", "status": "scored", "objective": 0.014285065754319828, "content_similarity": 0.6977550387382507, "expected_row": 0, "expected_score": 1709.9414108908845, "highest_other_score": 549.3936166235932, "conditional_null": {"threshold": 1097.4819628918053, "theta": 0.041409126033530856, "cumulant": 22.643061542245942, "active_symbols": 26404, "hypotheses": 8000, "family_epsilon": 1e-06, "modeled_per_hypothesis_upper": 1.2499999999482354e-10, "sample_probability": "floor(p * 2^32) / 2^32"}, "conditional_accused": [0], "row0_accused": true, "historical_threshold": 2100, "historical_accused": [], "bit_error_fraction": 0.4461904761904762, "zero_correlation_fraction": 0.006076190476190476, "word_sha256": "4c072fa345e3aa98d50ec05144deac31bfeb23a06393d7b98f1882e16cfbb756", "correlations_sha256": "b082ef42fdcb49a426614034bef8a6ec3e05df0be39a0abbf0a9e2e2db38d52f", "baseline_comparison": {"status": "compared", "rtol": 0, "atol": 1e-09, "scores_match": true, "matrices_match": true, "maximum_score_difference": 0.0, "maximum_matrix_difference": 0.0}}
++{"capture": "akshay3.jpeg", "profile": "affine_bias_translation", "status": "scored", "objective": 0.01466169522074399, "content_similarity": 0.6907787322998047, "expected_row": 0, "expected_score": 1827.3338156626833, "highest_other_score": 518.086474867613, "conditional_null": {"threshold": 1096.2895022695366, "theta": 0.04146167884621422, "cumulant": 22.651295886907846, "active_symbols": 26356, "hypotheses": 8000, "family_epsilon": 1e-06, "modeled_per_hypothesis_upper": 1.2499999999481687e-10, "sample_probability": "floor(p * 2^32) / 2^32"}, "conditional_accused": [0], "row0_accused": true, "historical_threshold": 2100, "historical_accused": [], "bit_error_fraction": 0.4431428571428571, "zero_correlation_fraction": 0.0064, "word_sha256": "51d8fe8831af896e9f0a198369da97c739dc0e91e632e86506898eb32f0a2709", "correlations_sha256": "4dba5bfe530ac86156a6986aae9560d8c6f60acfc889c48169330176b6c32075"}
++{"completed": true, "output": "research/evidence/nishan-bias-physical-2026-09-10/scores.json", "sha256": "38ba1ddf81519415d56d70fa7c37fbee940eb1341a796d8cb9fc2ca5c3ad0b9b", "all_baseline_controls_match": true}
++```
++
++## All eight outcomes
++
++| Capture | Profile | Status | Row0 score | Highest other | Conditional threshold | Accused rows | BER | Zero-correlation fraction |
++|---|---|---|---:|---:|---:|---|---:|---:|
++| akshay.jpeg | affine_baseline | scored | 66.069781 | 192.472113 | 413.812262 | [] | 0.498324 | 0.865638 |
++| akshay.jpeg | affine_bias_translation | boundary_failure at (1.75,2.0) | — | — | — | [] | — | — |
++| akshay1.jpeg | affine_baseline | scored | -11.626799 | 209.184914 | 441.884731 | [] | 0.499810 | 0.844190 |
++| akshay1.jpeg | affine_bias_translation | boundary_failure at (-2.0,2.0) | — | — | — | [] | — | — |
++| akshay2.jpeg | affine_baseline | scored | 788.315181 | 534.077802 | 1021.071525 | [] | 0.477848 | 0.136514 |
++| akshay2.jpeg | affine_bias_translation | scored; (-0.5,-0.25) | 835.190633 | 540.986090 | 1021.631926 | [] | 0.476514 | 0.136800 |
++| akshay3.jpeg | affine_baseline | scored | 1709.941411 | 549.393617 | 1097.481963 | [0] | 0.446190 | 0.006076 |
++| akshay3.jpeg | affine_bias_translation | scored; (0.0,0.5) | 1827.333816 | 518.086475 | 1096.289502 | [0] | 0.443143 | 0.006400 |
++
++The existing akshay3 attribution is retained in both profiles. Akshay2 is **not newly recovered**: its accepted translation modestly increases row0 score, but the score remains below the fixed conditional threshold. Neither of the other two captures produces an accusation; their bias-profile maxima hit the frozen search boundary and remain explicit failures without decoded words. No other roster row is accused. The retained historical Z=2100 control accuses no rows in any profile.
++
++All four baseline composed matrices and every element of all four 1000-score baseline vectors match the prior single-resampling `orb_ecc_affine` evidence exactly: maximum matrix difference 0 and maximum score difference 0, with the required rtol=0/atol=1e-9 checks all true. Baseline matching is a post-commitment control, not a selection mechanism.
++
++Both accepted translations increase their shared-bias objective and slightly improve row0 BER; their content-similarity diagnostics decrease. These observations do not warrant selecting a profile or claiming new physical recovery. There was one physical preparation invocation and one physical scoring invocation, no code failures, no numbered retry directory, and no score-based retuning.
++
++## Artifact and hash inventory
++
++Fresh artifacts are exclusively in `research/evidence/nishan-bias-physical-2026-09-10/`. The NPZ contains 30 arrays, including six complete 52,500-element uint8 words and six float32 correlation vectors. Its 20,157,130-byte compressed payload includes the native original-PDF endpoints, native and blurred response arrays, p/q/q image, geometry and four masks. The preparation JSON retains every candidate surface and the successful or diagnostic selected transforms. The scores JSON retains six full 1000-element score vectors and both failure records.
++
++Input and implementation hashes (the post-run validation independently confirms all original input hashes and source hash are unchanged):
++
++```text
++572a54f4c791ad84fc20c902e1e723f0455abdfe13b7616d1b8860fbc9dff5c8  research/tools/probe_nishan_bias_physical.py
++e1e09da289a3776a06aa9037933a10c09cd333994aef1cfcafe510f2f0602dc6  prototypes/nishan_pq/tests/test_bias_physical_boundary.py
++5b347ce904b224a0b33602b12b905d0534d7f626c7319cec960f8bf2e7ed5b06  artifacts/nishan/synthetic-source.pdf
++858871144523664edd1cb2a03c89f0863a2249d9984757f7b3e13852c52b6f3c  /home/user_end4/Downloads/akshay.jpeg
++0768a686fcfff4c220f7d2057ab491ea31c02cbb004fb1f503f3013e8f311a0e  /home/user_end4/Downloads/akshay1.jpeg
++c6d278e66d35dc17903350a53dc76e4a59537e036689d31f4f0bbdce8687031c  /home/user_end4/Downloads/akshay2.jpeg
++2869328b6c797ff095b23cf1a286255275dc1172b48d537bb1dedc97b6bd9203  /home/user_end4/Downloads/akshay3.jpeg
++```
++
++Prepared artifacts and successful gate hashes:
++
++```text
++cb32f3941581f20e1b49bc253b50a11b122a9dad3c823a97ed21fb61c114a7b2  research/evidence/nishan-bias-physical-2026-09-10/preparation.json
++bc41f6e32739b1fb4e454a19c47d0aae3877999f37f20f5b28bcd69f245b5f9d  research/evidence/nishan-bias-physical-2026-09-10/prepared.npz
++956678e16fac26228029f6ab34e7bb5e4ef76264b00d4a98898907dc6463c76c  research/evidence/nishan-bias-physical-2026-09-10/commitment.json
++703c640df2379a2f0096f70cd1a240237e946534eb137ec8757a16176b23fd48  research/evidence/nishan-bias-registration-synthetic-2026-09-10/manifest.json
++9941ec6b312e5bbd6481bcf0ad460191c681a60a7b1407387f5bc5402dd34aee  research/evidence/nishan-bias-registration-synthetic-2026-09-10/results.json
++4.0K	research/evidence/nishan-bias-physical-2026-09-10/commitment.json
++296K	research/evidence/nishan-bias-physical-2026-09-10/preparation.json
++20M	research/evidence/nishan-bias-physical-2026-09-10/prepared.npz
++180K	research/evidence/nishan-bias-physical-2026-09-10/scores.json
++```
++
++Final read-only verification called `validate_prepared` again, recomputed source/capture hashes and enumerated file sizes and all per-array shapes/dtypes/digests. It did not run preparation, registration, roster generation or scoring again. Exact inventory output:
++
++```json
++{
++  "code_sha256": {
++    "prototypes/nishan_pq/nishan/registration.py": "604c380475bd604f32a16ace55463b28f29d52f61b23b103149bc74fa0b7f92f",
++    "prototypes/nishan_pq/nishan/tardos.py": "cf0fe3bb08bbb6aa4daaa56cbd6f356c86a98cfddaba5c64297668adf2623bd0",
++    "prototypes/nishan_pq/nishan/tardos_carrier.py": "ea818369f5fd73975fdd66380352d3d3afb75e42cd0de3dc841e4243a8a2a0f9",
++    "prototypes/nishan_pq/nishan/watermark.py": "f52b1aa480393ff8baae407b31f2400a1476571bb38eaeb9248c6761bdca006c",
++    "prototypes/nishan_pq/tests/test_bias_physical_boundary.py": "e1e09da289a3776a06aa9037933a10c09cd333994aef1cfcafe510f2f0602dc6",
++    "research/tools/nishan_bias_registration.py": "2991323b8fbe9c8fc7e8a435dae9b777e2f739eda8d9353be8be574c6f6446eb",
++    "research/tools/probe_nishan_bias_physical.py": "572a54f4c791ad84fc20c902e1e723f0455abdfe13b7616d1b8860fbc9dff5c8",
++    "research/tools/probe_nishan_capture_channel.py": "c8cdb2e3cdf1302db465cf100fc05da7302df40d5e4ac16f1fda4c29b3c4bcd2",
++    "research/tools/probe_nishan_physical_registration_single.py": "d5c9ed1f967e648ab84894067f9bc835213eb077657c93e04aa1ea1a9704d5ee"
++  },
++  "original_inputs_unchanged": true,
++  "source_unchanged": true,
++  "files": [
++    {
++      "name": "commitment.json",
++      "bytes": 272,
++      "sha256": "956678e16fac26228029f6ab34e7bb5e4ef76264b00d4a98898907dc6463c76c"
++    },
++    {
++      "name": "preparation.json",
++      "bytes": 302445,
++      "sha256": "cb32f3941581f20e1b49bc253b50a11b122a9dad3c823a97ed21fb61c114a7b2"
++    },
++    {
++      "name": "prepared.npz",
++      "bytes": 20157130,
++      "sha256": "bc41f6e32739b1fb4e454a19c47d0aae3877999f37f20f5b28bcd69f245b5f9d"
++    },
++    {
++      "name": "scores.json",
++      "bytes": 182477,
++      "sha256": "38ba1ddf81519415d56d70fa7c37fbee940eb1341a796d8cb9fc2ca5c3ad0b9b"
++    }
++  ]
++}
++{
++  "p": {
++    "shape": [
++      52500
++    ],
++    "dtype": "float64",
++    "sha256": "ced73e739e79efa0ecdf37a5354d27f57fa350f8da56e226c59da2e99b7ee33c"
++  },
++  "source_luma": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "float32",
++    "sha256": "f9a280fb00a8c39a8f8485ed8dfa66915505ff4be01708d7e754f5c4394d0319"
++  },
++  "order": {
++    "shape": [
++      52500
++    ],
++    "dtype": "int64",
++    "sha256": "7a4bca54fd4caa3e417bde6a58f3c381e4e49983575625250fc13f0abf79e796"
++  },
++  "orientation": {
++    "shape": [
++      52500
++    ],
++    "dtype": "uint8",
++    "sha256": "8c9f2a77e91c238f9c774396363ddf587daccb6a0cafbf2146a8356227db7061"
++  },
++  "polarity": {
++    "shape": [
++      52500
++    ],
++    "dtype": "int8",
++    "sha256": "5a2c94195e55258b900d4edb1efb16dc0d79e3deb13203ade1af382ec9c4b7e3"
++  },
++  "active_blocks": {
++    "shape": [
++      280,
++      198
++    ],
++    "dtype": "bool",
++    "sha256": "6983c977c2fd74f96d7e1da4bb8c9d6810ef81b9f7d7c3a4cc6cd7bea425c8e5"
++  },
++  "r0": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "float64",
++    "sha256": "7096236ee81814677e83a3c629b93b6d200c85174bebedff7557c621ac728478"
++  },
++  "r1": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "float64",
++    "sha256": "aab163318ac6e596be9441023f224a8e0ad2d1aed3762acb3889eb14b99303ca"
++  },
++  "q": {
++    "shape": [
++      52500
++    ],
++    "dtype": "float64",
++    "sha256": "7caaacd1f8f24ec7624f6267e233adf7ff8fa3bb5ba6a2dc98369230b9f41074"
++  },
++  "q_image": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "float64",
++    "sha256": "d941e11ba19b072f250c7a19c97db99102d6a1403fa88d9b0dc0219a3848c3e4"
++  },
++  "native_midpoint": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "float64",
++    "sha256": "3055951c15ee8246d05c319a3458c37091d6b081733016f32af729fe5fd56fa8"
++  },
++  "native_pilot": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "float64",
++    "sha256": "05fd9317a89992332f4a2667d118b66eb806dd1a9c53a6cd8d36e435ae5d207b"
++  },
++  "midpoint": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "float64",
++    "sha256": "aaccf9d32f87d36b2aff5d50515f1106302866ffb1cc6f0b4ed6051263a71146"
++  },
++  "pilot": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "float64",
++    "sha256": "a6e871a63115a6523bca44c867dc73184412b09b6dbcd3f947daf40ea9791078"
++  },
++  "capture_0_mask": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "bool",
++    "sha256": "6c264d88c62f29612f93cba90a39483b9c2a1b9455b3ce290c881f474e8e36b2"
++  },
++  "record_0_word": {
++    "shape": [
++      52500
++    ],
++    "dtype": "uint8",
++    "sha256": "c5aaf371fdd8df4e574651b0e55299603ceaf01997f4ad1ec5caefc926e3a597"
++  },
++  "record_0_correlations": {
++    "shape": [
++      52500
++    ],
++    "dtype": "float32",
++    "sha256": "32e3b3f7eca69ab202dcc4f829e6986ba84410d4ce900bf41b47ec6758a609c3"
++  },
++  "capture_1_mask": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "bool",
++    "sha256": "46d12e9b45cb59b3ffecc0437fad81aaee34feac10c7847abf0858c2615d3630"
++  },
++  "record_2_word": {
++    "shape": [
++      52500
++    ],
++    "dtype": "uint8",
++    "sha256": "005e7be6dec51ef4d5ac40d64c7ed5547607f8bd1ec38b685565828fabf94867"
++  },
++  "record_2_correlations": {
++    "shape": [
++      52500
++    ],
++    "dtype": "float32",
++    "sha256": "909f53c55c11fe3240bd855bb0e7efa2579920a2b5e414981e07ef7845287570"
++  },
++  "capture_2_mask": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "bool",
++    "sha256": "c703ed17d079855d0d42f595fbd2864ff0c12ae8d8dabde23df2856f857794b2"
++  },
++  "record_4_word": {
++    "shape": [
++      52500
++    ],
++    "dtype": "uint8",
++    "sha256": "c48f0a81e50ccff92dc321159677b022a3390a12932406231b2207504a847a4e"
++  },
++  "record_4_correlations": {
++    "shape": [
++      52500
++    ],
++    "dtype": "float32",
++    "sha256": "726122618ca99f6a8d71992e7ea05cd90c91bfa78bd741452ffc724ce27b6b28"
++  },
++  "record_5_word": {
++    "shape": [
++      52500
++    ],
++    "dtype": "uint8",
++    "sha256": "6b0d29c2175b1eba552cd3dc18169a6d4bd28c2b192e8bf85080239f3cfd9382"
++  },
++  "record_5_correlations": {
++    "shape": [
++      52500
++    ],
++    "dtype": "float32",
++    "sha256": "8ebc93ec888fa612293fce93cdc7bebd4ad33cf7b5a3f0c8620b70ca544b8d21"
++  },
++  "capture_3_mask": {
++    "shape": [
++      1684,
++      1190
++    ],
++    "dtype": "bool",
++    "sha256": "6c6fb18890a93371b3bdd51eec23fbc6f0b21f71efc0b2572dc6d58f2fd3e8db"
++  },
++  "record_6_word": {
++    "shape": [
++      52500
++    ],
++    "dtype": "uint8",
++    "sha256": "4c072fa345e3aa98d50ec05144deac31bfeb23a06393d7b98f1882e16cfbb756"
++  },
++  "record_6_correlations": {
++    "shape": [
++      52500
++    ],
++    "dtype": "float32",
++    "sha256": "b082ef42fdcb49a426614034bef8a6ec3e05df0be39a0abbf0a9e2e2db38d52f"
++  },
++  "record_7_word": {
++    "shape": [
++      52500
++    ],
++    "dtype": "uint8",
++    "sha256": "51d8fe8831af896e9f0a198369da97c739dc0e91e632e86506898eb32f0a2709"
++  },
++  "record_7_correlations": {
++    "shape": [
++      52500
++    ],
++    "dtype": "float32",
++    "sha256": "4dba5bfe530ac86156a6986aae9560d8c6f60acfc889c48169330176b6c32075"
++  }
++}
++```
++
++The report's own digest is supplied separately at handoff rather than recursively included in its inventory.
++
++
++## Self-review and limitations
++
++The source endpoint boundary and float32 sum boundary have direct focused checks. The actual preparation test preserves both profiles and H=8000 and leaves a failed refinement without a word. Gate validation rejects failed results, manifest mutation, module mutation and escaped paths. Exclusive paths preserve existing evidence. Scoring validates before roster generation and does not register images.
++
++The commitment provides tamper detection against accidental changes; it is a local unsigned artifact, not an adversarial authenticated or externally timestamped commitment. The small scorer fixture has two mock roster rows; the actual process uses the fixed original 1000-row generator. The source fixture is explicitly constrained to one page, matching the supplied physical experiment.
++
++This is exploratory evidence on the same source page with a public codebook, not independent confirmation or a production security guarantee. The conditional-independent innocent-bit model and finite numerical threshold arithmetic are not certified. The fixed global translation search cannot correct arbitrary local curvature, nonuniform scale or larger misalignment. No score-based retuning, rerun, image selection or profile selection is permitted.
+
+diff --git a/research/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md b/research/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md
+new file mode 100644
+index 0000000..151ee3a
+--- /dev/null
++++ b/research/NISHAN_BIAS_PHYSICAL_FINDINGS_2026-09-11.md
+@@ -0,0 +1,104 @@
++# NISHAN shared-bias alignment: physical result
++
++The new fixed refinement strengthens the correct-recipient match on
++`akshay3.jpeg`, but recovers no additional supplied photo. `akshay2.jpeg`
++remains below its decision threshold. The other two refinement profiles fail
++the prescribed search-boundary check. No incorrect recipient is accused in
++this experiment. This is a negative result for the stated objective of adding
++another physical recovery, alongside a modest score improvement.
++
++The experiment started on 10 September and completed after midnight on
++11 September, Asia/Kolkata. Its predeclared evidence-directory name retains
++10 September. The physical task's independent spec/quality review is pending;
++the synthetic prerequisite has already passed independent review.
++
++## All fixed outcomes
++
++Both profiles were predeclared for every supplied capture. The new diagnostic
++family uses H=8000, epsilon=1e-6, and strict score>threshold. Thresholds are
++word-dependent and differ from earlier families; none was fitted to make a
++known row pass. These are modeled conditional-null thresholds, not certified
++physical wrongful-attribution probabilities.
++
++| Capture | Profile | Correct-row score | Highest other score | Threshold | Accused rows | Refinement status |
++|---|---|---:|---:|---:|---|---|
++| akshay | Affine baseline | 66.070 | 192.472 | 413.812 | None | Not applicable |
++| akshay | Shared-bias translation | — | — | — | None | Boundary failure (1.75,2.0) |
++| akshay1 | Affine baseline | -11.627 | 209.185 | 441.885 | None | Not applicable |
++| akshay1 | Shared-bias translation | — | — | — | None | Boundary failure (-2.0,2.0) |
++| akshay2 | Affine baseline | 788.315 | 534.078 | 1021.072 | None | Not applicable |
++| akshay2 | Shared-bias translation | 835.191 | 540.986 | 1021.632 | None | Accepted (-0.5,-0.25) |
++| akshay3 | Affine baseline | 1709.941 | 549.394 | 1097.482 | Only row0 | Not applicable |
++| akshay3 | Shared-bias translation | 1827.334 | 518.086 | 1096.290 | Only row0 | Accepted (0,0.5) |
++
++The historical threshold2100 accuses no row in any profile. Every successful
++profile retains its full1000-score vector; failed refinements have no decoded
++word and cannot silently fall back to a favorable result. All four baseline
++score vectors and composed matrices match the earlier single-resampling affine
++controls exactly (maximum differences0, required atol1e-9/rtol0).
++
++For akshay2 the objective changes0.008447→0.008899 and bit-error fraction
++0.477848→0.476514; for akshay3 they change0.014285→0.014662 and
++0.446190→0.443143. Bit agreement alone is not attribution because the shared
++biases affect ordinary agreement. The content-similarity diagnostic decreases
++for both accepted refinements. Neither that metric nor any recipient score
++selects a transform.
++
++## Separation and checks
++
++The implementation uses the original source PDF to render artificial binary
++all-zero/all-one endpoints, the fixture's actual strength4/144DPI/6px geometry,
++and the analytical mean derived from the shared biases. It does not use a
++recipient template or empirical average of roster rows. A fixed sigma0.75
++blur and fixed smooth-source/common-coverage mask precede the 289-candidate
++translation search. Search limits are ±2 reference pixels in0.25px steps;
++boundary maxima remain failures.
++
++The prepare process saves transforms, complete objective surfaces, response
++arrays, masks, correlations and decoded words, then writes a commitment hashing
++the two prepared files. A separate process verifies those files before creating
++the1000-row roster. It consumes saved words, never re-registering images.
++The original RGB8→luma float32 hard-decoder arithmetic remains unchanged.
++Prior score-bearing evidence is opened only in the scoring process for the
++baseline comparison.
++
++Eight focused process-boundary tests passed. The prerequisite synthetic suite
++passed13 focused tests,8 renderer cases and256/256 fixed shift recoveries,
++plus null, composition, independence and erasure checks. These synthetic
++successes did not predict recovery of the smaller physical photos.
++
++There was one physical prepare run and one separate score run. No original
++photo, source PDF, production module or previous result was changed. No
++threshold loosening, retry, score-based profile choice or expanded search was
++performed after seeing these outcomes.
++
++## What this means for the project
++
++Akshay3 establishes useful physical signal on this printed fixture with the
++experimental conditional decoder. This new translation method does not yet
++establish increased capture robustness, a novel best-in-world method or a
++production security guarantee. The public deterministic fixture, repeated
++development use of one page, unverified physical channel and uncertified
++numerical tail bound remain limitations. Zero observed incorrect accusations
++is not a measured one-in-a-million false-accusation rate.
++
++The new method's local translation scope cannot settle page curvature,
++nonuniform scaling, clipping or signal lost during image processing. A further
++geometry/channel study would need a separately fixed design and independent
++documents/keys for confirmation; these results do not justify repeatedly
++tuning the same photos until another row passes.
++
++## Evidence
++
++- [Physical task implementation and complete test/output record](evidence/nishan-bias-registration-task-2-report.md).
++- [Prepared metadata and all objective surfaces](evidence/nishan-bias-physical-2026-09-10/preparation.json).
++- [Frozen response arrays and words](evidence/nishan-bias-physical-2026-09-10/prepared.npz).
++- [Preparation commitment](evidence/nishan-bias-physical-2026-09-10/commitment.json).
++- [All scores, failures and baseline comparisons](evidence/nishan-bias-physical-2026-09-10/scores.json).
++- [Design, conditional-model argument and prior art](NISHAN_BIAS_SYNC_DESIGN_2026-09-10.md).
++- [Plan progress and decisions](evidence/nishan-bias-registration-progress.md).
++
++The preparation commitment SHA256 is
++`956678e16fac26228029f6ab34e7bb5e4ef76264b00d4a98898907dc6463c76c`;
++the scores SHA256 is
++`38ba1ddf81519415d56d70fa7c37fbee940eb1341a796d8cb9fc2ca5c3ad0b9b`.
+
+

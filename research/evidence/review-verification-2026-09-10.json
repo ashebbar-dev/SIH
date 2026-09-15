@@ -1,0 +1,44 @@
+{
+  "audit_date": "2026-09-10",
+  "baseline_suite": {
+    "chunk_id": "8a2d3b",
+    "wall_time_seconds": 0.000001252,
+    "exit_code": 0,
+    "original_token_count": 25,
+    "output": "----------------------------------------------------------------------\nRan 19 tests in 21.861s\n\nOK\n"
+  },
+  "regression_before_fix": {
+    "command": ".venv/bin/python -m unittest discover -s prototypes/nishan_pq/tests -p test_pdf_format_policy.py -q",
+    "exit_code": 1,
+    "failures": 3,
+    "errors": 3
+  },
+  "final_suite": {
+    "chunk_id": "f7890b",
+    "wall_time_seconds": 3.572724041,
+    "exit_code": 0,
+    "original_token_count": 25,
+    "output": "----------------------------------------------------------------------\nRan 22 tests in 25.888s\n\nOK\n"
+  },
+  "final_suite_command": ".venv/bin/python -m unittest discover -s prototypes/nishan_pq/tests -q",
+  "direct_fixture_after_fix": {
+    "ordinary_pdf": "corroborated_channels",
+    "transplant_pdf": "abstain_channel_conflict",
+    "prefixed_transplant_pdf": "abstain_channel_conflict",
+    "single_channel_pdf": "abstain_single_channel_editable_pdf",
+    "prefixed_single_channel_pdf": "abstain_single_channel_editable_pdf",
+    "all_cases_recognized_as_pdf": true
+  },
+  "independent_transfer_review": {
+    "rows_checked": 11964,
+    "summary_groups_checked": 64,
+    "raw_input_hashes_checked": 8,
+    "findings": [],
+    "scope": "CSV and summary arithmetic, data boundaries and hashes; no repeat training"
+  },
+  "limitations": [
+    "Tests and fixture decisions do not establish novelty or superiority.",
+    "Physical capture remains pending.",
+    "The initial 19-test suite passed despite the newly reproduced decision-policy bug."
+  ]
+}

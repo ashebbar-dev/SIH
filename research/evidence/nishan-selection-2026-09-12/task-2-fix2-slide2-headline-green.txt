@@ -1,0 +1,7 @@
+test_slide_two_headline_clears_official_logo (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_slide_two_headline_clears_official_logo) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.783s
+
+OK
+/tmp/tmpi7kr3e9a/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx

@@ -1,0 +1,6 @@
+test_renamed_prefixed_pdf_source_uses_strict_pdf_policy (test_release_safeguards.ReleaseSafeguardsTests.test_renamed_prefixed_pdf_source_uses_strict_pdf_policy) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 3.438s
+
+OK

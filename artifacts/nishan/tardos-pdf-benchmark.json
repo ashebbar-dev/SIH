@@ -1,0 +1,2377 @@
+{
+  "all_attack_expectations_passed": true,
+  "attack_count": 25,
+  "attacks": {
+    "2_copy_pixel_average": {
+      "accused_user_indices": [
+        0,
+        1
+      ],
+      "attack": "2_copy_pixel_average",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0,
+        1
+      ],
+      "colluder_score_max": 8528.444762751116,
+      "colluder_score_min": 8527.89552205455,
+      "colluders_recovered": [
+        0,
+        1
+      ],
+      "colluders_recovered_count": 2,
+      "decoded_one_fraction": 0.38148571428571426,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.9998,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.9998,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.35682348790578544,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0,
+          1
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0,
+          1
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 429.5571605557294,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 38843,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "d4b3c8e3d240c99bcc0ea3bf951689e487a687f7ce1cc9f0e8892b342db2012e",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "3_copy_pixel_average": {
+      "accused_user_indices": [
+        0,
+        1,
+        2
+      ],
+      "attack": "3_copy_pixel_average",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0,
+        1,
+        2
+      ],
+      "colluder_score_max": 5790.639945223834,
+      "colluder_score_min": 5625.156677908338,
+      "colluders_recovered": [
+        0,
+        1,
+        2
+      ],
+      "colluders_recovered_count": 3,
+      "decoded_one_fraction": 0.5015619047619048,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.999806,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.999806,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.41988156712614,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0,
+          1,
+          2
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0,
+          1,
+          2
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 494.0412560081933,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 32126,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "2567db8c1fcb08cf88642707884e65b2665463f6b082275c3485736b7f43cd0d",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "5_copy_pixel_average": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "attack": "5_copy_pixel_average",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 36.0,
+      "coalition_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3468.023734316277,
+      "colluder_score_min": 3265.476365504485,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "decoded_one_fraction": 0.3885523809523809,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.999804,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.999804,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.3563526989892125,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 410.62071652219197,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 24947,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "8197d1968289a72bdbab91494c18c75b6ccf76f9008407a0bcc1287dd1b052c1",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "carrier_realization_coin_flip_five_copy": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "attack": "carrier_realization_coin_flip_five_copy",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3581.787723251716,
+      "colluder_score_min": 3160.983964651634,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "decoded_one_fraction": 0.5029142857142858,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.99977,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.99977,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.4992144200950861,
+      "expected": {
+        "decision": "abstain_single_channel_editable_pdf",
+        "selected_indices": []
+      },
+      "fixture_scope": "The attack word was generated from the five codewords under the named marking-condition strategy and then embedded as a fresh carrier. This tests carrier realization of a code-level word, not an attacker editing five PDFs.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_single_channel_editable_pdf",
+        "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+        "screening_lead_indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 496.51350633595376,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 24947,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "066c583bc04622662ed685eb8ebceff39d0718ecf126ec2308f2ee9dff124193",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "carrier_realization_interleaving_five_copy": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "attack": "carrier_realization_interleaving_five_copy",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3435.318645346829,
+      "colluder_score_min": 3135.993868846136,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "decoded_one_fraction": 0.49752380952380953,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.999773,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.999773,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.47662022709846497,
+      "expected": {
+        "decision": "abstain_single_channel_editable_pdf",
+        "selected_indices": []
+      },
+      "fixture_scope": "The attack word was generated from the five codewords under the named marking-condition strategy and then embedded as a fresh carrier. This tests carrier realization of a code-level word, not an attacker editing five PDFs.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_single_channel_editable_pdf",
+        "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+        "screening_lead_indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 520.6738544972122,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 24947,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "9b669b88d1e482a382b9feb8889bb260574f8bcb9144ffc3d0316989ee68f079",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "carrier_realization_majority_five_copy": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "attack": "carrier_realization_majority_five_copy",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3498.366542504811,
+      "colluder_score_min": 3355.527022587851,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "decoded_one_fraction": 0.5008380952380952,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.999767,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.999767,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.7497221741359681,
+      "expected": {
+        "decision": "abstain_single_channel_editable_pdf",
+        "selected_indices": []
+      },
+      "fixture_scope": "The attack word was generated from the five codewords under the named marking-condition strategy and then embedded as a fresh carrier. This tests carrier realization of a code-level word, not an attacker editing five PDFs.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_single_channel_editable_pdf",
+        "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+        "screening_lead_indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 455.8556020574971,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 24947,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "5cd5aef57fb869e0ab5a444f448592fb757d512b12fed0664aabec24b5e244eb",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "carrier_realization_minority_five_copy": {
+      "accused_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "attack": "carrier_realization_minority_five_copy",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluder_score_max": 3650.170212401723,
+      "colluder_score_min": 3388.806744856736,
+      "colluders_recovered": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "colluders_recovered_count": 5,
+      "decoded_one_fraction": 0.5042095238095238,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.999768,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.999768,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.5229195570573211,
+      "expected": {
+        "decision": "abstain_single_channel_editable_pdf",
+        "selected_indices": []
+      },
+      "fixture_scope": "The attack word was generated from the five codewords under the named marking-condition strategy and then embedded as a fresh carrier. This tests carrier realization of a code-level word, not an attacker editing five PDFs.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_single_channel_editable_pdf",
+        "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+        "screening_lead_indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 588.7800644099395,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 24947,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "4ef74fd0ce2b4a610b72a32f41455977bcb66de5b028f94aac724351975e8222",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "pdf_both_channels_removed": {
+      "accused_user_indices": [],
+      "attack": "pdf_both_channels_removed",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 0.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": -109.18316880714785,
+      "colluder_score_min": -109.18316880714785,
+      "colluders_recovered": [],
+      "colluders_recovered_count": 0,
+      "decoded_one_fraction": 0.026895238095238094,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 1.000094,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 1.000094,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.24746886594220996,
+      "expected": {
+        "decision": "no_attribution_signal",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "no_attribution_signal",
+        "reason": "Neither carrier produced a signed release candidate.",
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 116.61874469580293,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.5018476190476191,
+        "violations": 26347
+      },
+      "suspect_sha3_256": "58bb57ac7fadbde59e5b04972a2c1cbce962f981aee35da93883c7c4c2b25c6e",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "pdf_clean_resave": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "pdf_clean_resave",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 17271.76836566745,
+      "colluder_score_min": 17271.76836566745,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.5009714285714286,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.99977,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.99977,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.43537330511026084,
+      "expected": {
+        "decision": "abstain_single_channel_editable_pdf",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_single_channel_editable_pdf",
+        "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+        "screening_lead_indices": [
+          0
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 462.33582401011614,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "b24636eff2ac6e58f299be7601d130cda87101da4b0996435a5fc8fe3c21a0f9",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "pdf_layout_normalized": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "pdf_layout_normalized",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 17271.76836566745,
+      "colluder_score_min": 17271.76836566745,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.5009714285714286,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.99977,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.99977,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.4332703370600939,
+      "expected": {
+        "decision": "abstain_single_channel_editable_pdf",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_single_channel_editable_pdf",
+        "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+        "screening_lead_indices": [
+          0
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 462.33582401011614,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "763fa4e88996d07511f8b4c495da79b53e520194f57cc54347f03eed9df02a02",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "pdf_overlay_object_removed": {
+      "accused_user_indices": [],
+      "attack": "pdf_overlay_object_removed",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 0.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": -109.18316880714785,
+      "colluder_score_min": -109.18316880714785,
+      "colluders_recovered": [],
+      "colluders_recovered_count": 0,
+      "decoded_one_fraction": 0.026895238095238094,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 1.000094,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 1.000094,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.2900524081196636,
+      "expected": {
+        "decision": "abstain_single_channel_editable_pdf",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_single_channel_editable_pdf",
+        "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+        "screening_lead_indices": [
+          0
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 116.61874469580293,
+      "layout_channel": {
+        "candidate_results": {
+          "0": {
+            "corrected_blocks": 0,
+            "match": true
+          },
+          "1": {
+            "corrected_blocks": 17,
+            "match": false
+          },
+          "2": {
+            "corrected_blocks": 16,
+            "match": false
+          },
+          "3": {
+            "corrected_blocks": 14,
+            "match": false
+          },
+          "4": {
+            "corrected_blocks": 16,
+            "match": false
+          }
+        },
+        "carrier_symbols_read": 133,
+        "encoded_bits": 126,
+        "matched_user_indices": [
+          0
+        ],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.5018476190476191,
+        "violations": 26347
+      },
+      "suspect_sha3_256": "3a853172cfa7285515ee2a2e057385ba785ccdc6130d93ebaea857cd9df4eec9",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "pdf_partial_overlap_visual_coalition_on_bob_layout": {
+      "accused_user_indices": [
+        0,
+        1
+      ],
+      "attack": "pdf_partial_overlap_visual_coalition_on_bob_layout",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0,
+        1
+      ],
+      "colluder_score_max": 8528.444762751116,
+      "colluder_score_min": 8527.89552205455,
+      "colluders_recovered": [
+        0,
+        1
+      ],
+      "colluders_recovered_count": 2,
+      "decoded_one_fraction": 0.38148571428571426,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.9998,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.9998,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.47472284198738635,
+      "expected": {
+        "decision": "abstain_channel_conflict",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_channel_conflict",
+        "reason": "The visual Tardos and text-layout identity sets differ. Even an overlapping candidate is withheld because extra candidates are consistent with carrier transplantation or recombination.",
+        "screening_lead_indices": [
+          1
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 429.5571605557294,
+      "layout_channel": {
+        "candidate_results": {
+          "0": {
+            "corrected_blocks": 15,
+            "match": false
+          },
+          "1": {
+            "corrected_blocks": 0,
+            "match": true
+          },
+          "2": {
+            "corrected_blocks": 14,
+            "match": false
+          },
+          "3": {
+            "corrected_blocks": 17,
+            "match": false
+          },
+          "4": {
+            "corrected_blocks": 17,
+            "match": false
+          }
+        },
+        "carrier_symbols_read": 133,
+        "encoded_bits": 126,
+        "matched_user_indices": [
+          1
+        ],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 38843,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "2ac99a1386a837653203abf7ea1f5473591a987dc810a90e066fec0a01231705",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "pdf_visual_carrier_transplanted": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "pdf_visual_carrier_transplanted",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 4590.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 17271.76836566745,
+      "colluder_score_min": 17271.76836566745,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.5009714285714286,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.002051,
+            "homography_suspect_to_reference": null,
+            "method": "resize-only",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.002051,
+            "rejection_reason": "only 0 ratio-test matches",
+            "suspect_height": 1684,
+            "suspect_keypoints": 8449,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 1.2232231840025634,
+      "expected": {
+        "decision": "abstain_channel_conflict",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_channel_conflict",
+        "reason": "The visual Tardos and text-layout identity sets differ. Even an overlapping candidate is withheld because extra candidates are consistent with carrier transplantation or recombination.",
+        "screening_lead_indices": [],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 462.33582401011614,
+      "layout_channel": {
+        "candidate_results": {
+          "0": {
+            "corrected_blocks": 15,
+            "match": false
+          },
+          "1": {
+            "corrected_blocks": 0,
+            "match": true
+          },
+          "2": {
+            "corrected_blocks": 14,
+            "match": false
+          },
+          "3": {
+            "corrected_blocks": 17,
+            "match": false
+          },
+          "4": {
+            "corrected_blocks": 17,
+            "match": false
+          }
+        },
+        "carrier_symbols_read": 133,
+        "encoded_bits": 126,
+        "matched_user_indices": [
+          1
+        ],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "44faf513d7a407dcceb6fa4234c5e051b6a4c75c112ef5f83dd2dabf4effe114",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "pdf_visual_transplant_then_layout_strip": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "pdf_visual_transplant_then_layout_strip",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 4590.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 17271.76836566745,
+      "colluder_score_min": 17271.76836566745,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.5009714285714286,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.002051,
+            "homography_suspect_to_reference": null,
+            "method": "resize-only",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.002051,
+            "rejection_reason": "only 0 ratio-test matches",
+            "suspect_height": 1684,
+            "suspect_keypoints": 8449,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 1.2137758808676153,
+      "expected": {
+        "decision": "abstain_single_channel_editable_pdf",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": true,
+        "decision": "abstain_single_channel_editable_pdf",
+        "reason": "This editable PDF was released with two carriers but only one survives. The remaining signal is an investigative lead, not corroborated attribution, because a remove-and-transplant attack can manufacture this state.",
+        "screening_lead_indices": [
+          0
+        ],
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 462.33582401011614,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": 0,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "c1f0e539c89bf9fa5e1e8560a141b873effb12bf112b3b3eb841983f8dcf96ab",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "raster_crop_10pct_each_edge": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "raster_crop_10pct_each_edge",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 53.00001525878906,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 10895.428609253235,
+      "colluder_score_min": 10895.428609253235,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.33424761904761907,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": true,
+            "baseline_similarity": 0.048818,
+            "homography_suspect_to_reference": [
+              [
+                0.9997418171202808,
+                2.723281712017752e-05,
+                118.97767915238165
+              ],
+              [
+                -0.0002862185814176412,
+                0.9998710547123829,
+                168.05670974412092
+              ],
+              [
+                -5.057278436695287e-07,
+                -2.066686619748928e-08,
+                1.0
+              ]
+            ],
+            "method": "ORB + RANSAC homography",
+            "ransac_inlier_ratio": 0.900741,
+            "ransac_inliers": 2432,
+            "ratio_test_matches": 2700,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.745504,
+            "rejection_reason": null,
+            "suspect_height": 1348,
+            "suspect_keypoints": 8000,
+            "suspect_width": 952
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 1.0357252559624612,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 385.60492961276066,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.18222857142857143,
+        "violations": 9567
+      },
+      "suspect_sha3_256": "6298de345bdb9d4ecb1046842d915aedc796b5edb8595c99613f933bb8a998e3",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "raster_crop_30pct_each_edge": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "raster_crop_30pct_each_edge",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 0.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 2685.523758852084,
+      "colluder_score_min": 2685.523758852084,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.11342857142857143,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": true,
+            "baseline_similarity": 0.055941,
+            "homography_suspect_to_reference": [
+              [
+                1.0006204296059034,
+                -0.0008471740471908471,
+                357.0048327576054
+              ],
+              [
+                0.0006035962780271035,
+                0.9978290174028892,
+                505.08845941508963
+              ],
+              [
+                1.2247527540222251e-06,
+                -2.127934305196772e-06,
+                1.0
+              ]
+            ],
+            "method": "ORB + RANSAC homography",
+            "ransac_inlier_ratio": 0.858696,
+            "ransac_inliers": 632,
+            "ratio_test_matches": 736,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.346318,
+            "rejection_reason": null,
+            "suspect_height": 674,
+            "suspect_keypoints": 4070,
+            "suspect_width": 476
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.6233096560463309,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 205.3769122127324,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.42163809523809526,
+        "violations": 22136
+      },
+      "suspect_sha3_256": "e79c3b612cfb33c044002621707192f668b5554e7a01b1686e550ea50bf83703",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "raster_crop_40pct_each_edge": {
+      "accused_user_indices": [],
+      "attack": "raster_crop_40pct_each_edge",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 0.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 583.3172498297149,
+      "colluder_score_min": 583.3172498297149,
+      "colluders_recovered": [],
+      "colluders_recovered_count": 0,
+      "decoded_one_fraction": 0.05678095238095238,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": true,
+            "baseline_similarity": 0.016991,
+            "homography_suspect_to_reference": [
+              [
+                1.005664547330711,
+                -0.0060774772206023155,
+                475.70675318433905
+              ],
+              [
+                0.0129586482209467,
+                0.9838656689075063,
+                674.3809691482886
+              ],
+              [
+                1.535878493983866e-05,
+                -1.606938293001825e-05,
+                1.0
+              ]
+            ],
+            "method": "ORB + RANSAC homography",
+            "ransac_inlier_ratio": 0.980583,
+            "ransac_inliers": 101,
+            "ratio_test_matches": 103,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.13511,
+            "rejection_reason": null,
+            "suspect_height": 336,
+            "suspect_keypoints": 607,
+            "suspect_width": 238
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.3975261019077152,
+      "expected": {
+        "decision": "no_attribution_signal",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "no_attribution_signal",
+        "reason": "Neither carrier produced a signed release candidate.",
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 154.2923786341006,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.4821714285714286,
+        "violations": 25314
+      },
+      "suspect_sha3_256": "2848638a768ef36628795aa68a93ad032f2df0fb31eb9c12ada8be5971aa50d5",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "raster_half_size": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "raster_half_size",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 39.00010681152344,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 15912.91344250302,
+      "colluder_score_min": 15912.91344250302,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.5013142857142857,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.992922,
+            "homography_suspect_to_reference": [
+              [
+                2.0002529551205894,
+                0.0004278930510255601,
+                0.06986192006292911
+              ],
+              [
+                -0.00032507571212131415,
+                2.0008243464576463,
+                -0.013034870119261518
+              ],
+              [
+                -1.4137897692175203e-07,
+                8.540000548504583e-07,
+                1.0
+              ]
+            ],
+            "method": "resize-only",
+            "ransac_inlier_ratio": 0.568553,
+            "ransac_inliers": 452,
+            "ratio_test_matches": 795,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.93982,
+            "rejection_reason": "homography failed the content-similarity guard",
+            "suspect_height": 842,
+            "suspect_keypoints": 7310,
+            "suspect_width": 595
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 1.1695497839245945,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 454.02665289700866,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.03927619047619048,
+        "violations": 2062
+      },
+      "suspect_sha3_256": "d10ed44cfc1ee8166a265e139a1e08da75ad0592a08800b237e14d1d0434671c",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "raster_rotate_2deg": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "raster_rotate_2deg",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 47.00007629394531,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 16056.1391135288,
+      "colluder_score_min": 16056.1391135288,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.49592380952380954,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": true,
+            "baseline_similarity": 0.29851,
+            "homography_suspect_to_reference": [
+              [
+                0.9992398362357992,
+                -0.03480774854616213,
+                29.658130320325746
+              ],
+              [
+                0.03464603874273211,
+                0.9991444242856912,
+                -20.036125039646034
+              ],
+              [
+                -2.4997598681208613e-07,
+                -8.101908062096221e-08,
+                1.0
+              ]
+            ],
+            "method": "ORB + RANSAC homography",
+            "ransac_inlier_ratio": 0.878822,
+            "ransac_inliers": 1581,
+            "ratio_test_matches": 1799,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.996775,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 8000,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 1.1823867689818144,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 445.8675530121058,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.03571428571428571,
+        "violations": 1875
+      },
+      "suspect_sha3_256": "b8d070e1f6a9ee6b4212b8fc80dbcfea8781d6ee882d7ac2985934a667e1e869",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "raster_screenshot": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "raster_screenshot",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 17271.76836566745,
+      "colluder_score_min": 17271.76836566745,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.5009714285714286,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.99977,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.99977,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.4423349150456488,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 462.33582401011614,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "8cb9e0836ed83446f631683e0e368fd63f43b01001c7c4fa9ddc94308e684847",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "single_digital_pdf": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "single_digital_pdf",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 54.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 17271.76836566745,
+      "colluder_score_min": 17271.76836566745,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.5009714285714286,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.99977,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.99977,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.44314506999216974,
+      "expected": {
+        "decision": "corroborated_channels",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "corroborated_channels",
+        "reason": "Both separately encoded, domain-separated carriers identify the same release event set.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 462.33582401011614,
+      "layout_channel": {
+        "candidate_results": {
+          "0": {
+            "corrected_blocks": 0,
+            "match": true
+          },
+          "1": {
+            "corrected_blocks": 17,
+            "match": false
+          },
+          "2": {
+            "corrected_blocks": 16,
+            "match": false
+          },
+          "3": {
+            "corrected_blocks": 14,
+            "match": false
+          },
+          "4": {
+            "corrected_blocks": 16,
+            "match": false
+          }
+        },
+        "carrier_symbols_read": 133,
+        "encoded_bits": 126,
+        "matched_user_indices": [
+          0
+        ],
+        "suspect_is_pdf": true,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "suspect_sha3_256": "e5859eec0b9ba927a62b5ae7403caa006d0e0eaa3f2bb82c7d42912a372b4a99",
+      "theorem_marking_condition_observed": true,
+      "threshold": 2100.0
+    },
+    "single_jpeg_q20": {
+      "accused_user_indices": [],
+      "attack": "single_jpeg_q20",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 0.0,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 347.20232055560126,
+      "colluder_score_min": 347.20232055560126,
+      "colluders_recovered": [],
+      "colluders_recovered_count": 0,
+      "decoded_one_fraction": 0.07125714285714285,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.998868,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.998868,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.22553020995110273,
+      "expected": {
+        "decision": "no_attribution_signal",
+        "selected_indices": []
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "no_attribution_signal",
+        "reason": "Neither carrier produced a signed release candidate.",
+        "selected_indices": []
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 191.37428635655505,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.48979047619047617,
+        "violations": 25714
+      },
+      "suspect_sha3_256": "0188adc77392c11b4f2b20bfc7b1407200c7f19f05ac09f2c0b0f596d880c26e",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "single_jpeg_q40": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "single_jpeg_q40",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 6.00006103515625,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 7057.8386394588915,
+      "colluder_score_min": 7057.8386394588915,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.28045714285714285,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.999342,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.999342,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.3183798601385206,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 463.1374864939572,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.29700952380952383,
+        "violations": 15593
+      },
+      "suspect_sha3_256": "34f1b1e0672b19640e0fe3b7ed9a797ce498e5a989315b358ee054a1d63176e1",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "single_jpeg_q55": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "single_jpeg_q55",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 22.000076293945312,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 13395.342220070155,
+      "colluder_score_min": 13395.342220070155,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.4631047619047619,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": false,
+            "baseline_similarity": 0.999144,
+            "homography_suspect_to_reference": null,
+            "method": "identity/content-similarity guard",
+            "ransac_inlier_ratio": 0.0,
+            "ransac_inliers": 0,
+            "ratio_test_matches": 0,
+            "reference_height": 1684,
+            "reference_keypoints": 0,
+            "reference_width": 1190,
+            "registered_similarity": 0.999144,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_keypoints": 0,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 0.4136162488721311,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 445.06949492666706,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.11245714285714285,
+        "violations": 5904
+      },
+      "suspect_sha3_256": "08e7fe516e8d20357ec315f10a5f1cc4327b07b600672df6ade128563ceb4e6e",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    },
+    "single_synthetic_perspective_photo": {
+      "accused_user_indices": [
+        0
+      ],
+      "attack": "single_synthetic_perspective_photo",
+      "benchmark_passed": true,
+      "block_correlation_absolute_median": 34.00006103515625,
+      "coalition_user_indices": [
+        0
+      ],
+      "colluder_score_max": 14183.938292892997,
+      "colluder_score_min": 14183.938292892997,
+      "colluders_recovered": [
+        0
+      ],
+      "colluders_recovered_count": 1,
+      "decoded_one_fraction": 0.46264761904761903,
+      "decoder_preprocessing": {
+        "pages": [
+          {
+            "applied": true,
+            "baseline_similarity": 0.064745,
+            "homography_suspect_to_reference": [
+              [
+                1.073452530294139,
+                0.0902731734210209,
+                -272.92174385610076
+              ],
+              [
+                -0.09417553616070719,
+                1.0971016427736036,
+                -92.26156006816909
+              ],
+              [
+                4.016270699010689e-05,
+                1.0040176548227171e-05,
+                0.9999999999999999
+              ]
+            ],
+            "method": "ORB + RANSAC homography",
+            "ransac_inlier_ratio": 0.839161,
+            "ransac_inliers": 840,
+            "ratio_test_matches": 1001,
+            "reference_height": 1684,
+            "reference_keypoints": 8013,
+            "reference_width": 1190,
+            "registered_similarity": 0.983025,
+            "rejection_reason": null,
+            "suspect_height": 1950,
+            "suspect_keypoints": 8000,
+            "suspect_width": 1650
+          }
+        ],
+        "registration_mode": "auto"
+      },
+      "evaluation_seconds": 1.2114862161688507,
+      "expected": {
+        "decision": "tardos_channel_only",
+        "selected_indices": [
+          0
+        ]
+      },
+      "fixture_scope": "The named file transformation was executed on released fixture copies.",
+      "fusion": {
+        "conflict": false,
+        "decision": "tardos_channel_only",
+        "reason": "Only the rendered visual carrier produced candidate rows.",
+        "selected_indices": [
+          0
+        ]
+      },
+      "innocent_accusations": [],
+      "innocent_accusations_count": 0,
+      "innocent_score_max": 448.6514010114649,
+      "layout_channel": {
+        "candidate_results": {},
+        "carrier_symbols_read": null,
+        "encoded_bits": 126,
+        "matched_user_indices": [],
+        "suspect_is_pdf": false,
+        "tag_bits": 72
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.08952380952380952,
+        "violations": 4700
+      },
+      "suspect_sha3_256": "95dfad53274d770ef2aa48aacbad32fe56908193be33e495a135e4afeb029767",
+      "theorem_marking_condition_observed": false,
+      "threshold": 2100.0
+    }
+  },
+  "carrier": {
+    "layout_adjustment_magnitude": 0.001,
+    "live_document_checks": {
+      "marked_image_objects": 1,
+      "marked_vector_drawings": 1,
+      "search_hits_in_marked": 1,
+      "source_image_objects": 0,
+      "source_vector_drawings": 1,
+      "text_extraction_equal": true,
+      "word_sequence_equal": true
+    },
+    "metrics_by_user": [
+      {
+        "released_document": {
+          "dpi": 144,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.87,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "text_layout_tag": {
+          "adjustment_magnitude": 0.001,
+          "capacity_bits": 133,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "modified_streams": 9,
+          "payload_bits": 126,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "user_index": 0,
+        "visual_tardos": {
+          "block_size_pixels": 6,
+          "capacity_symbols": 55440,
+          "dpi": 144,
+          "embedded_symbols": 52500,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.87,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "strength": 4.0,
+          "text_preserved": true
+        }
+      },
+      {
+        "released_document": {
+          "dpi": 144,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.869,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "text_layout_tag": {
+          "adjustment_magnitude": 0.001,
+          "capacity_bits": 133,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "modified_streams": 9,
+          "payload_bits": 126,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "user_index": 1,
+        "visual_tardos": {
+          "block_size_pixels": 6,
+          "capacity_symbols": 55440,
+          "dpi": 144,
+          "embedded_symbols": 52500,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.869,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "strength": 4.0,
+          "text_preserved": true
+        }
+      },
+      {
+        "released_document": {
+          "dpi": 144,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.867,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "text_layout_tag": {
+          "adjustment_magnitude": 0.001,
+          "capacity_bits": 133,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "modified_streams": 9,
+          "payload_bits": 126,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "user_index": 2,
+        "visual_tardos": {
+          "block_size_pixels": 6,
+          "capacity_symbols": 55440,
+          "dpi": 144,
+          "embedded_symbols": 52500,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.867,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "strength": 4.0,
+          "text_preserved": true
+        }
+      },
+      {
+        "released_document": {
+          "dpi": 144,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.868,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "text_layout_tag": {
+          "adjustment_magnitude": 0.001,
+          "capacity_bits": 133,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "modified_streams": 9,
+          "payload_bits": 126,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "user_index": 3,
+        "visual_tardos": {
+          "block_size_pixels": 6,
+          "capacity_symbols": 55440,
+          "dpi": 144,
+          "embedded_symbols": 52500,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.868,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "strength": 4.0,
+          "text_preserved": true
+        }
+      },
+      {
+        "released_document": {
+          "dpi": 144,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.868,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "text_layout_tag": {
+          "adjustment_magnitude": 0.001,
+          "capacity_bits": 133,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "modified_streams": 9,
+          "payload_bits": 126,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "text_preserved": true
+        },
+        "user_index": 4,
+        "visual_tardos": {
+          "block_size_pixels": 6,
+          "capacity_symbols": 55440,
+          "dpi": 144,
+          "embedded_symbols": 52500,
+          "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "pages": 1,
+          "psnr_db": 41.868,
+          "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+          "strength": 4.0,
+          "text_preserved": true
+        }
+      }
+    ],
+    "strength": 4.0
+  },
+  "claim_boundary": {
+    "demonstrated": "One deterministic full-size Tardos profile over 1,000 codebook rows; five dual-carrier live-text PDFs; all-row scoring; independent channel deletion; both-channel deletion; disjoint and partially overlapping carrier transplantation; raster crop, resize, rotation and compression boundaries; one synthetic perspective-photo fixture; and carrier realizations of four five-user code-level strategies.",
+    "not_demonstrated": "A probability estimated across independent codebooks, real printer/scanner or phone-camera hardware, or a cryptographically audited random generator. The short layout tag is an exact-PDF authenticator, not a collusion-secure code.",
+    "theorem": "The recorded family-wide bound belongs to the original randomized Tardos construction and is conditional on a coalition of at most five obeying the marking condition. Attack rows explicitly report whether decoded symbols did."
+  },
+  "code": {
+    "fixture_note": "The embedded public fixture key makes the artifact reproducible and is not a secret; production needs protected codebook state and an independently reviewed generator.",
+    "generation_seconds": 0.259535568067804,
+    "generator": "deterministic public fixture using the same HMAC-derived AES-CTR generator as the end-to-end path",
+    "manifest": {
+      "biases_sha3_256": "49ba152633624e8746184ebba224440c0f06e02de796b08f08f21dbb33e9c7bd",
+      "codebook_sha3_256": "fcf68ef31529a7c3a3337c95ab7bd366410c03fb55a1d83181b7733aa9c88719",
+      "codebook_shape": [
+        1000,
+        52500
+      ],
+      "commitment_encoding": "biases=<f8 row-major; codebook=u1 row-major",
+      "implementation_note": "Reproducible research generator; deployment requires protected state and an audited cryptographic DRBG.",
+      "parameters": {
+        "coalition_limit": 5,
+        "code_length": 52500,
+        "cutoff": 0.0006666666666666666,
+        "familywise_epsilon": 1e-06,
+        "k": 21,
+        "marking_assumption_required": true,
+        "per_user_epsilon": 9.999999999999999e-10,
+        "roster_size": 1000,
+        "theorem_profile": "Tardos F_(n,c,epsilon/n), original conservative constants",
+        "threshold": 2100.0
+      },
+      "theorem_bounds": {
+        "combined_error_upper": 9.990056234132518e-07,
+        "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+        "scope": "random code construction; coalition obeys the marking condition",
+        "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+        "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+      }
+    }
+  },
+  "date": "2026-09-10",
+  "measured_failure_boundary": "For an editable PDF the engine attributes only when both channels agree. Removing either carrier leaves a recorded screening lead but forces abstention; removing both leaves no signal. Disjoint, remove-after-transplant, and partial-overlap recombination all force abstention. The raster fixture recovers after 30% is cropped from every edge but not 40%, and at JPEG quality 40 but not quality 20.",
+  "schema": "nishan.dual-pdf-carrier-benchmark/v2",
+  "source": {
+    "path": "artifacts/nishan/synthetic-source.pdf",
+    "sha3_256": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb"
+  }
+}

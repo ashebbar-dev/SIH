@@ -1,0 +1,164 @@
+{
+  "accused_codebook_rows": [
+    0
+  ],
+  "attribution": [],
+  "channel_decision": {
+    "conflict": true,
+    "corroboration_required": true,
+    "decision": "abstain_inadequate_release_capacity",
+    "editable_pdf_corroboration_required": false,
+    "layout_authenticated_indices": [],
+    "layout_observation": {
+      "carrier_symbols_read": 0,
+      "encoded_bits": 126,
+      "nominal_wrong_candidate_match_probability": "2^-72 under the PRF/HMAC idealization",
+      "read_error": null,
+      "scope": "The layout result authenticates an exact digital-PDF carrier. It is not a Tardos accusation bound and is expected to disappear after normalization.",
+      "suspect_is_pdf": true,
+      "tag_bits": 72
+    },
+    "reason": "The signed release has inadequate layout capacity for corroborated attribution.",
+    "screening_lead_indices": [
+      0
+    ],
+    "selected_indices": [],
+    "tardos_issued_indices": [
+      0
+    ],
+    "unissued_tardos_indices": []
+  },
+  "decoder": {
+    "decoded_one_fraction": 0.5025333333333334,
+    "decoded_symbols": 52500,
+    "median_absolute_block_correlation": 54.0,
+    "preprocessing": {
+      "pages": [
+        {
+          "applied": false,
+          "baseline_similarity": 0.985893,
+          "homography_suspect_to_reference": null,
+          "method": "identity/content-similarity guard",
+          "ransac_inlier_ratio": 0.0,
+          "ransac_inliers": 0,
+          "ratio_test_matches": 0,
+          "reference_height": 1684,
+          "reference_keypoints": 0,
+          "reference_width": 1190,
+          "registered_similarity": 0.985893,
+          "rejection_reason": null,
+          "suspect_height": 1684,
+          "suspect_keypoints": 0,
+          "suspect_width": 1190
+        }
+      ],
+      "registration_mode": "auto"
+    }
+  },
+  "detection_threshold": 2100.0,
+  "fingerprint_scheme": "NISHAN dual carrier: Tardos visual code + HMAC layout tag",
+  "generated_at": "2026-09-12T05:02:06.822568+00:00",
+  "interpretation": "The engine returns a signed release candidate only under the recorded fail-closed channel policy. A visual/layout disagreement or an unissued Tardos threshold crossing causes abstention. The Tardos reference bound still requires its coalition and marking assumptions; it is not asserted automatically for a physical carrier input.",
+  "ledger": {
+    "canonical_head": "331c9cb84eb8896057c85b4a22aca71cf971ca70e456ec7f2e6123c5e5ea980d",
+    "canonical_length": 4,
+    "divergent_replicas": [],
+    "identity_registry_sha3_256": "2a69c85f207522ff497692c1494ddccff56f3f2dbe261d0b74b2353394df257f",
+    "quorum_valid": true,
+    "trust_root_hash": "5449b7ff394a2f209a6b4f8c13d10bd7b25507667cd51716e1e86d465b96c104",
+    "trust_root_valid": true
+  },
+  "ledger_witness": {
+    "failure": null,
+    "latest": {
+      "canonical_head": "331c9cb84eb8896057c85b4a22aca71cf971ca70e456ec7f2e6123c5e5ea980d",
+      "canonical_length": 4,
+      "identity_registry_sha3_256": "2a69c85f207522ff497692c1494ddccff56f3f2dbe261d0b74b2353394df257f",
+      "index": 4,
+      "ledger_trust_root_hash": "5449b7ff394a2f209a6b4f8c13d10bd7b25507667cd51716e1e86d465b96c104",
+      "previous_checkpoint_hash": "f49b51cdb4a7cc58c9390bd8ab75f63df12506764862e478d150a09439302518",
+      "version": "nishan-external-head-witness/v1",
+      "witnessed_at": "2026-09-12T05:02:03.476115+00:00"
+    },
+    "latest_checkpoint_hash": "71efbfcb16e9380201753e39244e30f7db47c67deaa2a6770a2a8ca073086fb8",
+    "ledger_comparison": "consistent",
+    "observed_ledger_head": "331c9cb84eb8896057c85b4a22aca71cf971ca70e456ec7f2e6123c5e5ea980d",
+    "observed_ledger_length": 4,
+    "valid": true,
+    "verified_checkpoints": 5,
+    "witness_enforced": true,
+    "witness_public_key_sha3_256": "002350d9bae7203053328fec053a580cbc8334caebb79377995fb9fedc159321",
+    "witnessed_ledger_head": "331c9cb84eb8896057c85b4a22aca71cf971ca70e456ec7f2e6123c5e5ea980d",
+    "witnessed_ledger_length": 4
+  },
+  "ranking": [
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 0,
+      "layout_tag": {
+        "corrected_blocks": null,
+        "match": false,
+        "release_channel_available": false,
+        "status": "release had no supported layout capacity",
+        "suspect_carrier_symbols": 0,
+        "suspect_is_pdf": true
+      },
+      "ledger_block_hash": "331c9cb84eb8896057c85b4a22aca71cf971ca70e456ec7f2e6123c5e5ea980d",
+      "ledger_block_index": 3,
+      "recipient_display_name": "Alice",
+      "recipient_id": "alice",
+      "recipient_signature_valid": true,
+      "score": 17501.081454,
+      "selected_by_fusion": false,
+      "session_id": "1651fc37-dbed-4bbf-908c-c068ea00fe25",
+      "tardos_above_threshold": true
+    }
+  ],
+  "reference_sha3_256": "f853a7e7d4a2801f6456e34ac11ae4e85b2e98c3c9c63284153de0edfe1761ff",
+  "suspect_sha3_256": "0aa1ecf08b5fa6245ba8deaa9fddf78556fe66d0ee46de21839e65e2debb4a8b",
+  "threshold_calibration": {
+    "coalition_limit": 5,
+    "code_length": 52500,
+    "decision_role": "binary fingerprint accusation threshold",
+    "familywise_epsilon_target": 1e-06,
+    "formal_code_bound_available": true,
+    "formal_familywise_bound_established": false,
+    "formal_familywise_bound_established_for_this_physical_attack": false,
+    "reference_theorem_bounds": {
+      "combined_error_upper": 9.990056234132518e-07,
+      "completeness_no_colluder_strict_upper": 5.62341325190349e-12,
+      "scope": "random code construction; coalition obeys the marking condition",
+      "soundness_any_innocent_union_upper": 9.989999999999999e-07,
+      "soundness_fixed_innocent_strict_upper": 9.999999999999999e-10
+    },
+    "roster_size": 1000,
+    "threshold": 2100.0,
+    "version": "original-tardos-reference-profile/v1",
+    "why_not_automatic": "The theorem requires a coalition of at most c and a decoded pirate word that obeys the marking condition. Those facts cannot be established from an unknown leak alone; named attack fixtures test the carrier condition separately. The keyed generator also uses documented finite-precision discretization."
+  },
+  "unissued_accused_codebook_rows": [],
+  "version": "nishan-evidence/v3-dual-carrier",
+  "visual_only_research_leads": [
+    {
+      "above_threshold": true,
+      "fingerprint_user_index": 0,
+      "layout_tag": {
+        "corrected_blocks": null,
+        "match": false,
+        "release_channel_available": false,
+        "status": "release had no supported layout capacity",
+        "suspect_carrier_symbols": 0,
+        "suspect_is_pdf": true
+      },
+      "ledger_block_hash": "331c9cb84eb8896057c85b4a22aca71cf971ca70e456ec7f2e6123c5e5ea980d",
+      "ledger_block_index": 3,
+      "recipient_display_name": "Alice",
+      "recipient_id": "alice",
+      "recipient_signature_valid": true,
+      "score": 17501.081454,
+      "selected_by_fusion": false,
+      "session_id": "1651fc37-dbed-4bbf-908c-c068ea00fe25",
+      "tardos_above_threshold": true
+    }
+  ]
+}

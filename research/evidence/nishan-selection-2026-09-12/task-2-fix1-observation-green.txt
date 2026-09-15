@@ -1,0 +1,11 @@
+test_required_profile_fields_and_types_are_strict (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_required_profile_fields_and_types_are_strict) ... ok
+test_each_case_observation_enforces_claim_invariants (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.SafeguardEvidenceTests.test_each_case_observation_enforces_claim_invariants) ... ok
+test_build_rejects_counterfactual_safeguard_observation (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_build_rejects_counterfactual_safeguard_observation) ... ok
+test_verifier_rejects_malformed_safeguard_observation (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_verifier_rejects_malformed_safeguard_observation) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.076s
+
+OK
+/tmp/tmpnutpn0w0/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx
+/tmp/tmpkixlqtfd/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx

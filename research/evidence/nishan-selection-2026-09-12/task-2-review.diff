@@ -1,0 +1,2242 @@
+# Review package: research/evidence/nishan-selection-2026-09-12/task-2-before.tar.gz -> working files
+No Git repository; complete net snapshot diff, 10 lines of context.
+## Changed files
+submissions/SIH26237_NISHAN_PQ/DEMO_RUNBOOK.md: 0 -> 6258 bytes; SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 -> 7cf808968c907f12935e4e2d43fb8688978f95818e1396ddf5013b1168fcc4f5
+submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx: 694171 -> 693901 bytes; SHA256 43189cec6406875c77183481671330e18c6a722f4adcf64739823a06d641f1b2 -> dcacba6f0a0957471deb702c00f082ded2b4cf085a9d1846a788a8811b073f95
+submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237_speaker_notes.md: 8659 -> 10777 bytes; SHA256 e667055fbcb987d269764201d57af37fb183754661cf9de47865f0c12a1023e2 -> 36501a934360481e75835b8edfb3c84ec2d46a394cfff0c32537304731198410
+submissions/SIH26237_NISHAN_PQ/build_deck.py: 33906 -> 33850 bytes; SHA256 b8fb0b65b59527604d78fd9409ed59ad8b48fae261dbd403c373819a9dbc0140 -> 518cb67264beaec2d2bbb1f081d2bf0302d8aa171c3e59559d50919b4c2d7dec
+submissions/SIH26237_NISHAN_PQ/deck_evidence.py: 21219 -> 29688 bytes; SHA256 370407b83083a7a1f19bbf88217a7b921fb7e5f7a2e2c0ede55c581648273a7d -> 27ad2f88d5356d9f1eaeaaaadf7a16e41847e3a23766e1540bec54da7266a8cf
+submissions/SIH26237_NISHAN_PQ/paste_ready_submission.md: 14611 -> 9944 bytes; SHA256 9e97e66280c29d3074e3192a45208eaa9aae50c463915d20ca0091cb2913427e -> bf073b5f4ef028d57351243caff6d11fd3bf9d056c8c00bcf62e58f364a69e57
+submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py: 16309 -> 24737 bytes; SHA256 8488d91bdee8c815318561e4687cac252a9e16a450ffcb3882ec015dee913749 -> cbeedaecaa83a854add8b0b99bf7e034e312f1e4eef6405c7003c9af668276dd
+submissions/SIH26237_NISHAN_PQ/verify_submission.py: 23417 -> 25629 bytes; SHA256 299b859dad9333f18594e4de29f19581043a4c0935d35bf8cebff2fe17cbdf35 -> a63164080b6757bde1e9e84cebdd243815fd17273accc3723d121905e7604573
+
+## Diff
+--- before/submissions/SIH26237_NISHAN_PQ/DEMO_RUNBOOK.md
++++ current/submissions/SIH26237_NISHAN_PQ/DEMO_RUNBOOK.md
+@@ -0,0 +1,159 @@
++# NISHAN-PQ five-minute offline judge demonstration
++
++Status: 12 September 2026. This runbook demonstrates the tested research
++prototype on public synthetic fixtures. It does not demonstrate production
++certification, human guilt, delivery/reading proof or robust physical recovery.
++
++## Before the session
++
++- Fill in: team ID **[TEAM ID]**, registered team name **[TEAM NAME]** and public
++  repository **[PUBLIC REPOSITORY URL]**.
++- Use the project `.venv` with the checked-in dependencies and an OpenSSL provider
++  exposing ML-KEM-768 and ML-DSA-65. The runner checks both and fails if unavailable.
++- Disconnect networking if the judges request an air-gapped demonstration. The
++  measured workflow needs neither a GPU nor an ESP32.
++- Keep the reviewed evidence directory unchanged. Each run must use a new, empty
++  output root. Do not publish, copy into the repository or reuse any generated
++  private keys or secrets; they are synthetic demo-only material.
++- Open slide 5 and a terminal at the project root.
++
++## Invocation
++
++Choose a new literal run name every time. For example, use `run-01` only once;
++increment the suffix for later rehearsals instead of deleting or overwriting it.
++
++```bash
++.venv/bin/python prototypes/nishan_pq/tools/demo_release_safeguards.py \
++  --output research/evidence/nishan-selection-2026-09-12/demo-judges-run-01
++```
++
++Expected summary shape:
++
++```json
++{
++  "results": ".../results.json",
++  "pqc_ready": true,
++  "cases": 12,
++  "all_passed": true
++}
++```
++
++If the root already contains output, the runner refuses it. Pick a new suffix;
++do not remove or overwrite the earlier evidence. A skipped or unavailable PQC
++check is not a pass.
++
++## Five-minute judge flow
++
++### 0:00–0:35 — Frame the decision
++
++Say: “NISHAN-PQ connects a leaked artifact to a signed release session when the
++available evidence corroborates. When it does not, the system returns
++inconclusive rather than naming a person.”
++
++Point out that the runner is offline, uses public synthetic one-page PDFs, and
++reports security scenarios—not population trials.
++
++### 0:35–1:25 — Two recipients and a repeated session
++
++Show these cases in the new `results.json`:
++
++- `concurrent_distinct_sessions_rows`: two processes issue the same source to
++  two recipients; their rows and session IDs differ. Process ordering may swap
++  row 0 and row 1.
++- `third_release_row`: the next release succeeds on row 2.
++- `signed_copy_hash_match`: all three published files match the hashes in their
++  signed release receipts.
++
++Explain: serialization spans validation, row allocation, signing, append,
++checkpoint and publication. A signed record means release authorization, not
++successful delivery or reading.
++
++### 1:25–2:05 — Clean PDF source association
++
++Show `clean_pdf_trace`:
++
++- decision: `corroborated_channels`;
++- visual and layout evidence select the same Alice release session;
++- the recipient signature is valid;
++- configured witness status is valid for the checked snapshot.
++
++Explain: tracing is non-blind and uses the retained original. The witness result
++is a checked snapshot, not an eternal freshness guarantee.
++
++### 2:05–2:45 — Raster transplant stays inconclusive
++
++Show `rendered_transplant_abstains`:
++
++- high-assurance `attribution` is empty;
++- decision: `abstain_missing_layout_channel`;
++- the visual score remains only under `visual_only_research_leads`.
++
++Optionally show `low_capacity_pdf_abstains`, which records a signed capacity
++limitation and also leaves attribution empty. Say: “Digital PDF corroboration;
++raster-only matches are research leads.” Genuine image screening remains a
++separate research mode.
++
++### 2:45–3:40 — Pin and rollback gates
++
++Show:
++
++- `wrong_pin_rejected`: configured release rejects the wrong actual witness-key
++  pin and creates no output;
++- `rollback_release_rejected`: all ledger replicas are truncated to the same
++  apparently quorum-valid prefix, but configured release rejects it;
++- `rollback_trace_rejected`: configured trace rejects the same rollback;
++- `trace_read_only`: witness checkpoint bytes are unchanged by trace.
++
++Explain: this guarantee requires a caller-provisioned pin and trustworthy
++retained witness state. All demo validator and witness keys remain co-located;
++R8 is therefore not met against one administrator controlling everything.
++
++### 3:40–4:25 — Witness/checkpoint failure publishes nothing
++
++Show both:
++
++- `checkpoint_failure_no_publication`: no destination is created;
++- `checkpoint_failure_preserves_existing_output`: an existing destination is
++  unchanged.
++
++Explain the precise boundary: the signed release-authorization record remains
++committed after the injected checkpoint failure. The ledger then exposes an
++`unwitnessed_extension`; deliberate review and checkpoint recovery are required.
++Do not call this a rollback of the committed record.
++
++### 4:25–5:00 — Close with evidence and next gate
++
++Show `pqc_ready: true`, `all_passed: true`, the exact 12 unique case names and the
++19-entry `code_sha256` map. The deck build independently checks those hashes
++against current files before presenting the fresh claims.
++
++Close with three boundaries and the next-round plan:
++
++1. Source-copy/session evidence does not establish human guilt and can be framed
++   by a trusted authority able to reproduce an issued copy.
++2. Physical recovery remains experimental: 0/4 at the shipped threshold;
++   exploratory profiles recover the same 1/4 capture.
++3. Next round: independent administrative/key custody, a larger multi-recipient
++   and multi-page corpus, representative held-out print/camera tests, and a
++   portable independent evidence verifier.
++
++## Quick result inspection
++
++Replace the path with the new run root used above.
++
++```bash
++jq '{version, pqc_ready, all_passed, cases: [.cases[] | {name, passed}]}' \
++  research/evidence/nishan-selection-2026-09-12/demo-judges-run-01/results.json
++```
++
++Optional current-file hash check:
++
++```bash
++jq -r '.code_sha256 | to_entries[] | "\(.value)  \(.key)"' \
++  research/evidence/nishan-selection-2026-09-12/demo-judges-run-01/results.json \
++  | sha256sum -c -
++```
++
++Stop if any case is missing, duplicated or false; if `pqc_ready` is not exactly
++true; or if any code hash differs. Do not describe a partial run as the reviewed
++12/12 demonstration.
+
+Binary artifact changed: submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx (hashes above).
+--- before/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237_speaker_notes.md
++++ current/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237_speaker_notes.md
+@@ -1,76 +1,76 @@
+ # NISHAN-PQ speaker notes and audit record
+ 
+ ## Slide 1
+ 
+-Slide 1 — scope and official requirements
+-Team ID: [ENTER TEAM ID]; team name: [ENTER REGISTERED TEAM NAME]; repository: [INSERT PUBLIC REPOSITORY LINK BEFORE UPLOAD]. Status date: 11 September 2026. This is an audit record, not marketing copy.
+-R1: Unique invisible watermark at decryption — demonstrated on the controlled release path; the trusted viewer and allocation-race caveats remain.
+-R2: Recipient/session specificity — each release has an explicit session and row; initial row allocation can still race.
+-R3: Visually identical / forensically distinct — 5 PDFs preserve extracted text and average 41.87 dB PSNR; this is not universal invisibility.
++Slide 1 — value proposition and scope
++Team ID: [ENTER TEAM ID]; team name: [ENTER REGISTERED TEAM NAME]; repository: [INSERT PUBLIC REPOSITORY LINK BEFORE UPLOAD]. Status date: 12 September 2026. Selection deadline supplied by the team: 15 September. This is a tested research prototype, not production certification or a competition-outcome claim.
++R1: Unique invisible watermark at decryption — the controlled release path generates a marked, signed session copy before publication; the managed-process and authority-framing boundaries remain.
++R2: Recipient/session specificity — transaction-wide serialization now covers history validation, row allocation, signing, append, checkpoint and publication; the fresh concurrent scenario produced distinct rows and a later row 2.
++R3: Visually identical / forensically distinct — 5 one-page PDFs preserve extracted text and average 41.87 dB rendered PSNR; PDFs are not byte-identical, and this was not a human invisibility study.
+ P22: Team ID, registered team name and repository URL remain explicit placeholders unless supplied through the build CLI; strict verification then fails.
+ 
+ ## Slide 2
+ 
+-Slide 2 — workflow and extraction evidence
+-R9: Extract mark from leak — digital fixtures recover, while shipped physical evidence is historical 0/4 and experimental 1/4 per profile; this is not robust deployment.
+-P10: Physical evidence is historical 0/4 and experimental 1/4 in each profile, with the same akshay3 capture recovered in both—not two recovered captures. Latest akshay3 is 1827.334 vs 1096.290; baseline is 1709.941 vs 1097.482. akshay2 latest is 835.191 vs 1021.632; neither first capture recovered, refinement adds no capture, and 2 boundary failures remain failures. These are visual-code-row results on one printed single-page public fixture, not end-to-end signed physical attribution or independent documents.
++Slide 2 — proposed solution and capabilities
++R4: Cryptographic binding to recipient identity — enrollment-bound recipient keys and an ML-DSA-signed canonical release event bind document, session, row and assurance mode; identity proofing and key custody remain deployment assumptions.
++R5: Recipient's own private signing key — ML-DSA receipt verification is implemented, but exclusive human custody is not established while demo keys remain local.
++R6: NIST PQC KEX/signatures — the fresh readiness check used real ML-KEM-768 and ML-DSA-65 through OpenSSL 3.6.4, with no classical fallback in the measured path; algorithm use does not certify the prototype.
++R9: Extract mark from leak — a supported clean PDF returns a signed source-copy session only when both channels corroborate; raster-only and inadequate-capacity PDF scores remain research leads with empty attribution.
++P5: The authority can reproduce both carriers for an already issued session without forging a new recipient receipt; exact source-copy evidence does not eliminate operator framing.
++P6: Removing both carriers or retyping content can leave readable material with no attribution signal.
++P7: The managed viewer can access authenticated clean plaintext before marking; publication is gated, but trusted software and endpoint control remain assumptions.
++P8: Extraction is non-blind and requires the retained original and correct source version.
++Source: research/evidence/nishan-selection-2026-09-12/demo/results.json.
++
++## Slide 3
++
++Slide 3 — technical approach and release gates
++R7: Blockchain/DLT audit — the prototype implements a hash-linked, quorum-signed local 3-of-4 demonstrator; it is not independently administered blockchain infrastructure.
++R8: No single administrator can alter/delete history — NOT MET. All validator keys, replicas and witness material remain co-located. A configured pin helps only when the witness key and retained state are independently provisioned and trustworthy.
++R10: Ledger lookup — available valid records map rows to signed sessions. In configured witness mode, release rejects the tested wrong pin; release and trace both reject the tested coordinated valid-prefix rollback. Legacy unconfigured mode is explicitly unwitnessed.
++P1: The separate witness is now called on configured release and trace paths. It detects the tested rollback only while the pinned key and retained external state remain trusted; rolling back the witness too is outside the local guarantee.
++P2: Allocation race — corrected. The existing ledger transaction lock is held from history validation and row allocation through append, checkpoint and publication; fresh concurrent releases used distinct rows and a third release succeeded.
++P3: PDF policy — rendered/rasterized transplant now returns empty high-assurance attribution and retains only a research lead. Authenticated plaintext parsing prevents a metadata-only type bypass; renamed/prefixed PDFs cannot select generic-image handling.
++P4: Insufficient 126-symbol layout capacity now yields a signed capacity limitation and abstention rather than PDF attribution.
++P17: Configured witness enforcement is implemented and tested on release and trace; the default compatibility mode remains explicitly unwitnessed, and trace records a checked snapshot rather than perpetual freshness.
++P18: All PDF-source traces now require visual/layout set equality, including raster suspects and low-capacity releases. Genuine raster-image screening is preserved and remains a different, research-only assurance class.
++Release ordering: validate → allocate/mark → recipient-sign → quorum append/re-audit → checkpoint/re-verify → atomic publication. A checkpoint failure leaves a committed authorization but publishes no new output.
++
++## Slide 4
++
++Slide 4 — feasibility, evidence separation and boundaries
++Fresh evidence: 12/12 named safeguard scenarios passed; all_passed=True; pqc_ready=True; 19 recorded SHA-256 entries match current files. These are scenario checks on public synthetic fixtures, not population experiments.
++P10: Physical evidence is historical shipped-threshold 0/4 and exploratory 1/4 in each profile, with the same akshay3 capture recovered in both—not two recovered captures. Latest akshay3 is 1827.334 vs 1096.290; baseline is 1709.941 vs 1097.482. akshay2 latest is 835.191 vs 1021.632; the first two refined-profile captures are boundary failures. This is one printed single-page public fixture, not end-to-end signed physical attribution.
+ P11: The 30/30 end-to-end JPEG-Q55 runs use one recipient identity across 30 accumulated issued sessions (rows 0..29); other-issued score is null 1 time and non-null 29 times, not a multi-person test.
+ P12: All 30 end-to-end trials reuse the same document, authority secret and codebook; no independent-document or independent-authority inference follows.
+ P13: The 30-codebook × 4-strategy study has 120 code-level cases; it is not carrier, PDF or physical evidence.
+-Digital context: all 1,000 rows were scored per session; 0 extra row was accused; mean 13433.337, population SD 128.216.
+-Sources: artifacts/nishan/end-to-end-jpeg-trials.json; artifacts/nishan/tardos-independent-codebook-study.json; research/evidence/nishan-bias-physical-2026-09-10/scores.json.
+-
+-## Slide 3
+-
+-Slide 3 — architecture, binding and audit limits
+-R4: Cryptographic binding to recipient identity — enrollment-bound prototype receipts are checked; identity and key custody remain a deployment assumption.
+-R5: Recipient's own private signing key — ML-DSA signing is demonstrated, but exclusive human custody of that key is unproven.
+-R6: NIST PQC KEX/signatures — ML-KEM-768 and ML-DSA-65 are used, with no classical fallback in the measured path.
+-R7: Blockchain/DLT audit — only a local, co-located 3-of-4 quorum demonstrator is implemented.
+-R8: No single administrator can alter/delete history — NOT MET; independent key/peer custody and an enforced witness are absent.
+-R10: Ledger lookup — implemented for available valid records, but coordinated valid-prefix rollback can erase the association unless the separate witness is consulted.
+-P1: A separate witness detects the recorded rollback; trace/release do not enforce it, so integration alone does not prevent or recover deletion.
+-P2: Allocation race — append locks start too late; protect the initial read through commit and avoid nested lock reacquisition.
+-P3: A rasterized transplant bypasses layout corroboration; the parser already rejects renamed or prefixed PDF content masquerading as a raster/image.
+-P4: Insufficient 126-symbol layout capacity disables that protection; shortness is only one cause. Fail/restrict release policy is proposed, not implemented.
+-P5: The authority can regenerate both carriers for an existing signed session without forging a fresh recipient signature.
+-P6: Removing both carriers leaves readable content and no attribution signal on the tested fixture.
+-P7: The trusted viewer can access clean plaintext before marking; ordinary output is released only after commit.
+-P8: Non-blind extraction requires the retained original and the correct version.
+-P17: Witness capability remains a separate audit tool, not enforced trace-path protection.
+-P18: Unconditional transplant-abstention is false for raster or low-capacity paths where layout corroboration is unavailable.
+-Carrier correction (unnumbered): tardos_carrier.py uses fixed 6x6 Tardos templates; watermark.pattern() is not the carrier, and shorter code does not enlarge blocks.
+-Sources: artifacts/nishan/measured-results.json; artifacts/nishan/tardos-pdf-benchmark.json.
+-
+-## Slide 4
+-
+-Slide 4 — feasibility and unresolved risks
+-R11: Verifiable associated recipient/event — signature checks work; authority framing and copy-to-human inference limits remain.
+-P9: Evidence identifies a session/copy association, not which human intentionally leaked it.
+ P14: Signed-PDF preservation is an expected compatibility issue because changed bytes normally invalidate signatures; damage to tagged PDF structure is untested, not demonstrated.
+ P15: Main published experiments are single-page. Page loops exist in code, but there is no validated multi-page benchmark.
+-P16: This task corrects PPT/PDF/verifier stale physical-pending wording only; other historical prose is not claimed updated.
+-P19: Registration and 1,000-row scoring do not prove photo robustness; fine cell alignment and measured few-thousand-symbol physical capacity remain unresolved.
+-P20: Co-located quorum is a real limitation and was already partly disclosed on slide 4; it is not administrator-resistant DLT.
++P16: This selection update corrects deck, notes, verifier, paste-ready prose and runbook semantics; historical evidence artifacts and prototype code are not rewritten by Task 2.
++P19: Registration and 1,000-row scoring do not prove photo robustness; physical synchronization and useful capacity remain unresolved.
++P20: Co-located validator and witness administration remains a material limitation; the local quorum is not administrator-resistant DLT.
+ P21: No Git repository was initialized. Local version history and publishing are distinct actions; controller backups are retained.
+-Additional limits: requiring current layout on every raster would lose legitimate screenshot/JPEG verdicts; no zero-operational-loss policy, 35 dB invisibility guarantee or population safety rate is claimed.
++Sources: demo/results.json; artifacts/nishan/end-to-end-jpeg-trials.json; artifacts/nishan/tardos-independent-codebook-study.json; research/evidence/nishan-bias-physical-2026-09-10/scores.json.
+ 
+ ## Slide 5
+ 
+-Slide 5 — operational value and remaining requirements
++Slide 5 — impact, judge demo and next-round gates
++R11: Verifiable associated recipient/event — signature and ledger checks support a source-copy/session association; authority framing and copy-to-human inference limits remain.
+ R12: Offline/air-gapped operation — demonstrated in a local architecture, not an audited hardened deployment.
+ R13: No cloud KMS — the implemented workflow has no required external KMS dependency.
+ R14: No public blockchain — the local demonstrator has no public-chain dependency.
+-Gate 1: security boundaries and claims. Gate 2: independent documents, keys, recipients, signed/tagged PDFs and negative attacks. Gate 3: held-out physical comparisons at matched visibility/security budgets.
+-Required future scope: multi-page material, protected key custody, external checkpoints, release-bound policy and real printer/camera validation. This is investigative assistance, not operational accusation readiness.
++P9: Evidence identifies a released session/copy association, not which human intentionally disclosed it, received it successfully or read it.
++Five-minute judge flow: create a fresh demo output root; issue two recipients plus a repeated/third session; trace a clean PDF; show raster transplant and low-capacity PDF abstention; show wrong-pin release rejection and rollback rejection on both release and trace; inject checkpoint failure and show no new publication while explaining the committed authorization record.
++Next-round validation is narrow: independent administrative/key custody; larger multi-recipient and multi-page corpus; representative held-out print/camera testing; and a portable independent proof verifier. Neither GPU nor ESP32 is required for the measured workflow.
++Do not publish or reuse demo private keys. The runbook names new output roots and preserves historical evidence.
+ 
+ ## Slide 6
+ 
+-Slide 6 — research boundary and sources
++Slide 6 — prior art, references and differentiated integration
+ P23: The stray file '=4.11' is retained outside presentation scope because this update is non-destructive; it was not silently deleted.
+-P24: Novelty is unestablished. TRACE concerns trajectory watermarking, physical comparators already exist, and set equality has not been shown novel; no competitor-superiority or winning-probability inference is supported.
++P24: Novelty is unestablished. The engineering contribution is the tested integration of PQ-signed marked release, configured pinned-checkpoint gating and conservative two-channel PDF evidence. No component-level invention, competitor superiority or winning-probability claim is made. TRACE concerns LLM-agent trajectories and is omitted from scarce visible slide space.
+ Parameter context (unnumbered): current n=1000,c=5,epsilon=1e-6 gives m=52500; roster-only n=20 gives m=42500; n=20,c=4,epsilon=1e-3 gives m=16000 but changes three assumptions. Rows are sessions. Ideal symmetric m=12331 is a separate audit requiring another decoder and implementation proof, not physical evidence or novelty.
+-Shorter-code and stronger/lower-frequency carrier ideas remain unvalidated hypotheses.
+-URLs: https://www.sih.gov.in/sih2026PS ; https://arxiv.org/abs/2607.08400 (TRACE is LLM-agent trajectories, not direct PDF physical comparison) ; https://www.matthewtancik.com/stegastamp ; https://arxiv.org/abs/2304.12682 ; https://doi.org/10.1145/3494106.3528674 ; https://www.renyi.hu/~tardos/fingerprint.pdf ; https://doi.org/10.1109/49.464718 ; https://doi.org/10.1109/83.951542 ; https://doi.org/10.1109/ICIP.2001.958536 ; https://csrc.nist.gov/pubs/fips/203/final ; https://csrc.nist.gov/pubs/fips/204/final.
++The recovered Sol Ultra session supplies no preserved authenticator probe artifacts, environment hashes or independently controlled secrets. Its adaptive strength-3 exact verifier recovered 3/5 after five-copy JPEG and failed perspective/10% crop; none of those numeric or recipient-controlled security claims are current deck evidence.
++URLs: https://www.sih.gov.in/sih2026PS ; https://csrc.nist.gov/pubs/fips/203/final ; https://csrc.nist.gov/pubs/fips/204/final ; https://www.cs.columbia.edu/cg/fontcode/ ; https://arxiv.org/abs/2010.06571 ; https://www.renyi.hu/~tardos/fingerprint.pdf.
+ Evidence paths: artifacts/nishan/measured-results.json; artifacts/nishan/tardos-pdf-benchmark.json; artifacts/nishan/tardos-independent-codebook-study.json; artifacts/nishan/end-to-end-jpeg-trials.json; research/evidence/nishan-bias-physical-2026-09-10/scores.json.
+-Team ID: [ENTER TEAM ID]; team name: [ENTER REGISTERED TEAM NAME]; repository: [INSERT PUBLIC REPOSITORY LINK BEFORE UPLOAD]. Status date: 11 September 2026. This is an audit record, not marketing copy.
++Team ID: [ENTER TEAM ID]; team name: [ENTER REGISTERED TEAM NAME]; repository: [INSERT PUBLIC REPOSITORY LINK BEFORE UPLOAD]. Status date: 12 September 2026. Selection deadline supplied by the team: 15 September. This is a tested research prototype, not production certification or a competition-outcome claim.
+--- before/submissions/SIH26237_NISHAN_PQ/build_deck.py
++++ current/submissions/SIH26237_NISHAN_PQ/build_deck.py
+@@ -6,21 +6,21 @@
+ import argparse
+ import json
+ from pathlib import Path
+ 
+ from pptx import Presentation
+ from pptx.dml.color import RGBColor
+ from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
+ from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
+ from pptx.util import Inches, Pt
+ 
+-from deck_evidence import load_physical, speaker_notes
++from deck_evidence import load_physical, speaker_notes, validate_safeguard_evidence
+ 
+ 
+ NAVY = "0B1F33"
+ BLUE = "24557A"
+ TEAL = "15B8A6"
+ TEAL_DARK = "087E73"
+ AMBER = "F4B942"
+ RED = "D95555"
+ INK = "172A3A"
+ MUTED = "617386"
+@@ -286,53 +286,65 @@
+         node.fill.solid()
+         node.fill.fore_color.rgb = rgb(NAVY if index < 4 else MUTED)
+         node.line.fill.background()
+         text(slide, x, y, 0.54, 0.54, f"V{index}", size=9, color=WHITE, bold=True, align=PP_ALIGN.CENTER, valign=MSO_ANCHOR.MIDDLE, margin=0)
+     pill(slide, 8.64, 5.55, 3.26, "RESEARCH PROTOTYPE", fill=NAVY, color=WHITE, size=10)
+ 
+ 
+ def slide_one(prs: Presentation, team_id: str, team_name: str) -> None:
+     slide = prs.slides[0]
+     clear_slide_body(slide, title_slide=True)
+-    text(slide, 0.70, 1.20, 6.72, 0.70, "NISHAN-PQ", size=34, color=NAVY, bold=True)
++    text(slide, 0.70, 1.14, 6.72, 0.62, "NISHAN-PQ", size=34, color=NAVY, bold=True)
+     text(
+         slide,
+         0.72,
+-        1.88,
++        1.78,
+         6.70,
+-        0.78,
+-        "At-decryption session provenance for air-gapped documents.",
+-        size=17,
++        0.84,
++        "Accountable decryption.\nVerifiable source-copy evidence.",
++        size=19,
+         color=TEAL_DARK,
+         bold=True,
+     )
+-    box(slide, 0.68, 2.48, 6.72, 3.68, fill=WHITE, line=GREY)
++    text(
++        slide,
++        0.72,
++        2.67,
++        6.52,
++        0.54,
++        "When a protected copy leaks, connect it to a signed release session—or return inconclusive.",
++        size=14.2,
++        color=INK,
++        bold=True,
++    )
++    box(slide, 0.68, 3.28, 6.72, 2.91, fill=WHITE, line=GREY)
+     fields = [
+         ("Problem Statement ID", "SIH26237"),
+         (
+             "Problem Statement Title",
+             "Cryptographic Attribution and Immutable Decryption Provenance for Multi-Recipient Encrypted Document Distribution",
+         ),
+         ("Theme", "Blockchain & Cybersecurity"),
+         ("PS Category", "Software"),
+         ("Team ID", team_id),
+         ("Team Name (Registered on portal)", team_name),
+     ]
+-    y = 2.73
++    y = 3.52
+     for index, (label, value) in enumerate(fields):
+-        height = 0.78 if index == 1 else 0.47
+-        text(slide, 0.95, y, 2.30, height, label.upper(), size=9.2, color=MUTED, bold=True)
++        height = 0.71 if index == 1 else 0.39
++        text(slide, 0.95, y, 2.30, height, label.upper(), size=8.8, color=MUTED, bold=True)
+         value_color = RED if value.startswith("[") else INK
+-        text(slide, 3.22, y - 0.01, 3.82, height, value, size=11.3 if index == 1 else 12.4, color=value_color, bold=index != 1)
++        text(slide, 3.22, y - 0.01, 3.82, height, value, size=10.4 if index == 1 else 11.8, color=value_color, bold=index != 1)
+         y += height
+     draw_document_hero(slide)
+-    pill(slide, 8.52, 6.00, 3.50, "EVIDENCE UPDATE: 11 SEPTEMBER 2026", fill=PALE_AMBER, color="7A5100", size=8.6)
++    pill(slide, 8.34, 6.00, 3.84, "FRESH SAFEGUARDS · 12/12 · REAL PQC", fill=PALE_AMBER, color="7A5100", size=8.6)
++    text(slide, 8.58, 6.37, 3.34, 0.25, "Evidence status · 12 September 2026", size=8.5, color=MUTED, align=PP_ALIGN.CENTER)
+ 
+ 
+ def digital_summary(
+     measured: dict,
+     tardos_benchmark: dict,
+     tardos_trials: dict,
+     end_to_end_trials: dict,
+ ) -> dict[str, int | float]:
+     """Derive every displayed experimental count from the saved JSON inputs."""
+     trial_summaries = tardos_trials["summary"]
+@@ -384,137 +396,126 @@
+ 
+ def slide_two(
+     prs: Presentation,
+     team_name: str,
+     physical: dict,
+     digital: dict,
+ ) -> None:
+     slide = prs.slides[1]
+     clear_slide_body(slide)
+     section_header(slide, "IDEA TITLE / PROPOSED SOLUTION", team_name, 2)
+-    rich_text(
++    text(
+         slide,
+         2.30,
+-        0.82,
+-        10.35,
++        0.84,
++        10.22,
+         0.38,
+-        [
+-            ("NISHAN-PQ  ", 18, NAVY, True),
+-            ("Session-bound evidence with explicit abstention", 13, TEAL_DARK, True),
+-        ],
+-    )
++        "One encrypted source. Every authorized release becomes a signed, session-specific copy.",
++        size=15.2,
++        color=TEAL_DARK,
++        bold=True,
++    )
++    capabilities = [
++        (
++            "01",
++            "Session-specific release",
++            "Serialized row + session allocation. Marked output is signed before publication.",
++            TEAL,
++        ),
++        (
++            "02",
++            "Commit before release",
++            "ML-DSA receipt enters the local 3-of-4 log; configured mode also pins a signed checkpoint.",
++            BLUE,
++        ),
++        (
++            "03",
++            "Conservative trace",
++            "Clean PDFs need two-channel agreement. Missing evidence produces a lead or inconclusive result.",
++            AMBER,
++        ),
++    ]
++    for index, (number, title_value, body, accent) in enumerate(capabilities):
++        x = 0.66 + index * 4.12
++        box(slide, x, 1.48, 3.82, 2.13, fill=WHITE, line=accent, line_width=1.4)
++        text(slide, x + 0.20, 1.68, 0.54, 0.40, number, size=19, color=accent, bold=True)
++        text(slide, x + 0.86, 1.71, 2.70, 0.34, title_value, size=14.4, color=NAVY, bold=True)
++        text(slide, x + 0.22, 2.25, 3.36, 1.03, body, size=13.0, color=INK)
++
++    box(slide, 0.66, 3.92, 12.06, 1.55, fill=PALE, line=None)
++    text(slide, 0.90, 4.14, 11.58, 0.30, "CONTROLLED RELEASE → EVIDENCE", size=11.2, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
++    flow = [
++        ("Encrypt once", "AES-256-GCM"),
++        ("Authorize", "ML-KEM-768"),
++        ("Mark", "visual + layout"),
++        ("Sign + commit", "ML-DSA-65"),
++        ("Trace", "attribute / abstain"),
++    ]
++    x = 0.90
++    for index, (title_value, body) in enumerate(flow):
++        box(slide, x, 4.57, 2.05, 0.60, fill=WHITE, line=GREY)
++        text(slide, x + 0.08, 4.64, 1.89, 0.22, title_value, size=10.8, color=NAVY, bold=True, align=PP_ALIGN.CENTER)
++        text(slide, x + 0.08, 4.89, 1.89, 0.18, body, size=8.7, color=MUTED, align=PP_ALIGN.CENTER)
++        x += 2.33
++        if index < len(flow) - 1:
++            arrow(slide, x - 0.22, 4.73, w=0.16, h=0.25)
++    box(slide, 0.66, 5.77, 12.06, 0.49, fill=PALE_TEAL, line=None)
+     text(
+         slide,
+-        0.66,
+-        1.26,
+-        12.02,
+-        0.50,
+-        "Bind visual evidence + optional layout evidence + a recipient signature + a co-located quorum receipt to each released session.",
+-        size=11.8,
+-        color=INK,
++        0.86,
++        5.88,
++        11.66,
++        0.24,
++        "Outcome: verifiable source-copy evidence—not a claim about which human disclosed the file.",
++        size=12.1,
++        color=TEAL_DARK,
+         bold=True,
+-    )
+-    flow = [
+-        ("Encrypt once", "One AES-256-GCM ciphertext; no duplicate source files."),
+-        ("Authorize", "ML-KEM-768 wraps the same content key for each recipient."),
+-        ("Dual mark", "Tardos rendering row + HMAC tag in live PDF text layout."),
+-        ("Sign + commit", "Recipient ML-DSA receipt enters a 3-of-4 offline quorum."),
+-        ("Trace or abstain", "Check available channels; verify signed evidence."),
+-    ]
+-    x = 0.64
+-    for index, (title_value, body) in enumerate(flow, 1):
+-        small_card(slide, x, 1.82, 2.25, 1.18, index, title_value, body, accent=TEAL if index != 5 else AMBER)
+-        x += 2.48
+-        if index < len(flow):
+-            arrow(slide, x - 0.18, 2.29, w=0.17, h=0.30)
+-
+-    latest = physical["profiles"]["affine_bias_translation"]["akshay3.jpeg"]
+-    box(slide, 0.65, 3.27, 5.92, 2.73, fill=PALE_TEAL, line=None)
+-    text(slide, 0.92, 3.50, 5.38, 0.34, "DIGITAL DEVELOPMENT", size=14, color=NAVY, bold=True)
+-    text(slide, 0.92, 3.91, 5.38, 0.45, f"{digital['jpeg_exact']}/{digital['jpeg_trials']} exact JPEG-Q55 sessions", size=19, color=TEAL_DARK, bold=True)
+-    bullet_list(slide, 0.92, 4.43, 5.36, 1.10, [
+-        f"All {digital['roster_rows']:,} rows scored; {digital['jpeg_false']} extra rows accused",
+-        f"Mean {digital['jpeg_mean']:,.3f}; population SD {digital['jpeg_sd']:,.3f}",
+-        f"{digital['codebooks']} codebooks × {digital['strategy_count']} strategies = {digital['code_cases']} code-level cases; not physical trials",
+-    ], size=10.2, gap=3)
+-    box(slide, 6.76, 3.27, 5.92, 2.73, fill=PALE_AMBER, line=None)
+-    text(slide, 7.03, 3.50, 5.38, 0.34, "REAL CAPTURES", size=14, color=NAVY, bold=True)
+-    text(slide, 7.03, 3.91, 5.38, 0.45, f"Historical {physical['historical_recovered']}/{physical['captures']}  ·  Experimental {physical['baseline_recovered']}/{physical['captures']} per profile", size=15.5, color="8A5D00", bold=True)
+-    bullet_list(slide, 7.03, 4.43, 5.36, 1.10, [
+-        f"Latest akshay3: {latest['expected_score']:,.3f} vs {latest['conditional_null']['threshold']:,.3f}",
+-        "Same akshay3 capture recovered; refinement adds no capture",
+-        f"{physical['captures']} captures · one printed single-page public fixture",
+-        "Visual code-row research; not signed end-to-end physical attribution",
+-    ], size=10.2, gap=3, bullet_color=AMBER)
+-    text(slide, 0.84, 6.08, 11.62, 0.25, "LIMIT: small, non-independent fixtures; these results are not a deployed reliability or population-safety guarantee.", size=9.5, color=RED, bold=True, align=PP_ALIGN.CENTER)
++        align=PP_ALIGN.CENTER,
++    )
+ 
+ 
+ def architecture_node(slide, x, y, w, title_value, body, *, fill=WHITE, accent=TEAL):
+     box(slide, x, y, w, 1.08, fill=fill, line=accent, line_width=1.3)
+     text(slide, x + 0.10, y + 0.10, w - 0.20, 0.30, title_value, size=11.2, color=NAVY, bold=True, align=PP_ALIGN.CENTER)
+     text(slide, x + 0.10, y + 0.45, w - 0.20, 0.48, body, size=8.9, color=MUTED, align=PP_ALIGN.CENTER)
+ 
+ 
+ def slide_three(prs: Presentation, team_name: str) -> None:
+     slide = prs.slides[2]
+     clear_slide_body(slide)
+     section_header(slide, "TECHNICAL APPROACH", team_name, 3)
+-    text(slide, 2.30, 0.85, 9.80, 0.30, "Implemented path, trusted-process assumption and demonstrator boundary", size=14, color=TEAL_DARK, bold=True)
+-    box(slide, 0.58, 1.30, 12.18, 3.20, fill=PALE, line=None)
+-    pill(slide, 0.82, 1.51, 2.34, "TRUSTED VIEWER PROCESS", fill=NAVY, color=WHITE, size=8.8)
+-    pill(slide, 9.22, 1.51, 3.02, "CO-LOCATED 3-OF-4 DEMONSTRATOR", fill=PALE_AMBER, color="7A5100", size=8.1)
++    text(slide, 2.30, 0.84, 9.80, 0.34, "Commit and witness before release (configured mode)", size=15.2, color=TEAL_DARK, bold=True)
++    box(slide, 0.58, 1.32, 12.18, 3.72, fill=PALE, line=None)
++    pill(slide, 0.82, 1.51, 2.78, "MANAGED-PROCESS TRUST BOUNDARY", fill=NAVY, color=WHITE, size=8.5)
++    pill(slide, 9.02, 1.51, 3.24, "CO-LOCATED VALIDATORS + WITNESS", fill=PALE_AMBER, color="7A5100", size=8.0)
+     nodes = [
+-        (0.82, 2.12, 1.68, "Sender", "AES-256-GCM\none ciphertext"),
+-        (2.76, 2.12, 1.82, "Key envelopes", "ML-KEM-768\nper recipient"),
+-        (4.84, 2.12, 1.82, "Trusted viewer", "decrypts first; Tardos +\noptional layout tag"),
+-        (6.92, 2.12, 1.82, "Signed receipt", "ML-DSA-65\nenrollment-bound"),
+-        (9.00, 2.12, 1.82, "Quorum demo", "co-located keys/replicas\nhash-linked history"),
+-        (11.08, 2.12, 1.42, "Marked copy", "same visible\ncontent"),
++        (0.82, 2.08, 1.72, "Validate", "package + ledger\n+ pinned state"),
++        (2.80, 2.08, 1.72, "Allocate + mark", "serialized row/session\nvisual + layout"),
++        (4.78, 2.08, 1.72, "Recipient sign", "ML-DSA-65\nrelease receipt"),
++        (6.76, 2.08, 1.72, "Quorum append", "3-of-4 local log\nthen re-audit"),
++        (8.74, 2.08, 1.72, "Checkpoint", "verify actual key pin\n+ signed head"),
++        (10.72, 2.08, 1.72, "Publish", "atomic replace\nmarked copy"),
+     ]
+     for index, (x, y, w, title_value, body) in enumerate(nodes):
+         architecture_node(slide, x, y, w, title_value, body, fill=WHITE, accent=TEAL if index < 5 else AMBER)
+         if index < len(nodes) - 1:
+             arrow(slide, x + w + 0.07, y + 0.38, w=0.16, h=0.28)
+-    # forensic return path
+-    box(slide, 4.84, 3.52, 5.98, 0.62, fill=PALE_AMBER, line=None)
+-    text(slide, 4.99, 3.66, 5.68, 0.30, "LEAK → reference + visual/layout score → trace / ABSTAIN → receipt verification", size=9.7, color=NAVY, bold=True, align=PP_ALIGN.CENTER)
+-
+-    box(slide, 0.62, 4.76, 5.96, 1.50, fill=WHITE, line=GREY)
+-    text(slide, 0.86, 4.98, 5.48, 0.30, "CURRENT BOUNDARIES", size=13.3, color=NAVY, bold=True)
+-    bullet_list(
+-        slide,
+-        0.86,
+-        5.36,
+-        5.45,
+-        0.72,
+-        [
+-            "Witness is not enforced in trace/release; plaintext exists before marking",
+-            "Initial audit/row allocation is not transaction-wide; reference retained",
+-        ],
+-        size=10.6,
+-        gap=3,
+-    )
+-    box(slide, 6.78, 4.76, 5.96, 1.50, fill=WHITE, line=GREY)
+-    text(slide, 7.02, 4.98, 5.48, 0.30, "PROPOSED HARDENING — NOT IMPLEMENTED", size=12.5, color=NAVY, bold=True)
+-    bullet_list(
+-        slide,
+-        7.02,
+-        5.36,
+-        5.45,
+-        0.72,
+-        [
+-            "Protected custody + external checkpoints + transaction-wide allocation",
+-            "Freeze release-bound assurance policy; separate keys and operators",
+-        ],
+-        size=10.6,
+-        gap=3,
+-    )
++    box(slide, 1.50, 3.55, 10.36, 0.93, fill=WHITE, line=GREY)
++    text(slide, 1.76, 3.72, 2.30, 0.28, "TRACE PATH · READ ONLY", size=11.2, color=NAVY, bold=True)
++    text(slide, 4.00, 3.68, 7.54, 0.45, "retained source + suspect → PDF type guard → visual/layout agreement → signed session  |  otherwise INCONCLUSIVE", size=11.4, color=INK, bold=True)
++
++    box(slide, 0.62, 5.28, 7.15, 0.93, fill=PALE_TEAL, line=None)
++    text(slide, 0.86, 5.44, 2.10, 0.27, "FAIL-CLOSED NOW", size=11.3, color=TEAL_DARK, bold=True)
++    text(slide, 2.72, 5.40, 4.77, 0.48, "wrong pin (release) · rollback (release + trace) · raster/low-capacity attribution · checkpoint publication", size=10.8, color=NAVY, bold=True)
++    box(slide, 7.98, 5.28, 4.76, 0.93, fill=PALE_AMBER, line=None)
++    text(slide, 8.22, 5.44, 1.52, 0.27, "BOUNDARY", size=11.3, color="8A5D00", bold=True)
++    text(slide, 9.58, 5.38, 2.88, 0.51, "keys + replicas remain under one local administrator", size=11.2, color=NAVY, bold=True)
+ 
+ 
+ def metric_badge(slide, x, y, w, number, caption, *, fill=PALE_TEAL, accent=TEAL_DARK):
+     box(slide, x, y, w, 0.86, fill=fill, line=None)
+     text(slide, x + 0.06, y + 0.08, w - 0.12, 0.34, number, size=18, color=accent, bold=True, align=PP_ALIGN.CENTER)
+     text(slide, x + 0.08, y + 0.48, w - 0.16, 0.25, caption, size=8.5, color=MUTED, bold=True, align=PP_ALIGN.CENTER)
+ 
+ 
+ def risk_row(slide, y, title_value, truth, gate, severity="HIGH"):
+     box(slide, 6.06, y, 6.54, 0.94, fill=WHITE, line=GREY)
+@@ -524,187 +525,165 @@
+     text(slide, 7.10, y + 0.10, 1.50, 0.28, title_value, size=10.4, color=NAVY, bold=True)
+     text(slide, 8.58, y + 0.10, 3.78, 0.28, truth, size=9.0, color=MUTED)
+     text(slide, 7.10, y + 0.49, 5.24, 0.29, "UNRESOLVED  ·  " + gate, size=8.9, color=TEAL_DARK, bold=True)
+ 
+ 
+ def slide_four(
+     prs: Presentation,
+     team_name: str,
+     physical: dict,
+     digital: dict,
++    safeguards: dict,
+ ) -> None:
+     slide = prs.slides[3]
+     clear_slide_body(slide)
+     section_header(slide, "FEASIBILITY AND VIABILITY", team_name, 4)
+-    box(slide, 0.62, 1.24, 5.16, 4.96, fill=PALE_TEAL, line=None)
+-    text(slide, 0.90, 1.49, 4.62, 0.34, "COMPACT MEASURED OUTCOMES", size=14.2, color=NAVY, bold=True)
+-    bullet_list(
+-        slide,
+-        0.90,
+-        1.91,
+-        4.60,
+-        1.85,
+-        [
+-            f"Digital: {digital['jpeg_exact']}/{digital['jpeg_trials']} exact JPEG-Q55 sessions; all {digital['roster_rows']:,} rows scored",
+-            f"Physical: historical {physical['historical_recovered']}/{physical['captures']}; conditional {physical['baseline_recovered']}/{physical['captures']} per profile, same capture",
+-            "Searchable text retained; PDF bytes are not identical and signatures are not proven preserved",
+-            "Conflict/removal fixtures abstain; witness detects the recorded rollback fixture",
+-        ],
+-        size=11.1,
+-        gap=6,
+-    )
+-    metric_badge(
+-        slide,
+-        0.90,
+-        4.05,
+-        1.22,
+-        f"{digital['psnr_mean']:.2f}",
+-        f"MEAN PSNR · {digital['pdf_count']} PDFs",
+-    )
+-    metric_badge(
+-        slide,
+-        2.24,
+-        4.05,
+-        1.78,
+-        f"{digital['attack_cases']}",
+-        "RECORDED DIGITAL CASES",
+-        fill=PALE_AMBER,
+-        accent="9A6900",
+-    )
+-    metric_badge(
+-        slide,
+-        4.14,
+-        4.05,
+-        1.26,
+-        f"{digital['code_all_five']}/{digital['code_cases']}",
+-        "CODE TRIALS · ALL 5",
+-    )
+-    pill(slide, 0.92, 5.24, 4.46, "EXPERIMENTAL EVIDENCE · NOT A RELIABILITY RATE", fill=NAVY, color=WHITE, size=8.5)
+-    text(slide, 0.94, 5.72, 4.42, 0.27, f"{digital['code_cases']} code-level cases are not {digital['code_cases']} physical trials.", size=9.0, color=MUTED, align=PP_ALIGN.CENTER)
+-
+-    text(slide, 6.06, 1.25, 6.54, 0.38, "FOUR MATERIAL RISK GROUPS", size=13.0, color=NAVY, bold=True)
+-    risk_row(slide, 1.76, "Physical", f"{digital['pages_per_pdf']}-page fixture / {physical['captures']} captures", "held-out print/camera matrix", "HIGH")
+-    risk_row(slide, 2.80, "Raster / capacity", "Low-capacity bypass; raster policy open", "fail/restrict release policy", "HIGH")
+-    risk_row(slide, 3.84, "Rollback / row race", "Witness separate; allocation not atomic", "external checkpoint + atomic row", "HIGH")
+-    risk_row(slide, 4.88, "Framing / removal", "Authority can re-mark; both carriers removable", "custody + negative attacks", "HIGH")
+-    box(slide, 6.06, 5.94, 6.54, 0.30, fill=PALE_RED, line=None)
+-    text(slide, 6.12, 5.97, 6.42, 0.21, "Recipient session evidence is not proof of who leaked it.", size=9.2, color=RED, bold=True, align=PP_ALIGN.CENTER, margin=0)
++    text(slide, 2.30, 0.84, 9.80, 0.34, "Fresh safeguards first; historical visual results and physical evidence stay separate.", size=14.5, color=TEAL_DARK, bold=True)
++
++    box(slide, 0.62, 1.37, 6.22, 4.81, fill=PALE_TEAL, line=None)
++    text(slide, 0.91, 1.62, 2.18, 0.31, "FRESH · CURRENT CODE", size=12.2, color=NAVY, bold=True)
++    text(slide, 0.91, 2.00, 2.20, 0.58, f"{len(safeguards['cases'])}/12", size=31, color=TEAL_DARK, bold=True)
++    text(slide, 2.35, 2.03, 4.05, 0.55, "safeguard scenarios passed\n59/59 final-code tests · real PQC · 19 hashes verified", size=11.8, color=INK, bold=True)
++    controls = [
++        "Serialized release: concurrent rows differ; next release succeeds",
++        "Pinned mode: wrong pin blocks release; rollback blocks release + trace",
++        "Checkpoint failure publishes nothing; existing output is preserved",
++        "Clean PDF corroborates; raster and low-capacity PDF abstain",
++    ]
++    bullet_list(slide, 0.92, 2.80, 5.62, 2.13, controls, size=12.2, gap=7)
++    pill(slide, 0.92, 5.39, 5.62, "SYNTHETIC OFFLINE SCENARIOS · NOT POPULATION EXPERIMENTS", fill=NAVY, color=WHITE, size=8.2)
++
++    box(slide, 7.05, 1.37, 5.67, 2.18, fill=PALE_AMBER, line=None)
++    text(slide, 7.33, 1.62, 5.12, 0.31, "HISTORICAL VISUAL FIXTURES", size=12.2, color=NAVY, bold=True)
++    text(slide, 7.33, 2.08, 5.12, 0.52, f"{digital['jpeg_exact']}/{digital['jpeg_trials']} JPEG-Q55 visual-channel trials", size=17.2, color="8A5D00", bold=True)
++    text(slide, 7.33, 2.66, 5.12, 0.60, f"One document/codebook; repeated sessions. {digital['pdf_count']} one-page PDFs retained text; mean PSNR {digital['psnr_mean']:.2f} dB.", size=11.5, color=INK)
++
++    box(slide, 7.05, 3.76, 5.67, 2.42, fill=WHITE, line=GREY)
++    text(slide, 7.33, 4.01, 5.12, 0.52, "Physical recovery remains experimental: 0/4 at the shipped threshold", size=14.0, color=RED, bold=True)
++    text(slide, 7.33, 4.63, 5.12, 0.66, "Exploratory profiles recover the same 1/4 capture. No added capture; no robust physical claim.", size=12.0, color=INK, bold=True)
++    text(slide, 7.33, 5.45, 5.12, 0.42, "Digital PDF corroboration; raster-only matches are research leads", size=11.3, color=TEAL_DARK, bold=True)
+ 
+ 
+ def benefit_card(slide, x, y, w, title_value, body, *, number=None, accent=TEAL):
+     box(slide, x, y, w, 1.16, fill=WHITE, line=GREY)
+     if number:
+         text(slide, x + 0.14, y + 0.12, 0.62, 0.38, number, size=17, color=accent, bold=True)
+         title_x = x + 0.78
+         title_w = w - 0.92
+     else:
+         title_x = x + 0.16
+         title_w = w - 0.32
+     text(slide, title_x, y + 0.13, title_w, 0.30, title_value, size=11.5, color=NAVY, bold=True)
+     text(slide, x + 0.16, y + 0.53, w - 0.32, 0.48, body, size=9.2, color=MUTED)
+ 
+ 
+ def slide_five(prs: Presentation, team_name: str) -> None:
+     slide = prs.slides[4]
+     clear_slide_body(slide)
+     section_header(slide, "IMPACT AND BENEFITS", team_name, 5)
+-    box(slide, 0.62, 1.22, 12.08, 1.20, fill=NAVY, line=None)
+-    text(slide, 0.92, 1.47, 2.25, 0.28, "INVESTIGATIVE ASSISTANCE", size=10, color=AMBER, bold=True)
+-    text(slide, 0.92, 1.78, 3.35, 0.36, "Offline session leads with PQ-signed evidence", size=12.4, color=WHITE, bold=True)
+-    text(slide, 4.55, 1.47, 1.60, 0.28, "CURRENT POSITION", size=10, color=AMBER, bold=True)
+-    text(slide, 4.55, 1.78, 7.58, 0.36, "Research proposal — not ready for operational accusations", size=13.0, color=WHITE, bold=True)
+-
+-    benefits = [
+-        ("Session-level lead", "Narrows an investigation to signed release sessions; it does not identify the human actor."),
+-        ("Offline operation", "The measured demo does not depend on cloud APIs, tokens or a public chain."),
+-        ("PQC mechanism", "ML-KEM and ML-DSA protect key delivery and release receipts in the prototype."),
+-        ("Evidence discipline", "Conflict, removal and proof boundaries are recorded instead of hidden."),
++    text(slide, 2.30, 0.84, 9.92, 0.34, "A five-minute judge demo shows both the useful answer and the refusal to overclaim.", size=14.4, color=TEAL_DARK, bold=True)
++    box(slide, 0.62, 1.37, 7.05, 4.84, fill=PALE, line=None)
++    text(slide, 0.91, 1.62, 6.49, 0.31, "JUDGE-DRIVEN DEMO · OFFLINE LAPTOP", size=12.4, color=NAVY, bold=True)
++    demo_steps = [
++        ("01", "Issue", "Alice + Bob + repeated session → distinct rows and signed copy hashes"),
++        ("02", "Associate", "Clean PDF → two channels agree on one signed source copy"),
++        ("03", "Abstain", "Rendered transplant / short PDF → inconclusive; research lead retained"),
++        ("04", "Block", "Wrong pin blocks release; rollback blocks release + trace; checkpoint fail publishes nothing"),
+     ]
+-    for index, (title_value, body) in enumerate(benefits):
+-        benefit_card(slide, 0.62 + index * 3.08, 2.70, 2.84, title_value, body, number=f"0{index+1}", accent=TEAL if index != 2 else AMBER)
+-
+-    text(slide, 0.66, 4.12, 5.10, 0.30, "THREE GATES BEFORE OPERATIONAL USE", size=13.2, color=NAVY, bold=True)
+-    phases = [
+-        ("GATE 1", "Security boundaries + defensible claim language", "Release policy; accusation limits"),
+-        ("GATE 2", "Independent documents, keys and recipients", "Multi-page + signed/tagged PDFs + negative attacks"),
+-        ("GATE 3", "Held-out physical comparisons", "Matched visibility + security budgets"),
+-    ]
+-    for index, (phase, scope, metric) in enumerate(phases):
+-        x = 0.66 + index * 4.08
+-        fill = PALE_TEAL if index == 0 else PALE_AMBER if index == 1 else PALE
+-        box(slide, x, 4.54, 3.80, 1.52, fill=fill, line=None)
+-        pill(slide, x + 0.18, 4.71, 1.30, phase, fill=NAVY, color=WHITE, size=8.5)
+-        text(slide, x + 0.18, 5.15, 3.44, 0.30, scope, size=10.0, color=NAVY, bold=True)
+-        text(slide, x + 0.18, 5.51, 3.44, 0.34, "REQUIRES: " + metric, size=8.5, color=MUTED)
+-        if index < 2:
+-            arrow(slide, x + 3.86, 5.11, w=0.17, h=0.28, color=AMBER)
++    y = 2.05
++    for number, title_value, body in demo_steps:
++        box(slide, 0.91, y, 6.47, 0.79, fill=WHITE, line=GREY)
++        text(slide, 1.08, y + 0.16, 0.48, 0.30, number, size=14.5, color=TEAL_DARK, bold=True)
++        text(slide, 1.67, y + 0.14, 1.07, 0.29, title_value, size=12.3, color=NAVY, bold=True)
++        text(slide, 2.71, y + 0.12, 4.45, 0.48, body, size=11.2, color=INK)
++        y += 0.91
++    pill(slide, 0.93, 5.78, 6.43, "VALUE: A DEFENSIBLE SESSION LEAD—OR A DEFENSIBLE INCONCLUSIVE", fill=NAVY, color=WHITE, size=8.3)
++
++    box(slide, 7.89, 1.37, 4.83, 2.14, fill=PALE_TEAL, line=None)
++    text(slide, 8.17, 1.62, 4.27, 0.31, "OPERATIONAL BENEFIT", size=12.3, color=NAVY, bold=True)
++    bullet_list(slide, 8.17, 2.06, 4.27, 1.10, [
++        "Air-gapped workflow; no cloud KMS or public chain",
++        "Evidence tied to a release session, not a vague access log",
++        "Explicit refusal when high-assurance evidence is missing",
++    ], size=11.4, gap=6)
++
++    box(slide, 7.89, 3.72, 4.83, 2.49, fill=PALE_AMBER, line=None)
++    text(slide, 8.17, 3.97, 4.27, 0.31, "NARROW SECOND-ROUND ROADMAP", size=12.0, color=NAVY, bold=True)
++    bullet_list(slide, 8.17, 4.40, 4.27, 1.34, [
++        "Independent administrator + key custody",
++        "Larger multi-recipient, multi-page corpus",
++        "Representative held-out print / camera tests",
++        "Portable independent evidence verifier",
++    ], size=11.2, gap=5, bullet_color=AMBER)
++    text(slide, 8.17, 5.83, 4.27, 0.20, "No GPU or ESP32 required for the measured demo.", size=9.1, color=MUTED, bold=True)
+ 
+ 
+ def reference_item(slide, y, number, title_value, link_label):
+     circle = slide.shapes.add_shape(MSO_AUTO_SHAPE_TYPE.OVAL, Inches(0.72), Inches(y), Inches(0.28), Inches(0.28))
+     circle.fill.solid()
+     circle.fill.fore_color.rgb = rgb(TEAL)
+     circle.line.fill.background()
+     text(slide, 0.72, y, 0.28, 0.28, str(number), size=8.5, color=WHITE, bold=True, align=PP_ALIGN.CENTER, valign=MSO_ANCHOR.MIDDLE, margin=0)
+     text(slide, 1.12, y - 0.02, 5.47, 0.23, title_value, size=9.6, color=NAVY, bold=True)
+     text(slide, 1.12, y + 0.22, 5.47, 0.22, link_label, size=7.8, color=MUTED)
+ 
+ 
+ def slide_six(prs: Presentation, team_name: str, repository_url: str) -> None:
+     slide = prs.slides[5]
+     clear_slide_body(slide)
+     section_header(slide, "RESEARCH AND REFERENCES", team_name, 6)
+-    text(slide, 0.68, 1.17, 5.92, 0.30, "PRIMARY SOURCES & FOUNDATIONAL WORK", size=13.3, color=NAVY, bold=True)
++    text(slide, 0.68, 1.17, 5.92, 0.30, "PRIMARY SOURCES & PRIOR ART", size=13.3, color=NAVY, bold=True)
+     references = [
+         ("Official SIH26237 problem statement", "sih.gov.in/sih2026PS"),
+         ("NIST FIPS 203 / 204 — ML-KEM / ML-DSA", "csrc.nist.gov/pubs/fips/203/final · /fips/204/final"),
+-        ("Tardos + T-Tracer + text-layout / dual marks", "ACM / IEEE sources; full URLs in notes"),
+-        ("Physical/screen-camera baselines", "StegaStamp · arXiv:2304.12682"),
+-        ("TRACE scope boundary", "arXiv:2607.08400 concerns LLM-agent trajectories"),
+-        ("Saved physical + digital evidence", "research/evidence/.../scores.json · artifacts/nishan/*.json"),
++        ("FontCode — established glyph perturbation", "cs.columbia.edu/cg/fontcode/"),
++        ("PQFabric — prior permissioned PQ ledger work", "arXiv:2010.06571"),
++        ("Tardos fingerprint codes", "renyi.hu/~tardos/fingerprint.pdf"),
++        ("Saved fresh + historical evidence", "demo/results.json · artifacts/nishan/*.json · scores.json"),
+         ("Public repository", repository_url),
+     ]
+     y = 1.62
+     for index, (title_value, link) in enumerate(references, 1):
+         reference_item(slide, y, index, title_value, link)
+         y += 0.64
+ 
+     box(slide, 6.84, 1.19, 5.83, 4.92, fill=PALE, line=None)
+-    text(slide, 7.12, 1.49, 5.26, 0.33, "PRIOR-ART BOUNDARY", size=14.0, color=NAVY, bold=True)
++    text(slide, 7.12, 1.49, 5.26, 0.33, "DIFFERENTIATED INTEGRATION", size=14.0, color=NAVY, bold=True)
+     box(slide, 7.12, 1.98, 5.28, 1.45, fill=WHITE, line=GREY)
+-    text(slide, 7.34, 2.18, 4.84, 0.29, "KNOWN / PRESCRIBED", size=10.3, color=MUTED, bold=True)
+-    text(slide, 7.34, 2.61, 4.84, 0.51, "SIH26237 prescribes decryption marking, PQ signatures and DLT. Tardos, layout/dual marks and physical baselines pre-exist.", size=10.4, color=INK, bold=True)
++    text(slide, 7.34, 2.18, 4.84, 0.29, "ESTABLISHED COMPONENTS", size=10.3, color=MUTED, bold=True)
++    text(slide, 7.34, 2.61, 4.84, 0.51, "PQC standards, traitor-tracing codes, document marks and permissioned ledgers all have prior art.", size=12.0, color=INK, bold=True)
+     arrow(slide, 9.53, 3.54, w=0.36, h=0.29, color=AMBER)
+     box(slide, 7.12, 3.95, 5.28, 1.63, fill=PALE_TEAL, line=None)
+-    text(slide, 7.34, 4.16, 4.84, 0.29, "HONEST CONTRIBUTION", size=10.3, color=TEAL_DARK, bold=True)
+-    text(slide, 7.34, 4.57, 4.84, 0.77, "Measured integration plus failure analysis: session-bound dual-domain evidence, explicit abstention, and documented physical limitations—not exclusive novelty or best-in-world performance.", size=9.9, color=NAVY, bold=True)
+-    pill(slide, 7.14, 5.72, 5.22, "Shorter code / stronger carrier: unvalidated hypotheses", fill=NAVY, color=WHITE, size=8.3)
++    text(slide, 7.34, 4.16, 4.84, 0.29, "ENGINEERING CONTRIBUTION", size=10.3, color=TEAL_DARK, bold=True)
++    text(slide, 7.34, 4.55, 4.84, 0.84, "Tested integration of PQ-signed marked release, configured pinned-checkpoint gating and conservative two-channel PDF evidence.", size=12.4, color=NAVY, bold=True)
++    pill(slide, 7.14, 5.72, 5.22, "INTEGRATION CLAIM · NOT A FIRST-EVER CLAIM", fill=NAVY, color=WHITE, size=8.4)
+ 
+ 
+ def delete_last_slide(prs: Presentation) -> None:
+     slide_id = prs.slides._sldIdLst[-1]
+     prs.part.drop_rel(slide_id.rId)
+     prs.slides._sldIdLst.remove(slide_id)
+ 
+ 
+ def build(
+     template: Path,
+     evidence_chart: Path,
+     metrics_path: Path,
+     tardos_benchmark_path: Path,
+     tardos_trials_path: Path,
+     end_to_end_trials_path: Path,
+     output: Path,
+     team_id: str,
+     team_name: str,
+     *,
+     physical_path: Path | None = None,
++    safeguard_path: Path | None = None,
+     repository_url: str = "[INSERT PUBLIC REPOSITORY LINK BEFORE UPLOAD]",
+ ) -> None:
+     """Build the deck.
+ 
+     ``evidence_chart`` remains in the positional API for compatibility with the
+     archived builder and existing callers. Slide 2 now uses editable evidence
+     cards, so that image path is intentionally not read.
+     """
+     prs = Presentation(template)
+     measured = json.loads(metrics_path.read_text())
+@@ -712,21 +691,31 @@
+     tardos_trials = json.loads(tardos_trials_path.read_text())
+     end_to_end_trials = json.loads(end_to_end_trials_path.read_text())
+     if physical_path is None:
+         physical_path = (
+             Path(__file__).resolve().parents[2]
+             / "research"
+             / "evidence"
+             / "nishan-bias-physical-2026-09-10"
+             / "scores.json"
+         )
++    if safeguard_path is None:
++        safeguard_path = (
++            Path(__file__).resolve().parents[2]
++            / "research"
++            / "evidence"
++            / "nishan-selection-2026-09-12"
++            / "demo"
++            / "results.json"
++        )
+     physical = load_physical(physical_path)
++    safeguards = validate_safeguard_evidence(json.loads(safeguard_path.read_text()))
+     digital = digital_summary(
+         measured,
+         tardos_benchmark,
+         tardos_trials,
+         end_to_end_trials,
+     )
+     if len(prs.slides) != 7:
+         raise ValueError(f"expected 7-slide official template, got {len(prs.slides)}")
+     delete_last_slide(prs)
+     slide_one(prs, team_id, team_name)
+@@ -735,29 +724,31 @@
+         team_name,
+         physical,
+         digital,
+     )
+     slide_three(prs, team_name)
+     slide_four(
+         prs,
+         team_name,
+         physical,
+         digital,
++        safeguards,
+     )
+     slide_five(prs, team_name)
+     slide_six(prs, team_name, repository_url)
+     notes = speaker_notes(
+         physical,
+         team_id=team_id,
+         team_name=team_name,
+         repository_url=repository_url,
+         digital=digital,
++        safeguards=safeguards,
+     )
+     for slide, note in zip(prs.slides, notes, strict=True):
+         slide.notes_slide.notes_text_frame.text = note
+     prs.core_properties.title = "NISHAN-PQ — SIH26237 Idea Submission"
+     prs.core_properties.subject = "Smart India Hackathon 2026"
+     prs.core_properties.author = team_name
+     output.parent.mkdir(parents=True, exist_ok=True)
+     prs.save(output)
+     notes_path = output.with_name(f"{output.stem}_speaker_notes.md")
+     notes_path.write_text(
+@@ -811,28 +802,35 @@
+     parser.add_argument(
+         "--physical-evidence",
+         type=Path,
+         default=None,
+         help="validated physical score JSON; defaults to the fixed documented evidence",
+     )
+     parser.add_argument(
+         "--repository-url",
+         default="[INSERT PUBLIC REPOSITORY LINK BEFORE UPLOAD]",
+     )
++    parser.add_argument(
++        "--safeguard-evidence",
++        type=Path,
++        default=None,
++        help="fresh validated 12-scenario safeguard report; defaults to the reviewed demo",
++    )
+     args = parser.parse_args()
+     build(
+         args.template.resolve(),
+         args.evidence_chart.resolve(),
+         args.metrics.resolve(),
+         args.tardos_benchmark.resolve(),
+         args.tardos_trials.resolve(),
+         args.end_to_end_trials.resolve(),
+         args.output.resolve(),
+         args.team_id,
+         args.team_name,
+         physical_path=args.physical_evidence.resolve() if args.physical_evidence else None,
++        safeguard_path=args.safeguard_evidence.resolve() if args.safeguard_evidence else None,
+         repository_url=args.repository_url,
+     )
+ 
+ 
+ if __name__ == "__main__":
+     main()
+--- before/submissions/SIH26237_NISHAN_PQ/deck_evidence.py
++++ current/submissions/SIH26237_NISHAN_PQ/deck_evidence.py
+@@ -1,28 +1,165 @@
+ #!/usr/bin/env python3
+ """Validated evidence summaries and audit notes for the NISHAN-PQ deck."""
+ 
+ from __future__ import annotations
+ 
+ import json
++import hashlib
+ import math
+ from pathlib import Path
++import re
+ from typing import Any
+ 
+ 
+ PROFILES = ("affine_baseline", "affine_bias_translation")
+ CAPTURES = ("akshay.jpeg", "akshay1.jpeg", "akshay2.jpeg", "akshay3.jpeg")
+ EXPECTED_RECOVERY = {profile: {"akshay3.jpeg"} for profile in PROFILES}
+ EXPECTED_BOUNDARY_FAILURES = {
+     ("akshay.jpeg", "affine_bias_translation"),
+     ("akshay1.jpeg", "affine_bias_translation"),
+ }
++SAFEGUARD_VERSION = "nishan-selection-safeguards/v1"
++EXPECTED_SAFEGUARD_CASES = (
++    "concurrent_distinct_sessions_rows",
++    "third_release_row",
++    "signed_copy_hash_match",
++    "clean_pdf_trace",
++    "trace_read_only",
++    "rendered_transplant_abstains",
++    "low_capacity_pdf_abstains",
++    "wrong_pin_rejected",
++    "rollback_release_rejected",
++    "rollback_trace_rejected",
++    "checkpoint_failure_no_publication",
++    "checkpoint_failure_preserves_existing_output",
++)
++REQUIRED_SAFEGUARD_HASHES = (
++    "prototypes/nishan_pq/nishan/__init__.py",
++    "prototypes/nishan_pq/nishan/__main__.py",
++    "prototypes/nishan_pq/nishan/cli.py",
++    "prototypes/nishan_pq/nishan/core.py",
++    "prototypes/nishan_pq/nishan/demo.py",
++    "prototypes/nishan_pq/nishan/identity.py",
++    "prototypes/nishan_pq/nishan/layout_tag.py",
++    "prototypes/nishan_pq/nishan/ledger.py",
++    "prototypes/nishan_pq/nishan/live_pdf.py",
++    "prototypes/nishan_pq/nishan/pqc.py",
++    "prototypes/nishan_pq/nishan/registration.py",
++    "prototypes/nishan_pq/nishan/tardos.py",
++    "prototypes/nishan_pq/nishan/tardos_carrier.py",
++    "prototypes/nishan_pq/nishan/util.py",
++    "prototypes/nishan_pq/nishan/watermark.py",
++    "prototypes/nishan_pq/nishan/witness.py",
++    "prototypes/nishan_pq/tests/test_pdf_format_policy.py",
++    "prototypes/nishan_pq/tests/test_release_safeguards.py",
++    "prototypes/nishan_pq/tools/demo_release_safeguards.py",
++)
++
++
++def validate_safeguard_evidence(evidence: dict) -> dict:
++    """Validate the fresh selection-safeguard report against current source.
++
++    The report is accepted only when it represents the exact reviewed scenario
++    set, every verdict and the real-PQC readiness check passed, and the required
++    source/test/runner hashes still match files in this workspace.
++    """
++    if not isinstance(evidence, dict):
++        raise ValueError("safeguard evidence must be an object")
++    if evidence.get("version") != SAFEGUARD_VERSION:
++        raise ValueError(f"safeguard evidence version must be {SAFEGUARD_VERSION}")
++    if evidence.get("all_passed") is not True:
++        raise ValueError("safeguard evidence all_passed verdict must be true")
++
++    cases = evidence.get("cases")
++    if not isinstance(cases, list):
++        raise ValueError("safeguard evidence cases must be a list")
++    names: list[str] = []
++    for index, case in enumerate(cases):
++        if not isinstance(case, dict):
++            raise ValueError(f"safeguard case {index} must be an object")
++        name = case.get("name")
++        # Validate type before hashing or set membership so malformed names
++        # consistently raise ValueError rather than leaking TypeError.
++        if not isinstance(name, str):
++            raise ValueError(f"safeguard case {index} name must be a string")
++        if not name:
++            raise ValueError(f"safeguard case {index} name must not be empty")
++        passed = case.get("passed")
++        if not isinstance(passed, bool):
++            raise ValueError(f"safeguard case {name} passed verdict must be boolean")
++        if passed is not True:
++            raise ValueError(f"safeguard case {name} passed verdict is false")
++        if "observed" not in case or not isinstance(case["observed"], (dict, list)):
++            raise ValueError(f"safeguard case {name} observed result must be an object or list")
++        names.append(name)
++    if len(names) != len(set(names)):
++        raise ValueError("safeguard scenario names contain duplicates")
++    expected = set(EXPECTED_SAFEGUARD_CASES)
++    actual = set(names)
++    if len(names) != len(EXPECTED_SAFEGUARD_CASES) or actual != expected:
++        raise ValueError(
++            "safeguard scenario coverage must be the exact 12 reviewed cases; "
++            f"missing={sorted(expected - actual)}, unexpected={sorted(actual - expected)}"
++        )
++
++    if evidence.get("pqc_ready") is not True:
++        raise ValueError("real PQC readiness must be true")
++    pqc = evidence.get("pqc_profile")
++    if not isinstance(pqc, dict):
++        raise ValueError("PQC profile must be an object")
++    if pqc.get("ml_kem_768") is not True:
++        raise ValueError("PQC profile must confirm ML-KEM-768")
++    if pqc.get("ml_dsa_65") is not True:
++        raise ValueError("PQC profile must confirm ML-DSA-65")
++    if not isinstance(pqc.get("openssl_version"), str) or not pqc["openssl_version"].strip():
++        raise ValueError("PQC profile must record a nonempty OpenSSL version")
++    if not isinstance(evidence.get("command"), str) or not evidence["command"].strip():
++        raise ValueError("safeguard evidence command must be a nonempty string")
++    if not isinstance(evidence.get("profile"), dict):
++        raise ValueError("safeguard evidence profile must be an object")
++    limitations = evidence.get("limitations")
++    if (
++        not isinstance(limitations, list)
++        or not limitations
++        or any(not isinstance(item, str) or not item.strip() for item in limitations)
++    ):
++        raise ValueError("safeguard evidence limitations must be nonempty strings")
++
++    hashes = evidence.get("code_sha256")
++    if not isinstance(hashes, dict):
++        raise ValueError("safeguard code_sha256 must be an object")
++    if any(not isinstance(path, str) for path in hashes):
++        raise ValueError("safeguard hash path names must be strings")
++    missing_hashes = sorted(set(REQUIRED_SAFEGUARD_HASHES) - set(hashes))
++    if missing_hashes:
++        raise ValueError(f"safeguard SHA-256 coverage is missing required files: {missing_hashes}")
++
++    root = Path(__file__).resolve().parents[2]
++    for relative, expected_hash in hashes.items():
++        if (
++            not isinstance(expected_hash, str)
++            or re.fullmatch(r"[0-9a-f]{64}", expected_hash) is None
++        ):
++            raise ValueError(f"safeguard SHA-256 for {relative!r} must be 64 lowercase hex characters")
++        relative_path = Path(relative)
++        if relative_path.is_absolute() or ".." in relative_path.parts:
++            raise ValueError(f"safeguard hash path must be workspace-relative: {relative!r}")
++        current_path = root / relative_path
++        if not current_path.is_file():
++            raise ValueError(f"safeguard hashed file is missing: {relative}")
++        current_hash = hashlib.sha256(current_path.read_bytes()).hexdigest()
++        if current_hash != expected_hash:
++            raise ValueError(
++                f"safeguard SHA-256 drift for {relative}: expected {expected_hash}, got {current_hash}"
++            )
++    return evidence
+ 
+ 
+ def _finite(value: Any, field: str, key: tuple[str, str]) -> float:
+     if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+         raise ValueError(f"{key}: {field} must be a finite number")
+     return float(value)
+ 
+ 
+ def _accused(value: Any, field: str, key: tuple[str, str]) -> list[int]:
+     if not isinstance(value, list) or any(isinstance(item, bool) or not isinstance(item, int) for item in value):
+@@ -207,90 +344,92 @@
+     return physical["profiles"][profile][capture]
+ 
+ 
+ def speaker_notes(
+     physical: dict[str, Any],
+     *,
+     team_id: str,
+     team_name: str,
+     repository_url: str,
+     digital: dict[str, Any],
++    safeguards: dict[str, Any],
+ ) -> list[str]:
+     """Return the six-slide audit record embedded in and exported from the deck."""
+     latest = _record(physical, "akshay3.jpeg", "affine_bias_translation")
+     baseline = _record(physical, "akshay3.jpeg", "affine_baseline")
+     akshay2 = _record(physical, "akshay2.jpeg", "affine_bias_translation")
+     common = (
+         f"Team ID: {team_id}; team name: {team_name}; repository: {repository_url}. "
+-        "Status date: 11 September 2026. This is an audit record, not marketing copy."
++        "Status date: 12 September 2026. Selection deadline supplied by the team: 15 September. "
++        "This is a tested research prototype, not production certification or a competition-outcome claim."
+     )
+     return [
+         "\n".join([
+-            "Slide 1 — scope and official requirements",
++            "Slide 1 — value proposition and scope",
+             common,
+-            "R1: Unique invisible watermark at decryption — demonstrated on the controlled release path; the trusted viewer and allocation-race caveats remain.",
+-            "R2: Recipient/session specificity — each release has an explicit session and row; initial row allocation can still race.",
+-            f"R3: Visually identical / forensically distinct — {digital['pdf_count']} PDFs preserve extracted text and average {digital['psnr_mean']:.2f} dB PSNR; this is not universal invisibility.",
++            "R1: Unique invisible watermark at decryption — the controlled release path generates a marked, signed session copy before publication; the managed-process and authority-framing boundaries remain.",
++            "R2: Recipient/session specificity — transaction-wide serialization now covers history validation, row allocation, signing, append, checkpoint and publication; the fresh concurrent scenario produced distinct rows and a later row 2.",
++            f"R3: Visually identical / forensically distinct — {digital['pdf_count']} one-page PDFs preserve extracted text and average {digital['psnr_mean']:.2f} dB rendered PSNR; PDFs are not byte-identical, and this was not a human invisibility study.",
+             "P22: Team ID, registered team name and repository URL remain explicit placeholders unless supplied through the build CLI; strict verification then fails.",
+         ]),
+         "\n".join([
+-            "Slide 2 — workflow and extraction evidence",
+-            f"R9: Extract mark from leak — digital fixtures recover, while shipped physical evidence is historical {physical['historical_recovered']}/{physical['captures']} and experimental {physical['baseline_recovered']}/{physical['captures']} per profile; this is not robust deployment.",
+-            f"P10: Physical evidence is historical {physical['historical_recovered']}/{physical['captures']} and experimental {physical['baseline_recovered']}/{physical['captures']} in each profile, with the same akshay3 capture recovered in both—not two recovered captures. Latest akshay3 is {latest['expected_score']:.3f} vs {latest['conditional_null']['threshold']:.3f}; baseline is {baseline['expected_score']:.3f} vs {baseline['conditional_null']['threshold']:.3f}. akshay2 latest is {akshay2['expected_score']:.3f} vs {akshay2['conditional_null']['threshold']:.3f}; neither first capture recovered, refinement adds no capture, and {physical['boundary_failures']} boundary failures remain failures. These are visual-code-row results on one printed single-page public fixture, not end-to-end signed physical attribution or independent documents.",
++            "Slide 2 — proposed solution and capabilities",
++            "R4: Cryptographic binding to recipient identity — enrollment-bound recipient keys and an ML-DSA-signed canonical release event bind document, session, row and assurance mode; identity proofing and key custody remain deployment assumptions.",
++            "R5: Recipient's own private signing key — ML-DSA receipt verification is implemented, but exclusive human custody is not established while demo keys remain local.",
++            "R6: NIST PQC KEX/signatures — the fresh readiness check used real ML-KEM-768 and ML-DSA-65 through OpenSSL 3.6.4, with no classical fallback in the measured path; algorithm use does not certify the prototype.",
++            "R9: Extract mark from leak — a supported clean PDF returns a signed source-copy session only when both channels corroborate; raster-only and inadequate-capacity PDF scores remain research leads with empty attribution.",
++            "P5: The authority can reproduce both carriers for an already issued session without forging a new recipient receipt; exact source-copy evidence does not eliminate operator framing.",
++            "P6: Removing both carriers or retyping content can leave readable material with no attribution signal.",
++            "P7: The managed viewer can access authenticated clean plaintext before marking; publication is gated, but trusted software and endpoint control remain assumptions.",
++            "P8: Extraction is non-blind and requires the retained original and correct source version.",
++            "Source: research/evidence/nishan-selection-2026-09-12/demo/results.json.",
++        ]),
++        "\n".join([
++            "Slide 3 — technical approach and release gates",
++            "R7: Blockchain/DLT audit — the prototype implements a hash-linked, quorum-signed local 3-of-4 demonstrator; it is not independently administered blockchain infrastructure.",
++            "R8: No single administrator can alter/delete history — NOT MET. All validator keys, replicas and witness material remain co-located. A configured pin helps only when the witness key and retained state are independently provisioned and trustworthy.",
++            "R10: Ledger lookup — available valid records map rows to signed sessions. In configured witness mode, release rejects the tested wrong pin; release and trace both reject the tested coordinated valid-prefix rollback. Legacy unconfigured mode is explicitly unwitnessed.",
++            "P1: The separate witness is now called on configured release and trace paths. It detects the tested rollback only while the pinned key and retained external state remain trusted; rolling back the witness too is outside the local guarantee.",
++            "P2: Allocation race — corrected. The existing ledger transaction lock is held from history validation and row allocation through append, checkpoint and publication; fresh concurrent releases used distinct rows and a third release succeeded.",
++            "P3: PDF policy — rendered/rasterized transplant now returns empty high-assurance attribution and retains only a research lead. Authenticated plaintext parsing prevents a metadata-only type bypass; renamed/prefixed PDFs cannot select generic-image handling.",
++            f"P4: Insufficient {digital['layout_symbols']}-symbol layout capacity now yields a signed capacity limitation and abstention rather than PDF attribution.",
++            "P17: Configured witness enforcement is implemented and tested on release and trace; the default compatibility mode remains explicitly unwitnessed, and trace records a checked snapshot rather than perpetual freshness.",
++            "P18: All PDF-source traces now require visual/layout set equality, including raster suspects and low-capacity releases. Genuine raster-image screening is preserved and remains a different, research-only assurance class.",
++            "Release ordering: validate → allocate/mark → recipient-sign → quorum append/re-audit → checkpoint/re-verify → atomic publication. A checkpoint failure leaves a committed authorization but publishes no new output.",
++        ]),
++        "\n".join([
++            "Slide 4 — feasibility, evidence separation and boundaries",
++            f"Fresh evidence: {len(safeguards['cases'])}/12 named safeguard scenarios passed; all_passed={safeguards['all_passed']}; pqc_ready={safeguards['pqc_ready']}; {len(safeguards['code_sha256'])} recorded SHA-256 entries match current files. These are scenario checks on public synthetic fixtures, not population experiments.",
++            f"P10: Physical evidence is historical shipped-threshold {physical['historical_recovered']}/{physical['captures']} and exploratory {physical['baseline_recovered']}/{physical['captures']} in each profile, with the same akshay3 capture recovered in both—not two recovered captures. Latest akshay3 is {latest['expected_score']:.3f} vs {latest['conditional_null']['threshold']:.3f}; baseline is {baseline['expected_score']:.3f} vs {baseline['conditional_null']['threshold']:.3f}. akshay2 latest is {akshay2['expected_score']:.3f} vs {akshay2['conditional_null']['threshold']:.3f}; the first two refined-profile captures are boundary failures. This is one printed single-page public fixture, not end-to-end signed physical attribution.",
+             f"P11: The {digital['jpeg_exact']}/{digital['jpeg_trials']} end-to-end JPEG-Q55 runs use one recipient identity across {digital['issued_session_count']} accumulated issued sessions (rows {digital['issued_row_min']}..{digital['issued_row_max']}); other-issued score is null {digital['other_score_null']} time and non-null {digital['other_score_nonnull']} times, not a multi-person test.",
+             f"P12: All {digital['jpeg_trials']} end-to-end trials reuse the same document, authority secret and codebook; no independent-document or independent-authority inference follows.",
+             f"P13: The {digital['codebooks']}-codebook × {digital['strategy_count']}-strategy study has {digital['code_cases']} code-level cases; it is not carrier, PDF or physical evidence.",
+-            f"Digital context: all {digital['roster_rows']:,} rows were scored per session; {digital['jpeg_false']} extra row was accused; mean {digital['jpeg_mean']:.3f}, population SD {digital['jpeg_sd']:.3f}.",
+-            "Sources: artifacts/nishan/end-to-end-jpeg-trials.json; artifacts/nishan/tardos-independent-codebook-study.json; research/evidence/nishan-bias-physical-2026-09-10/scores.json.",
+-        ]),
+-        "\n".join([
+-            "Slide 3 — architecture, binding and audit limits",
+-            "R4: Cryptographic binding to recipient identity — enrollment-bound prototype receipts are checked; identity and key custody remain a deployment assumption.",
+-            "R5: Recipient's own private signing key — ML-DSA signing is demonstrated, but exclusive human custody of that key is unproven.",
+-            "R6: NIST PQC KEX/signatures — ML-KEM-768 and ML-DSA-65 are used, with no classical fallback in the measured path.",
+-            "R7: Blockchain/DLT audit — only a local, co-located 3-of-4 quorum demonstrator is implemented.",
+-            "R8: No single administrator can alter/delete history — NOT MET; independent key/peer custody and an enforced witness are absent.",
+-            "R10: Ledger lookup — implemented for available valid records, but coordinated valid-prefix rollback can erase the association unless the separate witness is consulted.",
+-            "P1: A separate witness detects the recorded rollback; trace/release do not enforce it, so integration alone does not prevent or recover deletion.",
+-            "P2: Allocation race — append locks start too late; protect the initial read through commit and avoid nested lock reacquisition.",
+-            "P3: A rasterized transplant bypasses layout corroboration; the parser already rejects renamed or prefixed PDF content masquerading as a raster/image.",
+-            f"P4: Insufficient {digital['layout_symbols']}-symbol layout capacity disables that protection; shortness is only one cause. Fail/restrict release policy is proposed, not implemented.",
+-            "P5: The authority can regenerate both carriers for an existing signed session without forging a fresh recipient signature.",
+-            "P6: Removing both carriers leaves readable content and no attribution signal on the tested fixture.",
+-            "P7: The trusted viewer can access clean plaintext before marking; ordinary output is released only after commit.",
+-            "P8: Non-blind extraction requires the retained original and the correct version.",
+-            "P17: Witness capability remains a separate audit tool, not enforced trace-path protection.",
+-            "P18: Unconditional transplant-abstention is false for raster or low-capacity paths where layout corroboration is unavailable.",
+-            "Carrier correction (unnumbered): tardos_carrier.py uses fixed 6x6 Tardos templates; watermark.pattern() is not the carrier, and shorter code does not enlarge blocks.",
+-            "Sources: artifacts/nishan/measured-results.json; artifacts/nishan/tardos-pdf-benchmark.json.",
+-        ]),
+-        "\n".join([
+-            "Slide 4 — feasibility and unresolved risks",
+-            "R11: Verifiable associated recipient/event — signature checks work; authority framing and copy-to-human inference limits remain.",
+-            "P9: Evidence identifies a session/copy association, not which human intentionally leaked it.",
+             "P14: Signed-PDF preservation is an expected compatibility issue because changed bytes normally invalidate signatures; damage to tagged PDF structure is untested, not demonstrated.",
+             "P15: Main published experiments are single-page. Page loops exist in code, but there is no validated multi-page benchmark.",
+-            "P16: This task corrects PPT/PDF/verifier stale physical-pending wording only; other historical prose is not claimed updated.",
+-            f"P19: Registration and {digital['roster_rows']:,}-row scoring do not prove photo robustness; fine cell alignment and measured few-thousand-symbol physical capacity remain unresolved.",
+-            "P20: Co-located quorum is a real limitation and was already partly disclosed on slide 4; it is not administrator-resistant DLT.",
++            "P16: This selection update corrects deck, notes, verifier, paste-ready prose and runbook semantics; historical evidence artifacts and prototype code are not rewritten by Task 2.",
++            f"P19: Registration and {digital['roster_rows']:,}-row scoring do not prove photo robustness; physical synchronization and useful capacity remain unresolved.",
++            "P20: Co-located validator and witness administration remains a material limitation; the local quorum is not administrator-resistant DLT.",
+             "P21: No Git repository was initialized. Local version history and publishing are distinct actions; controller backups are retained.",
+-            "Additional limits: requiring current layout on every raster would lose legitimate screenshot/JPEG verdicts; no zero-operational-loss policy, 35 dB invisibility guarantee or population safety rate is claimed.",
+-        ]),
+-        "\n".join([
+-            "Slide 5 — operational value and remaining requirements",
++            "Sources: demo/results.json; artifacts/nishan/end-to-end-jpeg-trials.json; artifacts/nishan/tardos-independent-codebook-study.json; research/evidence/nishan-bias-physical-2026-09-10/scores.json.",
++        ]),
++        "\n".join([
++            "Slide 5 — impact, judge demo and next-round gates",
++            "R11: Verifiable associated recipient/event — signature and ledger checks support a source-copy/session association; authority framing and copy-to-human inference limits remain.",
+             "R12: Offline/air-gapped operation — demonstrated in a local architecture, not an audited hardened deployment.",
+             "R13: No cloud KMS — the implemented workflow has no required external KMS dependency.",
+             "R14: No public blockchain — the local demonstrator has no public-chain dependency.",
+-            "Gate 1: security boundaries and claims. Gate 2: independent documents, keys, recipients, signed/tagged PDFs and negative attacks. Gate 3: held-out physical comparisons at matched visibility/security budgets.",
+-            "Required future scope: multi-page material, protected key custody, external checkpoints, release-bound policy and real printer/camera validation. This is investigative assistance, not operational accusation readiness.",
+-        ]),
+-        "\n".join([
+-            "Slide 6 — research boundary and sources",
++            "P9: Evidence identifies a released session/copy association, not which human intentionally disclosed it, received it successfully or read it.",
++            "Five-minute judge flow: create a fresh demo output root; issue two recipients plus a repeated/third session; trace a clean PDF; show raster transplant and low-capacity PDF abstention; show wrong-pin release rejection and rollback rejection on both release and trace; inject checkpoint failure and show no new publication while explaining the committed authorization record.",
++            "Next-round validation is narrow: independent administrative/key custody; larger multi-recipient and multi-page corpus; representative held-out print/camera testing; and a portable independent proof verifier. Neither GPU nor ESP32 is required for the measured workflow.",
++            "Do not publish or reuse demo private keys. The runbook names new output roots and preserves historical evidence.",
++        ]),
++        "\n".join([
++            "Slide 6 — prior art, references and differentiated integration",
+             "P23: The stray file '=4.11' is retained outside presentation scope because this update is non-destructive; it was not silently deleted.",
+-            "P24: Novelty is unestablished. TRACE concerns trajectory watermarking, physical comparators already exist, and set equality has not been shown novel; no competitor-superiority or winning-probability inference is supported.",
++            "P24: Novelty is unestablished. The engineering contribution is the tested integration of PQ-signed marked release, configured pinned-checkpoint gating and conservative two-channel PDF evidence. No component-level invention, competitor superiority or winning-probability claim is made. TRACE concerns LLM-agent trajectories and is omitted from scarce visible slide space.",
+             "Parameter context (unnumbered): current n=1000,c=5,epsilon=1e-6 gives m=52500; roster-only n=20 gives m=42500; n=20,c=4,epsilon=1e-3 gives m=16000 but changes three assumptions. Rows are sessions. Ideal symmetric m=12331 is a separate audit requiring another decoder and implementation proof, not physical evidence or novelty.",
+-            "Shorter-code and stronger/lower-frequency carrier ideas remain unvalidated hypotheses.",
+-            "URLs: https://www.sih.gov.in/sih2026PS ; https://arxiv.org/abs/2607.08400 (TRACE is LLM-agent trajectories, not direct PDF physical comparison) ; https://www.matthewtancik.com/stegastamp ; https://arxiv.org/abs/2304.12682 ; https://doi.org/10.1145/3494106.3528674 ; https://www.renyi.hu/~tardos/fingerprint.pdf ; https://doi.org/10.1109/49.464718 ; https://doi.org/10.1109/83.951542 ; https://doi.org/10.1109/ICIP.2001.958536 ; https://csrc.nist.gov/pubs/fips/203/final ; https://csrc.nist.gov/pubs/fips/204/final.",
++            "The recovered Sol Ultra session supplies no preserved authenticator probe artifacts, environment hashes or independently controlled secrets. Its adaptive strength-3 exact verifier recovered 3/5 after five-copy JPEG and failed perspective/10% crop; none of those numeric or recipient-controlled security claims are current deck evidence.",
++            "URLs: https://www.sih.gov.in/sih2026PS ; https://csrc.nist.gov/pubs/fips/203/final ; https://csrc.nist.gov/pubs/fips/204/final ; https://www.cs.columbia.edu/cg/fontcode/ ; https://arxiv.org/abs/2010.06571 ; https://www.renyi.hu/~tardos/fingerprint.pdf.",
+             "Evidence paths: artifacts/nishan/measured-results.json; artifacts/nishan/tardos-pdf-benchmark.json; artifacts/nishan/tardos-independent-codebook-study.json; artifacts/nishan/end-to-end-jpeg-trials.json; research/evidence/nishan-bias-physical-2026-09-10/scores.json.",
+             common,
+         ]),
+     ]
+--- before/submissions/SIH26237_NISHAN_PQ/paste_ready_submission.md
++++ current/submissions/SIH26237_NISHAN_PQ/paste_ready_submission.md
+@@ -1,214 +1,172 @@
+ # SIH26237 — NISHAN-PQ
+ 
+-> Replace every bracketed field before uploading. The registered team name must not contain the institute name.
++> Replace every bracketed field before upload. The registered team name must not contain the institute name.
+ 
+ ## Portal fields
+ 
+ **Problem Statement ID:** SIH26237  
+ **Problem Statement:** Cryptographic Attribution and Immutable Decryption Provenance for Multi-Recipient Encrypted Document Distribution  
+ **Organization:** Ministry of Defence — Indian Navy (WESEE)  
+ **Category:** Software  
+ **Theme:** Blockchain & Cybersecurity  
+-**Idea title:** NISHAN-PQ — Every decrypted copy leaves a verifiable mark  
++**Idea title:** NISHAN-PQ — Accountable decryption with verifiable source-copy evidence  
+ **Team ID:** [TEAM ID]  
+-**Registered team name:** [TEAM NAME]
++**Registered team name:** [TEAM NAME]  
++**Public repository:** [PUBLIC REPOSITORY URL]
+ 
+-## Paste-ready idea description (95 words)
++## Paste-ready idea description (100 words)
+ 
+-NISHAN-PQ encrypts a sensitive document once and creates two separately encoded, domain-separated fingerprints at authorized decryption: a 52,500-symbol Tardos row in the rendered page and a 72-bit HMAC session tag in live PDF text layout. The recipient signs their shared commitment with ML-DSA-65; an offline 3-of-4 quorum commits it before release, while ML-KEM-768 delivers recipient keys. Editable PDFs are attributed only when both channels agree; removal, transplantation, or unissued rows force abstention. The prototype preserves searchable text, scores 1,000 rows, recovers 2/3/5-copy averaging fixtures, registers perspective images, and reports mathematical assumptions separately for each tested attack.
++NISHAN-PQ turns each authorized decryption into a recipient- and session-specific PDF release. A managed offline process allocates a unique Tardos row, adds a domain-separated layout tag, obtains an ML-DSA-65 recipient receipt and commits the event to a local 3-of-4 log. In configured mode, a separately provisioned witness pin gates both release and trace before atomic publication. A clean PDF is associated with a source copy only when visual and layout evidence agree; rasterized or low-capacity PDF matches remain research leads. Fresh real-PQC scenarios verify concurrent issuance, rollback rejection, read-only trace and fail-closed publication without claiming human guilt or production certification.
+ 
+ ## Thirty-second internal-round pitch
+ 
+-“Today, when one sensitive document goes to twenty authorized people and then
+-leaks, the distribution list is the suspect list. NISHAN gives each decryption
+-session two separately encoded marks and commits their shared identity before releasing
+-plaintext. A direct PDF must make both channels name the same signed session. If
+-we transplant Alice's visual mark onto Bob's PDF, the prototype refuses to accuse
+-either person. If the leak is a screenshot, scan or photo, the 52,500-symbol
+-Tardos path scores all 1,000 rows. Our measured fixtures recover five colluders,
+-preserve searchable text, and expose the exact conditions under which we abstain.”
++“Access logs tell us who opened a document; they do not tell us which released
++copy later appeared in a leak. NISHAN-PQ gives every authorized decryption a
++session-specific mark and a signed release record before publishing the copy.
++For a supported clean PDF, two differently encoded channels must name the same session.
++If a rasterized transplant removes that corroboration, the system returns
++inconclusive and keeps the visual match only as a research lead. Our fresh
++offline demonstration uses real ML-KEM and ML-DSA, issues concurrent distinct
++rows, blocks a wrong witness pin and coordinated rollback, and publishes nothing
++new when checkpointing fails.”
+ 
+-## Problem and exact decision improved
++## Problem and decision improved
+ 
+-The user is a defence document controller or leak investigator. The operational
+-decision is: **which authorized decryption session produced this leaked copy, and
+-what evidence and error model support that accusation?**
++The user is a defence document controller or leak investigator. The decision is:
++**which authorized release session is supported by this leaked copy, and is the
++evidence strong enough to report an association rather than an inconclusive
++result?**
+ 
+-Encrypt-once distribution gives every authorized user identical plaintext.
+-Central access logs only show who accessed a file and can be rewritten by a
+-privileged operator. A random per-user watermark may identify one intact copy,
+-but without a collusion code and a declared accusation policy it has no defensible
+-answer when recipients compare copies.
++Encrypt-once distribution gives every authorized recipient the same readable
++content. Conventional access logs record access, but a privileged administrator
++may alter local history and a log entry does not bind a later leaked artifact to
++one source copy. NISHAN-PQ adds release-specific evidence while keeping the
++content usable and the workflow offline.
+ 
+ ## Proposed solution
+ 
+-1. Encrypt one source with AES-256-GCM and wrap its content key separately for
+-   authorized recipients with ML-KEM-768.
+-2. Derive a protected per-document Tardos codebook with a predeclared roster,
+-   coalition limit, error target, code length and accusation threshold.
+-3. At authorized decryption, assign one unused codebook row and embed all symbols
+-   into a subtle PDF rendering layer. Separately bind the document, session
+-   and row into a 72-bit HMAC tag carried by 126 Hamming-coded layout positions.
+-   Retain the original text and vector objects.
+-4. Verify the recipient's KEM and signing-key hashes against a quorum-signed
+-   enrollment root, then sign the canonical event with ML-DSA-65.
+-5. Commit the signed event to an offline 3-of-4 validator quorum before releasing
+-   the marked document.
+-6. Given a leak, decode one pirate word, score every enrolled row, and map rows
+-   above threshold back to signed sessions in the canonical ledger.
+-7. Require both identities to agree for an editable PDF. Treat one surviving
+-   channel as a lead and abstain; also abstain on a conflict or unissued row.
++1. Encrypt the source once with AES-256-GCM and wrap the content key per recipient
++   with ML-KEM-768.
++2. Inside the managed viewer, authenticate and classify the plaintext, then hold
++   the ledger transaction lock across history validation, row/session allocation,
++   marking, signing, append, checkpoint and publication.
++3. Embed a Tardos rendering row and, where PDF capacity permits, a 72-bit HMAC
++   session tag in live text layout.
++4. Bind the document, recipient, session, row, output hash and release-assurance
++   mode in an ML-DSA-65 recipient-signed event.
++5. Commit to a local 3-of-4 hash-linked demonstrator. In configured mode, verify
++   the actual witness key against a caller-provisioned pin and require a healthy,
++   retained signed checkpoint chain.
++6. Publish the marked copy only after append, re-audit, checkpoint and final
++   consistency checks. A checkpoint failure may leave a committed release
++   authorization, but creates no new output and preserves any existing destination.
++7. During trace, verify the signed ledger and configured witness snapshot without
++   updating it. All PDF-source traces require visual/layout set equality; missing
++   channels, inadequate capacity, disagreement or an unissued row force abstention.
+ 
+-## Contribution and novelty boundary
++## Three key capabilities
+ 
+-SIH26237 already prescribes decryption-time marking, recipient signatures, NIST
+-post-quantum algorithms, immutable DLT provenance and air-gapped operation.
+-T-Tracer combines watermark-based traitor tracing with blockchain; Tardos codes,
+-spread-spectrum watermarks, text-layout marks, robust/fragile dual watermarking,
+-and transplantation attacks are established work. We do not claim that
+-architecture or its components as inventions.
++- **Accountable release:** serialized recipient/session allocation and signed
++  source-copy hashes before publication.
++- **Configured rollback gate:** wrong witness pins and the tested coordinated
++  valid-prefix rollback stop release and trace when the separately retained pin
++  and witness state are trustworthy.
++- **Conservative PDF evidence:** clean digital PDFs can corroborate; raster-only
++  and low-capacity PDF matches remain research leads with empty attribution.
+ 
+-The evaluated contribution is a narrower protocol: **a full configured collusion
+-code and a domain-separated live-layout session authenticator, committed to
+-one PQ-signed release, with fail-closed identity consensus for editable PDFs and
+-attack-by-attack proof boundaries for raster leaks.** We implement both the
+-cross-recipient transplantation attack and its remove-after-transplant extension.
+-No exact prior implementation was found in the recorded search; that is a scoped
+-differentiator, not a claim that no prior art exists.
++## Evidence status — 12 September 2026
+ 
+-## Working evidence as of 10 September 2026
++### Fresh selection safeguards on current code
+ 
+-- One AES-256-GCM broadcast package and three independent ML-KEM-768 recipient
+-  envelopes run end to end through OpenSSL 3.6.2, with no RSA/ECC fallback.
+-- The configured original Tardos reference profile declares `n = 1,000`, `c = 5`,
+-  family target `epsilon = 10^-6`, code length `m = 52,500`, and threshold
+-  `Z = 2,100`.
+-- The marked PDF retains identical extracted text and word order, remains
+-  searchable/selectable, retains the source vector drawing, and measures
+-  41.867–41.870 dB rendered PSNR across five generated dual-carrier copies.
+-- Across 30 successive fresh releases, the JPEG-Q55 path selects the exact signed
+-  session 30/30 times with zero extra codebook rows. The correct-row score is
+-  **13,433.3 ± 128.2** (population SD) against threshold **2,100**; the finite
+-  95% Wilson interval is 88.65–100%, so this is not called a universal rate.
+-- Its two-copy average recovers Alice and Bob; its three-copy average recovers
+-  Alice, Bob and Charlie, with valid signed ledger records.
+-- A separate full-roster carrier fixture recovers 2/2, 3/3 and 5/5 colluders from
+-  aligned pixel averages and accuses zero other rows. It records zero
+-  unanimous-position errors in 38,843, 32,126 and 24,947 positions for the
+-  two-, three-, and five-copy renderings, so proof applicability is stated per
+-  attack.
+-- Across 30 separately derived codebooks, four code-level marking-condition
+-  strategies recover all five randomly selected colluders in all 120
+-  attack/codebook pairs with zero innocent accusations. The per-strategy 95%
+-  Wilson bounds remain 88.65–100% and 0–11.35%, so this is finite stress evidence,
+-  not a rare-event false-accusation claim.
+-- Its 25-case attack matrix attributes a direct PDF only when both channels name
+-  row 0; removal of one editable-PDF channel yields an abstention and recorded
+-  lead; removal of both yields no signal; Alice-visual/Bob-layout transplantation
+-  and transplant-then-strip both abstain. An Alice/Bob visual coalition placed
+-  over Bob's layout also abstains despite the partial identity overlap.
+-- The raster path recovers row 0 after half-size resampling, two-degree rotation,
+-  JPEG quality 40, a centered crop removing 30% from every edge, and a
+-  deterministic perspective/lighting/photo simulation. It fails at JPEG quality
+-  20 and a crop removing 40% from every edge; these are fixture boundaries.
+-- One edited validator replica fails its block hash; the other three retain a
+-  quorum-valid canonical demo history.
+-- A corrupted recipient signature is rejected even after the generic replica
+-  layer endorses its record: tracing and the next plaintext release both stop,
+-  and the release output is not created. Production validators must enforce the
+-  same receipt-validation policy at endorsement.
+-- A cryptographically valid attacker-key signature claiming Alice is also
+-  rejected because it does not match Alice's quorum-signed enrollment entry.
+-  Editing the registry invalidates its signed trust root and blocks release.
+-- Replaying a valid signed receipt is rejected as a duplicate session and
+-  document-row assignment; tracing and the next release stop before output.
+-- A coordinated truncation of all four replicas remains quorum-valid to the
+-  ledger alone, but a separately signed ML-DSA head checkpoint detects the
+-  rollback. The demonstrator witness key is local; a deployment keeps it under
+-  a separate administrator or HSM.
++- All 12 named offline safeguard scenarios passed on public synthetic fixtures;
++  these are scenario checks, not population experiments.
++- The final Task 1 code suite passed 59/59 tests with no skips, failures or errors.
++- The fresh demo reports real OpenSSL 3.6.4 support for ML-KEM-768 and ML-DSA-65.
++- All 19 code hashes recorded by the demo were checked against the current files.
++- Two concurrent releases received distinct rows; the next successful release
++  used row 2; all three output hashes matched their signed receipts.
++- Clean PDF trace returned two-channel corroboration. A rendered transplant and
++  an inadequate-capacity PDF returned empty attribution while retaining research leads.
++- Configured release rejected a wrong pin; configured release and trace both
++  rejected the tested coordinated rollback.
++  Trace left checkpoint bytes unchanged.
++- Injected checkpoint failure published no new output and preserved an existing
++  destination. The committed authorization remains and requires deliberate review.
++- Authenticated content parsing closes the media-type-only PDF bypass. Actual PDF
++  references backed only by legacy generic-image receipts fail closed; genuine
++  raster-image screening remains available as research screening.
+ 
+-The Tardos bound is conditional. It covers the ideal randomized code construction
+-for coalitions up to `c` under the marking condition; it guarantees catching at
+-least one colluder, not every colluder. The five-copy recovery above is a fixture
+-result. JPEG-Q55 flips 5,904 of 52,500 symbols (11.2%), so the formal bound is not
+-applied to that JPEG even though the correct row is measured above threshold.
+-The keyed AES-CTR codebook generator is finite precision and not independently
+-audited.
++Evidence: `research/evidence/nishan-selection-2026-09-12/demo/results.json`.
+ 
+-The strongest known failure is also measured: deleting both removable carriers
+-leaves a usable PDF with no attribution signal. Copying both carriers copies the
+-identity of the source release, so the system traces a released copy/session and
+-does not prove which human disclosed it. The current controlled-viewer threat
+-model must prevent unmarked plaintext capture and restrict editable export.
+-Detection is non-blind and requires the authority's source document. Real
+-printer/scanner and phone-camera results are still pending.
++### Historical digital visual-channel evidence
+ 
+-## Technical stack
++- The historical JPEG-Q55 study completed 30/30 visual-channel trials for one
++  document, one authority/codebook and one recipient identity across repeated
++  sessions. It is not the current strict PDF verdict, a multi-person experiment
++  or physical performance.
++- Five one-page marked PDFs preserved extracted text and averaged about 41.87 dB
++  rendered PSNR. They are not byte-identical PDFs, a human invisibility study or
++  proof that pre-existing PDF signatures survive.
++- The 30-codebook × 4-strategy study contains 120 code-level cases. These are not
++  120 carrier, PDF or physical trials.
+ 
+-- **Cryptography:** ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204), AES-256-GCM,
+-  HKDF-SHA3-256 and AES-CTR-derived codebook streams.
+-- **Fingerprint:** original one-sided binary Tardos accusation score, 52,500 binary symbols,
+-  keyed 6 x 6 rendering blocks, 72-bit HMAC layout tag with Hamming(7,4), and
+-  fail-closed channel consensus; all 1,000 rows scored.
+-- **Prototype:** Python, OpenSSL provider, PyMuPDF, NumPy, Pillow, OpenCV ORB and
+-  RANSAC homography registration.
+-- **Offline provenance:** quorum-signed recipient enrollment root, four
+-  demonstrator replicas, 3-of-4 ML-DSA endorsement, hash-linked blocks, and a
+-  separately signed ledger-head witness.
+-- **Deployment:** signed controlled viewer, offline CA, TPM/HSM recipient keys,
+-  and separately administered Hyperledger Fabric peers.
+-- **No cloud dependency:** no hosted KMS, model/API, public blockchain,
+-  cryptocurrency or internet connection.
++Evidence: `artifacts/nishan/end-to-end-jpeg-trials.json`,
++`artifacts/nishan/tardos-independent-codebook-study.json` and
++`artifacts/nishan/tardos-pdf-benchmark.json`.
+ 
+-## Main risks and gates
++### Physical evidence remains experimental
+ 
+-| Risk | Current truth | Gate before a broad claim |
+-|---|---|---|
+-| Editable-PDF carrier removal | Either carrier is removable; one leaves a lead and forces abstention, both leave no signal | Content-bound carrier plus controlled viewer; keep agreement policy |
+-| JPEG/print/photo violates the marking assumption | JPEG and synthetic geometry are empirical; physical hardware remains unmeasured | Run the prepared 150/300-DPI print-scan and phone-camera protocol |
+-| Carrier transplantation frames another session | One-channel policy was vulnerable | Editable PDFs now require agreement; transplant and transplant-then-strip both abstain |
+-| Mathematical bound is repeated as a physical guarantee | Code theorem and carrier condition are separate in every evidence file | Predeclare attack and inspect unanimous-position errors; never transfer the bound silently |
+-| Source needed for extraction | Detector is non-blind | Protected source archive, hash-bound chain of custody, then evaluate blind synchronization |
+-| Recipient can capture plaintext before marking | Trusted endpoint assumed | Signed viewer, restricted export, device attestation and protected rendering |
+-| Demo operator owns all keys | PQ mechanisms are real; custody is synthetic | Offline CA, employee binding, HSM/TPM keys and separate validator administrators |
+-| All ledger replicas are rolled back together | The ledger accepts the valid prefix; the external witness detects it | Retain checkpoints and witness key outside ledger administration |
+-| Dishonest distributor can frame a recipient | Authority controls both carrier secrets | Buyer-involved asymmetric fingerprinting and independent adjudication |
+-| Concurrent row assignment | Current demo is sequential | Transactional allocation committed by quorum before rendering |
++- The shipped historical threshold recovered 0/4 real captures.
++- Both exploratory conditional profiles recovered the same one capture,
++  `akshay3.jpeg`, so the result is 1/4 per profile—not two captures.
++- The study uses one printed single-page public fixture and is visual code-row
++  research, not end-to-end signed physical attribution or a reliability rate.
+ 
+-## Three-minute demonstration
++Evidence: `research/evidence/nishan-bias-physical-2026-09-10/scores.json`.
+ 
+-1. Disconnect networking and show one encrypted package, three authorized
+-   identities and the declared `n/c/epsilon/m/Z` profile.
+-2. Decrypt for Alice and Bob. Search and select text in the marked PDF; show that
+-   the source and marked text hashes match, then trace the PDF and show both
+-   independent channels agree on Alice.
+-3. Put Alice's visual carrier onto Bob's layout carrier. Show `Tardos=Alice`,
+-   `layout=Bob`, and the red **ABSTAIN — CHANNEL CONFLICT** decision.
+-4. Drop Bob's JPEG-Q55 leak into the tracer. Show all 1,000 rows scored, Bob above
+-   2,100, the other issued rows below, and Bob's valid ML-DSA receipt.
+-5. Trace the Alice/Bob average and then the three-copy average; reveal all known
+-   contributors while describing them as the named aligned fixtures.
+-6. Show the five-copy benchmark row: five recovered, zero other roster rows,
+-   zero unanimous-position errors.
+-7. Edit one replica and run the audit. Show the block-hash failure and surviving
+-   three-replica canonical history.
+-8. Present a quorum-endorsed record with a corrupted recipient signature. Show
+-   tracing and the next plaintext release fail closed before any output exists.
+-9. Roll all four replicas back to the same valid prefix. Show the ledger alone
+-   accepts it, then let the external ML-DSA checkpoint report
+-   **ROLLBACK DETECTED**.
++## Remaining boundaries
++
++- All four validator keys, replicas and witness material are co-located. R8 is
++  not met against an administrator controlling the whole local environment.
++- Pinned rollback detection depends on independently provisioned key material and
++  trusted retained external state. Rolling back the witness too is outside this
++  local guarantee; legacy unconfigured mode remains explicitly unwitnessed.
++- Trusted software and local key custody remain compromise boundaries. The
++  authority can reproduce or plant an already issued copy.
++- A signed session shows release authorization and source-copy association, not
++  successful delivery, reading, human guilt or intent.
++- Trace is non-blind and needs the retained original. Removal or retyping can
++  defeat both carriers; transformed-artifact association is not exact-file integrity.
++- Current evidence is mainly single-page. Robust physical recovery, multi-page and
++  signed/tagged-PDF compatibility, independent governance, hardware-isolated
++  signing and a portable independent evidence verifier remain future work.
++
++## Five-minute demonstration
++
++Use the checked-in `DEMO_RUNBOOK.md`. Run the safeguard tool with a new output
++root, never overwrite the reviewed demo, and never publish or reuse its synthetic
++private keys. The sequence shows two recipients plus a repeated session, clean
++PDF corroboration, raster transplant abstention, rollback rejection and
++checkpoint failure with no publication.
++
++## Engineering contribution and prior-art boundary
++
++SIH26237 prescribes decryption-time marking, PQ signatures and DLT provenance.
++ML-KEM, ML-DSA, Tardos codes, document watermarking and permissioned PQ ledgers
++have prior art. The scoped engineering contribution is the tested integration of
++a PQ-signed marked release, configured pinned-checkpoint gating and conservative
++two-channel PDF evidence. This is not a first-ever or competitor-superiority claim.
++
++The recovered Sol Ultra session provides no preserved authenticator artifacts,
++hashes or independently controlled secrets. Its numeric and recipient-controlled
++security claims are not used here. Future research may evaluate independently
++controlled robust corroboration under fixed predeclared digital and physical tests.
+ 
+ ## Primary references
+ 
+ - [SIH 2026 official portal](https://www.sih.gov.in/sih2026PS)
+-- [SIH 2026 official guidelines](https://www.sih.gov.in/letters/SIH2026-Guidelines-College-SPOC.pdf)
+ - [NIST FIPS 203 — ML-KEM](https://csrc.nist.gov/pubs/fips/203/final)
+ - [NIST FIPS 204 — ML-DSA](https://csrc.nist.gov/pubs/fips/204/final)
++- [FontCode](https://www.cs.columbia.edu/cg/fontcode/)
++- [PQFabric](https://arxiv.org/abs/2010.06571)
+ - [Gábor Tardos, Optimal probabilistic fingerprint codes](https://www.renyi.hu/~tardos/fingerprint.pdf)
+-- [Wang et al., T-Tracer](https://doi.org/10.1145/3494106.3528674)
+-- [Gonzalez-Compean et al., blockchain and fingerprinting traceability](https://doi.org/10.3390/s22218400)
+-- [Brassil et al., electronic marking of text documents](https://doi.org/10.1109/49.464718)
+-- [Lu and Liao, robust + fragile multipurpose watermarking](https://ieeexplore.ieee.org/document/951542/)
+-- [Barreto et al., transplantation attacks on authentication watermarks](https://ieeexplore.ieee.org/document/958536/)
+-- [Cox et al., secure spread-spectrum watermarking](https://www.ee.columbia.edu/~ywang/MSS/HW2/CoxSpectrumWatermarking.pdf)
+-- [Hyperledger Fabric permissioned model](https://hyperledger-fabric.readthedocs.io/en/release-2.5/whatis.html)
+--- before/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py
++++ current/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py
+@@ -11,20 +11,21 @@
+ from pathlib import Path
+ 
+ import pymupdf as fitz
+ from pptx import Presentation
+ from pptx.util import Inches
+ 
+ 
+ ROOT = Path(__file__).resolve().parents[3]
+ PACKAGE = ROOT / "submissions" / "SIH26237_NISHAN_PQ"
+ PHYSICAL = ROOT / "research" / "evidence" / "nishan-bias-physical-2026-09-10" / "scores.json"
++SAFEGUARDS = ROOT / "research" / "evidence" / "nishan-selection-2026-09-12" / "demo" / "results.json"
+ sys.path.insert(0, str(PACKAGE))
+ 
+ 
+ def slide_text(prs: Presentation) -> list[str]:
+     return [
+         "\n".join(shape.text for shape in slide.shapes if hasattr(shape, "text_frame"))
+         for slide in prs.slides
+     ]
+ 
+ 
+@@ -143,26 +144,119 @@
+                 "conditional_null",
+                 "row0_accused",
+             )
+             for field in outcome_fields:
+                 first[field], second[field] = second[field], first[field]
+ 
+         with self.assertRaisesRegex(ValueError, "recovery identity.*akshay3"):
+             self.deck_evidence.load_physical(self.write_mutation(mutate))
+ 
+ 
++class SafeguardEvidenceTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.deck_evidence = importlib.import_module("deck_evidence")
++        self.source = json.loads(SAFEGUARDS.read_text())
++
++    def test_current_safeguard_evidence_is_valid(self) -> None:
++        self.assertIs(
++            self.deck_evidence.validate_safeguard_evidence(self.source),
++            self.source,
++        )
++
++    def test_failed_or_inconsistent_verdict_is_rejected(self) -> None:
++        for label, mutate in (
++            ("case", lambda data: data["cases"][0].__setitem__("passed", False)),
++            ("summary", lambda data: data.__setitem__("all_passed", False)),
++            ("wrong type", lambda data: data["cases"][0].__setitem__("passed", 1)),
++        ):
++            with self.subTest(label=label):
++                evidence = copy.deepcopy(self.source)
++                mutate(evidence)
++                with self.assertRaisesRegex(ValueError, "passed|verdict"):
++                    self.deck_evidence.validate_safeguard_evidence(evidence)
++
++    def test_scenario_names_are_exact_and_unique(self) -> None:
++        mutations = (
++            lambda data: data["cases"].pop(),
++            lambda data: data["cases"][0].__setitem__("name", "wrong_name"),
++            lambda data: data["cases"][0].__setitem__("name", data["cases"][1]["name"]),
++        )
++        for mutate in mutations:
++            with self.subTest(mutate=mutate):
++                evidence = copy.deepcopy(self.source)
++                mutate(evidence)
++                with self.assertRaisesRegex(ValueError, "scenario|case|name|coverage|duplicate"):
++                    self.deck_evidence.validate_safeguard_evidence(evidence)
++
++    def test_unhashable_or_non_string_scenario_name_is_clean_value_error(self) -> None:
++        for bad_name in ({"not": "hashable"}, ["not", "hashable"], 7, None):
++            with self.subTest(bad_name=bad_name):
++                evidence = copy.deepcopy(self.source)
++                evidence["cases"][0]["name"] = bad_name
++                with self.assertRaisesRegex(ValueError, "name.*string"):
++                    self.deck_evidence.validate_safeguard_evidence(evidence)
++
++    def test_real_pqc_readiness_is_required(self) -> None:
++        mutations = (
++            lambda data: data.__setitem__("pqc_ready", False),
++            lambda data: data["pqc_profile"].__setitem__("ml_kem_768", False),
++            lambda data: data["pqc_profile"].__setitem__("ml_dsa_65", "true"),
++        )
++        for mutate in mutations:
++            with self.subTest(mutate=mutate):
++                evidence = copy.deepcopy(self.source)
++                mutate(evidence)
++                with self.assertRaisesRegex(ValueError, "PQC|ML-KEM|ML-DSA|pqc"):
++                    self.deck_evidence.validate_safeguard_evidence(evidence)
++
++    def test_code_hash_drift_and_missing_required_coverage_are_rejected(self) -> None:
++        for label, mutate in (
++            (
++                "drift",
++                lambda data: data["code_sha256"].__setitem__(
++                    "prototypes/nishan_pq/nishan/core.py", "0" * 64
++                ),
++            ),
++            (
++                "missing",
++                lambda data: data["code_sha256"].pop(
++                    "prototypes/nishan_pq/tests/test_pdf_format_policy.py"
++                ),
++            ),
++        ):
++            with self.subTest(label=label):
++                evidence = copy.deepcopy(self.source)
++                mutate(evidence)
++                with self.assertRaisesRegex(ValueError, "hash|SHA-256|coverage"):
++                    self.deck_evidence.validate_safeguard_evidence(evidence)
++
++    def test_schema_and_top_level_types_are_strict(self) -> None:
++        mutations = (
++            lambda data: data.__setitem__("version", "wrong/version"),
++            lambda data: data.__setitem__("cases", {}),
++            lambda data: data.__setitem__("code_sha256", []),
++        )
++        for mutate in mutations:
++            with self.subTest(mutate=mutate):
++                evidence = copy.deepcopy(self.source)
++                mutate(evidence)
++                with self.assertRaises(ValueError):
++                    self.deck_evidence.validate_safeguard_evidence(evidence)
++
++
+ class DeckAndVerifierTests(unittest.TestCase):
+     maxDiff = None
+ 
+     @classmethod
+     def setUpClass(cls) -> None:
+         cls.build_deck = importlib.import_module("build_deck")
++        cls.deck_evidence = importlib.import_module("deck_evidence")
+         cls.verify_submission = importlib.import_module("verify_submission")
+ 
+     def setUp(self) -> None:
+         self.temp = tempfile.TemporaryDirectory()
+         self.addCleanup(self.temp.cleanup)
+         self.root = Path(self.temp.name)
+         self.output_dir = self.root / "submissions" / "SIH26237_NISHAN_PQ"
+         self.output_dir.mkdir(parents=True)
+         self.pptx = self.output_dir / "NISHAN-PQ_SIH26237.pptx"
+         self.pdf = self.output_dir / "NISHAN-PQ_SIH26237.pdf"
+@@ -191,20 +285,23 @@
+         for name in (
+             "measured-results.json",
+             "tardos-pdf-benchmark.json",
+             "tardos-independent-codebook-study.json",
+             "end-to-end-jpeg-trials.json",
+         ):
+             shutil.copy2(ROOT / "artifacts" / "nishan" / name, artifact_dir / name)
+         physical_dir = self.root / "research" / "evidence" / "nishan-bias-physical-2026-09-10"
+         physical_dir.mkdir(parents=True)
+         shutil.copy2(PHYSICAL, physical_dir / "scores.json")
++        safeguard_dir = self.root / "research" / "evidence" / "nishan-selection-2026-09-12" / "demo"
++        safeguard_dir.mkdir(parents=True)
++        shutil.copy2(SAFEGUARDS, safeguard_dir / "results.json")
+         self.render_pdf()
+ 
+     def render_pdf(self, stale: str = "") -> None:
+         prs = Presentation(self.pptx)
+         document = fitz.open()
+         for index, content in enumerate(slide_text(prs)):
+             page = document.new_page(width=960, height=540)
+             prefix = stale + "\n" if index == 0 and stale else ""
+             page.insert_textbox(fitz.Rect(18, 18, 942, 522), prefix + content, fontsize=5.8)
+         document.save(self.pdf)
+@@ -227,43 +324,66 @@
+         for index, block in enumerate(embedded, 1):
+             self.assertIn(f"## Slide {index}", exported)
+             self.assertIn(block, exported)
+         joined = "\n".join(embedded)
+         for prefix, count in (("R", 14), ("P", 24)):
+             for number in range(1, count + 1):
+                 self.assertEqual(joined.count(f"{prefix}{number}:"), 1)
+         semantic_anchors = {
+             "R8:": "NOT MET",
+             "R14:": "No public blockchain",
+-            "P1:": "separate witness",
+-            "P3:": "masquerading as a raster/image",
++            "P1:": "separate witness is now called",
++            "P2:": "corrected",
++            "P3:": "renamed/prefixed PDFs",
+             "P10:": "same akshay3 capture recovered in both—not two recovered captures",
+             "P11:": "one recipient identity across 30 accumulated issued sessions",
+             "P23:": "stray file '=4.11'",
+             "P24:": "Novelty is unestablished",
+         }
+         for label, anchor in semantic_anchors.items():
+             line = next(item for item in joined.splitlines() if item.startswith(label))
+             self.assertIn(anchor.lower(), line.lower())
+ 
+     def test_slide_claims_are_evidence_derived(self) -> None:
+         combined = "\n".join(slide_text(Presentation(self.pptx)))
+         self.assertIn("30/30", combined)
+         self.assertIn("0/4", combined)
+         self.assertIn("1/4", combined)
+-        self.assertIn("Experimental 1/4 per profile", combined)
+-        self.assertIn("Same akshay3 capture recovered; refinement adds no capture", combined)
+-        self.assertIn("Check available channels; verify signed evidence", combined)
+-        self.assertIn("Multi-page + signed/tagged PDFs + negative attacks", combined)
+-        self.assertIn("1,827.334", combined)
+-        self.assertIn("1,096.290", combined)
+-        self.assertIn("Recipient session evidence is not proof of who leaked it.", combined)
++        self.assertIn("12/12", combined)
++        self.assertIn("59/59 final-code tests", combined)
++        self.assertIn("19 hashes verified", combined)
++        self.assertIn("JPEG-Q55 visual-channel trials", combined)
++        self.assertIn("same 1/4 capture", combined)
++        self.assertIn("Digital PDF corroboration; raster-only matches are research leads", combined)
++        self.assertIn("Portable independent evidence verifier", combined)
++        self.assertIn("source-copy evidence—not a claim about which human", combined)
++
++    def test_build_rejects_safeguard_code_hash_drift(self) -> None:
++        evidence = json.loads(SAFEGUARDS.read_text())
++        evidence["code_sha256"]["prototypes/nishan_pq/nishan/core.py"] = "0" * 64
++        bad_path = self.root / "stale-safeguards.json"
++        bad_path.write_text(json.dumps(evidence))
++        with self.assertRaisesRegex(ValueError, "SHA-256 drift"):
++            self.build_deck.build(
++                ROOT / "resources" / "SIH2026-IDEA-Presentation-Format.pptx",
++                ROOT / "artifacts" / "nishan" / "attribution-scores.png",
++                ROOT / "artifacts" / "nishan" / "measured-results.json",
++                ROOT / "artifacts" / "nishan" / "tardos-pdf-benchmark.json",
++                ROOT / "artifacts" / "nishan" / "tardos-independent-codebook-study.json",
++                ROOT / "artifacts" / "nishan" / "end-to-end-jpeg-trials.json",
++                self.root / "must-not-build.pptx",
++                self.team_id,
++                self.team_name,
++                physical_path=PHYSICAL,
++                safeguard_path=bad_path,
++                repository_url=self.repository_url,
++            )
+ 
+     def test_displayed_counts_follow_mutated_json_copies(self) -> None:
+         end_to_end = json.loads(
+             (ROOT / "artifacts" / "nishan" / "end-to-end-jpeg-trials.json").read_text()
+         )
+         extra_trial = copy.deepcopy(end_to_end["trials"][-1])
+         extra_trial["trial"] = 30
+         extra_trial["tardos_user_index"] = 30
+         extra_trial["session_id"] = "mutated-test-session-30"
+         end_to_end["trials"].append(extra_trial)
+@@ -308,52 +428,106 @@
+             end_to_end_path,
+             output,
+             self.team_id,
+             self.team_name,
+             physical_path=PHYSICAL,
+             repository_url=self.repository_url,
+         )
+         prs = Presentation(output)
+         combined = "\n".join(slide_text(prs))
+         notes = "\n".join(note_text(slide) for slide in prs.slides)
+-        self.assertIn("29/31 exact JPEG-Q55 sessions", combined)
+-        self.assertIn("All 999 rows scored; 2 extra rows accused", combined)
+-        self.assertIn("31 codebooks × 4 strategies = 124 code-level cases", combined)
+-        self.assertIn("124 code-level cases are not 124 physical trials", combined)
+-        self.assertIn("MEAN PSNR · 6 PDFs", combined)
+-        self.assertIn("R3: Visually identical / forensically distinct — 6 PDFs", notes)
++        self.assertIn("29/31 JPEG-Q55 visual-channel trials", combined)
++        self.assertIn("6 one-page PDFs retained text", combined)
++        self.assertIn("R3: Visually identical / forensically distinct — 6 one-page PDFs", notes)
+         self.assertIn("P11: The 29/31 end-to-end JPEG-Q55 runs", notes)
+         self.assertIn("rows 0..30", notes)
+         self.assertIn("other-issued score is null 1 time and non-null 30 times", notes)
+         self.assertIn("P12: All 31 end-to-end trials", notes)
+         self.assertIn("P13: The 31-codebook × 4-strategy study has 124", notes)
+         self.assertIn("P19: Registration and 999-row scoring", notes)
+ 
+     def test_verifier_rejects_stale_pptx_claim(self) -> None:
+         self.prepare_verifier_root()
+         prs = Presentation(self.pptx)
+         prs.slides[0].shapes.add_textbox(Inches(0.2), Inches(0.2), Inches(5), Inches(0.3)).text = (
+             "real physical captures pending"
+         )
+         prs.save(self.pptx)
+         result = self.verify_submission.verify(self.root, allow_placeholders=True)
+         self.assertFalse(result["ok"])
+         self.assertTrue(any("stale" in error.lower() and "PPTX" in error for error in result["errors"]))
++
++    def test_verifier_accepts_matching_generated_package(self) -> None:
++        self.prepare_verifier_root()
++        for allow_placeholders in (True, False):
++            with self.subTest(allow_placeholders=allow_placeholders):
++                result = self.verify_submission.verify(self.root, allow_placeholders)
++                self.assertTrue(result["ok"], result["errors"])
++                self.assertEqual(result["fresh_safeguards"], {
++                    "cases": 12,
++                    "all_passed": True,
++                    "pqc_ready": True,
++                    "verified_code_hashes": 19,
++                })
+ 
+     def test_verifier_rejects_stale_pdf_claim(self) -> None:
+         self.prepare_verifier_root()
+         self.render_pdf("Synthetic perspective passes; hardware pending")
+         result = self.verify_submission.verify(self.root, allow_placeholders=True)
+         self.assertFalse(result["ok"])
+         self.assertTrue(any("stale" in error.lower() and "PDF" in error for error in result["errors"]))
+ 
+     def test_verifier_rejects_missing_physical_evidence(self) -> None:
+         self.prepare_verifier_root()
+         physical = self.root / "research" / "evidence" / "nishan-bias-physical-2026-09-10" / "scores.json"
+         physical.unlink()
+         result = self.verify_submission.verify(self.root, allow_placeholders=True)
+         self.assertFalse(result["ok"])
+         self.assertTrue(any("physical evidence" in error.lower() and "missing" in error.lower() for error in result["errors"]))
+ 
++    def test_verifier_rejects_missing_safeguard_evidence(self) -> None:
++        self.prepare_verifier_root()
++        safeguard = self.root / "research" / "evidence" / "nishan-selection-2026-09-12" / "demo" / "results.json"
++        safeguard.unlink()
++        result = self.verify_submission.verify(self.root, allow_placeholders=True)
++        self.assertFalse(result["ok"])
++        self.assertTrue(any("safeguard evidence" in error.lower() for error in result["errors"]))
++
++    def test_verifier_rejects_failed_safeguard_evidence(self) -> None:
++        self.prepare_verifier_root()
++        safeguard = self.root / "research" / "evidence" / "nishan-selection-2026-09-12" / "demo" / "results.json"
++        evidence = json.loads(safeguard.read_text())
++        evidence["cases"][0]["passed"] = False
++        safeguard.write_text(json.dumps(evidence))
++        result = self.verify_submission.verify(self.root, allow_placeholders=True)
++        self.assertFalse(result["ok"])
++        self.assertTrue(any("safeguard evidence" in error.lower() for error in result["errors"]))
++
++    def test_handoff_prose_and_runbook_use_current_boundaries(self) -> None:
++        submission = (PACKAGE / "paste_ready_submission.md").read_text()
++        runbook = (PACKAGE / "DEMO_RUNBOOK.md").read_text()
++        combined = submission + "\n" + runbook
++        normalized = " ".join(combined.split()).lower()
++        for phrase in (
++            "All 12 named offline safeguard scenarios passed",
++            "59/59 tests",
++            "All 19 code hashes",
++            "shipped historical threshold recovered 0/4",
++            "same one capture",
++            "configured release rejected a wrong pin",
++            "signed release-authorization record remains",
++            "portable independent evidence verifier remain future work",
++        ):
++            self.assertIn(phrase.lower(), normalized)
++        for name in self.deck_evidence.EXPECTED_SAFEGUARD_CASES:
++            self.assertIn(name, runbook)
++        for stale in (
++            "real physical captures pending",
++            "witness is not enforced",
++            "allocation is not atomic",
++            "30/30 attribution success",
++        ):
++            self.assertNotIn(stale.lower(), normalized)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+--- before/submissions/SIH26237_NISHAN_PQ/verify_submission.py
++++ current/submissions/SIH26237_NISHAN_PQ/verify_submission.py
+@@ -4,73 +4,91 @@
+ from __future__ import annotations
+ 
+ import argparse
+ import json
+ import re
+ from pathlib import Path
+ 
+ import pymupdf as fitz
+ from pptx import Presentation
+ 
+-from deck_evidence import load_physical
++from deck_evidence import load_physical, validate_safeguard_evidence
+ 
+ 
+ REQUIRED_TEXT = [
+     "SIH26237",
+-    "At-decryption session provenance for air-gapped documents",
++    "Accountable decryption.",
++    "Verifiable source-copy evidence.",
+     "RESEARCH PROTOTYPE",
+-    "EVIDENCE UPDATE: 11 SEPTEMBER 2026",
++    "FRESH SAFEGUARDS",
++    "12/12",
++    "REAL PQC",
+     "IDEA TITLE / PROPOSED SOLUTION",
+-    "DIGITAL DEVELOPMENT",
+-    "REAL CAPTURES",
+-    "Historical 0/4",
+-    "Experimental 1/4 per profile",
++    "Session-specific release",
++    "Commit before release",
++    "Conservative trace",
+     "TECHNICAL APPROACH",
+-    "TRUSTED VIEWER PROCESS",
+-    "CO-LOCATED 3-OF-4 DEMONSTRATOR",
+-    "PROPOSED HARDENING",
+-    "NOT IMPLEMENTED",
++    "Commit and witness before release (configured mode)",
++    "MANAGED-PROCESS TRUST BOUNDARY",
++    "CO-LOCATED VALIDATORS + WITNESS",
++    "FAIL-CLOSED NOW",
+     "FEASIBILITY AND VIABILITY",
+-    "Recipient session evidence is not proof of who leaked it.",
++    "59/59 final-code tests",
++    "Digital PDF corroboration; raster-only matches are research leads",
++    "Physical recovery remains experimental: 0/4 at the shipped threshold",
+     "IMPACT AND BENEFITS",
+-    "not ready for operational accusations",
+-    "GATE 1",
+-    "GATE 2",
+-    "GATE 3",
++    "JUDGE-DRIVEN DEMO",
++    "NARROW SECOND-ROUND ROADMAP",
++    "Portable independent evidence verifier",
+     "RESEARCH AND REFERENCES",
+-    "HONEST CONTRIBUTION",
+-    "unvalidated hypotheses",
++    "DIFFERENTIATED INTEGRATION",
++    "ENGINEERING CONTRIBUTION",
++    "NOT A FIRST-EVER CLAIM",
+     "ML-KEM-768",
+     "ML-DSA-65",
+     "30/30",
+-    "JPEG-Q55 sessions",
++    "JPEG-Q55 visual-channel trials",
+ ]
+ 
+ FORBIDDEN_CLAIMS = (
+     "real physical captures pending",
+     "Synthetic perspective passes; hardware pending",
++    "Witness is not enforced in trace/release",
++    "allocation is not atomic",
++    "initial row allocation can still race",
++    "Fail/restrict release policy is proposed, not implemented",
++    "30/30 exact JPEG-Q55 sessions",
++    "30/30 attribution success",
+ )
+ 
+ 
+ def verify(root: Path, allow_placeholders: bool) -> dict[str, object]:
+     pdf = root / "submissions" / "SIH26237_NISHAN_PQ" / "NISHAN-PQ_SIH26237.pdf"
+     pptx = root / "submissions" / "SIH26237_NISHAN_PQ" / "NISHAN-PQ_SIH26237.pptx"
+     evidence_path = root / "artifacts" / "nishan" / "measured-results.json"
+     tardos_benchmark_path = root / "artifacts" / "nishan" / "tardos-pdf-benchmark.json"
+     tardos_trials_path = root / "artifacts" / "nishan" / "tardos-independent-codebook-study.json"
+     end_to_end_trials_path = root / "artifacts" / "nishan" / "end-to-end-jpeg-trials.json"
+     physical_path = (
+         root
+         / "research"
+         / "evidence"
+         / "nishan-bias-physical-2026-09-10"
+         / "scores.json"
++    )
++    safeguard_path = (
++        root
++        / "research"
++        / "evidence"
++        / "nishan-selection-2026-09-12"
++        / "demo"
++        / "results.json"
+     )
+     notes_path = root / "submissions" / "SIH26237_NISHAN_PQ" / "NISHAN-PQ_SIH26237_speaker_notes.md"
+     errors: list[str] = []
+     warnings: list[str] = []
+ 
+     if not pdf.exists():
+         errors.append(f"missing PDF: {pdf}")
+         pdf_text = ""
+         normalized_pdf_text = ""
+         pdf_pages = 0
+@@ -114,47 +132,55 @@
+         for phrase in FORBIDDEN_CLAIMS:
+             if phrase in normalized_pptx_text:
+                 errors.append(f"PPTX contains stale physical-evidence claim: {phrase!r}")
+         note_blocks = [
+             slide.notes_slide.notes_text_frame.text.strip()
+             for slide in presentation.slides
+         ]
+         if len(note_blocks) != 6 or any(not block for block in note_blocks):
+             errors.append("PPTX must contain a non-empty speaker-note block on all six slides")
+         notes_text = "\n".join(note_blocks)
++        for phrase in FORBIDDEN_CLAIMS:
++            if phrase.lower() in notes_text.lower():
++                errors.append(f"PPTX notes contain stale claim: {phrase!r}")
+         for prefix, maximum in (("R", 14), ("P", 24)):
+             labels = re.findall(rf"(?<![A-Z0-9]){prefix}(\d+):", notes_text)
+             expected = [str(number) for number in range(1, maximum + 1)]
+             missing = [label for label in expected if labels.count(label) == 0]
+             duplicates = [label for label in expected if labels.count(label) > 1]
+             extras = sorted(set(labels) - set(expected), key=int)
+             if missing or duplicates or extras:
+                 errors.append(
+                     f"PPTX notes {prefix}-label coverage invalid: missing={missing}, duplicates={duplicates}, extras={extras}"
+                 )
+         note_anchors = {
+             "R8:": "NOT MET",
+             "R14:": "No public blockchain",
+             "P1:": "separate witness",
++            "P2:": "corrected",
++            "P3:": "renamed/prefixed PDFs",
+             "P11:": "one recipient identity across 30 accumulated issued sessions",
+             "P24:": "Novelty is unestablished",
+         }
+         for label, anchor in note_anchors.items():
+             matching = [line for line in notes_text.splitlines() if line.startswith(label)]
+             if len(matching) != 1 or anchor.lower() not in matching[0].lower():
+                 errors.append(f"PPTX notes semantic mapping is wrong for {label} (expected {anchor!r})")
+ 
+     if not notes_path.exists():
+         errors.append(f"missing exported speaker notes: {notes_path}")
+         exported_notes = ""
+     else:
+         exported_notes = notes_path.read_text()
++        for phrase in FORBIDDEN_CLAIMS:
++            if phrase.lower() in exported_notes.lower():
++                errors.append(f"exported notes contain stale claim: {phrase!r}")
+         for index, block in enumerate(note_blocks, 1):
+             if f"## Slide {index}" not in exported_notes or block not in exported_notes:
+                 errors.append(f"exported speaker notes do not match embedded slide {index} notes")
+ 
+     placeholders = sorted(
+         set(re.findall(r"\[[A-Z][A-Z _-]+\]", "\n".join((pdf_text, normalized_pptx_text, exported_notes))))
+     )
+     if placeholders:
+         message = "replace before upload: " + ", ".join(placeholders)
+         if allow_placeholders:
+@@ -186,24 +212,39 @@
+             ),
+         }
+         mismatches = {
+             key: (physical.get(key), expected)
+             for key, expected in expected_physical.items()
+             if physical.get(key) != expected
+         }
+         if mismatches:
+             errors.append(f"physical evidence summary differs from saved reviewed study: {mismatches}")
+         physical_anchor = (
+-            f"Historical {physical['historical_recovered']}/{physical['captures']}"
++            f"{physical['historical_recovered']}/{physical['captures']} at the shipped threshold"
+         )
+         if physical_anchor not in normalized_pptx_text or physical_anchor not in normalized_pdf_text:
+             errors.append(f"slide/PDF text does not match physical evidence: {physical_anchor!r}")
++
++    try:
++        safeguard_evidence = validate_safeguard_evidence(
++            json.loads(safeguard_path.read_text())
++        )
++    except FileNotFoundError as exc:
++        errors.append(f"missing fresh safeguard evidence: {exc}")
++        safeguard_evidence = None
++    except (OSError, json.JSONDecodeError, ValueError) as exc:
++        errors.append(f"malformed or stale safeguard evidence: {exc}")
++        safeguard_evidence = None
++    if safeguard_evidence is not None:
++        safeguard_anchor = f"{len(safeguard_evidence['cases'])}/12"
++        if safeguard_anchor not in normalized_pptx_text or safeguard_anchor not in normalized_pdf_text:
++            errors.append(f"slide/PDF text does not match fresh safeguards: {safeguard_anchor!r}")
+ 
+     evidence = json.loads(evidence_path.read_text())
+     jpeg = evidence.get("jpeg_attack_attribution", [])
+     if len(jpeg) != 1 or jpeg[0].get("recipient_id") != "bob":
+         errors.append("measured JPEG evidence is not a unique Bob attribution")
+     elif not jpeg[0].get("recipient_signature_valid"):
+         errors.append("Bob attribution has no valid recipient signature")
+     coalition = evidence.get("two_copy_average_attribution", [])
+     coalition_ids = {item.get("recipient_id") for item in coalition}
+     if coalition_ids != {"alice", "bob"}:
+@@ -420,20 +461,28 @@
+                 "baseline_recovered",
+                 "baseline_recovered_captures",
+                 "refined_recovered",
+                 "refined_recovered_captures",
+                 "boundary_failures",
+                 "boundary_failure_keys",
+             )
+         }
+         if physical is not None
+         else None,
++        "fresh_safeguards": {
++            "cases": len(safeguard_evidence["cases"]),
++            "all_passed": safeguard_evidence["all_passed"],
++            "pqc_ready": safeguard_evidence["pqc_ready"],
++            "verified_code_hashes": len(safeguard_evidence["code_sha256"]),
++        }
++        if safeguard_evidence is not None
++        else None,
+         "placeholders": placeholders,
+         "warnings": warnings,
+         "errors": errors,
+     }
+     return result
+ 
+ 
+ def main() -> None:
+     parser = argparse.ArgumentParser()
+     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])

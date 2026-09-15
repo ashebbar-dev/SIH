@@ -1,0 +1,9 @@
+test_encrypt_classifies_pdf_source_content_without_suffix_trust (test_pdf_format_policy.PdfFormatPolicyTests.test_encrypt_classifies_pdf_source_content_without_suffix_trust) ... ok
+test_parser_accepted_pdfs_always_require_channel_corroboration (test_pdf_format_policy.PdfFormatPolicyTests.test_parser_accepted_pdfs_always_require_channel_corroboration) ... ok
+test_existing_pillow_raster_formats_remain_supported (test_pdf_format_policy.RasterFormatPolicyTests.test_existing_pillow_raster_formats_remain_supported) ... ok
+test_unrecognized_input_is_not_accepted_as_raster (test_pdf_format_policy.RasterFormatPolicyTests.test_unrecognized_input_is_not_accepted_as_raster) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 25.473s
+
+OK

@@ -1,0 +1,16 @@
+test_slide_two_headline_clears_official_logo (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_slide_two_headline_clears_official_logo) ... FAIL
+
+======================================================================
+FAIL: test_slide_two_headline_clears_official_logo (submissions.SIH26237_NISHAN_PQ.tests.test_deck_update.DeckAndVerifierTests.test_slide_two_headline_clears_official_logo)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/submissions/SIH26237_NISHAN_PQ/tests/test_deck_update.py", line 413, in test_slide_two_headline_clears_official_logo
+    self.assertLessEqual(right_edge_inches, 10.3)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 12.52 not less than or equal to 10.3
+
+----------------------------------------------------------------------
+Ran 1 test in 0.864s
+
+FAILED (failures=1)
+/tmp/tmpyenuamf7/submissions/SIH26237_NISHAN_PQ/NISHAN-PQ_SIH26237.pptx

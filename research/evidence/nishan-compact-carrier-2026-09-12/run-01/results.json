@@ -1,0 +1,4476 @@
+{
+  "advancement": {
+    "prerequisite_details": {
+      "all_27_negative_observations_select_no_rows": true,
+      "both_compact_profiles_clean_select_only_intended": true,
+      "both_compact_profiles_text_unchanged": true
+    },
+    "prerequisites_met": true,
+    "profiles": {
+      "symmetric-12-r1": {
+        "comparisons": [
+          {
+            "rows": [
+              {
+                "compact_ratio": 9.595414170062545,
+                "compact_selected_rows": [
+                  0
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.648351393422027,
+                "ratio_exceeds_original": true,
+                "row": 0
+              },
+              {
+                "compact_ratio": 9.716601466733444,
+                "compact_selected_rows": [
+                  7
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.5497091554368945,
+                "ratio_exceeds_original": true,
+                "row": 7
+              }
+            ],
+            "transform": "blur1",
+            "wins_both_rows_without_extra_selections": true
+          },
+          {
+            "rows": [
+              {
+                "compact_ratio": 9.298895662567894,
+                "compact_selected_rows": [
+                  0
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.4586164845774015,
+                "ratio_exceeds_original": true,
+                "row": 0
+              },
+              {
+                "compact_ratio": 9.360205153909751,
+                "compact_selected_rows": [
+                  7
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.370299469234854,
+                "ratio_exceeds_original": true,
+                "row": 7
+              }
+            ],
+            "transform": "blur2",
+            "wins_both_rows_without_extra_selections": true
+          },
+          {
+            "rows": [
+              {
+                "compact_ratio": 9.481390178412783,
+                "compact_selected_rows": [
+                  0
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.6301201054257834,
+                "ratio_exceeds_original": true,
+                "row": 0
+              },
+              {
+                "compact_ratio": 9.666760898358175,
+                "compact_selected_rows": [
+                  7
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.558851505964583,
+                "ratio_exceeds_original": true,
+                "row": 7
+              }
+            ],
+            "transform": "half-resize",
+            "wins_both_rows_without_extra_selections": true
+          }
+        ],
+        "required_winning_transform_count": 2,
+        "winning_transforms": [
+          "blur1",
+          "blur2",
+          "half-resize"
+        ],
+        "worth_fresh_physical_test": true
+      },
+      "symmetric-6-r4": {
+        "comparisons": [
+          {
+            "rows": [
+              {
+                "compact_ratio": 8.380845178049533,
+                "compact_selected_rows": [
+                  0
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.648351393422027,
+                "ratio_exceeds_original": true,
+                "row": 0
+              },
+              {
+                "compact_ratio": 8.454258150900836,
+                "compact_selected_rows": [
+                  7
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.5497091554368945,
+                "ratio_exceeds_original": true,
+                "row": 7
+              }
+            ],
+            "transform": "blur1",
+            "wins_both_rows_without_extra_selections": true
+          },
+          {
+            "rows": [
+              {
+                "compact_ratio": 7.132433026469101,
+                "compact_selected_rows": [
+                  0
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.4586164845774015,
+                "ratio_exceeds_original": false,
+                "row": 0
+              },
+              {
+                "compact_ratio": 7.295219677025851,
+                "compact_selected_rows": [
+                  7
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.370299469234854,
+                "ratio_exceeds_original": false,
+                "row": 7
+              }
+            ],
+            "transform": "blur2",
+            "wins_both_rows_without_extra_selections": false
+          },
+          {
+            "rows": [
+              {
+                "compact_ratio": 9.01183847736295,
+                "compact_selected_rows": [
+                  0
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.6301201054257834,
+                "ratio_exceeds_original": true,
+                "row": 0
+              },
+              {
+                "compact_ratio": 9.127423264502868,
+                "compact_selected_rows": [
+                  7
+                ],
+                "no_extra_selected_rows": true,
+                "original_ratio": 7.558851505964583,
+                "ratio_exceeds_original": true,
+                "row": 7
+              }
+            ],
+            "transform": "half-resize",
+            "wins_both_rows_without_extra_selections": true
+          }
+        ],
+        "required_winning_transform_count": 2,
+        "winning_transforms": [
+          "blur1",
+          "half-resize"
+        ],
+        "worth_fresh_physical_test": true
+      }
+    },
+    "rule": "Fixed empirical pilot prioritization rule from the frozen specification; not statistical significance or a superiority test."
+  },
+  "artifact_sha3_256": {
+    "arrays/observation-000.npz": "3e1520c0bf46e26a8f6cef6fa77ca0d9523e6a8f1e34db06dd9e45301b73eb81",
+    "arrays/observation-001.npz": "065a50936d603e7c6b627124d1fb9c4d4c4e314444a5d757a70e8b4042a9d5c4",
+    "arrays/observation-002.npz": "042777685745550d0738c2e3a940f6a16a9e6d1d41779e3a0314f5d4958c6d38",
+    "arrays/observation-003.npz": "f81f6dff15b6dd09c7b7166f1e95d0004cefdeb51085e4f2ec7ea500090f4e77",
+    "arrays/observation-004.npz": "c8bd8393251ea7b4ad09a8c9192406f5e208f997007abcefe72b540dfac401d7",
+    "arrays/observation-005.npz": "338e5743354ea165e15bbb1fb6e65879c8509f903788820f5f05085951805a7a",
+    "arrays/observation-006.npz": "e1cbdfe2579d20e61c3a1727e6b34c9d5f3f720978087d94c2e4badac6e85036",
+    "arrays/observation-007.npz": "e88b1fc13edb2b58211810ac26c89a8dcd34928509858c3073533b491ae6acfc",
+    "arrays/observation-008.npz": "e7eb1bcc9a6f2be039a22001ff4410cfe18c958c9ce965188cb0273217e999d4",
+    "arrays/observation-009.npz": "f21ac4951b7c81aabc06a15ef06e5ccb134258352c02de1d973d28f965308e9a",
+    "arrays/observation-010.npz": "efdfb97ad5bd6321781233b69c92918d5c9e59baec66ab0887144ff6845a38e1",
+    "arrays/observation-011.npz": "845437eb22b8d8bee4c74e274f47d4e2e081e9ed244ebac0bf2f1e579e411288",
+    "arrays/observation-012.npz": "4ec99baee8c70e6ca2149262c5e2f7a231da78c1a1b3f4aa43c07c4a0b14285e",
+    "arrays/observation-013.npz": "8622e46c9aa4f9e03440818840aa63722511df94abbe4ca9e69a4a7220c2ec8b",
+    "arrays/observation-014.npz": "226631a531f1c720441d38b6479523c64c34b610d9e28f28288dc482422f047d",
+    "arrays/observation-015.npz": "27ae7b3464c52c8f0b0408c56fde86934e9fe95da9d39255cc46708e86329cfe",
+    "arrays/observation-016.npz": "079f20531097f3a1bc913e58ba3f6dc7a10bcf0a60ea52b521db7b1c263fbb95",
+    "arrays/observation-017.npz": "549e7f0aef63884a599008ad4931a4ec4614365e893c305d19e2e41072348233",
+    "arrays/observation-018.npz": "5e42c4758d7a607952934fd77661f22342562741b5cc99298ab9b80496f02067",
+    "arrays/observation-019.npz": "335f53b3a8c96b24811b1040551d60373634982fa4cd71c2c4c67e8a6fe62491",
+    "arrays/observation-020.npz": "bee108e0eaa4d974bc655c4067a5e7b0b4abaa0746aada352a641114f287847f",
+    "arrays/observation-021.npz": "c866f4c8399e9fb9fe5364e5607316f5f0c5a01b6b3a91a24ca6efcd7b0db884",
+    "arrays/observation-022.npz": "5b9ffcc6fe1eca98ffcdf4f2ee4c163c3bdfe39ae1ee01dafa6a249f8d46045e",
+    "arrays/observation-023.npz": "9cf6f93d90e0d94b4fe74cc5a66e079781ceec74cae9633c2f1666d51d92f599",
+    "arrays/observation-024.npz": "d330f5a4a6295be700507707c37ffd48d11836944ca0b5dbd7930cbd29d7d932",
+    "arrays/observation-025.npz": "0db0717d51bcd9e712ae69cee3c4ead6ecbac98dba39e5af44c0b886e81d6231",
+    "arrays/observation-026.npz": "0d1a5d44eadf8d7d5160ae25ee4f5bd22eaa013d24f38c53785656c2588d6585",
+    "arrays/observation-027.npz": "fdbba95dd97c2cd5f3895bb0ffb088f6faf6f295cc5020a07cadfdb3f850d525",
+    "arrays/observation-028.npz": "8050523a00b78d48b7011322d85dbd055c84f894ed86b12339d8f7b09ec249f1",
+    "arrays/observation-029.npz": "330188a28720ef5707793669a85cff33bdf97da549d4fd623369b4c88bc6758a",
+    "arrays/observation-030.npz": "d5520dd4e309b274349c555dcdd01ef7648cf79e53e3ee8c70144c7d225fa5f4",
+    "arrays/observation-031.npz": "cd5f3a96f8fa9fdebd665232c94e58ae6d6efb3c0787d374c39669420c08a062",
+    "arrays/observation-032.npz": "9628e5e463c9a898cfea5e5bb69652e6d921e08e682377ce2fdde9bd2b3580f2",
+    "arrays/observation-033.npz": "d0c1d9f65bb9c5c1f127d7ab4c17af346f7089673d90b1345c0f34265f0ef053",
+    "arrays/observation-034.npz": "6c179dbf9885c4fa41a2b1a31db0a5f09fde292b87631944abe78128f46c6824",
+    "arrays/observation-035.npz": "37e2fcbf8b31847b19a117b2f0917362ded3a018cbb62d4a84079dd8da7f881f",
+    "arrays/observation-036.npz": "698aa3d207cf31c0ca485bc6ec10bf6a14b66110f7e53a51a4e20237a5c15288",
+    "arrays/observation-037.npz": "ce5e5cf9ad3a54a70526bffd17ea71deb93d72dfd1b67cd0740bfa90548fc10c",
+    "arrays/observation-038.npz": "3a6e5e07ae95fc6d634b1293e2aeed33fd04112c93941cbdfa2ab356b8413caa",
+    "arrays/observation-039.npz": "6fb044f36726b2cbecca08bd61477b8c99dcee7908b3340ea66518e5955e35cd",
+    "arrays/observation-040.npz": "467975976ee80ac8b665b9ea3c16cb083911fb4bef10d123557bdc43bf53165d",
+    "arrays/observation-041.npz": "f627107e072fbed7a507f372fe96b5040f32990fe6707ff0fe10ddaab648de52",
+    "arrays/observation-042.npz": "77cb3f0bc989bb2cd06a5a7b795ecca077ba15b13f923f91984e714a80519e19",
+    "arrays/observation-043.npz": "47eb0f3fe5c7bddea15586c70ba278c2be3c112f27adc5154aa9de4e1d3b3ce3",
+    "arrays/observation-044.npz": "ad7a29cd4e209aa1b8000432eaa56dbf494510c822f0b4f34d8eaabd55d86e97",
+    "arrays/observation-045.npz": "03637d5c45ecc099d221ea59373579d7b732110862976810b0be6e80655a8554",
+    "arrays/observation-046.npz": "7826feac880afb30f61da3a55bc87b8d029764e04dd9137723b57f275cc5c7b5",
+    "arrays/observation-047.npz": "605a3ffd9224d68952120c581de8ebc81b8ab1a8770d34e1b60bb17c6f9f6aba",
+    "arrays/observation-048.npz": "263a24c3e1938ef3d024752d6246672ccac28bfb354a8fb6740c80115c4c0e7e",
+    "arrays/observation-049.npz": "cf3f44983a7a1099c730b06f6ab2a950aba2966250f50b408a8394c4400fd8c7",
+    "arrays/observation-050.npz": "480af285debfe18155fa90161b66d28026104a5a4e3616f6b1fdc4274bf4f28c",
+    "arrays/observation-051.npz": "6bae1c1fdc5a2f6b9c4219393a5091d4d7eb2040c3f965b484a6de42a0700afa",
+    "arrays/observation-052.npz": "b5d72f26fb7c577bd060bf9645142a91af1d301b538648f3cd52827cdf7dddbb",
+    "arrays/observation-053.npz": "bbc53dc0793ecef1fbc977e36b2ae56016f20bcf6a017fd86bdc571b5adcb0f9",
+    "arrays/observation-054.npz": "fcf85cb78371c688fd78a7a1d7d961b9e4e8f9ab990df6d8b1c495835a92c626",
+    "arrays/observation-055.npz": "33d7cd56673d8fb44a5742b3ff30c5208f66f1c49c99ad8d827cd5c874d19984",
+    "arrays/observation-056.npz": "99e3aca44bfe77163ec3a3dfedf8028c7683346256ecac3fb502a204feb812c0",
+    "issued/original-6-r1/row-0.pdf": "02fb37aa2da59c216a9b33a9d0256238252fd5ebbbb1f15cdad0f57a3e0592db",
+    "issued/original-6-r1/row-7.pdf": "330390b7c574e3eb75af52b778e4dd9e2c91b741f666852c4b3cf89f301d3544",
+    "issued/symmetric-12-r1/row-0.pdf": "02306a1bba2e6e0f364d91171875c40de1acc1eb0fc1b6c2b495f1eb933cec88",
+    "issued/symmetric-12-r1/row-7.pdf": "b507fd3204f3a3d4ec63aed717e19f3bb2f49ac319f9bba554e5e3fd9ffb7d7d",
+    "issued/symmetric-6-r4/row-0.pdf": "24aea4ae21c91dac17db758abcc3e0002e3c6ea45ea78f3538a4ee0df8a260e0",
+    "issued/symmetric-6-r4/row-7.pdf": "7d1dfed49c4879497b2ca393eded72ae36ec104dbfcc2f58674edd4b83e91d7b",
+    "manifest.json": "228e4e87d80ee7b5070d517f73af0a7e151b73eeebe7a0223f569e7fc273248e",
+    "physical-capture-instructions.md": "535f39cbbfb8d5155d5a81ddcb93ef0cedabde3bfb38a1ead8c08883adad8e82",
+    "private/replay-state.npz": "453d8060f9c47063ebe9a4957d7f5ecc312e1681310231f1e7f063fc07e25692",
+    "rasters/original-6-r1/row-0/blur1.png": "3c4d0edfa7866aa410710325aebbe8388bbbb814e0a66051aaf42affda6d1574",
+    "rasters/original-6-r1/row-0/blur2.png": "dfb979135bdaa41fe79431cdd45ea51dcc6ca0395d211653f1b5c74e081261cd",
+    "rasters/original-6-r1/row-0/clean.png": "1a2a121643934d4019ce011057f2bf3887aa531afd6aae6ec061284ff637b958",
+    "rasters/original-6-r1/row-0/half-resize.png": "813280c5dbd5546a120c947cbe8df4361e9fdc601982334dad6d21a1ccf4dbf8",
+    "rasters/original-6-r1/row-0/jpeg55.jpg": "bd9178abb6abce4f34b8c75368df381cb922e0652ce1d69385249140f255c91e",
+    "rasters/original-6-r1/row-7/blur1.png": "8ebee71ef6b2261a7af72dbbb6f99ec336a85c146aadc1dbba1a47a86c63226b",
+    "rasters/original-6-r1/row-7/blur2.png": "53f98517c6aaf7de050d24465599918e8b64e25137d3528368424d22b03d02b5",
+    "rasters/original-6-r1/row-7/clean.png": "9961ea1b4c1d8b9a68b14ed3ac0b72096c71fc166465e9d6f0d8e33e8f6b0929",
+    "rasters/original-6-r1/row-7/half-resize.png": "67869cc3e2be666731d884ab7a784413a51f560da136b323eceb2ec70408bdf2",
+    "rasters/original-6-r1/row-7/jpeg55.jpg": "4840437cc8d098f4480d509d22997e74ab533f9bf28641ccb9502a4fa51ec2e2",
+    "rasters/symmetric-12-r1/row-0/blur1.png": "61a9f15a149c57137688406a080142c062c8d5c3458d5e3d8c333ab7eb8c2108",
+    "rasters/symmetric-12-r1/row-0/blur2.png": "6c9a477ae45492944a20c215c21ca4d0a138219eab418dd75af21996d7789534",
+    "rasters/symmetric-12-r1/row-0/clean.png": "b80632ea02098e242cab98659189a33061077a658ce19b16c0b5ec356218fe96",
+    "rasters/symmetric-12-r1/row-0/half-resize.png": "bc3aa759f25ffde2a07e771e1e58c255533a626659d4ad76974d140ccde80015",
+    "rasters/symmetric-12-r1/row-0/jpeg55.jpg": "cb45583756de71a4b672974cd0f19d56bb813d6e8bcc37a24e262a62f75b2b3c",
+    "rasters/symmetric-12-r1/row-7/blur1.png": "e24721d5c755afa90b70a88f27fde35a8632a67f8485674dab46f81fcbfcdb0f",
+    "rasters/symmetric-12-r1/row-7/blur2.png": "e18427bf95ba2a94fd347771756306fa8c95da8a7745f5d5701fd9cec10365cc",
+    "rasters/symmetric-12-r1/row-7/clean.png": "500ca3cafb1aafaed38a16de105322fbaa3f8a4990ca9ac04af922d2d2bc774d",
+    "rasters/symmetric-12-r1/row-7/half-resize.png": "3ab068d6cb09983391112c179f00381f4c017101b8fae92856003e0e2c4e070f",
+    "rasters/symmetric-12-r1/row-7/jpeg55.jpg": "88c3cb3b7a16bffa37c6df8779bfc0bae6a9e220c14fe693d5d13e364aea3da5",
+    "rasters/symmetric-6-r4/row-0/blur1.png": "2006c13f79b5b4a838847f2e8afe05d3b620a4a2562f95293abe2ecad0003f7a",
+    "rasters/symmetric-6-r4/row-0/blur2.png": "52411f20a37def24736241e75edc4dcaaccf787b1e09b765ecf2b319cfe8cb16",
+    "rasters/symmetric-6-r4/row-0/clean.png": "8be1d5ebbdaf30ed0a3049f35d885a5049d731bbefdc0d8ed7fdb677488a3da0",
+    "rasters/symmetric-6-r4/row-0/half-resize.png": "16d5d63f7ede220f6cf3c252e90d09e995152360d60b10c16e3bc89bbb47c632",
+    "rasters/symmetric-6-r4/row-0/jpeg55.jpg": "ed0890d4318fa7983cdea446f870a62e7952142595a5d93931be16b72b6a0925",
+    "rasters/symmetric-6-r4/row-7/blur1.png": "2579cd437ef4bcd38261a37996ebed5c971e2399a5a0a10e91810fab5b305d87",
+    "rasters/symmetric-6-r4/row-7/blur2.png": "21d250cab55246fd0bb3fc6bc218324df7cfb992cfd6903cf77f821826a248da",
+    "rasters/symmetric-6-r4/row-7/clean.png": "d103134d7c5ed42ca0ee6f806fbe860b737aec96db1fa069f826543f9b15a8e4",
+    "rasters/symmetric-6-r4/row-7/half-resize.png": "947000789e8a8e6a0549c4df19ec63c21bb1711fce45d169c4870431c7705d70",
+    "rasters/symmetric-6-r4/row-7/jpeg55.jpg": "6fa04d3c63f20cf4ab7e28b5e64d1f32809e7e86a82a25d37cd62dceff9c3d7d",
+    "rasters/unmarked/blur1.png": "c175e793680fcb8d6e126f6cd351c9c2d2c20121aebb42270838316d70e9d7bc",
+    "rasters/unmarked/blur2.png": "a31bde5f7550045d438201a329f1312beefe1663bd268394883bb617fe3b497a",
+    "rasters/unmarked/clean.png": "2b8ce8c44a21a54a28bfd4b42ed2e4a1329d5487b24afc6e272ee7944d1a59e1",
+    "rasters/unmarked/half-resize.png": "7780509859c233b9e8b251d444e39a62f2949aad0faac8232f666100228b722c",
+    "rasters/unmarked/jpeg55.jpg": "9982a8af0491de89f96e96657686bdfdfea9a125f4ea5559c74a878e5748049d",
+    "source/synthetic-source.pdf": "1f1efd3373e76da4b0a01a3ada653bd5edb3849762c6a18adaf14be2310f0adb"
+  },
+  "completed_at_utc": "2026-09-12T08:01:19.027547+00:00",
+  "duration_seconds": 127.54282832099852,
+  "empirical_only": true,
+  "issued_pdfs": [
+    {
+      "block_size_pixels": 6,
+      "capacity_symbols": 55440,
+      "dpi": 144,
+      "embed_seconds": 3.765171361999819,
+      "embedded_symbols": 52500,
+      "file_size_bytes": 248175,
+      "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "measured_pair": {
+        "dpi": 144,
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 41.87,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "text_preserved": true
+      },
+      "pages": 1,
+      "pdf_path": "issued/original-6-r1/row-0.pdf",
+      "pdf_sha3_256": "02fb37aa2da59c216a9b33a9d0256238252fd5ebbbb1f15cdad0f57a3e0592db",
+      "profile": "original-6-r1",
+      "psnr_db": 41.87,
+      "row": 0,
+      "source_file_size_bytes": 2706,
+      "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "strength": 4.0,
+      "text_preserved": true
+    },
+    {
+      "block_size_pixels": 6,
+      "capacity_symbols": 55440,
+      "dpi": 144,
+      "embed_seconds": 3.3764898929948686,
+      "embedded_symbols": 52500,
+      "file_size_bytes": 248578,
+      "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "measured_pair": {
+        "dpi": 144,
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 41.868,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "text_preserved": true
+      },
+      "pages": 1,
+      "pdf_path": "issued/original-6-r1/row-7.pdf",
+      "pdf_sha3_256": "330390b7c574e3eb75af52b778e4dd9e2c91b741f666852c4b3cf89f301d3544",
+      "profile": "original-6-r1",
+      "psnr_db": 41.868,
+      "row": 7,
+      "source_file_size_bytes": 2706,
+      "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "strength": 4.0,
+      "text_preserved": true
+    },
+    {
+      "block_size_pixels": 6,
+      "capacity_symbols": 55440,
+      "dpi": 144,
+      "embed_seconds": 3.341681730998971,
+      "embedded_symbols": 49324,
+      "file_size_bytes": 254407,
+      "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "measured_pair": {
+        "dpi": 144,
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 42.137,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "text_preserved": true
+      },
+      "pages": 1,
+      "pdf_path": "issued/symmetric-6-r4/row-0.pdf",
+      "pdf_sha3_256": "24aea4ae21c91dac17db758abcc3e0002e3c6ea45ea78f3538a4ee0df8a260e0",
+      "profile": "symmetric-6-r4",
+      "psnr_db": 42.137,
+      "row": 0,
+      "source_file_size_bytes": 2706,
+      "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "strength": 4.0,
+      "text_preserved": true
+    },
+    {
+      "block_size_pixels": 6,
+      "capacity_symbols": 55440,
+      "dpi": 144,
+      "embed_seconds": 3.2414306869977736,
+      "embedded_symbols": 49324,
+      "file_size_bytes": 254445,
+      "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "measured_pair": {
+        "dpi": 144,
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 42.137,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "text_preserved": true
+      },
+      "pages": 1,
+      "pdf_path": "issued/symmetric-6-r4/row-7.pdf",
+      "pdf_sha3_256": "7d1dfed49c4879497b2ca393eded72ae36ec104dbfcc2f58674edd4b83e91d7b",
+      "profile": "symmetric-6-r4",
+      "psnr_db": 42.137,
+      "row": 7,
+      "source_file_size_bytes": 2706,
+      "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "strength": 4.0,
+      "text_preserved": true
+    },
+    {
+      "block_size_pixels": 12,
+      "capacity_symbols": 13860,
+      "dpi": 144,
+      "embed_seconds": 2.099814304994652,
+      "embedded_symbols": 12331,
+      "file_size_bytes": 175249,
+      "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "measured_pair": {
+        "dpi": 144,
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 42.142,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "text_preserved": true
+      },
+      "pages": 1,
+      "pdf_path": "issued/symmetric-12-r1/row-0.pdf",
+      "pdf_sha3_256": "02306a1bba2e6e0f364d91171875c40de1acc1eb0fc1b6c2b495f1eb933cec88",
+      "profile": "symmetric-12-r1",
+      "psnr_db": 42.142,
+      "row": 0,
+      "source_file_size_bytes": 2706,
+      "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "strength": 4.0,
+      "text_preserved": true
+    },
+    {
+      "block_size_pixels": 12,
+      "capacity_symbols": 13860,
+      "dpi": 144,
+      "embed_seconds": 1.976646309994976,
+      "embedded_symbols": 12331,
+      "file_size_bytes": 175138,
+      "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "measured_pair": {
+        "dpi": 144,
+        "marked_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "pages": 1,
+        "psnr_db": 42.14,
+        "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+        "text_preserved": true
+      },
+      "pages": 1,
+      "pdf_path": "issued/symmetric-12-r1/row-7.pdf",
+      "pdf_sha3_256": "b507fd3204f3a3d4ec63aed717e19f3bb2f49ac319f9bba554e5e3fd9ffb7d7d",
+      "profile": "symmetric-12-r1",
+      "psnr_db": 42.14,
+      "row": 7,
+      "source_file_size_bytes": 2706,
+      "source_text_sha3_256": "7e826adac335ded60bda03c2c650d597e326a2c380ec2d8dbe510ac5d10e8cce",
+      "strength": 4.0,
+      "text_preserved": true
+    }
+  ],
+  "limitations": [
+    "One source document and two issued copies per profile.",
+    "No physical print/camera result; synthetic blur is only diagnostic.",
+    "No theorem probability certification for the inherited keyed sampler or noisy decoded words.",
+    "No collusion guarantee, production attribution, novelty, or superiority claim.",
+    "Equal nominal carrier area does not imply equal perceptual fidelity.",
+    "The local manifest is not independently signed provenance."
+  ],
+  "observation_counts": {
+    "positive": 30,
+    "total": 57,
+    "unmarked": 15,
+    "wrong-context": 6,
+    "wrong-key": 6
+  },
+  "observations": [
+    {
+      "arrays_path": "arrays/observation-000.npz",
+      "arrays_sha3_256": "3e1520c0bf46e26a8f6cef6fa77ca0d9523e6a8f1e34db06dd9e45301b73eb81",
+      "decode_seconds": 1.0775908089999575,
+      "intended_row_rank": 1,
+      "intended_score": 17477.60206620402,
+      "intended_score_threshold_ratio": 8.322667650573344,
+      "kind": "positive",
+      "logical_ber": 0.0,
+      "logical_correlation_summary": {
+        "maximum": 104.28804016113281,
+        "mean": 0.18289437757219587,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 54.55426552872172
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "maximum_score": 17477.60206620402,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 8.322667650573344,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.0881601374335956,
+      "other_issued_maximum_score": 185.13628861055076,
+      "physical_correlation_summary": {
+        "maximum": 104.28804016113281,
+        "mean": 0.18289437757219587,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 54.55426552872172
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.9789826289998018,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/original-6-r1/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.23994394970844543,
+      "unissued_maximum_score": 503.8822943877354
+    },
+    {
+      "arrays_path": "arrays/observation-001.npz",
+      "arrays_sha3_256": "065a50936d603e7c6b627124d1fb9c4d4c4e314444a5d757a70e8b4042a9d5c4",
+      "decode_seconds": 0.993130980998103,
+      "intended_row_rank": 1,
+      "intended_score": 13959.118459474734,
+      "intended_score_threshold_ratio": 6.64719926641654,
+      "kind": "positive",
+      "logical_ber": 0.1002095238095238,
+      "logical_correlation_summary": {
+        "maximum": 258.0,
+        "mean": 0.1042314921787807,
+        "minimum": -283.8460693359375,
+        "standard_deviation": 31.42056889886857
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.1002095238095238,
+        "violations": 5261
+      },
+      "maximum_score": 13959.118459474734,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 6.64719926641654,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.04555937907440831,
+      "other_issued_maximum_score": 95.67469605625745,
+      "physical_correlation_summary": {
+        "maximum": 258.0,
+        "mean": 0.1042314921787807,
+        "minimum": -283.8460693359375,
+        "standard_deviation": 31.42056889886857
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.8786258050022298,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/original-6-r1/row-0/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.22847844246944737,
+      "unissued_maximum_score": 479.8047291858395
+    },
+    {
+      "arrays_path": "arrays/observation-002.npz",
+      "arrays_sha3_256": "042777685745550d0738c2e3a940f6a16a9e6d1d41779e3a0314f5d4958c6d38",
+      "decode_seconds": 0.8919449249951867,
+      "intended_row_rank": 1,
+      "intended_score": 16061.537926186258,
+      "intended_score_threshold_ratio": 7.648351393422027,
+      "kind": "positive",
+      "logical_ber": 0.04068571428571428,
+      "logical_correlation_summary": {
+        "maximum": 1810.0,
+        "mean": -0.5748609995524089,
+        "minimum": -1803.0,
+        "standard_deviation": 134.5988114527486
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.04068571428571428,
+        "violations": 2136
+      },
+      "maximum_score": 16061.537926186258,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 7.648351393422027,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.06181529594478575,
+      "other_issued_maximum_score": 129.81212148405007,
+      "physical_correlation_summary": {
+        "maximum": 1810.0,
+        "mean": -0.5748609995524089,
+        "minimum": -1803.0,
+        "standard_deviation": 134.5988114527486
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.7612892519973684,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/original-6-r1/row-0/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.23783942754867915,
+      "unissued_maximum_score": 499.46279785222623
+    },
+    {
+      "arrays_path": "arrays/observation-003.npz",
+      "arrays_sha3_256": "f81f6dff15b6dd09c7b7166f1e95d0004cefdeb51085e4f2ec7ea500090f4e77",
+      "decode_seconds": 0.8087712350024958,
+      "intended_row_rank": 1,
+      "intended_score": 15663.094617612544,
+      "intended_score_threshold_ratio": 7.4586164845774015,
+      "kind": "positive",
+      "logical_ber": 0.05198095238095238,
+      "logical_correlation_summary": {
+        "maximum": 3408.0,
+        "mean": -1.8220627355666388,
+        "minimum": -3407.0,
+        "standard_deviation": 297.7599318823285
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.05198095238095238,
+        "violations": 2729
+      },
+      "maximum_score": 15663.094617612544,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 7.4586164845774015,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.05782418568916819,
+      "other_issued_maximum_score": 121.43078994725319,
+      "physical_correlation_summary": {
+        "maximum": 3408.0,
+        "mean": -1.8220627355666388,
+        "minimum": -3407.0,
+        "standard_deviation": 297.7599318823285
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.6688388410038897,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/original-6-r1/row-0/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.2314388303750351,
+      "unissued_maximum_score": 486.0215437875737
+    },
+    {
+      "arrays_path": "arrays/observation-004.npz",
+      "arrays_sha3_256": "c8bd8393251ea7b4ad09a8c9192406f5e208f997007abcefe72b540dfac401d7",
+      "decode_seconds": 0.526775621001434,
+      "intended_row_rank": 1,
+      "intended_score": 16023.252221394145,
+      "intended_score_threshold_ratio": 7.6301201054257834,
+      "kind": "positive",
+      "logical_ber": 0.04133333333333333,
+      "logical_correlation_summary": {
+        "maximum": 1163.0,
+        "mean": -0.16410871449425107,
+        "minimum": -1236.0,
+        "standard_deviation": 78.24261196941671
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.04133333333333333,
+        "violations": 2170
+      },
+      "maximum_score": 16023.252221394145,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 7.6301201054257834,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.06349284153659665,
+      "other_issued_maximum_score": 133.33496722685297,
+      "physical_correlation_summary": {
+        "maximum": 1163.0,
+        "mean": -0.16410871449425107,
+        "minimum": -1236.0,
+        "standard_deviation": 78.24261196941671
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.6387339170032647,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/original-6-r1/row-0/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.24599469703137283,
+      "unissued_maximum_score": 516.5888637658829
+    },
+    {
+      "arrays_path": "arrays/observation-005.npz",
+      "arrays_sha3_256": "338e5743354ea165e15bbb1fb6e65879c8509f903788820f5f05085951805a7a",
+      "decode_seconds": 0.7546389189956244,
+      "intended_row_rank": 1,
+      "intended_score": 17245.372248477408,
+      "intended_score_threshold_ratio": 8.21208202308448,
+      "kind": "positive",
+      "logical_ber": 0.0,
+      "logical_correlation_summary": {
+        "maximum": 104.28804016113281,
+        "mean": 0.02495710685366676,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 54.581247723945076
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "maximum_score": 17245.372248477408,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 8.21208202308448,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.03751129068806436,
+      "other_issued_maximum_score": 78.77371044493515,
+      "physical_correlation_summary": {
+        "maximum": 104.28804016113281,
+        "mean": 0.02495710685366676,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 54.581247723945076
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.8934317930034013,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/original-6-r1/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.2381694898074748,
+      "unissued_maximum_score": 500.15592859569705
+    },
+    {
+      "arrays_path": "arrays/observation-006.npz",
+      "arrays_sha3_256": "e1cbdfe2579d20e61c3a1727e6b34c9d5f3f720978087d94c2e4badac6e85036",
+      "decode_seconds": 0.8240144509982201,
+      "intended_row_rank": 1,
+      "intended_score": 13785.308116096412,
+      "intended_score_threshold_ratio": 6.564432436236387,
+      "kind": "positive",
+      "logical_ber": 0.10234285714285714,
+      "logical_correlation_summary": {
+        "maximum": 246.55508422851562,
+        "mean": -0.005825346556163969,
+        "minimum": -264.5460205078125,
+        "standard_deviation": 31.50315660513365
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.10234285714285714,
+        "violations": 5373
+      },
+      "maximum_score": 13785.308116096412,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 6.564432436236387,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.03138022938180746,
+      "other_issued_maximum_score": -65.89848170179567,
+      "physical_correlation_summary": {
+        "maximum": 246.55508422851562,
+        "mean": -0.005825346556163969,
+        "minimum": -264.5460205078125,
+        "standard_deviation": 31.50315660513365
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.7635686150024412,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/original-6-r1/row-7/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.24839424330472698,
+      "unissued_maximum_score": 521.6279109399267
+    },
+    {
+      "arrays_path": "arrays/observation-007.npz",
+      "arrays_sha3_256": "e88b1fc13edb2b58211810ac26c89a8dcd34928509858c3073533b491ae6acfc",
+      "decode_seconds": 0.8235900870058686,
+      "intended_row_rank": 1,
+      "intended_score": 15854.38922641748,
+      "intended_score_threshold_ratio": 7.5497091554368945,
+      "kind": "positive",
+      "logical_ber": 0.04097142857142857,
+      "logical_correlation_summary": {
+        "maximum": 1801.0,
+        "mean": -0.7205179508027576,
+        "minimum": -1808.0,
+        "standard_deviation": 134.61618144487815
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.04097142857142857,
+        "violations": 2151
+      },
+      "maximum_score": 15854.38922641748,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 7.5497091554368945,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.044105250015072275,
+      "other_issued_maximum_score": 92.62102503165178,
+      "physical_correlation_summary": {
+        "maximum": 1801.0,
+        "mean": -0.7205179508027576,
+        "minimum": -1808.0,
+        "standard_deviation": 134.61618144487815
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.7584736899952986,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/original-6-r1/row-7/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.25195424137170974,
+      "unissued_maximum_score": 529.1039068805904
+    },
+    {
+      "arrays_path": "arrays/observation-008.npz",
+      "arrays_sha3_256": "e7eb1bcc9a6f2be039a22001ff4410cfe18c958c9ce965188cb0273217e999d4",
+      "decode_seconds": 0.8647813169955043,
+      "intended_row_rank": 1,
+      "intended_score": 15477.628885393193,
+      "intended_score_threshold_ratio": 7.370299469234854,
+      "kind": "positive",
+      "logical_ber": 0.05228571428571428,
+      "logical_correlation_summary": {
+        "maximum": 3404.0,
+        "mean": -1.9377617040724981,
+        "minimum": -3408.0,
+        "standard_deviation": 297.76114403472474
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.05228571428571428,
+        "violations": 2745
+      },
+      "maximum_score": 15477.628885393193,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 7.370299469234854,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.06623065055563328,
+      "other_issued_maximum_score": 139.08436616682988,
+      "physical_correlation_summary": {
+        "maximum": 3404.0,
+        "mean": -1.9377617040724981,
+        "minimum": -3408.0,
+        "standard_deviation": 297.76114403472474
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 1.2735338019992923,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/original-6-r1/row-7/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.2433089001184657,
+      "unissued_maximum_score": 510.94869024877795
+    },
+    {
+      "arrays_path": "arrays/observation-009.npz",
+      "arrays_sha3_256": "f21ac4951b7c81aabc06a15ef06e5ccb134258352c02de1d973d28f965308e9a",
+      "decode_seconds": 1.5550213289970998,
+      "intended_row_rank": 1,
+      "intended_score": 15873.588162525624,
+      "intended_score_threshold_ratio": 7.558851505964583,
+      "kind": "positive",
+      "logical_ber": 0.04125714285714286,
+      "logical_correlation_summary": {
+        "maximum": 1164.0,
+        "mean": -0.30543593101501465,
+        "minimum": -1236.0,
+        "standard_deviation": 78.27174427345194
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 52500,
+        "violation_rate": 0.04125714285714286,
+        "violations": 2166
+      },
+      "maximum_score": 15873.588162525624,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 7.558851505964583,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": 0.02982388710224618,
+      "other_issued_maximum_score": 62.630162914716976,
+      "physical_correlation_summary": {
+        "maximum": 1164.0,
+        "mean": -0.30543593101501465,
+        "minimum": -1236.0,
+        "standard_deviation": 78.27174427345194
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 1.298830530999112,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/original-6-r1/row-7/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.23844094396931606,
+      "unissued_maximum_score": 500.72598233556374
+    },
+    {
+      "arrays_path": "arrays/observation-010.npz",
+      "arrays_sha3_256": "efdfb97ad5bd6321781233b69c92918d5c9e59baec66ab0887144ff6845a38e1",
+      "decode_seconds": 1.5308447729985346,
+      "intended_row_rank": 1,
+      "intended_score": 8650.055030903923,
+      "intended_score_threshold_ratio": 10.331084602168605,
+      "kind": "positive",
+      "logical_ber": 0.0,
+      "logical_correlation_summary": {
+        "maximum": 298.2637710571289,
+        "mean": 2.440754318515727,
+        "minimum": -291.6319274902344,
+        "standard_deviation": 217.5075293011643
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "maximum_score": 8650.055030903923,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 10.331084602168605,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.21686881859578458,
+      "other_issued_maximum_score": -181.58085889131905,
+      "physical_correlation_summary": {
+        "maximum": 108.00004577636719,
+        "mean": 0.6101885796289318,
+        "minimum": -102.99993896484375,
+        "standard_deviation": 54.59386343277059
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.38059002999943914,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.36363927224762327,
+      "unissued_maximum_score": 304.46945673831
+    },
+    {
+      "arrays_path": "arrays/observation-011.npz",
+      "arrays_sha3_256": "845437eb22b8d8bee4c74e274f47d4e2e081e9ed244ebac0bf2f1e579e411288",
+      "decode_seconds": 1.2243629820004571,
+      "intended_row_rank": 1,
+      "intended_score": 8199.508183240945,
+      "intended_score_threshold_ratio": 9.792979632452571,
+      "kind": "positive",
+      "logical_ber": 0.025302084178087745,
+      "logical_correlation_summary": {
+        "maximum": 390.2991485595703,
+        "mean": 0.4058876958712011,
+        "minimum": -359.0002746582031,
+        "standard_deviation": 95.83776410365394
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.025302084178087745,
+        "violations": 312
+      },
+      "maximum_score": 8199.508183240945,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 9.792979632452571,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.19884503021762248,
+      "other_issued_maximum_score": -166.48982369606549,
+      "physical_correlation_summary": {
+        "maximum": 355.00006103515625,
+        "mean": 0.10147192396780028,
+        "minimum": -299.0,
+        "standard_deviation": 31.38457287240007
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.29632375900109764,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-0/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.3403913645409685,
+      "unissued_maximum_score": 285.0043484016958
+    },
+    {
+      "arrays_path": "arrays/observation-012.npz",
+      "arrays_sha3_256": "4ec99baee8c70e6ca2149262c5e2f7a231da78c1a1b3f4aa43c07c4a0b14285e",
+      "decode_seconds": 0.9095665849963552,
+      "intended_row_rank": 1,
+      "intended_score": 7017.150162568296,
+      "intended_score_threshold_ratio": 8.380845178049533,
+      "kind": "positive",
+      "logical_ber": 0.09626145486984024,
+      "logical_correlation_summary": {
+        "maximum": 2077.0000610351562,
+        "mean": 0.3662310502755556,
+        "minimum": -2685.0,
+        "standard_deviation": 308.7879627737308
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.09626145486984024,
+        "violations": 1187
+      },
+      "maximum_score": 7017.150162568296,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 8.380845178049533,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.1806201664619093,
+      "other_issued_maximum_score": -151.23043124229022,
+      "physical_correlation_summary": {
+        "maximum": 1643.0,
+        "mean": 0.0915577625688889,
+        "minimum": -1818.0,
+        "standard_deviation": 135.52486684216706
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.5148361000028672,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-0/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.43322481421282016,
+      "unissued_maximum_score": 362.7323391493086
+    },
+    {
+      "arrays_path": "arrays/observation-013.npz",
+      "arrays_sha3_256": "8622e46c9aa4f9e03440818840aa63722511df94abbe4ca9e69a4a7220c2ec8b",
+      "decode_seconds": 1.6267433629982406,
+      "intended_row_rank": 1,
+      "intended_score": 5971.874257059487,
+      "intended_score_threshold_ratio": 7.132433026469101,
+      "kind": "positive",
+      "logical_ber": 0.1534344335414808,
+      "logical_correlation_summary": {
+        "maximum": 3965.0003814697266,
+        "mean": -3.4886953421785982,
+        "minimum": -5657.999603271484,
+        "standard_deviation": 598.9560420054008
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.1534344335414808,
+        "violations": 1892
+      },
+      "maximum_score": 5971.874257059487,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 7.132433026469101,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.21133097540579954,
+      "other_issued_maximum_score": -176.94410968341577,
+      "physical_correlation_summary": {
+        "maximum": 3145.0,
+        "mean": -0.8721738355446496,
+        "minimum": -3417.0,
+        "standard_deviation": 297.8609399889511
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.3125949800014496,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-0/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.4060197985485418,
+      "unissued_maximum_score": 339.95400641130993
+    },
+    {
+      "arrays_path": "arrays/observation-014.npz",
+      "arrays_sha3_256": "226631a531f1c720441d38b6479523c64c34b610d9e28f28288dc482422f047d",
+      "decode_seconds": 0.8888454850020935,
+      "intended_row_rank": 1,
+      "intended_score": 7545.470951079404,
+      "intended_score_threshold_ratio": 9.01183847736295,
+      "kind": "positive",
+      "logical_ber": 0.06536371746006,
+      "logical_correlation_summary": {
+        "maximum": 1683.0001831054688,
+        "mean": 0.6969666442734976,
+        "minimum": -1389.0001678466797,
+        "standard_deviation": 201.2013574938257
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.06536371746006,
+        "violations": 806
+      },
+      "maximum_score": 7545.470951079404,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 9.01183847736295,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.17284953309303933,
+      "other_issued_maximum_score": -144.72420185262922,
+      "physical_correlation_summary": {
+        "maximum": 1218.0,
+        "mean": 0.1742416610683744,
+        "minimum": -1269.0,
+        "standard_deviation": 79.35001208696727
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.2329171109959134,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-0/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.3675654279465001,
+      "unissued_maximum_score": 307.756765299122
+    },
+    {
+      "arrays_path": "arrays/observation-015.npz",
+      "arrays_sha3_256": "27ae7b3464c52c8f0b0408c56fde86934e9fe95da9d39255cc46708e86329cfe",
+      "decode_seconds": 1.2080358780003735,
+      "intended_row_rank": 1,
+      "intended_score": 8773.42217405306,
+      "intended_score_threshold_ratio": 10.478426600392678,
+      "kind": "positive",
+      "logical_ber": 0.0,
+      "logical_correlation_summary": {
+        "maximum": 298.2637710571289,
+        "mean": 0.40668792777200286,
+        "minimum": -291.6319274902344,
+        "standard_deviation": 217.53178674521462
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "maximum_score": 8773.42217405306,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 10.478426600392678,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.06952682037171307,
+      "other_issued_maximum_score": -58.2137157421833,
+      "physical_correlation_summary": {
+        "maximum": 108.00004577636719,
+        "mean": 0.10167198194300071,
+        "minimum": -104.28804016113281,
+        "standard_deviation": 54.598257614340746
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.5932317760016304,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.4227430076476411,
+      "unissued_maximum_score": 353.9560869837754
+    },
+    {
+      "arrays_path": "arrays/observation-016.npz",
+      "arrays_sha3_256": "079f20531097f3a1bc913e58ba3f6dc7a10bcf0a60ea52b521db7b1c263fbb95",
+      "decode_seconds": 1.7112508700010949,
+      "intended_row_rank": 1,
+      "intended_score": 8339.574228777543,
+      "intended_score_threshold_ratio": 9.960265755044853,
+      "kind": "positive",
+      "logical_ber": 0.025058794907144594,
+      "logical_correlation_summary": {
+        "maximum": 437.00010681152344,
+        "mean": -0.313574425061054,
+        "minimum": -408.0001525878906,
+        "standard_deviation": 96.43344534756885
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.025058794907144594,
+        "violations": 309
+      },
+      "maximum_score": 8339.574228777543,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 9.960265755044853,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.10604255153070408,
+      "other_issued_maximum_score": -88.78776446816723,
+      "physical_correlation_summary": {
+        "maximum": 358.0,
+        "mean": -0.0783936062652635,
+        "minimum": -278.0,
+        "standard_deviation": 31.428449096197333
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.39195901999482885,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-7/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.4279426834905391,
+      "unissued_maximum_score": 358.30969397819376
+    },
+    {
+      "arrays_path": "arrays/observation-017.npz",
+      "arrays_sha3_256": "549e7f0aef63884a599008ad4931a4ec4614365e893c305d19e2e41072348233",
+      "decode_seconds": 1.7976773119953577,
+      "intended_row_rank": 1,
+      "intended_score": 7078.617692803478,
+      "intended_score_threshold_ratio": 8.454258150900836,
+      "kind": "positive",
+      "logical_ber": 0.09715351552996512,
+      "logical_correlation_summary": {
+        "maximum": 2078.0000610351562,
+        "mean": -1.4865761592086335,
+        "minimum": -2679.0,
+        "standard_deviation": 309.0576932735896
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.09715351552996512,
+        "violations": 1198
+      },
+      "maximum_score": 7078.617692803478,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 8.454258150900836,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.054949175332150955,
+      "other_issued_maximum_score": -46.0080822904229,
+      "physical_correlation_summary": {
+        "maximum": 1642.0,
+        "mean": -0.3716440398021584,
+        "minimum": -1811.0,
+        "standard_deviation": 135.5491643379285
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.33223177299805684,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-7/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.4607186145172576,
+      "unissued_maximum_score": 385.7524667351523
+    },
+    {
+      "arrays_path": "arrays/observation-018.npz",
+      "arrays_sha3_256": "5e42c4758d7a607952934fd77661f22342562741b5cc99298ab9b80496f02067",
+      "decode_seconds": 1.340566860002582,
+      "intended_row_rank": 1,
+      "intended_score": 6108.172965262576,
+      "intended_score_threshold_ratio": 7.295219677025851,
+      "kind": "positive",
+      "logical_ber": 0.15278566215229908,
+      "logical_correlation_summary": {
+        "maximum": 3963.000442504883,
+        "mean": -4.435941010783666,
+        "minimum": -5662.999588012695,
+        "standard_deviation": 598.9019772313807
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.15278566215229908,
+        "violations": 1884
+      },
+      "maximum_score": 6108.172965262576,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 7.295219677025851,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.04765077731256577,
+      "other_issued_maximum_score": -39.89724814880721,
+      "physical_correlation_summary": {
+        "maximum": 3144.0,
+        "mean": -1.1089852526959165,
+        "minimum": -3410.0,
+        "standard_deviation": 297.83242979343555
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.32406603600247763,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-7/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.43520936776766894,
+      "unissued_maximum_score": 364.39397470087636
+    },
+    {
+      "arrays_path": "arrays/observation-019.npz",
+      "arrays_sha3_256": "335f53b3a8c96b24811b1040551d60373634982fa4cd71c2c4c67e8a6fe62491",
+      "decode_seconds": 1.320153708998987,
+      "intended_row_rank": 1,
+      "intended_score": 7642.248279694614,
+      "intended_score_threshold_ratio": 9.127423264502868,
+      "kind": "positive",
+      "logical_ber": 0.06601248884924175,
+      "logical_correlation_summary": {
+        "maximum": 1683.000244140625,
+        "mean": -0.9048648774213004,
+        "minimum": -1393.0002136230469,
+        "standard_deviation": 201.12587232270732
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.06601248884924175,
+        "violations": 814
+      },
+      "maximum_score": 7642.248279694614,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 9.127423264502868,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.0034304803556939067,
+      "other_issued_maximum_score": -2.8722873736759738,
+      "physical_correlation_summary": {
+        "maximum": 1222.0,
+        "mean": -0.2262162193553251,
+        "minimum": -1270.0,
+        "standard_deviation": 79.29724414708406
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.2801551040029153,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-6-r4/row-7/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.43906678430612867,
+      "unissued_maximum_score": 367.62372904126687
+    },
+    {
+      "arrays_path": "arrays/observation-020.npz",
+      "arrays_sha3_256": "bee108e0eaa4d974bc655c4067a5e7b0b4abaa0746aada352a641114f287847f",
+      "decode_seconds": 0.5465400489993044,
+      "intended_row_rank": 1,
+      "intended_score": 8650.055030903923,
+      "intended_score_threshold_ratio": 10.331084602168605,
+      "kind": "positive",
+      "logical_ber": 0.0,
+      "logical_correlation_summary": {
+        "maximum": 370.0541687011719,
+        "mean": 2.6608357864539514,
+        "minimum": -354.8139343261719,
+        "standard_deviation": 217.72602197633083
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "maximum_score": 8650.055030903923,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 10.331084602168605,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.21686881859578458,
+      "other_issued_maximum_score": -181.58085889131905,
+      "physical_correlation_summary": {
+        "maximum": 370.0541687011719,
+        "mean": 2.6608357864539514,
+        "minimum": -354.8139343261719,
+        "standard_deviation": 217.72602197633083
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.19966071400267538,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.36363927224762327,
+      "unissued_maximum_score": 304.46945673831
+    },
+    {
+      "arrays_path": "arrays/observation-021.npz",
+      "arrays_sha3_256": "c866f4c8399e9fb9fe5364e5607316f5f0c5a01b6b3a91a24ca6efcd7b0db884",
+      "decode_seconds": 0.4539612039952772,
+      "intended_row_rank": 1,
+      "intended_score": 8476.023343562216,
+      "intended_score_threshold_ratio": 10.123232041813571,
+      "kind": "positive",
+      "logical_ber": 0.010137052955964641,
+      "logical_correlation_summary": {
+        "maximum": 607.5081787109375,
+        "mean": 2.585140438093755,
+        "minimum": -526.1630249023438,
+        "standard_deviation": 171.3717404197638
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.010137052955964641,
+        "violations": 125
+      },
+      "maximum_score": 8476.023343562216,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 10.123232041813571,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.2616454733967689,
+      "other_issued_maximum_score": -219.071649359437,
+      "physical_correlation_summary": {
+        "maximum": 607.5081787109375,
+        "mean": 2.585140438093755,
+        "minimum": -526.1630249023438,
+        "standard_deviation": 171.3717404197638
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.35536408700136235,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-0/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.36878952654019703,
+      "unissued_maximum_score": 308.78168384412237
+    },
+    {
+      "arrays_path": "arrays/observation-022.npz",
+      "arrays_sha3_256": "5b9ffcc6fe1eca98ffcdf4f2ee4c163c3bdfe39ae1ee01dafa6a249f8d46045e",
+      "decode_seconds": 0.4281680450003478,
+      "intended_row_rank": 1,
+      "intended_score": 8034.089721609049,
+      "intended_score_threshold_ratio": 9.595414170062545,
+      "kind": "positive",
+      "logical_ber": 0.03795312626713162,
+      "logical_correlation_summary": {
+        "maximum": 2254.161865234375,
+        "mean": 2.5855730910746297,
+        "minimum": -2119.311767578125,
+        "standard_deviation": 284.4637710925427
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.03795312626713162,
+        "violations": 468
+      },
+      "maximum_score": 8034.089721609049,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 9.595414170062545,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.26085301280322404,
+      "other_issued_maximum_score": -218.40813453907177,
+      "physical_correlation_summary": {
+        "maximum": 2254.161865234375,
+        "mean": 2.5855730910746297,
+        "minimum": -2119.311767578125,
+        "standard_deviation": 284.4637710925427
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.19958223000139697,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-0/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.46431690042444435,
+      "unissued_maximum_score": 388.7652550640329
+    },
+    {
+      "arrays_path": "arrays/observation-023.npz",
+      "arrays_sha3_256": "9cf6f93d90e0d94b4fe74cc5a66e079781ceec74cae9633c2f1666d51d92f599",
+      "decode_seconds": 0.4301450409984682,
+      "intended_row_rank": 1,
+      "intended_score": 7785.819427997105,
+      "intended_score_threshold_ratio": 9.298895662567894,
+      "kind": "positive",
+      "logical_ber": 0.05376692887843646,
+      "logical_correlation_summary": {
+        "maximum": 5470.1669921875,
+        "mean": 5.849793057731348,
+        "minimum": -4584.3203125,
+        "standard_deviation": 527.165938486135
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.05376692887843646,
+        "violations": 663
+      },
+      "maximum_score": 7785.819427997105,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 9.298895662567894,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.21373674765671202,
+      "other_issued_maximum_score": -178.95842503979628,
+      "physical_correlation_summary": {
+        "maximum": 5470.1669921875,
+        "mean": 5.849793057731348,
+        "minimum": -4584.3203125,
+        "standard_deviation": 527.165938486135
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.28676830400218023,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-0/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.4613895858852752,
+      "unissued_maximum_score": 386.31426053328795
+    },
+    {
+      "arrays_path": "arrays/observation-024.npz",
+      "arrays_sha3_256": "d330f5a4a6295be700507707c37ffd48d11836944ca0b5dbd7930cbd29d7d932",
+      "decode_seconds": 0.7069910270001856,
+      "intended_row_rank": 1,
+      "intended_score": 7938.619222567086,
+      "intended_score_threshold_ratio": 9.481390178412783,
+      "kind": "positive",
+      "logical_ber": 0.04038601897656313,
+      "logical_correlation_summary": {
+        "maximum": 1464.0,
+        "mean": 2.476750857135345,
+        "minimum": -1223.999755859375,
+        "standard_deviation": 206.90895074323123
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.04038601897656313,
+        "violations": 498
+      },
+      "maximum_score": 7938.619222567086,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 9.481390178412783,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.23263620409029778,
+      "other_issued_maximum_score": -194.7826433576263,
+      "physical_correlation_summary": {
+        "maximum": 1464.0,
+        "mean": 2.476750857135345,
+        "minimum": -1223.999755859375,
+        "standard_deviation": 206.90895074323123
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.37991410800168524,
+      "selected_count": 1,
+      "selected_rows": [
+        0
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-0/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.43908869170415854,
+      "unissued_maximum_score": 367.64207176188523
+    },
+    {
+      "arrays_path": "arrays/observation-025.npz",
+      "arrays_sha3_256": "0db0717d51bcd9e712ae69cee3c4ead6ecbac98dba39e5af44c0b886e81d6231",
+      "decode_seconds": 0.5011749980039895,
+      "intended_row_rank": 1,
+      "intended_score": 8773.42217405306,
+      "intended_score_threshold_ratio": 10.478426600392678,
+      "kind": "positive",
+      "logical_ber": 0.0,
+      "logical_correlation_summary": {
+        "maximum": 360.5589294433594,
+        "mean": 0.5685422008088418,
+        "minimum": -354.8139343261719,
+        "standard_deviation": 217.8030912335988
+      },
+      "marking_condition": {
+        "marking_condition_observed": true,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.0,
+        "violations": 0
+      },
+      "maximum_score": 8773.42217405306,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 10.478426600392678,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.06952682037171307,
+      "other_issued_maximum_score": -58.2137157421833,
+      "physical_correlation_summary": {
+        "maximum": 360.5589294433594,
+        "mean": 0.5685422008088418,
+        "minimum": -354.8139343261719,
+        "standard_deviation": 217.8030912335988
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.24777648500457872,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.4227430076476411,
+      "unissued_maximum_score": 353.9560869837754
+    },
+    {
+      "arrays_path": "arrays/observation-026.npz",
+      "arrays_sha3_256": "0d1a5d44eadf8d7d5160ae25ee4f5bd22eaa013d24f38c53785656c2588d6585",
+      "decode_seconds": 0.5335683770026662,
+      "intended_row_rank": 1,
+      "intended_score": 8598.66293972876,
+      "intended_score_threshold_ratio": 10.269705103435232,
+      "kind": "positive",
+      "logical_ber": 0.00989376368502149,
+      "logical_correlation_summary": {
+        "maximum": 539.0000610351562,
+        "mean": 0.7849950248254843,
+        "minimum": -510.73504638671875,
+        "standard_deviation": 171.48012662082053
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.00989376368502149,
+        "violations": 122
+      },
+      "maximum_score": 8598.66293972876,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 10.269705103435232,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.07759008676662768,
+      "other_issued_maximum_score": -64.96496217280577,
+      "physical_correlation_summary": {
+        "maximum": 539.0000610351562,
+        "mean": 0.7849950248254843,
+        "minimum": -510.73504638671875,
+        "standard_deviation": 171.48012662082053
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.36544289700395893,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-7/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.42008247605022064,
+      "unissued_maximum_score": 351.7284656240282
+    },
+    {
+      "arrays_path": "arrays/observation-027.npz",
+      "arrays_sha3_256": "fdbba95dd97c2cd5f3895bb0ffb088f6faf6f295cc5020a07cadfdb3f850d525",
+      "decode_seconds": 0.4634357809991343,
+      "intended_row_rank": 1,
+      "intended_score": 8135.557943544789,
+      "intended_score_threshold_ratio": 9.716601466733444,
+      "kind": "positive",
+      "logical_ber": 0.03868299407996107,
+      "logical_correlation_summary": {
+        "maximum": 2253.574951171875,
+        "mean": 0.7600940069851818,
+        "minimum": -2124.0126953125,
+        "standard_deviation": 284.33480262074994
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.03868299407996107,
+        "violations": 477
+      },
+      "maximum_score": 8135.557943544789,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 9.716601466733444,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.06827277932670363,
+      "other_issued_maximum_score": -57.163726852530125,
+      "physical_correlation_summary": {
+        "maximum": 2253.574951171875,
+        "mean": 0.7600940069851818,
+        "minimum": -2124.0126953125,
+        "standard_deviation": 284.33480262074994
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.24964732600346906,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-7/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.3915315310807477,
+      "unissued_maximum_score": 327.8232073979549
+    },
+    {
+      "arrays_path": "arrays/observation-028.npz",
+      "arrays_sha3_256": "8050523a00b78d48b7011322d85dbd055c84f894ed86b12339d8f7b09ec249f1",
+      "decode_seconds": 0.7172221829969203,
+      "intended_row_rank": 1,
+      "intended_score": 7837.152903081849,
+      "intended_score_threshold_ratio": 9.360205153909751,
+      "kind": "positive",
+      "logical_ber": 0.055145568080447654,
+      "logical_correlation_summary": {
+        "maximum": 5469.2265625,
+        "mean": 4.269259775712555,
+        "minimum": -4579.09228515625,
+        "standard_deviation": 526.4823570048851
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.055145568080447654,
+        "violations": 680
+      },
+      "maximum_score": 7837.152903081849,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 9.360205153909751,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.02278725437337917,
+      "other_issued_maximum_score": -19.079410528838395,
+      "physical_correlation_summary": {
+        "maximum": 5469.2265625,
+        "mean": 4.269259775712555,
+        "minimum": -4579.09228515625,
+        "standard_deviation": 526.4823570048851
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.2990716180065647,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-7/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.41139005557359215,
+      "unissued_maximum_score": 344.4504383529313
+    },
+    {
+      "arrays_path": "arrays/observation-029.npz",
+      "arrays_sha3_256": "330188a28720ef5707793669a85cff33bdf97da549d4fd623369b4c88bc6758a",
+      "decode_seconds": 0.6276348039973527,
+      "intended_row_rank": 1,
+      "intended_score": 8093.8272176995,
+      "intended_score_threshold_ratio": 9.666760898358175,
+      "kind": "positive",
+      "logical_ber": 0.040710404671154,
+      "logical_correlation_summary": {
+        "maximum": 1464.0,
+        "mean": 1.0803993116203532,
+        "minimum": -1230.9998779296875,
+        "standard_deviation": 206.42749231440405
+      },
+      "marking_condition": {
+        "marking_condition_observed": false,
+        "unanimous_positions": 12331,
+        "violation_rate": 0.040710404671154,
+        "violations": 502
+      },
+      "maximum_score": 8093.8272176995,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 9.666760898358175,
+      "negative_ber": "not-applicable",
+      "negative_marking_condition_reason": null,
+      "other_issued_maximum_ratio": -0.06609862084950964,
+      "other_issued_maximum_score": -55.34333807460002,
+      "physical_correlation_summary": {
+        "maximum": 1464.0,
+        "mean": 1.0803993116203532,
+        "minimum": -1230.9998779296875,
+        "standard_deviation": 206.42749231440405
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.25816231499629794,
+      "selected_count": 1,
+      "selected_rows": [
+        7
+      ],
+      "suspect_path": "rasters/symmetric-12-r1/row-7/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.4186486806936271,
+      "unissued_maximum_score": 350.5279712698357
+    },
+    {
+      "arrays_path": "arrays/observation-030.npz",
+      "arrays_sha3_256": "d5520dd4e309b274349c555dcdd01ef7648cf79e53e3ee8c70144c7d225fa5f4",
+      "decode_seconds": 0.9781127599999309,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "standard_deviation": 0.0
+      },
+      "marking_condition": null,
+      "maximum_score": 0.0,
+      "maximum_score_row": 0,
+      "maximum_score_threshold_ratio": 0.0,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.0,
+      "other_issued_maximum_score": 0.0,
+      "physical_correlation_summary": {
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "standard_deviation": 0.0
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.0015691059961682186,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.0,
+      "unissued_maximum_score": 0.0
+    },
+    {
+      "arrays_path": "arrays/observation-031.npz",
+      "arrays_sha3_256": "cd5f3a96f8fa9fdebd665232c94e58ae6d6efb3c0787d374c39669420c08a062",
+      "decode_seconds": 1.9587819750013296,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 259.0,
+        "mean": -0.031202637554350352,
+        "minimum": -253.00006103515625,
+        "standard_deviation": 16.18911881538828
+      },
+      "marking_condition": null,
+      "maximum_score": 180.36228259973285,
+      "maximum_score_row": 7,
+      "maximum_score_threshold_ratio": 0.08588680123796802,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.08588680123796802,
+      "other_issued_maximum_score": 180.36228259973285,
+      "physical_correlation_summary": {
+        "maximum": 259.0,
+        "mean": -0.031202637554350352,
+        "minimum": -253.00006103515625,
+        "standard_deviation": 16.18911881538828
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.14869430499675218,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.08089406041344982,
+      "unissued_maximum_score": 169.87752686824462
+    },
+    {
+      "arrays_path": "arrays/observation-032.npz",
+      "arrays_sha3_256": "9628e5e463c9a898cfea5e5bb69652e6d921e08e682377ce2fdde9bd2b3580f2",
+      "decode_seconds": 0.7856745000026422,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 1764.0,
+        "mean": -0.7274837159656343,
+        "minimum": -1764.0,
+        "standard_deviation": 124.96952425392232
+      },
+      "marking_condition": null,
+      "maximum_score": 194.2059077179905,
+      "maximum_score_row": 579,
+      "maximum_score_threshold_ratio": 0.09247900367523357,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.06138018250769883,
+      "other_issued_maximum_score": 128.89838326616754,
+      "physical_correlation_summary": {
+        "maximum": 1764.0,
+        "mean": -0.7274837159656343,
+        "minimum": -1764.0,
+        "standard_deviation": 124.96952425392232
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.12553759499860462,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.09247900367523357,
+      "unissued_maximum_score": 194.2059077179905
+    },
+    {
+      "arrays_path": "arrays/observation-033.npz",
+      "arrays_sha3_256": "d0c1d9f65bb9c5c1f127d7ab4c17af346f7089673d90b1345c0f34265f0ef053",
+      "decode_seconds": 0.7949134680020506,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 3397.0,
+        "mean": -1.9490051456996373,
+        "minimum": -3404.0,
+        "standard_deviation": 295.71921194796
+      },
+      "marking_condition": null,
+      "maximum_score": 206.60302492553188,
+      "maximum_score_row": 981,
+      "maximum_score_threshold_ratio": 0.09838239282168185,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.08114029769897996,
+      "other_issued_maximum_score": 170.3946251678579,
+      "physical_correlation_summary": {
+        "maximum": 3397.0,
+        "mean": -1.9490051456996373,
+        "minimum": -3404.0,
+        "standard_deviation": 295.71921194796
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.1922361169999931,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.09838239282168185,
+      "unissued_maximum_score": 206.60302492553188
+    },
+    {
+      "arrays_path": "arrays/observation-034.npz",
+      "arrays_sha3_256": "6c179dbf9885c4fa41a2b1a31db0a5f09fde292b87631944abe78128f46c6824",
+      "decode_seconds": 0.9753212340001483,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 1125.0,
+        "mean": -0.3123410845801944,
+        "minimum": -1227.0,
+        "standard_deviation": 69.25864962965665
+      },
+      "marking_condition": null,
+      "maximum_score": 169.0002326432552,
+      "maximum_score_row": 882,
+      "maximum_score_threshold_ratio": 0.08047630125869296,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.0680078418644046,
+      "other_issued_maximum_score": 142.81646791524966,
+      "physical_correlation_summary": {
+        "maximum": 1125.0,
+        "mean": -0.3123410845801944,
+        "minimum": -1227.0,
+        "standard_deviation": 69.25864962965665
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.20150644599925727,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.08047630125869296,
+      "unissued_maximum_score": 169.0002326432552
+    },
+    {
+      "arrays_path": "arrays/observation-035.npz",
+      "arrays_sha3_256": "37e2fcbf8b31847b19a117b2f0917362ded3a018cbb62d4a84079dd8da7f881f",
+      "decode_seconds": 1.3279765550032607,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "standard_deviation": 0.0
+      },
+      "marking_condition": null,
+      "maximum_score": 471.6022938396141,
+      "maximum_score_row": 79,
+      "maximum_score_threshold_ratio": 0.5632522774510829,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.11430546705608019,
+      "other_issued_maximum_score": 95.70617398300273,
+      "physical_correlation_summary": {
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "standard_deviation": 0.0
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.22059261100366712,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.5632522774510829,
+      "unissued_maximum_score": 471.6022938396141
+    },
+    {
+      "arrays_path": "arrays/observation-036.npz",
+      "arrays_sha3_256": "698aa3d207cf31c0ca485bc6ec10bf6a14b66110f7e53a51a4e20237a5c15288",
+      "decode_seconds": 1.0347236509987852,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 253.00006103515625,
+        "mean": -0.5267379198638147,
+        "minimum": -366.99998474121094,
+        "standard_deviation": 32.35278528665449
+      },
+      "marking_condition": null,
+      "maximum_score": 367.5118844367091,
+      "maximum_score_row": 914,
+      "maximum_score_threshold_ratio": 0.4389332041071757,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.2290566790107099,
+      "other_issued_maximum_score": 191.78556317531547,
+      "physical_correlation_summary": {
+        "maximum": 253.00006103515625,
+        "mean": -0.13168447996595367,
+        "minimum": -229.0,
+        "standard_deviation": 16.140748074642
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.23167513699445408,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.4389332041071757,
+      "unissued_maximum_score": 367.5118844367091
+    },
+    {
+      "arrays_path": "arrays/observation-037.npz",
+      "arrays_sha3_256": "ce5e5cf9ad3a54a70526bffd17ea71deb93d72dfd1b67cd0740bfa90548fc10c",
+      "decode_seconds": 0.878706030001922,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 1874.9998779296875,
+        "mean": -1.718172581949312,
+        "minimum": -2783.0,
+        "standard_deviation": 250.30817335569333
+      },
+      "marking_condition": null,
+      "maximum_score": 334.6167908626845,
+      "maximum_score_row": 79,
+      "maximum_score_threshold_ratio": 0.39964536218069635,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.30916526194549804,
+      "other_issued_maximum_score": 258.85922267164676,
+      "physical_correlation_summary": {
+        "maximum": 1605.0,
+        "mean": -0.429543145487328,
+        "minimum": -1764.0,
+        "standard_deviation": 125.67111261448085
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.1987092080016737,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.39964536218069635,
+      "unissued_maximum_score": 334.6167908626845
+    },
+    {
+      "arrays_path": "arrays/observation-038.npz",
+      "arrays_sha3_256": "3a6e5e07ae95fc6d634b1293e2aeed33fd04112c93941cbdfa2ab356b8413caa",
+      "decode_seconds": 0.7008707700006198,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 3872.0,
+        "mean": -4.76141066594132,
+        "minimum": -5729.0,
+        "standard_deviation": 589.3237834158366
+      },
+      "marking_condition": null,
+      "maximum_score": 342.69451554409795,
+      "maximum_score_row": 16,
+      "maximum_score_threshold_ratio": 0.40929289121705054,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.3323233553949601,
+      "other_issued_maximum_score": 278.24913094000163,
+      "physical_correlation_summary": {
+        "maximum": 3149.0,
+        "mean": -1.19035266648533,
+        "minimum": -3404.0,
+        "standard_deviation": 295.7386403857767
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.17812298399803694,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.40929289121705054,
+      "unissued_maximum_score": 342.69451554409795
+    },
+    {
+      "arrays_path": "arrays/observation-039.npz",
+      "arrays_sha3_256": "6fb044f36726b2cbecca08bd61477b8c99dcee7908b3340ea66518e5955e35cd",
+      "decode_seconds": 0.7792945819965098,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 1561.0000610351562,
+        "mean": -1.3250035329337209,
+        "minimum": -1333.0,
+        "standard_deviation": 140.44032379827422
+      },
+      "marking_condition": null,
+      "maximum_score": 307.38159697589407,
+      "maximum_score_row": 368,
+      "maximum_score_threshold_ratio": 0.3671173503708692,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.3063292015175965,
+      "other_issued_maximum_score": 256.48463377638524,
+      "physical_correlation_summary": {
+        "maximum": 1177.0,
+        "mean": -0.3312508832334302,
+        "minimum": -1298.0,
+        "standard_deviation": 70.35487282217532
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.2219714919992839,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.3671173503708692,
+      "unissued_maximum_score": 307.38159697589407
+    },
+    {
+      "arrays_path": "arrays/observation-040.npz",
+      "arrays_sha3_256": "467975976ee80ac8b665b9ea3c16cb083911fb4bef10d123557bdc43bf53165d",
+      "decode_seconds": 0.3707979239989072,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "standard_deviation": 0.0
+      },
+      "marking_condition": null,
+      "maximum_score": 471.6022938396141,
+      "maximum_score_row": 79,
+      "maximum_score_threshold_ratio": 0.5632522774510829,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.11430546705608019,
+      "other_issued_maximum_score": 95.70617398300273,
+      "physical_correlation_summary": {
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "standard_deviation": 0.0
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.2368203719961457,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.5632522774510829,
+      "unissued_maximum_score": 471.6022938396141
+    },
+    {
+      "arrays_path": "arrays/observation-041.npz",
+      "arrays_sha3_256": "f627107e072fbed7a507f372fe96b5040f32990fe6707ff0fe10ddaab648de52",
+      "decode_seconds": 0.35586343499744544,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 411.49029541015625,
+        "mean": 0.1635033790236329,
+        "minimum": -359.99993896484375,
+        "standard_deviation": 37.4516322701438
+      },
+      "marking_condition": null,
+      "maximum_score": 402.7192768379032,
+      "maximum_score_row": 79,
+      "maximum_score_threshold_ratio": 0.48098271110094504,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.03769284275828094,
+      "other_issued_maximum_score": 31.559625797846838,
+      "physical_correlation_summary": {
+        "maximum": 411.49029541015625,
+        "mean": 0.1635033790236329,
+        "minimum": -359.99993896484375,
+        "standard_deviation": 37.4516322701438
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.14992843099753372,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/jpeg55.jpg",
+      "transform": "jpeg55",
+      "unissued_maximum_ratio": 0.48098271110094504,
+      "unissued_maximum_score": 402.7192768379032
+    },
+    {
+      "arrays_path": "arrays/observation-042.npz",
+      "arrays_sha3_256": "77cb3f0bc989bb2cd06a5a7b795ecca077ba15b13f923f91984e714a80519e19",
+      "decode_seconds": 0.35931145200447645,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 2207.114013671875,
+        "mean": 0.30719814930081263,
+        "minimum": -1834.60791015625,
+        "standard_deviation": 201.509546916353
+      },
+      "marking_condition": null,
+      "maximum_score": 449.92157927760314,
+      "maximum_score_row": 79,
+      "maximum_score_threshold_ratio": 0.5373581882718378,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.014338157703600895,
+      "other_issued_maximum_score": 12.005114463189315,
+      "physical_correlation_summary": {
+        "maximum": 2207.114013671875,
+        "mean": 0.30719814930081263,
+        "minimum": -1834.60791015625,
+        "standard_deviation": 201.509546916353
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.20076876399980392,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/blur1.png",
+      "transform": "blur1",
+      "unissued_maximum_ratio": 0.5373581882718378,
+      "unissued_maximum_score": 449.92157927760314
+    },
+    {
+      "arrays_path": "arrays/observation-043.npz",
+      "arrays_sha3_256": "47eb0f3fe5c7bddea15586c70ba278c2be3c112f27adc5154aa9de4e1d3b3ce3",
+      "decode_seconds": 0.368342550995294,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 5490.71044921875,
+        "mean": 3.8649339614805056,
+        "minimum": -4370.4599609375,
+        "standard_deviation": 495.80413249170175
+      },
+      "marking_condition": null,
+      "maximum_score": 421.2640088080442,
+      "maximum_score_row": 79,
+      "maximum_score_threshold_ratio": 0.5031313788520272,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.07523554434785326,
+      "other_issued_maximum_score": 62.99354075102,
+      "physical_correlation_summary": {
+        "maximum": 5490.71044921875,
+        "mean": 3.8649339614805056,
+        "minimum": -4370.4599609375,
+        "standard_deviation": 495.80413249170175
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.26943136299814796,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/blur2.png",
+      "transform": "blur2",
+      "unissued_maximum_ratio": 0.5031313788520272,
+      "unissued_maximum_score": 421.2640088080442
+    },
+    {
+      "arrays_path": "arrays/observation-044.npz",
+      "arrays_sha3_256": "ad7a29cd4e209aa1b8000432eaa56dbf494510c822f0b4f34d8eaabd55d86e97",
+      "decode_seconds": 0.49142207900149515,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "unmarked",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 1420.0,
+        "mean": 0.6975962077601675,
+        "minimum": -1178.0,
+        "standard_deviation": 126.95830958738358
+      },
+      "marking_condition": null,
+      "maximum_score": 435.43826416523126,
+      "maximum_score_row": 79,
+      "maximum_score_threshold_ratio": 0.5200602227431554,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": -0.02670339324072734,
+      "other_issued_maximum_score": -22.358332153786925,
+      "physical_correlation_summary": {
+        "maximum": 1420.0,
+        "mean": 0.6975962077601675,
+        "minimum": -1178.0,
+        "standard_deviation": 126.95830958738358
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": null,
+      "scoring_seconds": 0.20335595500364434,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/unmarked/half-resize.png",
+      "transform": "half-resize",
+      "unissued_maximum_ratio": 0.5200602227431554,
+      "unissued_maximum_score": 435.43826416523126
+    },
+    {
+      "arrays_path": "arrays/observation-045.npz",
+      "arrays_sha3_256": "03637d5c45ecc099d221ea59373579d7b732110862976810b0be6e80655a8554",
+      "decode_seconds": 0.7787221580001642,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-key",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 104.28804016113281,
+        "mean": -0.3336299930027553,
+        "minimum": -102.68399047851562,
+        "standard_deviation": 37.824834399636735
+      },
+      "marking_condition": null,
+      "maximum_score": 385.82965995683503,
+      "maximum_score_row": 433,
+      "maximum_score_threshold_ratio": 0.18372840950325478,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": -0.005880542317277554,
+      "other_issued_maximum_score": -12.349138866282864,
+      "physical_correlation_summary": {
+        "maximum": 104.28804016113281,
+        "mean": -0.3336299930027553,
+        "minimum": -102.68399047851562,
+        "standard_deviation": 37.824834399636735
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.3789007470040815,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/original-6-r1/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.18372840950325478,
+      "unissued_maximum_score": 385.82965995683503
+    },
+    {
+      "arrays_path": "arrays/observation-046.npz",
+      "arrays_sha3_256": "7826feac880afb30f61da3a55bc87b8d029764e04dd9137723b57f275cc5c7b5",
+      "decode_seconds": 0.711285935001797,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-key",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 104.4019775390625,
+        "mean": -0.2924696596054804,
+        "minimum": -102.3699722290039,
+        "standard_deviation": 37.85955042036141
+      },
+      "marking_condition": null,
+      "maximum_score": 358.53348342117164,
+      "maximum_score_row": 809,
+      "maximum_score_threshold_ratio": 0.17073023020055791,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.156609119985054,
+      "other_issued_maximum_score": 328.8791519686134,
+      "physical_correlation_summary": {
+        "maximum": 104.4019775390625,
+        "mean": -0.2924696596054804,
+        "minimum": -102.3699722290039,
+        "standard_deviation": 37.85955042036141
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.40283295499830274,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/original-6-r1/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.17073023020055791,
+      "unissued_maximum_score": 358.53348342117164
+    },
+    {
+      "arrays_path": "arrays/observation-047.npz",
+      "arrays_sha3_256": "605a3ffd9224d68952120c581de8ebc81b8ab1a8770d34e1b60bb17c6f9f6aba",
+      "decode_seconds": 0.7579954480024753,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-key",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 255.81396484375,
+        "mean": -0.24157010179667682,
+        "minimum": -231.26385498046875,
+        "standard_deviation": 73.70431570776103
+      },
+      "marking_condition": null,
+      "maximum_score": 381.8434362093343,
+      "maximum_score_row": 239,
+      "maximum_score_threshold_ratio": 0.4560499129968159,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.23035522232583946,
+      "other_issued_maximum_score": 192.87281311744889,
+      "physical_correlation_summary": {
+        "maximum": 104.28804016113281,
+        "mean": -0.060392525449169204,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 36.540753881609334
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.17688550900493283,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/symmetric-6-r4/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.4560499129968159,
+      "unissued_maximum_score": 381.8434362093343
+    },
+    {
+      "arrays_path": "arrays/observation-048.npz",
+      "arrays_sha3_256": "263a24c3e1938ef3d024752d6246672ccac28bfb354a8fb6740c80115c4c0e7e",
+      "decode_seconds": 0.7389266640020651,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-key",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 250.63192749023438,
+        "mean": 0.4363142006898601,
+        "minimum": -254.7720489501953,
+        "standard_deviation": 72.81023422432561
+      },
+      "marking_condition": null,
+      "maximum_score": 346.78941782745443,
+      "maximum_score_row": 1,
+      "maximum_score_threshold_ratio": 0.41418358633700386,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.1645267376298348,
+      "other_issued_maximum_score": 137.75565580543446,
+      "physical_correlation_summary": {
+        "maximum": 104.28804016113281,
+        "mean": 0.10907855017246502,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 36.49837753150576
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.19633909900585422,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/symmetric-6-r4/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.41418358633700386,
+      "unissued_maximum_score": 346.78941782745443
+    },
+    {
+      "arrays_path": "arrays/observation-049.npz",
+      "arrays_sha3_256": "cf3f44983a7a1099c730b06f6ab2a950aba2966250f50b408a8394c4400fd8c7",
+      "decode_seconds": 0.3334242459968664,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-key",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 354.5277099609375,
+        "mean": -0.6031270790115566,
+        "minimum": -370.0541687011719,
+        "standard_deviation": 145.22549752605045
+      },
+      "marking_condition": null,
+      "maximum_score": 349.5479509284527,
+      "maximum_score_row": 79,
+      "maximum_score_threshold_ratio": 0.41747820570560656,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.06428974611599528,
+      "other_issued_maximum_score": 53.82879564353461,
+      "physical_correlation_summary": {
+        "maximum": 354.5277099609375,
+        "mean": -0.6031270790115566,
+        "minimum": -370.0541687011719,
+        "standard_deviation": 145.22549752605045
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.177711101998284,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/symmetric-12-r1/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.41747820570560656,
+      "unissued_maximum_score": 349.5479509284527
+    },
+    {
+      "arrays_path": "arrays/observation-050.npz",
+      "arrays_sha3_256": "480af285debfe18155fa90161b66d28026104a5a4e3616f6b1fdc4274bf4f28c",
+      "decode_seconds": 0.4273221520052175,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-key",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 354.5277099609375,
+        "mean": 0.9698928428985866,
+        "minimum": -360.51605224609375,
+        "standard_deviation": 145.3826293520359
+      },
+      "marking_condition": null,
+      "maximum_score": 355.99676680396334,
+      "maximum_score_row": 316,
+      "maximum_score_threshold_ratio": 0.42518026796482744,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.1778242717765513,
+      "other_issued_maximum_score": 148.8894724930141,
+      "physical_correlation_summary": {
+        "maximum": 354.5277099609375,
+        "mean": 0.9698928428985866,
+        "minimum": -360.51605224609375,
+        "standard_deviation": 145.3826293520359
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.16394751900224946,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/symmetric-12-r1/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.42518026796482744,
+      "unissued_maximum_score": 355.99676680396334
+    },
+    {
+      "arrays_path": "arrays/observation-051.npz",
+      "arrays_sha3_256": "6bae1c1fdc5a2f6b9c4219393a5091d4d7eb2040c3f965b484a6de42a0700afa",
+      "decode_seconds": 0.569577827998728,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-context",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 104.0,
+        "mean": -0.03393948139009022,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 37.59672040904836
+      },
+      "marking_condition": null,
+      "maximum_score": 402.46663489413277,
+      "maximum_score_row": 494,
+      "maximum_score_threshold_ratio": 0.1916507785210156,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.03283105389317559,
+      "other_issued_maximum_score": 68.94521317566874,
+      "physical_correlation_summary": {
+        "maximum": 104.0,
+        "mean": -0.03393948139009022,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 37.59672040904836
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.33807791599974735,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/original-6-r1/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.1916507785210156,
+      "unissued_maximum_score": 402.46663489413277
+    },
+    {
+      "arrays_path": "arrays/observation-052.npz",
+      "arrays_sha3_256": "b5d72f26fb7c577bd060bf9645142a91af1d301b538648f3cd52827cdf7dddbb",
+      "decode_seconds": 0.6002180619980209,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-context",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 104.4019775390625,
+        "mean": -0.2906901498885382,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 37.63233564409137
+      },
+      "marking_condition": null,
+      "maximum_score": 338.2253837253911,
+      "maximum_score_row": 328,
+      "maximum_score_threshold_ratio": 0.16105970653590054,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.048107204445538274,
+      "other_issued_maximum_score": 101.02512933563037,
+      "physical_correlation_summary": {
+        "maximum": 104.4019775390625,
+        "mean": -0.2906901498885382,
+        "minimum": -108.00004577636719,
+        "standard_deviation": 37.63233564409137
+      },
+      "profile": "original-6-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.3351938949999749,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/original-6-r1/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.16105970653590054,
+      "unissued_maximum_score": 338.2253837253911
+    },
+    {
+      "arrays_path": "arrays/observation-053.npz",
+      "arrays_sha3_256": "bbc53dc0793ecef1fbc977e36b2ae56016f20bcf6a017fd86bdc571b5adcb0f9",
+      "decode_seconds": 0.6084817640003166,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-context",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 274.68404388427734,
+        "mean": 0.48940085514010756,
+        "minimum": -250.63192749023438,
+        "standard_deviation": 73.6431700089494
+      },
+      "marking_condition": null,
+      "maximum_score": 321.7299962465464,
+      "maximum_score_row": 234,
+      "maximum_score_threshold_ratio": 0.3842541808582139,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": -0.02781156774610649,
+      "other_issued_maximum_score": -23.2861892786199,
+      "physical_correlation_summary": {
+        "maximum": 102.99993896484375,
+        "mean": 0.12235021378502689,
+        "minimum": -104.28804016113281,
+        "standard_deviation": 36.65440188665716
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.1596062009994057,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/symmetric-6-r4/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.3842541808582139,
+      "unissued_maximum_score": 321.7299962465464
+    },
+    {
+      "arrays_path": "arrays/observation-054.npz",
+      "arrays_sha3_256": "fcf85cb78371c688fd78a7a1d7d961b9e4e8f9ab990df6d8b1c495835a92c626",
+      "decode_seconds": 0.6225977959984448,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-context",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 274.68404388427734,
+        "mean": -0.23136796797388187,
+        "minimum": -250.63192749023438,
+        "standard_deviation": 73.47227767722528
+      },
+      "marking_condition": null,
+      "maximum_score": 389.11071842269735,
+      "maximum_score_row": 234,
+      "maximum_score_threshold_ratio": 0.46472950024867216,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.03927121641521413,
+      "other_issued_maximum_score": 32.88117329431543,
+      "physical_correlation_summary": {
+        "maximum": 102.68399047851562,
+        "mean": -0.05784199199347047,
+        "minimum": -104.28804016113281,
+        "standard_deviation": 36.64204550733666
+      },
+      "profile": "symmetric-6-r4",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.18176883299747715,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/symmetric-6-r4/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.46472950024867216,
+      "unissued_maximum_score": 389.11071842269735
+    },
+    {
+      "arrays_path": "arrays/observation-055.npz",
+      "arrays_sha3_256": "33d7cd56673d8fb44a5742b3ff30c5208f66f1c49c99ad8d827cd5c874d19984",
+      "decode_seconds": 0.3518547679996118,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-context",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 354.5277099609375,
+        "mean": -1.4014924195317222,
+        "minimum": -354.5277099609375,
+        "standard_deviation": 145.46958386414389
+      },
+      "marking_condition": null,
+      "maximum_score": 315.027994089391,
+      "maximum_score_row": 871,
+      "maximum_score_threshold_ratio": 0.3762497287429244,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.12283700579160826,
+      "other_issued_maximum_score": 102.84949749669414,
+      "physical_correlation_summary": {
+        "maximum": 354.5277099609375,
+        "mean": -1.4014924195317222,
+        "minimum": -354.5277099609375,
+        "standard_deviation": 145.46958386414389
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 0,
+      "scoring_seconds": 0.15325017400027718,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/symmetric-12-r1/row-0/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.3762497287429244,
+      "unissued_maximum_score": 315.027994089391
+    },
+    {
+      "arrays_path": "arrays/observation-056.npz",
+      "arrays_sha3_256": "99e3aca44bfe77163ec3a3dfedf8028c7683346256ecac3fb502a204feb812c0",
+      "decode_seconds": 0.2638144430020475,
+      "intended_row_rank": null,
+      "intended_score": null,
+      "intended_score_threshold_ratio": null,
+      "kind": "wrong-context",
+      "logical_ber": null,
+      "logical_correlation_summary": {
+        "maximum": 354.5277099609375,
+        "mean": -1.2329350505448655,
+        "minimum": -354.5277099609375,
+        "standard_deviation": 145.7600467975193
+      },
+      "marking_condition": null,
+      "maximum_score": 380.09770361981407,
+      "maximum_score_row": 23,
+      "maximum_score_threshold_ratio": 0.45396491920074616,
+      "negative_ber": null,
+      "negative_marking_condition_reason": "no participating source row; marking-condition BER is undefined",
+      "other_issued_maximum_ratio": 0.06829890134547935,
+      "other_issued_maximum_score": 57.1855984089668,
+      "physical_correlation_summary": {
+        "maximum": 354.5277099609375,
+        "mean": -1.2329350505448655,
+        "minimum": -354.5277099609375,
+        "standard_deviation": 145.7600467975193
+      },
+      "profile": "symmetric-12-r1",
+      "registration": {
+        "pages": [
+          {
+            "applied": false,
+            "method": "identity",
+            "reference_height": 1684,
+            "reference_width": 1190,
+            "rejection_reason": null,
+            "suspect_height": 1684,
+            "suspect_width": 1190
+          }
+        ],
+        "registration_mode": "off"
+      },
+      "registration_mode": "off",
+      "row": 7,
+      "scoring_seconds": 0.1397564639992197,
+      "selected_count": 0,
+      "selected_rows": [],
+      "suspect_path": "rasters/symmetric-12-r1/row-7/clean.png",
+      "transform": "clean",
+      "unissued_maximum_ratio": 0.45396491920074616,
+      "unissued_maximum_score": 380.09770361981407
+    }
+  ],
+  "preparation_seconds": {
+    "original_codebook_generation": 1.6630934679997154,
+    "symmetric_codebook_generation": 0.2875995319991489
+  },
+  "profile_transform_summary": [
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        8.322667650573344,
+        8.21208202308448
+      ],
+      "logical_ber": [
+        0.0,
+        0.0
+      ],
+      "profile": "original-6-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "clean"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        6.64719926641654,
+        6.564432436236387
+      ],
+      "logical_ber": [
+        0.1002095238095238,
+        0.10234285714285714
+      ],
+      "profile": "original-6-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "jpeg55"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        7.648351393422027,
+        7.5497091554368945
+      ],
+      "logical_ber": [
+        0.04068571428571428,
+        0.04097142857142857
+      ],
+      "profile": "original-6-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "blur1"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        7.4586164845774015,
+        7.370299469234854
+      ],
+      "logical_ber": [
+        0.05198095238095238,
+        0.05228571428571428
+      ],
+      "profile": "original-6-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "blur2"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        7.6301201054257834,
+        7.558851505964583
+      ],
+      "logical_ber": [
+        0.04133333333333333,
+        0.04125714285714286
+      ],
+      "profile": "original-6-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "half-resize"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        10.331084602168605,
+        10.478426600392678
+      ],
+      "logical_ber": [
+        0.0,
+        0.0
+      ],
+      "profile": "symmetric-6-r4",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "clean"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        9.792979632452571,
+        9.960265755044853
+      ],
+      "logical_ber": [
+        0.025302084178087745,
+        0.025058794907144594
+      ],
+      "profile": "symmetric-6-r4",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "jpeg55"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        8.380845178049533,
+        8.454258150900836
+      ],
+      "logical_ber": [
+        0.09626145486984024,
+        0.09715351552996512
+      ],
+      "profile": "symmetric-6-r4",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "blur1"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        7.132433026469101,
+        7.295219677025851
+      ],
+      "logical_ber": [
+        0.1534344335414808,
+        0.15278566215229908
+      ],
+      "profile": "symmetric-6-r4",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "blur2"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        9.01183847736295,
+        9.127423264502868
+      ],
+      "logical_ber": [
+        0.06536371746006,
+        0.06601248884924175
+      ],
+      "profile": "symmetric-6-r4",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "half-resize"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        10.331084602168605,
+        10.478426600392678
+      ],
+      "logical_ber": [
+        0.0,
+        0.0
+      ],
+      "profile": "symmetric-12-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "clean"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        10.123232041813571,
+        10.269705103435232
+      ],
+      "logical_ber": [
+        0.010137052955964641,
+        0.00989376368502149
+      ],
+      "profile": "symmetric-12-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "jpeg55"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        9.595414170062545,
+        9.716601466733444
+      ],
+      "logical_ber": [
+        0.03795312626713162,
+        0.03868299407996107
+      ],
+      "profile": "symmetric-12-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "blur1"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        9.298895662567894,
+        9.360205153909751
+      ],
+      "logical_ber": [
+        0.05376692887843646,
+        0.055145568080447654
+      ],
+      "profile": "symmetric-12-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "blur2"
+    },
+    {
+      "intended_row_ranks": [
+        1,
+        1
+      ],
+      "intended_score_threshold_ratios": [
+        9.481390178412783,
+        9.666760898358175
+      ],
+      "logical_ber": [
+        0.04038601897656313,
+        0.040710404671154
+      ],
+      "profile": "symmetric-12-r1",
+      "rows": [
+        0,
+        7
+      ],
+      "selected_rows": [
+        [
+          0
+        ],
+        [
+          7
+        ]
+      ],
+      "transform": "half-resize"
+    }
+  ],
+  "schema_version": "nishan-compact-carrier-run/v1",
+  "status": "complete",
+  "transform_timings": [
+    {
+      "path": "rasters/original-6-r1/row-0/clean.png",
+      "profile": "original-6-r1",
+      "render_seconds": 0.6651651150023099,
+      "row": 0,
+      "transform": "clean",
+      "transform_seconds": 0.4562872349997633
+    },
+    {
+      "path": "rasters/original-6-r1/row-0/jpeg55.jpg",
+      "profile": "original-6-r1",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "jpeg55",
+      "transform_seconds": 0.08133655499841552
+    },
+    {
+      "path": "rasters/original-6-r1/row-0/blur1.png",
+      "profile": "original-6-r1",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "blur1",
+      "transform_seconds": 1.5938875909996568
+    },
+    {
+      "path": "rasters/original-6-r1/row-0/blur2.png",
+      "profile": "original-6-r1",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "blur2",
+      "transform_seconds": 1.2946502630002215
+    },
+    {
+      "path": "rasters/original-6-r1/row-0/half-resize.png",
+      "profile": "original-6-r1",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "half-resize",
+      "transform_seconds": 1.657448377001856
+    },
+    {
+      "path": "rasters/original-6-r1/row-7/clean.png",
+      "profile": "original-6-r1",
+      "render_seconds": 0.4863273549999576,
+      "row": 7,
+      "transform": "clean",
+      "transform_seconds": 0.4116192600049544
+    },
+    {
+      "path": "rasters/original-6-r1/row-7/jpeg55.jpg",
+      "profile": "original-6-r1",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "jpeg55",
+      "transform_seconds": 0.07802953300415538
+    },
+    {
+      "path": "rasters/original-6-r1/row-7/blur1.png",
+      "profile": "original-6-r1",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "blur1",
+      "transform_seconds": 1.33605128700583
+    },
+    {
+      "path": "rasters/original-6-r1/row-7/blur2.png",
+      "profile": "original-6-r1",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "blur2",
+      "transform_seconds": 1.825092372004292
+    },
+    {
+      "path": "rasters/original-6-r1/row-7/half-resize.png",
+      "profile": "original-6-r1",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "half-resize",
+      "transform_seconds": 1.6823792580034933
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-0/clean.png",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.5738550489986665,
+      "row": 0,
+      "transform": "clean",
+      "transform_seconds": 0.37512796200462617
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-0/jpeg55.jpg",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "jpeg55",
+      "transform_seconds": 0.07413314400037052
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-0/blur1.png",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "blur1",
+      "transform_seconds": 1.1194819420052227
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-0/blur2.png",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "blur2",
+      "transform_seconds": 1.1431592279986944
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-0/half-resize.png",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "half-resize",
+      "transform_seconds": 1.317613685001561
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-7/clean.png",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.3361187120026443,
+      "row": 7,
+      "transform": "clean",
+      "transform_seconds": 0.3895940779984812
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-7/jpeg55.jpg",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "jpeg55",
+      "transform_seconds": 0.07025371900090249
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-7/blur1.png",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "blur1",
+      "transform_seconds": 1.1620381259999704
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-7/blur2.png",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "blur2",
+      "transform_seconds": 1.2561643299995922
+    },
+    {
+      "path": "rasters/symmetric-6-r4/row-7/half-resize.png",
+      "profile": "symmetric-6-r4",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "half-resize",
+      "transform_seconds": 1.5320315569988452
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-0/clean.png",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.4010578050001641,
+      "row": 0,
+      "transform": "clean",
+      "transform_seconds": 0.2912912399988272
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-0/jpeg55.jpg",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "jpeg55",
+      "transform_seconds": 0.16652634400088573
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-0/blur1.png",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "blur1",
+      "transform_seconds": 1.1248785409989068
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-0/blur2.png",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "blur2",
+      "transform_seconds": 1.049401816999307
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-0/half-resize.png",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.0,
+      "row": 0,
+      "transform": "half-resize",
+      "transform_seconds": 0.8719821359991329
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-7/clean.png",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.31591230599588016,
+      "row": 7,
+      "transform": "clean",
+      "transform_seconds": 0.24516118900646688
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-7/jpeg55.jpg",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "jpeg55",
+      "transform_seconds": 0.07881764299963834
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-7/blur1.png",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "blur1",
+      "transform_seconds": 0.8785711599994102
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-7/blur2.png",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "blur2",
+      "transform_seconds": 1.37617901199701
+    },
+    {
+      "path": "rasters/symmetric-12-r1/row-7/half-resize.png",
+      "profile": "symmetric-12-r1",
+      "render_seconds": 0.0,
+      "row": 7,
+      "transform": "half-resize",
+      "transform_seconds": 1.469322396995267
+    },
+    {
+      "path": "rasters/unmarked/clean.png",
+      "profile": null,
+      "render_seconds": 0.04269819500041194,
+      "row": null,
+      "transform": "clean",
+      "transform_seconds": 0.13744540200423216
+    },
+    {
+      "path": "rasters/unmarked/jpeg55.jpg",
+      "profile": null,
+      "render_seconds": 0.0,
+      "row": null,
+      "transform": "jpeg55",
+      "transform_seconds": 0.06469882399687776
+    },
+    {
+      "path": "rasters/unmarked/blur1.png",
+      "profile": null,
+      "render_seconds": 0.0,
+      "row": null,
+      "transform": "blur1",
+      "transform_seconds": 0.6577350520019536
+    },
+    {
+      "path": "rasters/unmarked/blur2.png",
+      "profile": null,
+      "render_seconds": 0.0,
+      "row": null,
+      "transform": "blur2",
+      "transform_seconds": 0.8627213049985585
+    },
+    {
+      "path": "rasters/unmarked/half-resize.png",
+      "profile": null,
+      "render_seconds": 0.0,
+      "row": null,
+      "transform": "half-resize",
+      "transform_seconds": 0.7499039779941086
+    }
+  ]
+}

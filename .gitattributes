@@ -1,0 +1,3 @@
+# Evidence and verifier commitments depend on exact bytes. Preserve line endings
+# on checkout, including when another laptop has core.autocrlf enabled.
+* -text

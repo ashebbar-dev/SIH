@@ -1,0 +1,1434 @@
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/compact_carrier_v1/profiles.py	2026-09-12 13:24:55.269688742 +0530
+@@ -0,0 +1,285 @@
++"""Frozen profiles and replay-safe scoring for the compact-carrier pilot."""
++
++from __future__ import annotations
++
++import hashlib
++import json
++from dataclasses import asdict, dataclass, replace
++from pathlib import Path
++from types import MappingProxyType
++from typing import Mapping
++
++import numpy as np
++
++from nishan import tardos
++
++
++ROSTER_SIZE = 1000
++COALITION_LIMIT = 5
++FAMILYWISE_EPSILON = 1.0e-6
++DPI = 144
++STRENGTH = 4.0
++SYMMETRIC_CUTOFF = 1.0 / 141.55
++SYMMETRIC_THRESHOLD = 837.2843088602898
++
++
++@dataclass(frozen=True)
++class CarrierProfile:
++    name: str
++    logical_positions: int
++    block_size: int
++    repetitions: int
++    physical_placements: int
++    nominal_pixels: int
++    threshold: float
++    scorer: str
++    family: str
++
++
++_PROFILE_SEQUENCE = (
++    CarrierProfile(
++        name="original-6-r1",
++        logical_positions=52500,
++        block_size=6,
++        repetitions=1,
++        physical_placements=52500,
++        nominal_pixels=1890000,
++        threshold=2100.0,
++        scorer="original-one-sided",
++        family="original",
++    ),
++    CarrierProfile(
++        name="symmetric-6-r4",
++        logical_positions=12331,
++        block_size=6,
++        repetitions=4,
++        physical_placements=49324,
++        nominal_pixels=1775664,
++        threshold=SYMMETRIC_THRESHOLD,
++        scorer="symmetric-signed",
++        family="symmetric",
++    ),
++    CarrierProfile(
++        name="symmetric-12-r1",
++        logical_positions=12331,
++        block_size=12,
++        repetitions=1,
++        physical_placements=12331,
++        nominal_pixels=1775664,
++        threshold=SYMMETRIC_THRESHOLD,
++        scorer="symmetric-signed",
++        family="symmetric",
++    ),
++)
++
++PROFILES: Mapping[str, CarrierProfile] = MappingProxyType(
++    {profile.name: profile for profile in _PROFILE_SEQUENCE}
++)
++
++
++def original_configuration() -> tardos.Parameters:
++    config = tardos.parameters(ROSTER_SIZE, COALITION_LIMIT, FAMILYWISE_EPSILON)
++    if config.code_length != 52500 or config.threshold != 2100.0:
++        raise RuntimeError("imported original profile no longer matches the frozen pilot")
++    return config
++
++
++def symmetric_configuration() -> tardos.Parameters:
++    """Return an explicitly empirical Parameters-shaped generator input."""
++
++    return replace(
++        original_configuration(),
++        code_length=12331,
++        cutoff=SYMMETRIC_CUTOFF,
++        threshold=SYMMETRIC_THRESHOLD,
++        theorem_profile=(
++            "Empirical symmetric carrier pilot; inherited keyed sampler baseline; "
++            "not theorem-certified"
++        ),
++    )
++
++
++def profile_manifest(profile: CarrierProfile) -> dict[str, object]:
++    result = asdict(profile)
++    result.update({"dpi": DPI, "strength": STRENGTH, "theorem_certified": False})
++    return result
++
++
++def symmetric_scores(
++    codebook: np.ndarray,
++    biases: np.ndarray,
++    word: np.ndarray,
++) -> np.ndarray:
++    """Compute the frozen empirical symbol-symmetric score for every row."""
++
++    codebook = np.asarray(codebook)
++    biases = np.asarray(biases, dtype=np.float64)
++    word = np.asarray(word)
++    if codebook.ndim != 2:
++        raise ValueError("codebook must be 2-D")
++    if biases.shape != (codebook.shape[1],):
++        raise ValueError("bias vector length does not match codebook")
++    if word.shape != (codebook.shape[1],):
++        raise ValueError("word length does not match codebook")
++    if not np.all(np.isfinite(biases)) or np.any(biases <= 0.0) or np.any(
++        biases >= 1.0
++    ):
++        raise ValueError("biases must be finite and strictly between zero and one")
++    if np.any((codebook != 0) & (codebook != 1)):
++        raise ValueError("codebook must be binary")
++    if np.any((word != 0) & (word != 1)):
++        raise ValueError("word must be binary")
++
++    signed_output = 2.0 * word.astype(np.float64) - 1.0
++    weights = signed_output / np.sqrt(biases * (1.0 - biases))
++    scores = np.empty(codebook.shape[0], dtype=np.float64)
++    for start in range(0, codebook.shape[0], 32):
++        chunk = codebook[start : start + 32].astype(np.float64)
++        scores[start : start + 32] = ((chunk - biases) * weights).sum(axis=1)
++    if not np.all(np.isfinite(scores)):
++        raise ValueError("score calculation produced a non-finite value")
++    return scores
++
++
++def collapse_correlations(
++    correlations: np.ndarray,
++    logical_positions: int,
++    repetitions: int,
++) -> tuple[np.ndarray, np.ndarray]:
++    """Sum analog repetitions before applying the strict positive-bit decision."""
++
++    correlations = np.asarray(correlations, dtype=np.float64)
++    if logical_positions < 1 or repetitions < 1:
++        raise ValueError("logical_positions and repetitions must be positive")
++    if correlations.ndim != 1:
++        raise ValueError("correlations must be one-dimensional")
++    if correlations.shape != (logical_positions * repetitions,):
++        raise ValueError("correlation length does not match profile dimensions")
++    if not np.all(np.isfinite(correlations)):
++        raise ValueError("correlations must be finite")
++    summed = correlations.reshape(repetitions, logical_positions).sum(axis=0)
++    word = (summed > 0.0).astype(np.uint8)
++    return word, summed
++
++
++def sha3_file(path: Path) -> str:
++    digest = hashlib.sha3_256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def array_commitment(array: np.ndarray, dtype: str) -> str:
++    return hashlib.sha3_256(
++        np.ascontiguousarray(array, dtype=dtype).tobytes()
++    ).hexdigest()
++
++
++def read_manifest(run: Path) -> dict[str, object]:
++    manifest_path = run / "manifest.json"
++    try:
++        value = json.loads(manifest_path.read_text(encoding="utf-8"))
++    except (OSError, json.JSONDecodeError) as error:
++        raise ValueError(f"cannot read a valid run manifest: {error}") from error
++    if not isinstance(value, dict):
++        raise ValueError("run manifest must be a JSON object")
++    return value
++
++
++def load_replay_state(
++    run: Path,
++    manifest: dict[str, object] | None = None,
++) -> dict[str, np.ndarray]:
++    """Verify public commitments before loading the private, pickle-free NPZ."""
++
++    run = Path(run)
++    manifest = read_manifest(run) if manifest is None else manifest
++    replay_metadata = manifest.get("private_replay")
++    if not isinstance(replay_metadata, dict):
++        raise ValueError("manifest lacks private replay metadata")
++    relative = replay_metadata.get("path")
++    expected_hash = replay_metadata.get("sha3_256")
++    if relative != "private/replay-state.npz" or not isinstance(expected_hash, str):
++        raise ValueError("manifest private replay metadata is invalid")
++    replay_path = run / relative
++    if not replay_path.is_file() or sha3_file(replay_path) != expected_hash:
++        raise ValueError("replay-state hash mismatch")
++
++    source_metadata = manifest.get("source")
++    if source_metadata is not None:
++        if not isinstance(source_metadata, dict):
++            raise ValueError("manifest source metadata is invalid")
++        source_relative = source_metadata.get("run_path")
++        source_hash = source_metadata.get("sha3_256")
++        if not isinstance(source_relative, str) or not isinstance(source_hash, str):
++            raise ValueError("manifest source commitment is invalid")
++        source_path = run / source_relative
++        if not source_path.is_file() or sha3_file(source_path) != source_hash:
++            raise ValueError("source hash mismatch")
++
++    try:
++        with np.load(replay_path, allow_pickle=False) as archive:
++            state = {name: np.array(archive[name], copy=True) for name in archive.files}
++    except (OSError, ValueError, KeyError) as error:
++        raise ValueError(f"private replay state is invalid: {error}") from error
++
++    required = {
++        "original_biases",
++        "original_codebook",
++        "original_key",
++        "symmetric_biases",
++        "symmetric_codebook",
++        "symmetric_key",
++        "carrier_key",
++        "wrong_carrier_key",
++        "context_uuid",
++    }
++    if set(state) != required:
++        raise ValueError("private replay state has unexpected fields")
++    if state["original_biases"].shape != (52500,) or state[
++        "original_codebook"
++    ].shape != (ROSTER_SIZE, 52500):
++        raise ValueError("original replay arrays have invalid shapes")
++    if state["symmetric_biases"].shape != (12331,) or state[
++        "symmetric_codebook"
++    ].shape != (ROSTER_SIZE, 12331):
++        raise ValueError("symmetric replay arrays have invalid shapes")
++    for key_name in ("original_key", "symmetric_key", "carrier_key", "wrong_carrier_key"):
++        if state[key_name].dtype != np.uint8 or state[key_name].shape != (32,):
++            raise ValueError(f"{key_name} has invalid encoding")
++    if state["context_uuid"].shape != () or state["context_uuid"].dtype.kind not in {
++        "S",
++        "U",
++    }:
++        raise ValueError("context UUID has invalid encoding")
++
++    families = manifest.get("families")
++    if isinstance(families, dict):
++        for family, bias_name, codebook_name in (
++            ("original", "original_biases", "original_codebook"),
++            ("symmetric", "symmetric_biases", "symmetric_codebook"),
++        ):
++            metadata = families.get(family)
++            if not isinstance(metadata, dict):
++                raise ValueError(f"manifest lacks {family} family commitments")
++            if array_commitment(state[bias_name], "<f8") != metadata.get(
++                "biases_sha3_256"
++            ):
++                raise ValueError(f"{family} bias commitment mismatch")
++            if array_commitment(state[codebook_name], "u1") != metadata.get(
++                "codebook_sha3_256"
++            ):
++                raise ValueError(f"{family} codebook commitment mismatch")
++    return state
++
++
++def context_for_profile(context_uuid: str, profile_name: str) -> str:
++    if profile_name not in PROFILES:
++        raise ValueError(f"unknown frozen profile: {profile_name}")
++    return f"{context_uuid}/compact-carrier-v1/{profile_name}"
++
++
++def decode_context_uuid(state: dict[str, np.ndarray]) -> str:
++    value = state["context_uuid"].item()
++    return value.decode("utf-8") if isinstance(value, bytes) else str(value)
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/compact_carrier_v1/run_study.py	2026-09-12 13:27:50.700780175 +0530
+@@ -0,0 +1,824 @@
++#!/usr/bin/env python3
++"""Run the one-shot frozen empirical compact-carrier pilot."""
++
++from __future__ import annotations
++
++import argparse
++import hashlib
++import importlib.metadata
++import json
++import os
++import platform
++import shutil
++import sys
++import time
++import traceback
++import uuid
++from dataclasses import asdict
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any
++
++import numpy as np
++from PIL import Image, ImageFilter
++
++from nishan import tardos, tardos_carrier, watermark
++
++from profiles import (
++    DPI,
++    PROFILES,
++    STRENGTH,
++    array_commitment,
++    collapse_correlations,
++    context_for_profile,
++    original_configuration,
++    profile_manifest,
++    sha3_file,
++    symmetric_configuration,
++    symmetric_scores,
++)
++
++
++REPO_ROOT = Path(__file__).resolve().parents[3]
++SOURCE = REPO_ROOT / "artifacts/nishan/synthetic-source.pdf"
++ISSUED_ROWS = (0, 7)
++TRANSFORMS = ("clean", "jpeg55", "blur1", "blur2", "half-resize")
++SCHEMA_VERSION = "nishan-compact-carrier-run/v1"
++PROFILE_VERSION = "compact-carrier-v1"
++
++
++def create_output_directory(output: Path) -> None:
++    output.mkdir(parents=True, exist_ok=False)
++
++
++def build_declared_matrix() -> list[dict[str, object]]:
++    matrix: list[dict[str, object]] = []
++    for profile in PROFILES:
++        for row in ISSUED_ROWS:
++            for transform in TRANSFORMS:
++                matrix.append(
++                    {
++                        "kind": "positive",
++                        "profile": profile,
++                        "row": row,
++                        "transform": transform,
++                    }
++                )
++    for profile in PROFILES:
++        for transform in TRANSFORMS:
++            matrix.append(
++                {
++                    "kind": "unmarked",
++                    "profile": profile,
++                    "row": None,
++                    "transform": transform,
++                }
++            )
++    for kind in ("wrong-key", "wrong-context"):
++        for profile in PROFILES:
++            for row in ISSUED_ROWS:
++                matrix.append(
++                    {
++                        "kind": kind,
++                        "profile": profile,
++                        "row": row,
++                        "transform": "clean",
++                    }
++                )
++    identities = {
++        (item["kind"], item["profile"], item["row"], item["transform"])
++        for item in matrix
++    }
++    if len(matrix) != 57 or len(identities) != 57:
++        raise RuntimeError("frozen matrix construction is invalid")
++    return matrix
++
++
++def _json_write(path: Path, value: object) -> None:
++    path.write_text(
++        json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n",
++        encoding="utf-8",
++    )
++
++
++def _relative(path: Path, output: Path) -> str:
++    return path.relative_to(output).as_posix()
++
++
++def _now() -> str:
++    return datetime.now(timezone.utc).isoformat()
++
++
++def _secret_commitment(secret: bytes) -> str:
++    return hashlib.sha3_256(secret).hexdigest()
++
++
++def _environment_versions() -> dict[str, str]:
++    versions = {"python": platform.python_version()}
++    for package in ("numpy", "pillow", "pymupdf", "cryptography"):
++        try:
++            versions[package] = importlib.metadata.version(package)
++        except importlib.metadata.PackageNotFoundError:
++            versions[package] = "unavailable"
++    return versions
++
++
++def _source_hashes() -> dict[str, str]:
++    paths = {
++        "tardos.py": REPO_ROOT / "prototypes/nishan_pq/nishan/tardos.py",
++        "tardos_carrier.py": REPO_ROOT
++        / "prototypes/nishan_pq/nishan/tardos_carrier.py",
++        "watermark.py": REPO_ROOT / "prototypes/nishan_pq/nishan/watermark.py",
++    }
++    experiment = sorted(Path(__file__).resolve().parent.glob("*"))
++    for path in experiment:
++        if path.is_file() and path.suffix in {".py", ".md"}:
++            paths[f"experiment/{path.name}"] = path
++    return {name: sha3_file(path) for name, path in paths.items()}
++
++
++def _family_for_profile(
++    profile_name: str,
++    original_biases: np.ndarray,
++    original_codebook: np.ndarray,
++    symmetric_biases: np.ndarray,
++    symmetric_codebook: np.ndarray,
++) -> tuple[np.ndarray, np.ndarray]:
++    if PROFILES[profile_name].family == "original":
++        return original_biases, original_codebook
++    return symmetric_biases, symmetric_codebook
++
++
++def _render_single_page(path: Path) -> Image.Image:
++    pages, _ = watermark.load_pages(path, dpi=DPI)
++    if len(pages) != 1:
++        raise RuntimeError("frozen pilot source must render as exactly one page")
++    return Image.fromarray(pages[0], mode="RGB")
++
++
++def _write_transforms(
++    clean: Image.Image,
++    directory: Path,
++) -> tuple[dict[str, Path], dict[str, float]]:
++    directory.mkdir(parents=True, exist_ok=True)
++    paths: dict[str, Path] = {}
++    timings: dict[str, float] = {}
++    operations = {
++        "clean": lambda image: image.copy(),
++        "jpeg55": lambda image: image.copy(),
++        "blur1": lambda image: image.filter(ImageFilter.GaussianBlur(radius=1.0)),
++        "blur2": lambda image: image.filter(ImageFilter.GaussianBlur(radius=2.0)),
++        "half-resize": lambda image: image.resize(
++            (max(1, image.width // 2), max(1, image.height // 2)),
++            Image.Resampling.LANCZOS,
++        ).resize(image.size, Image.Resampling.LANCZOS),
++    }
++    for name in TRANSFORMS:
++        started = time.perf_counter()
++        transformed = operations[name](clean)
++        suffix = ".jpg" if name == "jpeg55" else ".png"
++        path = directory / f"{name}{suffix}"
++        if name == "jpeg55":
++            transformed.save(
++                path,
++                format="JPEG",
++                quality=55,
++                subsampling=0,
++                optimize=False,
++            )
++        else:
++            transformed.save(path, format="PNG")
++        paths[name] = path
++        timings[name] = time.perf_counter() - started
++    return paths, timings
++
++
++def _summary(values: np.ndarray) -> dict[str, float]:
++    values = np.asarray(values, dtype=np.float64)
++    return {
++        "minimum": float(values.min()),
++        "maximum": float(values.max()),
++        "mean": float(values.mean()),
++        "standard_deviation": float(values.std()),
++    }
++
++
++def _score_observation(
++    index: int,
++    declaration: dict[str, object],
++    suspect: Path,
++    output: Path,
++    source_copy: Path,
++    carrier_key: bytes,
++    wrong_carrier_key: bytes,
++    context_uuid: str,
++    original_biases: np.ndarray,
++    original_codebook: np.ndarray,
++    symmetric_biases: np.ndarray,
++    symmetric_codebook: np.ndarray,
++) -> dict[str, object]:
++    profile_name = str(declaration["profile"])
++    profile = PROFILES[profile_name]
++    row_value = declaration["row"]
++    row = int(row_value) if row_value is not None else None
++    kind = str(declaration["kind"])
++    biases, codebook = _family_for_profile(
++        profile_name,
++        original_biases,
++        original_codebook,
++        symmetric_biases,
++        symmetric_codebook,
++    )
++    decode_key = wrong_carrier_key if kind == "wrong-key" else carrier_key
++    context = context_for_profile(context_uuid, profile_name)
++    if kind == "wrong-context":
++        context = f"{context}/intentionally-wrong"
++
++    decode_started = time.perf_counter()
++    _, correlations, diagnostics = tardos_carrier.decode_word_with_diagnostics(
++        source_copy,
++        suspect,
++        profile.physical_placements,
++        decode_key,
++        context,
++        dpi=DPI,
++        block_size=profile.block_size,
++        registration_mode="off",
++    )
++    decode_seconds = time.perf_counter() - decode_started
++    logical_word, logical_sums = collapse_correlations(
++        correlations, profile.logical_positions, profile.repetitions
++    )
++
++    scoring_started = time.perf_counter()
++    if profile.scorer == "original-one-sided":
++        scores = tardos.accusation_scores(biases, codebook, logical_word)
++    else:
++        scores = symmetric_scores(codebook, biases, logical_word)
++    scoring_seconds = time.perf_counter() - scoring_started
++    if scores.shape != (1000,) or not np.all(np.isfinite(scores)):
++        raise RuntimeError("scorer did not return 1000 finite row scores")
++    ratios = scores / profile.threshold
++    selected = np.flatnonzero(scores > profile.threshold)
++
++    arrays_directory = output / "arrays"
++    arrays_directory.mkdir(parents=True, exist_ok=True)
++    arrays_path = arrays_directory / f"observation-{index:03d}.npz"
++    np.savez(
++        arrays_path,
++        scores=np.asarray(scores, dtype=np.float64),
++        score_threshold_ratios=np.asarray(ratios, dtype=np.float64),
++        physical_correlations=np.asarray(correlations, dtype=np.float64),
++        logical_summed_correlations=np.asarray(logical_sums, dtype=np.float64),
++        decoded_word=np.asarray(logical_word, dtype=np.uint8),
++    )
++
++    positive = kind == "positive"
++    intended_score = float(scores[row]) if positive and row is not None else None
++    intended_ratio = float(ratios[row]) if positive and row is not None else None
++    intended_rank = (
++        1 + int(np.count_nonzero(scores > scores[row]))
++        if positive and row is not None
++        else None
++    )
++    other_rows = [issued for issued in ISSUED_ROWS if issued != row]
++    unissued_mask = np.ones(1000, dtype=bool)
++    unissued_mask[list(ISSUED_ROWS)] = False
++    ber = (
++        float(np.count_nonzero(logical_word != codebook[row]) / profile.logical_positions)
++        if positive and row is not None
++        else None
++    )
++    marking = (
++        tardos_carrier.marking_condition_errors(logical_word, codebook[[row]])
++        if positive and row is not None
++        else None
++    )
++    return {
++        **declaration,
++        "suspect_path": _relative(suspect, output),
++        "arrays_path": _relative(arrays_path, output),
++        "arrays_sha3_256": sha3_file(arrays_path),
++        "registration_mode": "off",
++        "registration": diagnostics,
++        "selected_rows": [int(value) for value in selected],
++        "selected_count": int(selected.size),
++        "maximum_score": float(scores.max()),
++        "maximum_score_threshold_ratio": float(ratios.max()),
++        "maximum_score_row": int(np.argmax(scores)),
++        "intended_score": intended_score,
++        "intended_score_threshold_ratio": intended_ratio,
++        "intended_row_rank": intended_rank,
++        "other_issued_maximum_score": float(scores[other_rows].max()),
++        "other_issued_maximum_ratio": float(ratios[other_rows].max()),
++        "unissued_maximum_score": float(scores[unissued_mask].max()),
++        "unissued_maximum_ratio": float(ratios[unissued_mask].max()),
++        "logical_ber": ber,
++        "negative_ber": None if not positive else "not-applicable",
++        "marking_condition": marking,
++        "negative_marking_condition_reason": (
++            "no participating source row; marking-condition BER is undefined"
++            if not positive
++            else None
++        ),
++        "physical_correlation_summary": _summary(correlations),
++        "logical_correlation_summary": _summary(logical_sums),
++        "decode_seconds": decode_seconds,
++        "scoring_seconds": scoring_seconds,
++    }
++
++
++def _validate_observation_matrix(
++    declared_matrix: list[dict[str, object]], observations: list[dict[str, object]]
++) -> None:
++    expected = {
++        (kind, profile, row, transform)
++        for kind, profile, row, transform in (
++            (
++                item["kind"],
++                item["profile"],
++                item["row"],
++                item["transform"],
++            )
++            for item in declared_matrix
++        )
++    }
++    observed = {
++        (o["kind"], o["profile"], o["row"], o["transform"])
++        for o in observations
++    }
++    if len(observations) != 57 or len(expected) != 57 or observed != expected:
++        raise RuntimeError("fixed observation matrix is incomplete or duplicated")
++
++
++def _profile_transform_summary(
++    observations: list[dict[str, object]],
++) -> list[dict[str, object]]:
++    summary: list[dict[str, object]] = []
++    for profile in PROFILES:
++        for transform in TRANSFORMS:
++            cases = [
++                item
++                for item in observations
++                if item["kind"] == "positive"
++                and item["profile"] == profile
++                and item["transform"] == transform
++            ]
++            summary.append(
++                {
++                    "profile": profile,
++                    "transform": transform,
++                    "rows": [int(item["row"]) for item in cases],
++                    "intended_score_threshold_ratios": [
++                        item["intended_score_threshold_ratio"] for item in cases
++                    ],
++                    "logical_ber": [item["logical_ber"] for item in cases],
++                    "selected_rows": [item["selected_rows"] for item in cases],
++                    "intended_row_ranks": [item["intended_row_rank"] for item in cases],
++                }
++            )
++    return summary
++
++
++def _advancement(
++    observations: list[dict[str, object]], issued: list[dict[str, object]]
++) -> dict[str, object]:
++    compact = ("symmetric-6-r4", "symmetric-12-r1")
++    clean_compact = [
++        item
++        for item in observations
++        if item["kind"] == "positive"
++        and item["profile"] in compact
++        and item["transform"] == "clean"
++    ]
++    clean_selection = len(clean_compact) == 4 and all(
++        item["selected_rows"] == [item["row"]] for item in clean_compact
++    )
++    compact_text = all(
++        item["text_preserved"] for item in issued if item["profile"] in compact
++    )
++    negatives = [item for item in observations if item["kind"] != "positive"]
++    negatives_clear = len(negatives) == 27 and all(
++        not item["selected_rows"] for item in negatives
++    )
++    prerequisites = clean_selection and compact_text and negatives_clear
++
++    positive_lookup = {
++        (str(item["profile"]), int(item["row"]), str(item["transform"])): item
++        for item in observations
++        if item["kind"] == "positive"
++    }
++    candidates: dict[str, object] = {}
++    for profile in compact:
++        winning_transforms: list[str] = []
++        comparisons: list[dict[str, object]] = []
++        for transform in ("blur1", "blur2", "half-resize"):
++            row_comparisons: list[dict[str, object]] = []
++            wins = True
++            for row in ISSUED_ROWS:
++                candidate = positive_lookup[(profile, row, transform)]
++                original = positive_lookup[("original-6-r1", row, transform)]
++                no_extra = candidate["selected_rows"] == [row]
++                ratio_win = float(candidate["intended_score_threshold_ratio"]) > float(
++                    original["intended_score_threshold_ratio"]
++                )
++                wins = wins and no_extra and ratio_win
++                row_comparisons.append(
++                    {
++                        "row": row,
++                        "compact_ratio": candidate[
++                            "intended_score_threshold_ratio"
++                        ],
++                        "original_ratio": original[
++                            "intended_score_threshold_ratio"
++                        ],
++                        "compact_selected_rows": candidate["selected_rows"],
++                        "ratio_exceeds_original": ratio_win,
++                        "no_extra_selected_rows": no_extra,
++                    }
++                )
++            if wins:
++                winning_transforms.append(transform)
++            comparisons.append(
++                {
++                    "transform": transform,
++                    "wins_both_rows_without_extra_selections": wins,
++                    "rows": row_comparisons,
++                }
++            )
++        candidates[profile] = {
++            "worth_fresh_physical_test": prerequisites
++            and len(winning_transforms) >= 2,
++            "winning_transforms": winning_transforms,
++            "required_winning_transform_count": 2,
++            "comparisons": comparisons,
++        }
++    return {
++        "rule": (
++            "Fixed empirical pilot prioritization rule from the frozen specification; "
++            "not statistical significance or a superiority test."
++        ),
++        "prerequisites_met": prerequisites,
++        "prerequisite_details": {
++            "both_compact_profiles_clean_select_only_intended": clean_selection,
++            "both_compact_profiles_text_unchanged": compact_text,
++            "all_27_negative_observations_select_no_rows": negatives_clear,
++        },
++        "profiles": candidates,
++    }
++
++
++def _artifact_hashes(output: Path) -> dict[str, str]:
++    return {
++        _relative(path, output): sha3_file(path)
++        for path in sorted(output.rglob("*"))
++        if path.is_file() and path.name not in {"results.json", "failure.json"}
++    }
++
++
++def _physical_instructions(output: Path) -> None:
++    lines = [
++        "# Physical capture instructions",
++        "",
++        "This packet has no physical result. It identifies the three row-0 PDFs for a fresh test:",
++        "",
++    ]
++    for profile in PROFILES:
++        lines.append(f"- `issued/{profile}/row-0.pdf`")
++    lines.extend(
++        [
++            "",
++            "Print each PDF at actual size using the same printer settings. Photograph the full page from the same distance and under the same lighting. Retain the original, unfiltered camera files and label each capture with its profile.",
++            "",
++            "Supply only the capture image and profile label for scoring. Do not send the private replay state. No physical result exists until fresh images are supplied and evaluated.",
++        ]
++    )
++    (output / "physical-capture-instructions.md").write_text(
++        "\n".join(lines), encoding="utf-8"
++    )
++
++
++def run(output: Path) -> dict[str, object]:
++    create_output_directory(output)
++    run_started = time.perf_counter()
++    try:
++        if not SOURCE.is_file():
++            raise FileNotFoundError(f"frozen source is missing: {SOURCE}")
++        source_directory = output / "source"
++        source_directory.mkdir()
++        source_copy = source_directory / "synthetic-source.pdf"
++        shutil.copy2(SOURCE, source_copy)
++        source_hash = sha3_file(SOURCE)
++        if sha3_file(source_copy) != source_hash:
++            raise RuntimeError("copied source hash does not match frozen input")
++
++        original_config = original_configuration()
++        symmetric_config = symmetric_configuration()
++        original_key = os.urandom(32)
++        symmetric_key = os.urandom(32)
++        carrier_key = os.urandom(32)
++        wrong_carrier_key = os.urandom(32)
++        context_uuid = str(uuid.uuid4())
++
++        generation_started = time.perf_counter()
++        original_biases, original_codebook = tardos.generate_keyed(
++            original_config, original_key, f"{context_uuid}/original-codebook"
++        )
++        original_generation_seconds = time.perf_counter() - generation_started
++        generation_started = time.perf_counter()
++        symmetric_biases, symmetric_codebook = tardos.generate_keyed(
++            symmetric_config, symmetric_key, f"{context_uuid}/symmetric-codebook"
++        )
++        symmetric_generation_seconds = time.perf_counter() - generation_started
++
++        private_directory = output / "private"
++        private_directory.mkdir()
++        replay_path = private_directory / "replay-state.npz"
++        np.savez(
++            replay_path,
++            original_biases=np.asarray(original_biases, dtype=np.float64),
++            original_codebook=np.asarray(original_codebook, dtype=np.uint8),
++            original_key=np.frombuffer(original_key, dtype=np.uint8),
++            symmetric_biases=np.asarray(symmetric_biases, dtype=np.float64),
++            symmetric_codebook=np.asarray(symmetric_codebook, dtype=np.uint8),
++            symmetric_key=np.frombuffer(symmetric_key, dtype=np.uint8),
++            carrier_key=np.frombuffer(carrier_key, dtype=np.uint8),
++            wrong_carrier_key=np.frombuffer(wrong_carrier_key, dtype=np.uint8),
++            context_uuid=np.asarray(context_uuid),
++        )
++        replay_path.chmod(0o600)
++
++        capacities = {
++            str(block): tardos_carrier.capacity(source_copy, dpi=DPI, block_size=block)
++            for block in (6, 12)
++        }
++        for profile in PROFILES.values():
++            if capacities[str(profile.block_size)] < profile.physical_placements:
++                raise RuntimeError(f"rendered capacity is insufficient for {profile.name}")
++
++        issued: list[dict[str, object]] = []
++        observation_paths: dict[tuple[str, int | None, str], Path] = {}
++        transform_timings: list[dict[str, object]] = []
++        for profile_name, profile in PROFILES.items():
++            _, codebook = _family_for_profile(
++                profile_name,
++                original_biases,
++                original_codebook,
++                symmetric_biases,
++                symmetric_codebook,
++            )
++            for row in ISSUED_ROWS:
++                logical_word = codebook[row]
++                physical_word = np.tile(logical_word, profile.repetitions)
++                if physical_word.shape != (profile.physical_placements,):
++                    raise RuntimeError("physical word shape violates frozen profile")
++                pdf_path = output / "issued" / profile_name / f"row-{row}.pdf"
++                embed_started = time.perf_counter()
++                carrier_metrics = tardos_carrier.embed_pdf(
++                    source_copy,
++                    pdf_path,
++                    physical_word,
++                    carrier_key,
++                    context_for_profile(context_uuid, profile_name),
++                    strength=STRENGTH,
++                    dpi=DPI,
++                    block_size=profile.block_size,
++                )
++                embed_seconds = time.perf_counter() - embed_started
++                measured = tardos_carrier.measure_pdf_pair(
++                    source_copy, pdf_path, dpi=DPI
++                )
++                issued.append(
++                    {
++                        "profile": profile_name,
++                        "row": row,
++                        "pdf_path": _relative(pdf_path, output),
++                        "pdf_sha3_256": sha3_file(pdf_path),
++                        "file_size_bytes": pdf_path.stat().st_size,
++                        "source_file_size_bytes": source_copy.stat().st_size,
++                        "embed_seconds": embed_seconds,
++                        **asdict(carrier_metrics),
++                        "measured_pair": asdict(measured),
++                    }
++                )
++                render_started = time.perf_counter()
++                clean = _render_single_page(pdf_path)
++                render_seconds = time.perf_counter() - render_started
++                paths, timings = _write_transforms(
++                    clean, output / "rasters" / profile_name / f"row-{row}"
++                )
++                for transform, path in paths.items():
++                    observation_paths[(profile_name, row, transform)] = path
++                    transform_timings.append(
++                        {
++                            "profile": profile_name,
++                            "row": row,
++                            "transform": transform,
++                            "render_seconds": render_seconds
++                            if transform == "clean"
++                            else 0.0,
++                            "transform_seconds": timings[transform],
++                            "path": _relative(path, output),
++                        }
++                    )
++
++        source_render_started = time.perf_counter()
++        source_clean = _render_single_page(source_copy)
++        source_render_seconds = time.perf_counter() - source_render_started
++        source_paths, source_transform_timings = _write_transforms(
++            source_clean, output / "rasters" / "unmarked"
++        )
++        for transform, path in source_paths.items():
++            observation_paths[("unmarked", None, transform)] = path
++            transform_timings.append(
++                {
++                    "profile": None,
++                    "row": None,
++                    "transform": transform,
++                    "render_seconds": source_render_seconds
++                    if transform == "clean"
++                    else 0.0,
++                    "transform_seconds": source_transform_timings[transform],
++                    "path": _relative(path, output),
++                }
++            )
++
++        declared_matrix = build_declared_matrix()
++        manifest = {
++            "schema_version": SCHEMA_VERSION,
++            "profile_version": PROFILE_VERSION,
++            "created_at_utc": _now(),
++            "scope": (
++                "Isolated empirical one-source carrier pilot; no physical result, "
++                "probability certification, production attribution, collusion guarantee, "
++                "novelty, or superiority claim."
++            ),
++            "source": {
++                "input_path": "artifacts/nishan/synthetic-source.pdf",
++                "run_path": "source/synthetic-source.pdf",
++                "sha3_256": source_hash,
++            },
++            "versions": _environment_versions(),
++            "implementation_sha3_256": _source_hashes(),
++            "profiles": {
++                name: profile_manifest(profile) for name, profile in PROFILES.items()
++            },
++            "generator_configurations": {
++                "original": {**asdict(original_config), "theorem_certified": False},
++                "symmetric": {**asdict(symmetric_config), "theorem_certified": False},
++            },
++            "families": {
++                "original": {
++                    "biases_sha3_256": array_commitment(original_biases, "<f8"),
++                    "codebook_sha3_256": array_commitment(original_codebook, "u1"),
++                    "codebook_shape": list(original_codebook.shape),
++                    "generator_key_commitment_sha3_256": _secret_commitment(
++                        original_key
++                    ),
++                    "empirical_inherited_sampler": (
++                        "53-bit/float64 biases and 32-bit Bernoulli thresholds"
++                    ),
++                },
++                "symmetric": {
++                    "biases_sha3_256": array_commitment(symmetric_biases, "<f8"),
++                    "codebook_sha3_256": array_commitment(symmetric_codebook, "u1"),
++                    "codebook_shape": list(symmetric_codebook.shape),
++                    "generator_key_commitment_sha3_256": _secret_commitment(
++                        symmetric_key
++                    ),
++                    "empirical_inherited_sampler": (
++                        "53-bit/float64 biases and 32-bit Bernoulli thresholds"
++                    ),
++                    "same_codebook_for_both_symmetric_profiles": True,
++                },
++            },
++            "carrier": {
++                "key_commitment_sha3_256": _secret_commitment(carrier_key),
++                "wrong_key_commitment_sha3_256": _secret_commitment(
++                    wrong_carrier_key
++                ),
++                "profile_context_commitments_sha3_256": {
++                    profile: hashlib.sha3_256(
++                        context_for_profile(context_uuid, profile).encode("utf-8")
++                    ).hexdigest()
++                    for profile in PROFILES
++                },
++                "profile_contexts_are_distinct": True,
++                "dpi": DPI,
++                "strength": STRENGTH,
++                "rendered_capacities": capacities,
++            },
++            "private_replay": {
++                "path": "private/replay-state.npz",
++                "sha3_256": sha3_file(replay_path),
++                "mode": "0600",
++            },
++            "declared_matrix": declared_matrix,
++            "declared_observation_count": 57,
++            "manifest_provenance_limitation": (
++                "This local manifest is not independently signed provenance."
++            ),
++        }
++        _json_write(output / "manifest.json", manifest)
++
++        observations: list[dict[str, object]] = []
++        for index, declaration in enumerate(declared_matrix):
++            profile_name = str(declaration["profile"])
++            row_value = declaration["row"]
++            row = int(row_value) if row_value is not None else None
++            transform = str(declaration["transform"])
++            if declaration["kind"] == "unmarked":
++                suspect = observation_paths[("unmarked", None, transform)]
++            else:
++                suspect = observation_paths[(profile_name, row, transform)]
++            observations.append(
++                _score_observation(
++                    index,
++                    declaration,
++                    suspect,
++                    output,
++                    source_copy,
++                    carrier_key,
++                    wrong_carrier_key,
++                    context_uuid,
++                    original_biases,
++                    original_codebook,
++                    symmetric_biases,
++                    symmetric_codebook,
++                )
++            )
++        _validate_observation_matrix(declared_matrix, observations)
++        _physical_instructions(output)
++
++        duration = time.perf_counter() - run_started
++        results: dict[str, Any] = {
++            "schema_version": SCHEMA_VERSION,
++            "completed_at_utc": _now(),
++            "status": "complete",
++            "empirical_only": True,
++            "limitations": [
++                "One source document and two issued copies per profile.",
++                "No physical print/camera result; synthetic blur is only diagnostic.",
++                "No theorem probability certification for the inherited keyed sampler or noisy decoded words.",
++                "No collusion guarantee, production attribution, novelty, or superiority claim.",
++                "Equal nominal carrier area does not imply equal perceptual fidelity.",
++                "The local manifest is not independently signed provenance.",
++            ],
++            "duration_seconds": duration,
++            "preparation_seconds": {
++                "original_codebook_generation": original_generation_seconds,
++                "symmetric_codebook_generation": symmetric_generation_seconds,
++            },
++            "observation_counts": {
++                "total": len(observations),
++                "positive": sum(o["kind"] == "positive" for o in observations),
++                "unmarked": sum(o["kind"] == "unmarked" for o in observations),
++                "wrong-key": sum(o["kind"] == "wrong-key" for o in observations),
++                "wrong-context": sum(
++                    o["kind"] == "wrong-context" for o in observations
++                ),
++            },
++            "issued_pdfs": issued,
++            "transform_timings": transform_timings,
++            "observations": observations,
++            "profile_transform_summary": _profile_transform_summary(observations),
++            "advancement": _advancement(observations, issued),
++            "artifact_sha3_256": _artifact_hashes(output),
++        }
++        _json_write(output / "results.json", results)
++        return results
++    except Exception as error:
++        failure = {
++            "schema_version": SCHEMA_VERSION,
++            "failed_at_utc": _now(),
++            "error_type": type(error).__name__,
++            "error": str(error),
++            "traceback": traceback.format_exc(),
++            "retained_run": True,
++        }
++        _json_write(output / "failure.json", failure)
++        raise
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, required=True)
++    args = parser.parse_args()
++    results = run(args.output)
++    print(
++        json.dumps(
++            {
++                "status": results["status"],
++                "output": str(args.output),
++                "duration_seconds": results["duration_seconds"],
++                "observation_counts": results["observation_counts"],
++                "advancement": results["advancement"],
++            },
++            sort_keys=True,
++            allow_nan=False,
++        )
++    )
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/compact_carrier_v1/score_capture.py	2026-09-12 13:28:31.073568181 +0530
+@@ -0,0 +1,116 @@
++#!/usr/bin/env python3
++"""Read-only empirical replay scorer for a supplied capture."""
++
++from __future__ import annotations
++
++import argparse
++import json
++from pathlib import Path
++
++import numpy as np
++
++from nishan import tardos, tardos_carrier
++
++from profiles import (
++    DPI,
++    PROFILES,
++    collapse_correlations,
++    context_for_profile,
++    decode_context_uuid,
++    load_replay_state,
++    read_manifest,
++    symmetric_scores,
++)
++
++
++def score_capture(run: Path, profile_name: str, suspect: Path) -> dict[str, object]:
++    run = Path(run)
++    suspect = Path(suspect)
++    if profile_name not in PROFILES:
++        raise ValueError(f"unknown frozen profile: {profile_name}")
++    if not suspect.is_file():
++        raise ValueError(f"suspect capture does not exist: {suspect}")
++    manifest = read_manifest(run)
++    state = load_replay_state(run, manifest)
++    profile = PROFILES[profile_name]
++    context_uuid = decode_context_uuid(state)
++    if profile.family == "original":
++        biases = state["original_biases"]
++        codebook = state["original_codebook"]
++    else:
++        biases = state["symmetric_biases"]
++        codebook = state["symmetric_codebook"]
++    source_metadata = manifest["source"]
++    if not isinstance(source_metadata, dict):
++        raise ValueError("manifest source metadata is invalid")
++    source = run / str(source_metadata["run_path"])
++    _, correlations, diagnostics = tardos_carrier.decode_word_with_diagnostics(
++        source,
++        suspect,
++        profile.physical_placements,
++        state["carrier_key"].tobytes(),
++        context_for_profile(context_uuid, profile_name),
++        dpi=DPI,
++        block_size=profile.block_size,
++        registration_mode="always",
++    )
++    word, summed = collapse_correlations(
++        correlations, profile.logical_positions, profile.repetitions
++    )
++    if profile.scorer == "original-one-sided":
++        scores = tardos.accusation_scores(biases, codebook, word)
++    else:
++        scores = symmetric_scores(codebook, biases, word)
++    selected = np.flatnonzero(scores > profile.threshold)
++    ordering = np.argsort(-scores, kind="stable")[:10]
++    return {
++        "schema_version": "nishan-compact-carrier-capture/v1",
++        "empirical_extraction": True,
++        "profile": profile_name,
++        "suspect": str(suspect),
++        "registration_mode": "always",
++        "registration": diagnostics,
++        "threshold": profile.threshold,
++        "selected_rows": [int(row) for row in selected],
++        "selected_count": int(selected.size),
++        "highest_score_row": int(np.argmax(scores)),
++        "highest_score": float(scores.max()),
++        "highest_score_threshold_ratio": float(scores.max() / profile.threshold),
++        "top_ten_rows": [
++            {
++                "row": int(row),
++                "score": float(scores[row]),
++                "score_threshold_ratio": float(scores[row] / profile.threshold),
++            }
++            for row in ordering
++        ],
++        "logical_one_count": int(word.sum()),
++        "physical_correlation_minimum": float(correlations.min()),
++        "physical_correlation_maximum": float(correlations.max()),
++        "logical_correlation_minimum": float(summed.min()),
++        "logical_correlation_maximum": float(summed.max()),
++        "identity_verdict": None,
++        "identity_verdict_reason": (
++            "Diagnostic scores are not an identity verdict or production attribution."
++        ),
++        "limitations": [
++            "Empirical extraction only; no theorem probability certification.",
++            "A generated clean raster is replay smoke, not physical evidence.",
++            "Registration is always enabled here and differs from the controlled synthetic study.",
++            "The local manifest is not independently signed provenance.",
++        ],
++    }
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--run", required=True, type=Path)
++    parser.add_argument("--profile", required=True, choices=tuple(PROFILES))
++    parser.add_argument("--suspect", required=True, type=Path)
++    args = parser.parse_args()
++    report = score_capture(args.run, args.profile, args.suspect)
++    print(json.dumps(report, indent=2, sort_keys=True, allow_nan=False))
++
++
++if __name__ == "__main__":
++    main()
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/compact_carrier_v1/test_profiles.py	2026-09-12 13:23:25.341144767 +0530
+@@ -0,0 +1,169 @@
++from __future__ import annotations
++
++import hashlib
++import tempfile
++import unittest
++from pathlib import Path
++
++import numpy as np
++
++from profiles import (
++    PROFILES,
++    collapse_correlations,
++    load_replay_state,
++    symmetric_scores,
++)
++from run_study import build_declared_matrix, create_output_directory
++
++
++class SymmetricScoreTests(unittest.TestCase):
++    def test_symmetric_uses_both_output_symbols(self):
++        p = np.array([0.2, 0.8])
++        x = np.array([[1, 0], [0, 1]], dtype=np.uint8)
++        np.testing.assert_allclose(
++            symmetric_scores(x, p, np.array([1, 0])), [4.0, -1.0]
++        )
++        np.testing.assert_allclose(
++            symmetric_scores(x, p, np.array([0, 1])), [-4.0, 1.0]
++        )
++
++    def test_repetition_sums_analog_correlations_before_threshold(self):
++        # Majority hard decisions would give the wrong first bit.
++        corr = np.array([9.0, -2.0, -1.0, 1.0, -1.0, 1.0, -1.0, -2.0])
++        word, summed = collapse_correlations(corr, 2, 4)
++        np.testing.assert_allclose(summed, [6.0, -2.0])
++        np.testing.assert_array_equal(word, [1, 0])
++
++    def test_zero_correlation_tie_is_zero(self):
++        word, summed = collapse_correlations(np.array([1.0, -1.0]), 1, 2)
++        self.assertEqual(int(word[0]), 0)
++        self.assertEqual(float(summed[0]), 0.0)
++
++    def test_symmetric_validates_shape_binary_and_finiteness(self):
++        valid_x = np.array([[0, 1]], dtype=np.uint8)
++        valid_p = np.array([0.2, 0.8])
++        valid_y = np.array([0, 1], dtype=np.uint8)
++        bad_calls = (
++            lambda: symmetric_scores(valid_x.reshape(-1), valid_p, valid_y),
++            lambda: symmetric_scores(valid_x, valid_p[:1], valid_y),
++            lambda: symmetric_scores(valid_x, valid_p, valid_y[:1]),
++            lambda: symmetric_scores(np.array([[0, 2]]), valid_p, valid_y),
++            lambda: symmetric_scores(valid_x, valid_p, np.array([0, 2])),
++            lambda: symmetric_scores(valid_x, np.array([0.0, 0.8]), valid_y),
++            lambda: symmetric_scores(valid_x, np.array([np.nan, 0.8]), valid_y),
++        )
++        for call in bad_calls:
++            with self.subTest(call=call), self.assertRaises(ValueError):
++                call()
++
++    def test_collapse_validates_shape_and_finiteness(self):
++        for correlations, positions, repetitions in (
++            (np.zeros((2, 2)), 2, 2),
++            (np.array([1.0, np.inf]), 1, 2),
++            (np.ones(3), 2, 2),
++            (np.ones(2), 0, 2),
++            (np.ones(2), 2, 0),
++        ):
++            with self.subTest(
++                correlations=correlations,
++                positions=positions,
++                repetitions=repetitions,
++            ), self.assertRaises(ValueError):
++                collapse_correlations(correlations, positions, repetitions)
++
++
++class FrozenProfileTests(unittest.TestCase):
++    def test_profile_constants_and_matched_area(self):
++        expected = {
++            "original-6-r1": (52500, 6, 1, 52500, 1890000, 2100.0),
++            "symmetric-6-r4": (
++                12331,
++                6,
++                4,
++                49324,
++                1775664,
++                837.2843088602898,
++            ),
++            "symmetric-12-r1": (
++                12331,
++                12,
++                1,
++                12331,
++                1775664,
++                837.2843088602898,
++            ),
++        }
++        self.assertEqual(tuple(PROFILES), tuple(expected))
++        for name, values in expected.items():
++            profile = PROFILES[name]
++            self.assertEqual(
++                (
++                    profile.logical_positions,
++                    profile.block_size,
++                    profile.repetitions,
++                    profile.physical_placements,
++                    profile.nominal_pixels,
++                    profile.threshold,
++                ),
++                values,
++            )
++            self.assertEqual(
++                profile.physical_placements * profile.block_size**2,
++                profile.nominal_pixels,
++            )
++
++    def test_profiles_mapping_is_immutable(self):
++        with self.assertRaises(TypeError):
++            PROFILES["extra"] = PROFILES["original-6-r1"]  # type: ignore[index]
++
++    def test_fixed_matrix_count_and_identity(self):
++        matrix = build_declared_matrix()
++        identities = {
++            (item["kind"], item["profile"], item["row"], item["transform"])
++            for item in matrix
++        }
++        self.assertEqual(len(matrix), 57)
++        self.assertEqual(len(identities), 57)
++        self.assertEqual(
++            sum(item["kind"] == "positive" for item in matrix), 30
++        )
++        self.assertEqual(
++            sum(item["kind"] == "unmarked" for item in matrix), 15
++        )
++        self.assertEqual(sum(item["kind"] == "wrong-key" for item in matrix), 6)
++        self.assertEqual(
++            sum(item["kind"] == "wrong-context" for item in matrix), 6
++        )
++
++
++class ReplayAndGuardTests(unittest.TestCase):
++    def test_replay_state_hash_rejection_happens_before_npz_load(self):
++        with tempfile.TemporaryDirectory() as temporary:
++            run = Path(temporary)
++            private = run / "private"
++            private.mkdir()
++            replay = private / "replay-state.npz"
++            replay.write_bytes(b"not-an-npz")
++            digest = hashlib.sha3_256(b"different").hexdigest()
++            manifest = {
++                "private_replay": {
++                    "path": "private/replay-state.npz",
++                    "sha3_256": digest,
++                }
++            }
++            with self.assertRaisesRegex(ValueError, "replay-state hash mismatch"):
++                load_replay_state(run, manifest)
++
++    def test_no_overwrite_output_guard(self):
++        with tempfile.TemporaryDirectory() as temporary:
++            existing = Path(temporary) / "existing"
++            existing.mkdir()
++            sentinel = existing / "sentinel.txt"
++            sentinel.write_text("preserve", encoding="utf-8")
++            with self.assertRaises(FileExistsError):
++                create_output_directory(existing)
++            self.assertEqual(sentinel.read_text(encoding="utf-8"), "preserve")
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- /dev/null	2026-09-11 19:55:11.535918568 +0530
++++ research/experiments/compact_carrier_v1/README.md	2026-09-12 13:28:32.971558192 +0530
+@@ -0,0 +1,25 @@
++# Empirical compact-carrier pilot
++
++This isolated experiment compares the frozen `original-6-r1`, `symmetric-6-r4`, and `symmetric-12-r1` carrier profiles on one synthetic PDF. It issues rows 0 and 7, evaluates the exact 57-observation matrix, and retains replay artifacts. It is not a production attribution system.
++
++Run the focused tests:
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/experiments/compact_carrier_v1 .venv/bin/python -m unittest discover -s research/experiments/compact_carrier_v1 -p 'test_*.py' -v
++```
++
++Run the one fixed pilot into a destination that does not already exist:
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/experiments/compact_carrier_v1 .venv/bin/python research/experiments/compact_carrier_v1/run_study.py --output research/evidence/nishan-compact-carrier-2026-09-12/run-01
++```
++
++Replay a capture read-only with always-on registration:
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/experiments/compact_carrier_v1 .venv/bin/python research/experiments/compact_carrier_v1/score_capture.py --run research/evidence/nishan-compact-carrier-2026-09-12/run-01 --profile symmetric-12-r1 --suspect research/evidence/nishan-compact-carrier-2026-09-12/run-01/rasters/symmetric-12-r1/row-0/clean.png
++```
++
++The run contains `manifest.json`, `results.json`, a copied source, six issued PDFs, controlled rasters, one NPZ per observation, physical instructions, and `private/replay-state.npz`. The private NPZ contains fresh keys and codebooks, is mode 0600, and must not be shared. Public JSON contains commitments rather than secrets. A capture replay validates both the copied source and private-state hash before loading arrays and never writes into the run.
++
++All findings are empirical: one source document, two issued copies per profile, no physical print/camera result, no certified probabilities for the inherited finite-precision keyed sampler or noisy decoded words, no collusion guarantee, no production attribution, and no novelty or superiority claim. Equal nominal carrier area is not equal perceptual fidelity. Synthetic blur is diagnostic only, capture replay uses registration while the matrix does not, and local manifests are not independently signed provenance.

@@ -1,0 +1,146 @@
+{
+  "status": "preliminary; not target-compliant",
+  "dataset": "IO-VNBD synchronized S1 subset",
+  "split": {
+    "method": "contiguous temporal holdout within S1",
+    "train_rows": [
+      200,
+      20696
+    ],
+    "test_rows": [
+      20697,
+      51743
+    ],
+    "final_required_upgrade": "hold out complete journeys/sequences and Indian field recordings"
+  },
+  "evaluation_policy": {
+    "window_sampling": "non-overlapping within each duration bucket",
+    "absolute_endpoint_error": "reported for every sampled outage",
+    "percentage_drift": "reported only when distance travelled is at least 50 m",
+    "reason": "percentage error is unstable and misleading for stopped or near-stationary windows"
+  },
+  "alignment_estimated_on_training_only": {
+    "correlation": 0.9425279038620715,
+    "lag_rows": 2,
+    "phone_gyro_axis": 1
+  },
+  "speed_model": {
+    "type": "HistGradientBoostingRegressor over causal raw/rolling IMU features",
+    "feature_count": 247,
+    "test_mae_m_s": 1.5244,
+    "test_correlation": 0.8741
+  },
+  "yaw_model": {
+    "type": "training-fit linear phone-gyro mount map with pre-outage bias calibration",
+    "coefficients": [
+      -0.03575119,
+      -0.95460042,
+      -0.36468278,
+      -0.00534432
+    ],
+    "test_median_absolute_error_deg_s": 0.9821,
+    "test_correlation": 0.9613
+  },
+  "phone_speed_unit_integrity_check": {
+    "correlation_phone_numeric_vs_vbox_m_s": 0.84173,
+    "median_phone_numeric_over_vbox_m_s": 0.99222,
+    "interpretation": "phone GPS speed header says km/h, but paired values are numerically consistent with m/s"
+  },
+  "outages": {
+    "15": {
+      "non_overlapping_windows_total": 206,
+      "windows_distance_ge_50m": 168,
+      "windows_below_50m_excluded_from_ratio": 38,
+      "median_distance_m_all": 97.363,
+      "minimum_distance_m_all": 0.173,
+      "constant_median_absolute_error_m_all": 41.269,
+      "constant_p95_absolute_error_m_all": 114.409,
+      "constant_median_drift_percent_distance_ge_50m": 48.993,
+      "constant_p95_drift_percent_distance_ge_50m": 125.852,
+      "constant_under_10_percent_share_distance_ge_50m": 0.1726,
+      "speed_component_reference_heading_median_absolute_error_m_all": 13.444,
+      "speed_component_reference_heading_p95_absolute_error_m_all": 47.587,
+      "speed_component_reference_heading_median_drift_percent_distance_ge_50m": 14.141,
+      "speed_component_reference_heading_p95_drift_percent_distance_ge_50m": 52.525,
+      "speed_component_reference_heading_under_10_percent_share_distance_ge_50m": 0.3452,
+      "phone_imu_median_absolute_error_m_all": 15.389,
+      "phone_imu_p95_absolute_error_m_all": 57.281,
+      "phone_imu_median_drift_percent_distance_ge_50m": 15.281,
+      "phone_imu_p95_drift_percent_distance_ge_50m": 49.155,
+      "phone_imu_under_10_percent_share_distance_ge_50m": 0.3036
+    },
+    "30": {
+      "non_overlapping_windows_total": 103,
+      "windows_distance_ge_50m": 97,
+      "windows_below_50m_excluded_from_ratio": 6,
+      "median_distance_m_all": 194.566,
+      "minimum_distance_m_all": 0.39,
+      "constant_median_absolute_error_m_all": 124.132,
+      "constant_p95_absolute_error_m_all": 296.343,
+      "constant_median_drift_percent_distance_ge_50m": 76.579,
+      "constant_p95_drift_percent_distance_ge_50m": 182.507,
+      "constant_under_10_percent_share_distance_ge_50m": 0.0309,
+      "speed_component_reference_heading_median_absolute_error_m_all": 25.602,
+      "speed_component_reference_heading_p95_absolute_error_m_all": 117.984,
+      "speed_component_reference_heading_median_drift_percent_distance_ge_50m": 15.414,
+      "speed_component_reference_heading_p95_drift_percent_distance_ge_50m": 55.679,
+      "speed_component_reference_heading_under_10_percent_share_distance_ge_50m": 0.3402,
+      "phone_imu_median_absolute_error_m_all": 31.43,
+      "phone_imu_p95_absolute_error_m_all": 105.916,
+      "phone_imu_median_drift_percent_distance_ge_50m": 16.084,
+      "phone_imu_p95_drift_percent_distance_ge_50m": 51.588,
+      "phone_imu_under_10_percent_share_distance_ge_50m": 0.2371
+    },
+    "60": {
+      "non_overlapping_windows_total": 51,
+      "windows_distance_ge_50m": 51,
+      "windows_below_50m_excluded_from_ratio": 0,
+      "median_distance_m_all": 394.777,
+      "minimum_distance_m_all": 60.874,
+      "constant_median_absolute_error_m_all": 367.332,
+      "constant_p95_absolute_error_m_all": 693.374,
+      "constant_median_drift_percent_distance_ge_50m": 92.909,
+      "constant_p95_drift_percent_distance_ge_50m": 224.513,
+      "constant_under_10_percent_share_distance_ge_50m": 0.0,
+      "speed_component_reference_heading_median_absolute_error_m_all": 56.869,
+      "speed_component_reference_heading_p95_absolute_error_m_all": 174.02,
+      "speed_component_reference_heading_median_drift_percent_distance_ge_50m": 13.211,
+      "speed_component_reference_heading_p95_drift_percent_distance_ge_50m": 61.766,
+      "speed_component_reference_heading_under_10_percent_share_distance_ge_50m": 0.2745,
+      "phone_imu_median_absolute_error_m_all": 71.753,
+      "phone_imu_p95_absolute_error_m_all": 174.205,
+      "phone_imu_median_drift_percent_distance_ge_50m": 18.342,
+      "phone_imu_p95_drift_percent_distance_ge_50m": 37.304,
+      "phone_imu_under_10_percent_share_distance_ge_50m": 0.1765
+    },
+    "120": {
+      "non_overlapping_windows_total": 25,
+      "windows_distance_ge_50m": 25,
+      "windows_below_50m_excluded_from_ratio": 0,
+      "median_distance_m_all": 817.625,
+      "minimum_distance_m_all": 343.164,
+      "constant_median_absolute_error_m_all": 778.022,
+      "constant_p95_absolute_error_m_all": 1409.452,
+      "constant_median_drift_percent_distance_ge_50m": 104.85,
+      "constant_p95_drift_percent_distance_ge_50m": 284.983,
+      "constant_under_10_percent_share_distance_ge_50m": 0.0,
+      "speed_component_reference_heading_median_absolute_error_m_all": 70.24,
+      "speed_component_reference_heading_p95_absolute_error_m_all": 288.119,
+      "speed_component_reference_heading_median_drift_percent_distance_ge_50m": 8.952,
+      "speed_component_reference_heading_p95_drift_percent_distance_ge_50m": 30.767,
+      "speed_component_reference_heading_under_10_percent_share_distance_ge_50m": 0.56,
+      "phone_imu_median_absolute_error_m_all": 170.978,
+      "phone_imu_p95_absolute_error_m_all": 432.796,
+      "phone_imu_median_drift_percent_distance_ge_50m": 22.918,
+      "phone_imu_p95_drift_percent_distance_ge_50m": 41.547,
+      "phone_imu_under_10_percent_share_distance_ge_50m": 0.08
+    }
+  },
+  "limitations": [
+    "No road-map constraint or factor-graph smoother is included.",
+    "The speed-component reference-heading curve is an ablation, not an end-to-end navigation result.",
+    "The holdout is a contiguous part of one sequence, not a held-out journey/device/Indian-road benchmark.",
+    "The current phone-IMU result remains above the SIH26168 10% median drift target.",
+    "Long-duration buckets contain only the non-overlapping windows available in one S1 holdout; no 200-window claim is made."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "nishan.physical-capture-provenance/v1",
+  "capture_path": "/home/user_end4/Downloads/akshay1.jpeg",
+  "sha256": "0768a686fcfff4c220f7d2057ab491ea31c02cbb004fb1f503f3013e8f311a0e",
+  "size_bytes": 51219,
+  "width_pixels": 912,
+  "height_pixels": 1280,
+  "format": "JPEG",
+  "mode": "RGB",
+  "embedded_dpi": null,
+  "embedded_exif": {},
+  "reported_by_user": {
+    "capture_method": "camera",
+    "transfer_method": "WhatsApp"
+  },
+  "expected_print_file": "artifacts/nishan/dual-carrier-user-0000-live-text.pdf",
+  "expected_print_file_basis": "Requested camera image of same printed sheet; exact physical print provenance not independently verified.",
+  "source_capture_modified": false,
+  "baseline_evidence": "research/evidence/nishan-akshay1-camera-2026-09-10.json",
+  "diagnostic_observations": {
+    "capture_exact_white_pixel_fraction": 0.9127724095394737,
+    "earlier_scan_resized_area_mean_absolute_channel_difference": 1.4513891744334795,
+    "earlier_scan_resized_area_pixel_correlation": 0.9793399900715054,
+    "earlier_scan_resized_area_fraction_pixels_within_5_all_channels": 0.9440463952850877,
+    "comparison_method": "Earlier Doc Scanner image resized to this image's geometry with OpenCV INTER_AREA; no original files modified.",
+    "interpretation_limit": "Similarity is unsurprising for the same page and does not establish shared derivation or contradict user-reported capture provenance. WhatsApp transfer and reduced dimensions prevent treating this as a verified unprocessed camera original."
+  },
+  "follow_up_requested": "Transfer original camera file as Document/file or via USB; no new photograph required if original remains available."
+}

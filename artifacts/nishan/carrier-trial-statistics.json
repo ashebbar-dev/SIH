@@ -1,0 +1,55 @@
+{
+  "attacks": {
+    "alice_bob_charlie_pixel_average": {
+      "guilty_scores": {
+        "maximum": 0.495231,
+        "mean": 0.467619,
+        "minimum": 0.441829,
+        "sd_population": 0.011503
+      }
+    },
+    "alice_bob_pixel_average": {
+      "guilty_scores": {
+        "maximum": 0.621919,
+        "mean": 0.596779,
+        "minimum": 0.573065,
+        "sd_population": 0.012578
+      },
+      "innocent_score": {
+        "maximum": 0.019331,
+        "mean": 0.001605,
+        "minimum": -0.01589,
+        "sd_population": 0.008482
+      }
+    },
+    "bob_jpeg_q55": {
+      "guilty_score": {
+        "maximum": 0.332806,
+        "mean": 0.315217,
+        "minimum": 0.301219,
+        "sd_population": 0.010182
+      },
+      "maximum_innocent_score_per_trial": {
+        "maximum": 0.009624,
+        "mean": 0.003499,
+        "minimum": -0.003187,
+        "sd_population": 0.003455
+      }
+    }
+  },
+  "limitations": [
+    "The source page and attack parameters are fixed.",
+    "The trial does not test print-scan, geometry, crop, OCR, interleaving, majority, or minority attacks.",
+    "No rare-event false-accusation probability can be inferred from this trial count."
+  ],
+  "method": "deterministic Monte Carlo over independent UUID-derived carriers on the rendered one-page synthetic source; this measures run-to-run carrier variation, not a formal error bound",
+  "psnr_db": {
+    "maximum": 43.057737,
+    "mean": 42.834078,
+    "minimum": 42.324081,
+    "sd_population": 0.221712
+  },
+  "trials": 30,
+  "version": "nishan-carrier-trials/v1",
+  "watermark_strength": 2.2
+}

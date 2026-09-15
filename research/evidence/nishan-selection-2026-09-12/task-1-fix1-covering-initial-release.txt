@@ -1,0 +1,47 @@
+test_actual_pin_rechecked_after_append_before_checkpoint (test_release_safeguards.ReleaseSafeguardsTests.test_actual_pin_rechecked_after_append_before_checkpoint) ... ok
+test_bad_arguments_fail_before_decryption_and_locks_are_released (test_release_safeguards.ReleaseSafeguardsTests.test_bad_arguments_fail_before_decryption_and_locks_are_released) ... ok
+test_checkpoint_failure_commits_but_never_publishes_and_requires_recovery (test_release_safeguards.ReleaseSafeguardsTests.test_checkpoint_failure_commits_but_never_publishes_and_requires_recovery) ... ok
+test_concurrent_issuance_has_distinct_rows_and_third_release_succeeds (test_release_safeguards.ReleaseSafeguardsTests.test_concurrent_issuance_has_distinct_rows_and_third_release_succeeds) ... ok
+test_coordinated_rollback_rejected_by_release_and_trace (test_release_safeguards.ReleaseSafeguardsTests.test_coordinated_rollback_rejected_by_release_and_trace) ... ok
+test_empty_missing_and_replaced_witness_rejected (test_release_safeguards.ReleaseSafeguardsTests.test_empty_missing_and_replaced_witness_rejected) ... ok
+test_foreign_ledger_root_and_invalid_witness_signature_rejected (test_release_safeguards.ReleaseSafeguardsTests.test_foreign_ledger_root_and_invalid_witness_signature_rejected) ... ok
+test_legacy_generic_pdf_receipt_rejected_before_screening (test_release_safeguards.ReleaseSafeguardsTests.test_legacy_generic_pdf_receipt_rejected_before_screening) ... ok
+test_noop_or_corrupt_checkpoint_never_publishes (test_release_safeguards.ReleaseSafeguardsTests.test_noop_or_corrupt_checkpoint_never_publishes) ... ok
+test_pdf_source_label_tampering_before_first_strict_release_rejected (test_release_safeguards.ReleaseSafeguardsTests.test_pdf_source_label_tampering_before_first_strict_release_rejected) ... ok
+test_pinned_happy_path_and_read_only_trace (test_release_safeguards.ReleaseSafeguardsTests.test_pinned_happy_path_and_read_only_trace) ... ok
+test_renamed_prefixed_pdf_source_uses_strict_pdf_policy (test_release_safeguards.ReleaseSafeguardsTests.test_renamed_prefixed_pdf_source_uses_strict_pdf_policy) ... ERROR
+test_rendered_transplant_retains_leads_without_attribution (test_release_safeguards.ReleaseSafeguardsTests.test_rendered_transplant_retains_leads_without_attribution) ... ok
+test_short_pdf_abstains_with_signed_capacity_limitation (test_release_safeguards.ReleaseSafeguardsTests.test_short_pdf_abstains_with_signed_capacity_limitation) ... ok
+test_workspace_destination_can_be_on_another_filesystem (test_release_safeguards.ReleaseSafeguardsTests.test_workspace_destination_can_be_on_another_filesystem) ... ok
+
+======================================================================
+ERROR: test_renamed_prefixed_pdf_source_uses_strict_pdf_policy (test_release_safeguards.ReleaseSafeguardsTests.test_renamed_prefixed_pdf_source_uses_strict_pdf_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_release_safeguards.py", line 163, in test_renamed_prefixed_pdf_source_uses_strict_pdf_policy
+    result = self.release(**self.strict())
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/tests/test_release_safeguards.py", line 112, in release
+    return core.decrypt_and_attribute(self.package, self.identities, "alice", self.secret,
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.ledger, output or self.root / "out.pdf", **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py", line 183, in decrypt_and_attribute
+    return _decrypt_and_attribute_locked(
+        package_path, identities_root, recipient_id, authority_secret_path,
+        ledger_root, output_path, watermark_strength,
+        witness_root=witness_root, witness_public_key_sha3_256=pin,
+    )
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/core.py", line 273, in _decrypt_and_attribute_locked
+    carrier_metrics = tardos_carrier.embed_pdf(
+        plaintext_path,
+    ...<4 lines>...
+        strength=4.0,
+    )
+  File "/home/user_end4/MySpace/SIH/prototypes/nishan_pq/nishan/tardos_carrier.py", line 241, in embed_pdf
+    raise ValueError("the Tardos live-document carrier requires PDF input and output")
+ValueError: the Tardos live-document carrier requires PDF input and output
+
+----------------------------------------------------------------------
+Ran 15 tests in 60.726s
+
+FAILED (errors=1)

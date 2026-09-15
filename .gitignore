@@ -1,0 +1,71 @@
+.venv/
+.venv-kws/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+
+# Raw datasets and local demo state can be large or contain secret material.
+data/
+demo-run/
+**/identities/
+**/authority/
+**/ledger/validators/
+**/ledger/replicas/
+*.pem
+*private-key*
+*private_key*
+*watermark-secret*
+
+# Temporary office-render output; keep only the reviewed root submission files.
+submissions/SIH26237_NISHAN_PQ/rendered/
+
+# Laptop handoff: machine-local tooling and credentials never belong in Git.
+/.agents/
+/.codex/
+.env
+.env.*
+!.env.example
+*.egg-info/
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+**/secrets/
+**/private/
+**/secret.bin
+**/authority-secret.bin
+**/auth-secret.bin
+**/material/
+**/.transaction.lock
+
+# Saved reports are portable; their live identities, ledgers and witnesses are not.
+**/validators/
+**/replicas/
+**/witness/
+**/*-ledger/
+**/*-witness/
+/research/evidence/nishan-selection-2026-09-12/demo*/fixture/
+
+# Opaque snapshots can bypass the key exclusions above. Keep source and reviews.
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+
+# Raw third-party recordings need separate acquisition / license review.
+/parallel_research/**/input/
+/parallel_research/**/downloads/
+/parallel_research/**/data/
+
+# Personal camera originals are transferred separately. Existing synthetic-page
+# diagnostic buffers and deterministic public test fixtures remain portable.
+/physical_captures/*
+!/physical_captures/README.md
+/artifacts/nishan/physical-alignments/
+
+# Accidental shell output, retained locally rather than deleted.
+/=4.11
