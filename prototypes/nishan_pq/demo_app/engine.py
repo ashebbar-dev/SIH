@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -21,6 +22,7 @@ from .public_fixture import build_material, decode_public
 
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 MAX_IMAGE_PIXELS = 40_000_000
+DETECTION_DPI = 144
 PUBLIC_LIMITATIONS = [
     "A photograph without a recovered carrier is inconclusive; it is not proof that a page was unmarked.",
     "The public fixture uses a published test key and synthetic row, not a signed real-person identity.",
@@ -65,7 +67,22 @@ class DemoEngine:
                         raise InputError("Encrypted PDFs are not supported.")
                     if document.page_count != 1:
                         raise InputError("Only a one-page PDF is supported by this demonstration.")
-                    document[0].rect
+                    rectangle = document[0].rect
+                    if (
+                        not math.isfinite(float(rectangle.width))
+                        or not math.isfinite(float(rectangle.height))
+                        or rectangle.width <= 0
+                        or rectangle.height <= 0
+                    ):
+                        raise InputError("PDF page dimensions are invalid.")
+                    width = math.ceil(float(rectangle.width) * DETECTION_DPI / 72.0)
+                    height = math.ceil(float(rectangle.height) * DETECTION_DPI / 72.0)
+                    if (
+                        width < 1 or height < 1 or width * height > MAX_IMAGE_PIXELS
+                    ):
+                        raise InputError(
+                            "PDF rendering at the detector resolution exceeds the 40 million pixels limit."
+                        )
                     return "pdf", path
             finally:
                 document.close()
@@ -206,7 +223,7 @@ class DemoEngine:
         )
         attribution = evidence.get("attribution", [])
         leads = evidence.get("visual_only_research_leads", []) if registration_ok else []
-        if attribution:
+        if attribution and registration_ok:
             kind, title, assurance, selected = (
                 "verified_session",
                 "Verified signed release",

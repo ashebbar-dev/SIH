@@ -89,6 +89,18 @@ class DemoEngineTests(unittest.TestCase):
         with self.assertRaisesRegex(InputError, "one-page"):
             self.engine.analyze(multiple, "public")
 
+    def test_pdf_projected_raster_is_bounded_before_detector_allocation(self) -> None:
+        huge_pdf = self.state_dir / "huge-page.pdf"
+        with fitz.open() as document:
+            document.new_page(width=50_000, height=50_000)
+            document.save(huge_pdf)
+        with patch(
+            "demo_app.engine.decode_public",
+            side_effect=AssertionError("oversize PDF reached raster detector"),
+        ):
+            with self.assertRaisesRegex(InputError, "40 million pixels"):
+                self.engine.analyze(huge_pdf, "public")
+
     def test_oversize_and_excessive_pixels_are_rejected(self) -> None:
         oversize = self.state_dir / "oversize.bin"
         with oversize.open("wb") as handle:
@@ -110,6 +122,46 @@ class DemoEngineTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "PQC support is unavailable"):
                 self.engine.prepare_signed()
 
+    def test_pqc_status_runtime_failure_disables_only_signed_mode(self) -> None:
+        from nishan import pqc
+
+        with patch.object(pqc, "support", side_effect=RuntimeError("provider probe failed")):
+            capabilities = self.engine.capabilities()
+        self.assertTrue(capabilities["public"])
+        self.assertFalse(capabilities["signed"])
+        self.assertIn("provider probe failed", capabilities["signed_detail"])
+
+    def test_signed_attribution_with_rejected_registration_is_inconclusive(self) -> None:
+        from nishan import core
+
+        fake_evidence = {
+            "decoder": {"preprocessing": {"pages": [{
+                "rejection_reason": "weak homography",
+                "registered_similarity": 0.02,
+            }]}},
+            "attribution": [{
+                "recipient_id": "alice",
+                "recipient_display_name": "Alice",
+                "session_id": "signed-session",
+                "fingerprint_user_index": 0,
+                "score": 9000.0,
+                "recipient_signature_valid": True,
+            }],
+            "visual_only_research_leads": [],
+            "detection_threshold": 2100.0,
+            "accused_codebook_rows": [0],
+            "channel_decision": {"decision": "corroborated_channels"},
+            "ledger_witness": {"valid": True},
+        }
+        manifest = {"witness_public_key_sha3_256": "0" * 64}
+        suspect = ROOT / "artifacts/nishan/dual-carrier-user-0000-live-text.pdf"
+        with patch.object(self.engine, "_current_signed", return_value=(self.state_dir, manifest)), patch.object(
+            core, "trace_leak", return_value=fake_evidence
+        ):
+            result = self.engine.analyze(suspect, "signed")
+        self.assertEqual(result["kind"], "inconclusive")
+        self.assertEqual(result["recipients"], [])
+
 
 class SignedDemoIntegrationTests(unittest.TestCase):
     def test_signed_alice_bob_trace_and_restart_reuse(self) -> None:
@@ -117,9 +169,19 @@ class SignedDemoIntegrationTests(unittest.TestCase):
             from nishan import pqc
         except (ImportError, OSError) as error:
             self.skipTest(f"PQC import unavailable: {error}")
-        status = pqc.support()
+        try:
+            status = pqc.support()
+        except (OSError, RuntimeError) as error:
+            self.skipTest(f"PQC support probe failed: {error}")
         if not status.ready:
-            self.skipTest(f"PQC unavailable: {status.detail}")
+            missing = []
+            if not status.ml_kem_768:
+                missing.append("ML-KEM-768")
+            if not status.ml_dsa_65:
+                missing.append("ML-DSA-65")
+            self.skipTest(
+                f"PQC unavailable in {status.openssl_version}: missing {', '.join(missing)}"
+            )
 
         with tempfile.TemporaryDirectory() as directory:
             state = Path(directory) / "state"

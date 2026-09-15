@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
+import logging
+import math
 import os
+import re
 import secrets
 import threading
 import time
@@ -24,6 +26,12 @@ from .engine import MAX_UPLOAD_BYTES, DemoEngine, InputError
 
 
 STATIC_ROOT = Path(__file__).with_name("static")
+LOGGER = logging.getLogger(__name__)
+PREVIEW_MAX_WIDTH = 1400
+PREVIEW_MAX_HEIGHT = 1800
+OWNED_JOB_FILE = re.compile(
+    r"^[0-9a-f]{32}(?:\.upload|-preview\.jpg|-report\.json)$"
+)
 STATIC_ROUTES = {
     "/": (STATIC_ROOT / "index.html", "text/html; charset=utf-8"),
     "/mobile": (STATIC_ROOT / "mobile.html", "text/html; charset=utf-8"),
@@ -53,7 +61,15 @@ class DemoHTTPServer(ThreadingHTTPServer):
         self.files_root = engine.state_dir / "http-files"
         self.files_root.mkdir(mode=0o700, parents=True, exist_ok=True)
         os.chmod(self.files_root, 0o700)
+        self._clean_orphaned_job_files()
         super().__init__(address, DemoRequestHandler)
+
+    def _clean_orphaned_job_files(self) -> None:
+        """Remove only files this server names and owns from an earlier process."""
+
+        for path in self.files_root.iterdir():
+            if OWNED_JOB_FILE.fullmatch(path.name) and (path.is_file() or path.is_symlink()):
+                path.unlink()
 
     def server_close(self) -> None:
         super().server_close()
@@ -134,6 +150,8 @@ class DemoHTTPServer(ThreadingHTTPServer):
                 job["report_url"] = f"/api/jobs/{job_id}/report"
                 job["status"] = "done"
         except Exception as error:
+            if not isinstance(error, (InputError, RuntimeError, ValueError)):
+                LOGGER.exception("Unexpected failure in analysis job %s", job_id)
             with self._lock:
                 self.jobs[job_id]["status"] = "error"
                 self.jobs[job_id]["error"] = (
@@ -185,19 +203,41 @@ class DemoHTTPServer(ThreadingHTTPServer):
             try:
                 with fitz.open(source) as document:
                     if document.is_pdf and document.page_count:
-                        pixmap = document[0].get_pixmap(matrix=fitz.Matrix(1.3, 1.3), alpha=False)
+                        pixmap = document[0].get_pixmap(
+                            matrix=self.preview_matrix(document[0].rect), alpha=False
+                        )
                         image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
                     else:
                         raise fitz.FileDataError("not a PDF")
             except (fitz.FileDataError, RuntimeError, ValueError):
                 with Image.open(source) as opened:
                     image = ImageOps.exif_transpose(opened).convert("RGB")
-            image.thumbnail((1400, 1800), Image.Resampling.LANCZOS)
+            image.thumbnail(
+                (PREVIEW_MAX_WIDTH, PREVIEW_MAX_HEIGHT), Image.Resampling.LANCZOS
+            )
             image.save(output, "JPEG", quality=86, optimize=True)
             os.chmod(output, 0o600)
             return output
         except Exception:
             return None
+
+    @staticmethod
+    def preview_matrix(rectangle: fitz.Rect) -> fitz.Matrix:
+        """Choose a PDF render matrix before pixel allocation."""
+
+        width = max(float(rectangle.width), 1.0)
+        height = max(float(rectangle.height), 1.0)
+        if not math.isfinite(width) or not math.isfinite(height):
+            raise ValueError("preview page dimensions are invalid")
+        scale = min(
+            1.3,
+            PREVIEW_MAX_WIDTH / width,
+            PREVIEW_MAX_HEIGHT / height,
+        )
+        # Floating rounding in the renderer can add one edge pixel. Bias the
+        # scale inward so the allocation remains inside both display bounds.
+        scale = max(scale - 1e-9, 1e-9)
+        return fitz.Matrix(scale, scale)
 
     def public_job(self, job_id: str) -> dict | None:
         with self._lock:

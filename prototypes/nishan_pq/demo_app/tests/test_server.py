@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import http.client
 import json
+import math
 import tempfile
 import threading
 import time
 import unittest
 from pathlib import Path
+
+import pymupdf as fitz
 
 from demo_app.engine import DemoEngine
 from demo_app.server import DemoHTTPServer
@@ -21,6 +24,7 @@ class ControlledEngine:
         self.started = threading.Event()
         self.release = threading.Event()
         self.hold = False
+        self.raise_unexpected = False
 
     def capabilities(self):
         return {"public": True, "signed": False, "signed_detail": "test engine"}
@@ -35,6 +39,8 @@ class ControlledEngine:
 
     def analyze(self, path, mode):
         self.started.set()
+        if self.raise_unexpected:
+            raise KeyError("private diagnostic detail")
         if self.hold and not self.release.wait(5):
             raise TimeoutError("test release timed out")
         return {
@@ -181,6 +187,60 @@ class ServerTests(unittest.TestCase):
         self.assertIn('id="result-context"', desktop)
         self.assertIn('id="result-context"', mobile)
         self.assertIn('rel="icon" href="data:image/svg+xml', desktop)
+
+    def test_unexpected_failure_is_sanitized_but_traceback_is_logged_locally(self) -> None:
+        self.engine.raise_unexpected = True
+        headers = self.post_headers()
+        with self.assertLogs("demo_app.server", level="ERROR") as captured:
+            code, _, payload = self.request(
+                "POST", "/api/analyze?mode=public", b"pdf", headers
+            )
+            self.assertEqual(code, 202)
+            job = self.wait_job(json.loads(payload)["job_id"])
+        self.assertEqual(
+            job["error"], "Analysis failed. Inspect the local terminal for details."
+        )
+        self.assertNotIn("private diagnostic detail", job["error"])
+        self.assertIn("KeyError: 'private diagnostic detail'", "\n".join(captured.output))
+
+
+class ServerResourceLifecycleTests(unittest.TestCase):
+    def test_preview_matrix_bounds_allocation_before_render(self) -> None:
+        rectangle = fitz.Rect(0, 0, 50_000, 50_000)
+        matrix = DemoHTTPServer.preview_matrix(rectangle)
+        width = math.ceil(rectangle.width * matrix.a)
+        height = math.ceil(rectangle.height * matrix.d)
+        self.assertLessEqual(width, 1400)
+        self.assertLessEqual(height, 1800)
+        self.assertLessEqual(width * height, 1400 * 1800)
+
+    def test_startup_removes_only_owned_orphan_job_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            state = Path(directory)
+            files = state / "http-files"
+            files.mkdir()
+            job_id = "a" * 32
+            owned = [
+                files / f"{job_id}.upload",
+                files / f"{job_id}-preview.jpg",
+                files / f"{job_id}-report.json",
+            ]
+            for path in owned:
+                path.write_bytes(b"orphan")
+            unrelated = files / "judge-notes.txt"
+            unrelated.write_text("preserve")
+            signed_state = state / "runs" / "run-safe" / "identities" / "alice"
+            signed_state.mkdir(parents=True)
+            private_key = signed_state / "private.pem"
+            private_key.write_text("preserve")
+            engine = ControlledEngine(state)
+            server = DemoHTTPServer(("127.0.0.1", 0), engine)
+            try:
+                self.assertTrue(all(not path.exists() for path in owned))
+                self.assertEqual(unrelated.read_text(), "preserve")
+                self.assertEqual(private_key.read_text(), "preserve")
+            finally:
+                server.server_close()
 
 
 class RealEngineHTTPIntegrationTests(unittest.TestCase):

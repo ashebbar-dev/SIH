@@ -20,6 +20,12 @@ server. The default binding is loopback-only, request bodies are limited to
 Analysis can take a few seconds; the interface reports the measured duration
 and does not simulate progress or promise zero delay.
 
+Uploaded bytes and generated preview/report files are temporary job artifacts.
+Only the newest 20 completed jobs are retained while the server runs, and
+owned orphan job files are removed when it next starts. Signed identities,
+ledger, witness and issued PDFs are a separate persistent run and are not
+removed by that cleanup.
+
 The fastest judge flow is:
 
 1. Click **Try original**. The real published source is uploaded and can be
