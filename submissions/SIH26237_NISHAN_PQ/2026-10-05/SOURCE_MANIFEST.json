@@ -1,0 +1,122 @@
+{
+  "publication_date": "2026-10-05",
+  "stable_source_commit": "f37e861dc02815adf1bebb3e1b45ff222dccf821",
+  "note": "Logical local-origin labels are provenance, not downloadable inputs. Raw photos and runtime state are excluded.",
+  "files": [
+    {
+      "path": "stable-runs-2026-09-28/unittest.txt",
+      "origin": "SIH-final/ppt/runs/unittest.txt",
+      "bytes": 9663,
+      "sha256": "db21a9aab1ff0ef43f05fc1e67046b20a4f96d18991fc3347b44822ee1c14238",
+      "transformation": "none"
+    },
+    {
+      "path": "stable-runs-2026-09-28/doctor.txt",
+      "origin": "SIH-final/ppt/runs/doctor.txt",
+      "bytes": 176,
+      "sha256": "b58c8eae6b6adbcd34d62168df6f4969fe9151f68f1bf56ce9d9eca2d286dce6",
+      "transformation": "none"
+    },
+    {
+      "path": "stable-runs-2026-09-28/safeguard.txt",
+      "origin": "SIH-final/ppt/runs/safeguard.txt",
+      "bytes": 405,
+      "sha256": "9ac6d6f5aecbc803f651b75b8711769f614b28830bc9de202cca39178de1ace9",
+      "transformation": "none"
+    },
+    {
+      "path": "stable-runs-2026-09-28/bench_tardos_pdf.json",
+      "origin": "SIH-final/ppt/runs/bench_tardos_pdf.json",
+      "bytes": 79325,
+      "sha256": "80b18b82c2512f37692bab4c6525a0ef44f04dbcd3f925ede8904be205da8131",
+      "transformation": "none"
+    },
+    {
+      "path": "stable-runs-2026-09-28/bench_tardos_trials.json",
+      "origin": "SIH-final/ppt/runs/bench_tardos_trials.json",
+      "bytes": 47946,
+      "sha256": "e00253822e782420ef9aaeac34d098cffd343ce177e58f05623e79dd931766f8",
+      "transformation": "none"
+    },
+    {
+      "path": "stable-runs-2026-09-28/bench_e2e_trials.json",
+      "origin": "SIH-final/ppt/runs/bench_e2e_trials.json",
+      "bytes": 23352,
+      "sha256": "9004bda08fc7b20df55d85c4174b71854a3696e589bfd4eaedaf4dde90ce1e1d",
+      "transformation": "none"
+    },
+    {
+      "path": "physical-research/RESULTS.md",
+      "origin": "SIH/physical_captures/stroke-v3-20260918/test3-20260928/RESULTS.md",
+      "bytes": 16985,
+      "sha256": "9d3c144393037d74e0cd8fb802748b45f848ce478aac1caac17a903a7b4840d5",
+      "transformation": "none"
+    },
+    {
+      "path": "physical-research/SUBMISSION_SNAPSHOT.md",
+      "origin": "SIH/physical_captures/stroke-v3-20260918/test3-20260928/SUBMISSION_SNAPSHOT.md",
+      "bytes": 5629,
+      "sha256": "65e237f607fc1c489b726ff709ba404ac75615bcc079a1c21b1cde7ef08a6247",
+      "transformation": "none"
+    },
+    {
+      "path": "physical-research/fresh-foundation-check.md",
+      "origin": "SIH/physical_captures/stroke-v3-20260918/test3-20260928/fresh-foundation-check.md",
+      "bytes": 2786,
+      "sha256": "653729d93ca1e0185f005a09dd1abea1b177eb9717b520cdc14e799c0e154f71",
+      "transformation": "none"
+    },
+    {
+      "path": "physical-research/r22b-final-evidence-review.md",
+      "origin": "SIH/physical_captures/stroke-v3-20260918/test3-20260928/r22b-final-evidence-review.md",
+      "bytes": 10317,
+      "sha256": "4623e7bb87590a6504590eb178f8b56d89e4997d799ac65ac9c454ae93e7c5a9",
+      "transformation": "Replaced the authorizing report absolute local path with a logical origin; evidence hashes and findings unchanged.",
+      "source_sha256": "acff9b084d1fb76623f7d22a1064e84f9e931c2064205cfb3861ac4a1f5aa127"
+    },
+    {
+      "path": "physical-research/submission-figures-r15-v1/figure-data.json",
+      "origin": "SIH/physical_captures/stroke-v3-20260918/test3-20260928/submission-figures-r15-v1/figure-data.json",
+      "bytes": 1208,
+      "sha256": "a647aa0b7ce23e8942b121d6313b87bf7cf3bb8de18ed0ee86d9a4a9673fb8a1",
+      "transformation": "Replaced absolute local source path with logical origin; measurements and original source hash unchanged.",
+      "source_sha256": "70bf48d7d21e96174bddcf85464f63c71b01fadc9276e143f4b6f60abdf0cadc"
+    },
+    {
+      "path": "physical-research/submission-figures-r15-v1/verified-r15-results.png",
+      "origin": "SIH/physical_captures/stroke-v3-20260918/test3-20260928/submission-figures-r15-v1/verified-r15-results.png",
+      "bytes": 136875,
+      "sha256": "5d31f34ffb29c6312679f5f11c24a82df0f8263e2f07452fb2f762280a5065b1",
+      "transformation": "none"
+    },
+    {
+      "path": "physical-research/submission-figures-r15-v1/verified-r15-results.svg",
+      "origin": "SIH/physical_captures/stroke-v3-20260918/test3-20260928/submission-figures-r15-v1/verified-r15-results.svg",
+      "bytes": 90949,
+      "sha256": "186f6fac992ce187650cd50cff66c667be4671ddb6a7b5b81b420d5f7a43c7f5",
+      "transformation": "none"
+    },
+    {
+      "path": "physical-research/fresh-stable-safeguards-v1/results.json",
+      "origin": "SIH/physical_captures/stroke-v3-20260918/test3-20260928/fresh-stable-safeguards-v1/results.json",
+      "bytes": 17957,
+      "sha256": "1f5a7a1961faf89fa399dc104d6e9ad66181d1b00e99bacbf46fc59d7ecc45e7",
+      "transformation": "none"
+    },
+    {
+      "path": "physical-research/r15-summary.json",
+      "origin": "R15 receiver-meshcontrast worktree/outputs/test3-meshcontrast-r15-v1/summary.json",
+      "bytes": 53979,
+      "sha256": "a3636da230eecf3bf2053ffc35d945faab22888627c1de6826cae7ae082520ac",
+      "transformation": "Removed bindings (local absolute paths and original-capture filenames/hashes); retained all measurement rows, aggregates and timings; added publication notice.",
+      "source_sha256": "c91edc234d9fd166f44f30014f650b2b5545243f6f7e0bc017e6034eb7ece58b"
+    },
+    {
+      "path": "NISHAN-PQ_SIH26237_Aevrix.pdf",
+      "origin": "SIH-final/ppt/NISHAN-PQ_SIH26237_Aevrix.pdf",
+      "bytes": 2392856,
+      "sha256": "d5f64acd9da4cdb7912536cfd5e681c372f9296f2ffc9b1f71d3ff03578afcd0",
+      "transformation": "none"
+    }
+  ]
+}

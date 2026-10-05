@@ -1,0 +1,48 @@
+{
+  "measured_new_trials": false,
+  "publication_note": "Only source path replaced. source_sha256 still identifies the original private summary; plotted measurements unchanged.",
+  "rows": [
+    {
+      "baseline": 1,
+      "exact": 1,
+      "finite": 2,
+      "label": "Normal photo",
+      "n": 6,
+      "route": "normal"
+    },
+    {
+      "baseline": 2,
+      "exact": 0,
+      "finite": 3,
+      "label": "WhatsApp photo",
+      "n": 6,
+      "route": "whatsapp"
+    },
+    {
+      "baseline": 0,
+      "exact": 0,
+      "finite": 0,
+      "label": "Real tilt",
+      "n": 6,
+      "route": "tilted"
+    },
+    {
+      "baseline": 1,
+      "exact": 1,
+      "finite": 4,
+      "label": "Scanner app",
+      "n": 6,
+      "route": "scanner"
+    }
+  ],
+  "script_sha256": "fe0ae5a405ceb8a891e12251a4c0a774253f68358a3b32409f72e16bd7c4bf19",
+  "source": "Original R15 summary (private local export; see ../r15-summary.json for a public derivative)",
+  "source_commit": "f48f52b31bbbe8b0841e8f462d60009e21b5c3c0",
+  "source_sha256": "c91edc234d9fd166f44f30014f650b2b5545243f6f7e0bc017e6034eb7ece58b",
+  "test3_marked": 24,
+  "total": {
+    "baseline_finite": 4,
+    "r15_exact": 2,
+    "r15_finite": 9
+  }
+}

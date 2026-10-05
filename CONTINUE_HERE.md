@@ -1,4 +1,15 @@
-# Laptop handoff — 15 September 2026
+# Laptop handoff
+
+## Current entry point — 5 October 2026
+
+Use [the Aevrix submission package](submissions/SIH26237_NISHAN_PQ/2026-10-05/README.md)
+for the current PDF, evidence, qualifications, research index and reproduction commands.
+The stable demo source is unchanged from `f37e861`; experimental branches are separate.
+The package records exclusions and does not claim that the local photo corpus or all
+runtime state is public. On another laptop, clone the repository normally; in an existing
+clean checkout, fetch/pull without discarding local work.
+
+## Historical laptop handoff — 15 September 2026
 
 Start here. Older plans and the historical sections of README.md are not the
 current execution order. This handoff preserves source, tests, presentations,

@@ -1,0 +1,2540 @@
+diff --git a/research/robustness/receiver/PLAN.md b/research/robustness/receiver/PLAN.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ba04b58d91cd810a647175da449bdb11afc0f357
+--- /dev/null
++++ b/research/robustness/receiver/PLAN.md
+@@ -0,0 +1,179 @@
++# Existing-Carrier Soft Receiver Pilot Implementation Plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
++
++**Goal:** Build and measure a bounded, recipient-independent receiver comparison for the unchanged NISHAN `n=1000, c=5, m=52500, block=6, 144 DPI, strength=4` carrier: historical hard evidence versus a global blur/photometric soft score versus a local warp/channel-uncertainty soft score.
++
++**Architecture:** A fixture stage may use issued rows only to create labeled test inputs; it writes receiver inputs and evaluation labels separately. A preparation stage consumes source pixels, biases, keyed carrier geometry, and captures but cannot load roster rows or target labels; it commits hard words and signed soft evidence. A scoring stage verifies that commitment, then loads the roster and labels, applies receiver-specific conditional Chernoff boundaries, and retains every score and failure.
++
++**Tech Stack:** Python 3.14, NumPy, OpenCV, SciPy, PyMuPDF, Pillow, existing `nishan` Tardos/carrier/registration modules, `unittest`.
++
++**Spec:** `/tmp/sih-robustness-20260916-control/research/robustness_campaign/SPEC.md`
++
++## Global Constraints
++
++- Protected baseline is `f37e861dc02815adf1bebb3e1b45ff222dccf821`; write only branch `research/robustness-20260916-receiver` in this worktree.
++- Do not edit main, another worktree, tags, or the shared virtual environment; do not merge, push, resume an old agent, or spawn a subagent.
++- Run with `__PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python`, `PYTHONDONTWRITEBYTECODE=1`, this worktree's `prototypes/nishan_pq` on `PYTHONPATH`, and at most two OpenCV/BLAS threads.
++- Keep the carrier profile and embedded symbol bytes fixed: `n=1000`, `c=5`, `m=52500`, block `6`, `144 DPI`, strength `4`, public fixture row bytes and geometry unchanged.
++- The historical threshold `2100` is reported only for the historical asymmetric hard scorer. Both changed signed-soft scorers use their own explicitly modeled conditional Chernoff threshold and never choose a boundary from row 0 or another recipient score.
++- Receiver fitting may use the original source, rendered binary endpoints, realized biases, keyed geometry, and capture pixels. It may not use any roster row, target label, recipient score, or empirical roster average.
++- `__PRIVATE_HOME__/Downloads/legacy-capture-0{,1,2,3}.jpeg` are development observations of one sheet, never unseen tests. The pending new photo stays sealed until intake hashes and configuration are committed.
++- The source-pack split from commit `1148b8b` is development (`dev_memo`, `dev_table`), validation (`validation_dense`, `validation_diagram`), and confirmation (`test_short`, `test_mixed`). The confirmation sources are first measured only after preregistration is committed.
++- Preserve separate categories for exact PDF, raster/JPEG, simulated print-camera, scanner/enhancement, ordinary photo, WhatsApp ordinary-photo transfer, and future WhatsApp-document transfer. JPEG Q55 is only one codec case.
++- Synthetic success is not physical success. Pattern recovery after transplantation is not content authenticity or human culpability. No production promotion follows this pilot.
++- Target resident memory is at most 1.5 GiB and added branch artifacts at most 500 MiB. Produce zero print-ready candidates in this receiver-only lead.
++
++---
++
++## File Structure
++
++- `research/robustness/receiver/PLAN.md`: this executable plan and progress record.
++- `research/robustness/receiver/preregistration.json`: immutable settings, splits, hypotheses, metrics, hashes, decision rules, and missing-input policy committed before measurement.
++- `research/robustness/receiver/source_license_audit.md`: primary literature URLs, incorporated-code/license boundary, pinned commits, and missing artifacts.
++- `research/robustness/receiver/receiver.py`: row-blind channel fitting, hard evidence extraction, global signed-soft evidence, local mixture evidence, signed scoring, and conditional thresholds.
++- `research/robustness/receiver/run_pilot.py`: exclusive-output `fixtures`, `prepare`, and `score` commands with commitments and full provenance.
++- `research/robustness/receiver/tests/test_receiver.py`: focused arithmetic, separation, channel-fit, uncertainty-mixture, control, and overwrite tests.
++- `research/robustness/receiver/sources/`: copied six-PDF shared synthetic source pack plus its manifest, pinned to commit `1148b8b`.
++- `research/robustness/receiver/evidence/pilot-v1/`: safe synthetic fixture manifest, committed prepared arrays, scores, per-case CSV, hashes, and command log; original user photos remain outside Git.
++- `research/robustness/receiver/REPORT.md`: hypothesis, matched comparison, complete outcomes, negative controls, failures, assumptions, and next physical action.
++- `research/robustness/receiver/checkpoint.json`: current stage, missing new physical inputs, precise research question, and next command.
++
++### Task 1: Freeze inputs, comparison, and audit before measurement
++
++**Files:**
++- Create: `research/robustness/receiver/preregistration.json`
++- Create: `research/robustness/receiver/source_license_audit.md`
++- Copy: `research/robustness/receiver/sources/{manifest.json,dev_memo.pdf,dev_table.pdf,validation_dense.pdf,validation_diagram.pdf,test_short.pdf,test_mixed.pdf}`
++- Modify: `research/robustness/receiver/PLAN.md`
++
++**Interfaces:**
++- Consumes: campaign `SPEC.md`, baseline/source-pack commit IDs, exact source/capture hashes, historical receiver reports.
++- Produces: `preregistration.json` whose SHA-256 is required by all three runner commands.
++
++- [x] **Step 1: Copy and hash the six-source pack**
++
++  Copy only the seven files named above from the read-only control worktree and verify every PDF against `manifest.json` plus source-pack Git commit `1148b8b`.
++
++- [x] **Step 2: Write the frozen comparison JSON**
++
++  Freeze three profiles: `affine_hard_asymmetric`, `affine_global_signed_soft`, and `affine_local_mixture_signed_soft`. Freeze global blur candidates `[0.0, 0.6, 1.0, 1.4]`, robust 80% trimmed affine photometric fits, local `96x96` tiles, shift offsets `[-0.75, 0, 0.75]^2`, a minimum 64 content pixels per fit, signed confidence `tanh(z/3)`, family epsilon `1e-6`, and `H = evaluated_cases * 3 * 1000` including failed profiles. Freeze strict `score > threshold`, complete score retention, and no post-result parameter changes under the `pilot-v1` name.
++
++- [x] **Step 3: Freeze cases and outcome semantics**
++
++  Include exact-PDF and one preregistered distortion for each of the six source-pack documents; the existing source/marked PDF identity, Q55, global, local-warp, combined, and white-clipping synthetic diagnostics; unmarked, wrong-key, wrong-context, wrong-source, other-issued-row, and copied-overlay controls; and all four historical captures with their provenance categories. Store expected rows only in a scoring label file produced by `fixtures`, never in preparation metadata. Treat transplant donor-pattern recovery as an attribution abstention.
++
++- [x] **Step 4: Freeze metrics and external-intake policy**
++
++  Record exact expected-row recovery, correct/wrong/abstain, every accused row and all 1,000 scores, bit error where a labeled row exists, PSNR plus source-text-region PSNR for synthetic cases, extracted-text equality for generated PDFs, runtime/RSS, capacity, fit failures, saturation, retained evidence, and every exclusion. The pending new photo may be added only as a named `whatsapp_document_real_camera_confirmation` intake with original bytes, SHA-256, dimensions, metadata, and no tuning.
++
++- [x] **Step 5: Write the source/license audit**
++
++  Cite the primary Tardos and Meerwald/Furon sources and the established synchronization references already identified in the historical design. State that no external code, weights, or dataset are incorporated; list existing package licenses from installed metadata; pin baseline `f37e861` and source pack `1148b8b`; list missing physical originals, printer settings, scanner capture, ordinary-photo pair, and new WhatsApp-document file.
++
++- [x] **Step 6: Self-review and commit the preregistration**
++
++  Validate JSON, verify hashes, scan this plan for placeholders, compare every campaign-spec deliverable to a task, then commit the plan, preregistration, audit, and copied source pack before running receiver measurements.
++
++### Task 2: Implement and unit-test row-blind receiver primitives
++
++**Files:**
++- Create: `research/robustness/receiver/receiver.py`
++- Create: `research/robustness/receiver/tests/test_receiver.py`
++
++**Interfaces:**
++- Produces: `fit_global_channel(midpoint, captured, content_mask, config) -> GlobalFit`; `extract_hard(...) -> Evidence`; `extract_global_soft(...) -> Evidence`; `extract_local_mixture_soft(...) -> Evidence`; `signed_scores(biases, codebook, weights) -> ndarray`; `conditional_signed_threshold(biases, weights, epsilon, hypotheses) -> dict`.
++- Consumes: scalar 144-DPI luma arrays, fixed carrier order/orientation/polarity, bias-only q values, and configuration loaded from preregistration.
++
++- [x] **Step 1: Write failing arithmetic and validation tests**
++
++  Test shape/finite checks; the historical hard word and correlations on a tiny fixed block grid; signed score centering with `q=floor(p*2^32)/2^32`; an exact enumeration showing the returned Chernoff tail bound covers the enumerated tail; zero-evidence abstention; and exclusive handling of the historical threshold.
++
++- [x] **Step 2: Run the focused tests and retain the expected failures**
++
++  Run `python -m unittest research.robustness.receiver.tests.test_receiver -v` and save the failing output in the command log before implementation.
++
++- [x] **Step 3: Implement minimal hard and signed-soft arithmetic**
++
++  Reproduce the existing float32 block correlation and strict sign for the hard profile. For soft profiles, compute row score `sum_j w_j (X_ij-q_j)/sqrt(q_j(1-q_j))` and its exact conditional product-Bernoulli log-MGF for any frozen evidence vector `w` independent of the tested row.
++
++- [x] **Step 4: Implement the global content-only channel fit**
++
++  For each frozen blur candidate, blur the bias-derived rendered midpoint, robustly fit positive gain and offset on a fixed source-gradient/content mask, and select the lowest median absolute residual without consulting any code row. Correlate the residual against the correspondingly blurred signed carrier template, normalize by tile MAD noise with a positive floor, and emit `tanh(z/3)` evidence plus every fit diagnostic.
++
++- [x] **Step 5: Implement local warp/channel uncertainty**
++
++  Render the globally aligned capture at the nine frozen subpixel shifts. In each fixed tile, fit gain/offset and residual scale for every shift using source content only, turn content losses into normalized mixture weights with the frozen deterministic loss scale, and average signed per-symbol confidence over candidates. Empty/rank-deficient/low-content tiles inherit the global fit and report fallback counts.
++
++- [x] **Step 6: Add channel and separation tests**
++
++  Test recovery of known blur/gain/offset without row access; a piecewise subpixel-shift fixture where local evidence improves the true signed correlation over global evidence; unchanged preparation output when unused roster data are swapped; and failure if a row/label argument is supplied to preparation interfaces.
++
++- [x] **Step 7: Run focused tests under resource limits and commit**
++
++  Use the shared interpreter and two-thread environment, retain full output, and commit only after every focused test passes.
++
++### Task 3: Implement the separated, reproducible pilot runner
++
++**Files:**
++- Create: `research/robustness/receiver/run_pilot.py`
++- Modify: `research/robustness/receiver/tests/test_receiver.py`
++
++**Interfaces:**
++- Produces: `fixtures/manifest.json` plus private-to-scoring `labels.json`; `prepared/preparation.json`, `prepared/evidence.npz`, and `prepared/commitment.json`; `scores.json` and `cases.csv`.
++- Consumes: committed preregistration hash, copied source pack, existing source/marked PDFs, and optional external capture paths.
++
++- [x] **Step 1: Test stage separation and exclusive outputs**
++
++  Mock roster generation to raise during `prepare`; mock image registration/channel fitting to raise during `score`; mutate a prepared byte and require commitment rejection; pre-create every output target and require refusal without overwrite.
++
++- [x] **Step 2: Implement `fixtures`**
++
++  Verify all source/input hashes, generate source-pack marked rasters in temporary PDFs with the fixed row-0 bytes and exact strength/profile, materialize deterministic distortions and controls, record PSNR/text metrics and case hashes, and store expected rows only in `labels.json`. Do not create a print-ready candidate PDF.
++
++- [x] **Step 3: Implement `prepare`**
++
++  Generate biases with the zero-row path, build actual rendered binary endpoints, initialize each case with the fixed ORB then ECC-affine single-resampling transform when geometry differs, run all three profiles without roster/labels, retain failures, serialize evidence arrays, and write a two-file SHA-256 commitment.
++
++- [x] **Step 4: Implement `score`**
++
++  Verify preregistration, fixture, and preparation commitments; generate the roster only here; apply the historical `2100` decision only to the hard asymmetric score; apply conditional hard and signed-soft thresholds using frozen `H`; retain all 1,000 scores; calculate correct/wrong/abstain, bit errors, ranks, margins, and transplantation-safe outcome semantics.
++
++- [x] **Step 5: Add the end-to-end miniature test and run the suite**
++
++  Exercise all three stages on a tiny synthetic fixture, verify profile/case completeness and no favorable fallback, then run the focused suite under two-thread limits and commit.
++
++### Task 4: Run the bounded pilot and report every result
++
++**Files:**
++- Create: `research/robustness/receiver/evidence/pilot-v1/command.log`
++- Create: `research/robustness/receiver/evidence/pilot-v1/fixtures/manifest.json`
++- Create: `research/robustness/receiver/evidence/pilot-v1/fixtures/labels.json`
++- Create: `research/robustness/receiver/evidence/pilot-v1/prepared/{preparation.json,evidence.npz,commitment.json}`
++- Create: `research/robustness/receiver/evidence/pilot-v1/{scores.json,cases.csv,hashes.sha256}`
++- Create: `research/robustness/receiver/REPORT.md`
++- Create: `research/robustness/receiver/checkpoint.json`
++
++**Interfaces:**
++- Consumes: the committed code and preregistration; no settings may change under `pilot-v1` after the first score is visible.
++- Produces: a complete development result and a ready intake command for the pending new capture.
++
++- [x] **Step 1: Run fixtures and prepare without inspecting labels or scores**
++
++  Record the exact commands, environment, wall time, peak RSS, Python/hardware versions, Git commit, preregistration hash, and each failure. Commit the prepared evidence before scoring.
++
++- [x] **Step 2: Score once and export complete tabular outcomes**
++
++  Run one scoring pass, retain all cases/profiles/rows, and export `cases.csv` without filtering failures or negative controls. Do not rerun with changed parameters.
++
++- [x] **Step 3: Audit hashes, resource use, and coverage**
++
++  Verify every commitment, input hash, source split, mandatory negative, and score-array length; assert zero candidate print PDFs and branch artifacts below 500 MiB.
++
++- [x] **Step 4: Write the report and checkpoint**
++
++  Lead with decisive matched counts and physical development scores. Separate literature expectation from measurement, disclose changed scorer assumptions and same-page/public-key reuse, state whether evidence is unrecoverable at this operating point, classify Q55/WhatsApp/scanner/camera correctly, and give the next no-tuning confirmation command plus any precise GPT-6-Pro question.
++
++- [x] **Step 5: Run final tests, inspect the diff, and commit safe artifacts**
++
++  Re-run the focused suite, validate JSON/CSV, inspect `git diff --check` and `git status`, then commit safe code/protocol/results. Original captures, secrets, runtime private state, and third-party material remain untracked.
+diff --git a/research/robustness/receiver/REPORT.md b/research/robustness/receiver/REPORT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..68423d2e6c1a6cf3d2e160eaaf807bb1d6aafe8a
+--- /dev/null
++++ b/research/robustness/receiver/REPORT.md
+@@ -0,0 +1,122 @@
++# Unchanged-carrier receiver pilot — measured report
++
++Date: 16 September 2026. Branch: `research/robustness-20260916-receiver`.
++Protected demo baseline: `f37e861dc02815adf1bebb3e1b45ff222dccf821` (not modified).
++
++## Result first
++
++The frozen soft-receiver proposal did **not** produce a valid broad comparison. The historical hard extractor prepared 16 of 20 frozen cases and, under its matched conditional Chernoff boundary, returned 12 correct row-pattern outcomes, four abstentions, no wrong row, and four retained input/registration failures. One of the 12 is the copied-overlay transplant and is not a security success. Excluding that known transplant, the hard profile produced 11 correct outcomes and four abstentions among 15 scored cases.
++
++Each signed-soft profile prepared only two cases: `sourcepack_dev_table_global` and the known transplant. Each had 18 retained failures (14 at the frozen 4,096-content-pixel gate, three at registration, and the sealed prospective input). The sole non-transplant matched case selected row 0 under all three profiles, so there is no success-count improvement to claim. On that case the global-soft profile was also better than the local mixture on both sign BER (0.041676 versus 0.064743) and expected-row margin (27,723.075 versus 26,455.688). The preregistered hypothesis that this local mixture helps under spatially varying registration is therefore not supported by this bounded run.
++
++This is a negative implementation result, not evidence that soft decoding in general is ineffective. Soft Tardos decoding and synchronization/channel fitting are established directions in the cited literature. Here, the particular frozen content-mask eligibility rule was incompatible with most tested pages.
++
++The reserved prospective camera/transfer-unknown capture also produced **no recovery**. The hard profile ran, ranked row 0 first, but scored `923.890`, below its unchanged conditional threshold `1142.690` (margin `-218.800`), and accused nobody. Both soft profiles failed the same frozen content gate before scoring. This one-time result is an abstention, not attribution and not evidence of physical robustness.
++
++## Matched outcomes
++
++All profiles used identical embedded bytes at `n=1000`, `c=5`, `m=52500`, 6-pixel blocks, 144 DPI, and strength 4. Preparation used no recipient rows or labels. Scoring generated the roster only after the two-file preparation commitment had been committed.
++
++| Profile | Prepared/scored | Correct pattern | Abstain | Wrong | Failure |
++|---|---:|---:|---:|---:|---:|
++| Hard, conditional matched boundary | 16/20 | 12 | 4 | 0 | 4 |
++| Global signed-soft | 2/20 | 2 | 0 | 0 | 18 |
++| Local-mixture signed-soft | 2/20 | 2 | 0 | 0 | 18 |
++
++The table reports actual decoder pattern outcomes. It includes one known transplant as a recovered donor pattern in each profile; those three records explicitly set `security_success_counted=false` and `deployable_manipulation_detected=false`.
++
++The unchanged historical `2100` cutoff was applied only to the hard asymmetric score. Among the 16 hard-scored cases it produced 10 correct pattern outcomes and six abstentions. The matched conditional hard boundary produced two additional recoveries: the synthetic white-clipping stress (`1374.907 > 310.045`) and historical `legacy-capture-3.jpeg` (`1709.941 > 1145.125`). No boundary was selected from a target score. Every conditional profile used strict `score > threshold`, family epsilon `10^-6`, and the preregistered `H=60,000`, including failed and reserved hypotheses.
++
++### Physical development captures
++
++These four files were repeatedly examined historical development inputs, not unseen confirmation.
++
++| Capture category | Row-0 score | Conditional threshold | Rank | Conditional outcome | Historical 2100 |
++|---|---:|---:|---:|---|---|
++| Scanner/enhancement (`legacy-capture-0.jpeg`) | 66.070 | 432.615 | 146 | abstain | abstain |
++| WhatsApp ordinary photo (`legacy-capture-1.jpeg`) | -11.627 | 461.870 | 544 | abstain | abstain |
++| Ordinary photo, transfer unknown (`legacy-capture-2.jpeg`) | 788.315 | 1065.517 | 1 | abstain | abstain |
++| Real-camera JPEG (`legacy-capture-3.jpeg`) | 1709.941 | 1145.125 | 1 | row 0 only | abstain |
++
++The soft profiles did not score any historical capture because the existing source produced only 1,675 pixels under the frozen content-mask definition, below the fixed minimum of 4,096. The run did not lower that minimum after seeing the failure.
++
++## Controls and failure audit
++
++- The wrong-key hard control accused nobody. Its soft profiles failed the content gate.
++- The other-issued row-1 hard control selected row 1 only. Its soft profiles failed the content gate.
++- All three profiles recovered row 0 from the copied-overlay transplant. This shows donor-pattern copying, not source authenticity. The evaluator's safe disposition is abstention, but the runtime has no manipulation detector and cannot use the oracle fixture label; this is not counted as security success.
++- The unmarked and wrong-source controls failed the frozen same-size registration guard before scoring. They therefore do not provide usable negative-control accusation evidence. This incomplete control coverage prevents a broad receiver claim.
++- `sourcepack_validation_diagram_combined` failed the same registration guard in all three profiles.
++- Per soft profile, the exact 14 content-gate failures were: `sourcepack_dev_memo_q55`, `sourcepack_validation_dense_local`, `sourcepack_test_short_global`, `sourcepack_test_mixed_local`, `existing_exact`, `existing_global`, `existing_local`, `existing_white_clip`, `control_wrong_key`, `control_other_issued_row1`, and all four historical captures. Local-mixture records preserve the corresponding shared-global-fit-unavailable failure rather than substituting another fit.
++- The prospective capture remained sealed and accounts for one unavailable record per profile.
++
++Every failed and scored row is retained in `cases.csv`; every successful profile retains all 1,000 raw scores in `scores.json`.
++
++## Fidelity and capacity
++
++Every generated marked source had capacity 55,440 blocks for the fixed 52,500-symbol codeword. Extracted PDF text was unchanged for all generated marked positive fixtures. Exact existing-PDF marking measured 41.870 dB global PSNR and 42.099 dB on the declared text-region mask. Across raster diagnostic observations, source-to-observation PSNR ranged from 14.947 to 56.473 dB and text-region PSNR from 9.800 to 44.224 dB; those wide ranges describe the transforms, not watermark invisibility. Per-case PSNR, text-region PSNR, saturation, capacity, text hashes, and exclusions are in `fixtures/manifest.json`.
++
++JPEG Q55 is one codec case. None of the synthetic transforms establishes printing, scanning, camera, WhatsApp-photo, or WhatsApp-document robustness.
++
++## Calibration and chronology
++
++The signed score is `sum_j w_j (X_ij-q_j)/sqrt(q_j(1-q_j))`, with `q_j=floor(p_j*2^32)/2^32`. Its conditional product-Bernoulli Chernoff boundary assumes row-independent prepared evidence conditional on the source, capture, biases, and fixed geometry. Numerical optimization plus `1e-9` padding is not interval certification or an empirical rare-event false-attribution estimate.
++
++The preregistration's typed `frozen_at` value (`2026-09-16T15:20:00+05:30`) is inaccurate metadata. The verifiable protocol freeze is Git commit `8b3a5e7ce4c4e563b010ae1c98dafc110195b9e7`, committed at `2026-09-16T14:00:38+05:30`, before implementation and measurement. Ordering claims use Git ancestry and recorded command events, not the typed time.
++
++## Runtime, resources, and reproducibility
++
++Host: Linux 7.2.4 x86-64, Intel i5-8350U (4 cores/8 threads), Python 3.14.7, NumPy 2.5.3, OpenCV 5.0.0. OpenCV and BLAS thread caps were two.
++
++| Stage | Wall time | Peak RSS |
++|---|---:|---:|
++| Fixtures | 42.18 s | 504,020 KiB |
++| Recipient-blind prepare | 36.55 s | 679,864 KiB |
++| All-row score | 5.64 s | 374,944 KiB |
++
++Pilot artifacts were about 13 MiB, below the 500 MiB cap; peak RSS was below 1.5 GiB. Zero print-ready PDFs were produced.
++
++Key hashes:
++
++- Preregistration: `2bef062bc6011e337bf3159a232ac714d13b24e99db8eb2d4716512f00f68eaf`
++- Runner: `63ad453b170715f7500576271cdf5ec22238e597f1cea0a24a898c5463d7b6f3`
++- Receiver core: `75faba40821eab8319d17e5fd28e49c5b7094311580ba9fbdc701c338045375d`
++- Fixture manifest: `94a563a01312b866d82f69ff714241f95a2200a8577db082628fe35178c27ac5`
++- Preparation JSON: `7095a8de915b9521dd440f947fb738cf5f412fb9839a8d914c09e788915fc81f`
++- Evidence NPZ: `71ea87f417cf32f1e5a4fac2717be51b5e88398a9337b0269e3d0ead8988ba9e`
++- Scores JSON: `995b90181c177534861dee5546cbf5569c8aecdf15914db72e1a0223bae5e1db`
++- Cases CSV: `774cdf03991969e4f2ae49e12b789b85878ff4f44fda8adea7462ad9cc4943a2`
++
++Exact commands and the missing `/usr/bin/time` failure are retained in `evidence/pilot-v1/command.log`.
++
++## One-time prospective result
++
++After explicit coordinator release, `__PRIVATE_HOME__/LEGACY_TRIAL_CAPTURE.jpeg` was evaluated in one frozen pipeline run in the fresh exclusive `pilot-v1-prospective` path. The original file remained outside Git and unchanged at SHA-256 `0c9f2d85491fc0e58d654bd5592ab60fee2ab2e662919434b764c4d2777d276d`; it is a 3,359,696-byte RGB JPEG, 3072×4096. Its transfer/filter history remains unverified, so the observed category is `real_camera_transfer_unknown_confirmation`. The preregistered WhatsApp-document category is retained only as an explicit deviation, not asserted as fact.
++
++| Profile | Status | Prospective result |
++|---|---|---|
++| Hard asymmetric | scored | row 0 score `923.889567`, rank 1; threshold `1142.689839`; no accused row; abstain |
++| Global signed-soft | evidence failure | frozen content mask retained 1,675 pixels; required 4,096; no scores computed |
++| Local-mixture signed-soft | evidence failure | shared frozen global fit unavailable; no scores computed |
++
++For hard evidence, the highest non-target score was `511.115443` (row 226), sign BER against row 0 was `0.473638`, the conditional margin was `-218.800272`, and the unchanged historical-2100 decision also abstained. All 1,000 hard scores are retained in prospective `scores.json`; failed soft profiles correctly have no fabricated score vector.
++
++Content-only registration passed before scoring: ORB/RANSAC retained 174 of 326 ratio-test matches, registered gradient similarity was `0.618005`, and ECC-affine coefficient was `0.501326`. These alignment diagnostics do not turn a below-threshold score into attribution.
++
++The frozen runner regenerated the prior 19 cases to enforce its full inventory. All 19 capture hashes, all 41 previously prepared arrays, and all 57 prior case/profile status/outcome/score vectors reproduced exactly. They are integrity duplicates, not new independent measurements, and are not added to the earlier counts.
++
++Prospective runtime was 35.43 s / 504,364 KiB for fixtures, 60.55 s / 681,672 KiB for preparation, and 5.36 s / 375,192 KiB for scoring. Exact commands are in `evidence/pilot-v1-prospective/command.log`.
++
++Prospective hashes:
++
++- Fixture manifest: `a223dd4c8ec5dc5193cb84470f9754cfac11e7adbaeab9813fe8d7b19dc52e8e`
++- Preparation JSON: `de9de1d1d295fef0604e5a0a7dc4d5362b868396a1cdc3ceb91381cde9474f0d`
++- Evidence NPZ: `fd835fbbed7b0bcab85f529875cee840e04edcd275e4ba7f6bb63b83f839fb72`
++- Scores JSON: `e535a7a382879504b14af0b0675a06b03b3e75cc77395dd9bb97ed40fe6ade29`
++- Cases CSV: `22551d92ba8262ff8cf46c82d1026692f9ad8fe7b7970218a77ab3bc35189665`
++
++No automatic mask retuning follows this result. A possible future, separately preregistered development question remains: **what row-independent, source-only eligibility rule can handle sparse pages without recipient-score feedback while preserving an analyzable conditional null?**
++
++## Claim boundary
++
++This pilot supports neither production promotion nor a claim of soft-receiver superiority. The prospective capture abstained and therefore does not establish physical recovery. The one historical development recovery remains development-only. A recovered visual pattern cannot inherit digital-PDF structure, immutable-ledger, content-authenticity, non-framing, or human-culpability claims.
+diff --git a/research/robustness/receiver/__init__.py b/research/robustness/receiver/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..2277aa00206d24b732e628a299f9c8dc83079a4e
+--- /dev/null
++++ b/research/robustness/receiver/__init__.py
+@@ -0,0 +1 @@
++"""Research-only unchanged-carrier receiver pilot."""
+diff --git a/research/robustness/receiver/receiver.py b/research/robustness/receiver/receiver.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..cd0305aa3c911c457db7499027fe92693d564e98
+--- /dev/null
++++ b/research/robustness/receiver/receiver.py
+@@ -0,0 +1,520 @@
++"""Row-blind evidence extraction for the existing NISHAN visual carrier.
++
++The preparation functions in this module accept source/channel state but no
++recipient rows, target labels, or accusation scores.  Signed-score calibration
++is separate and explicit because the historical threshold 2100 applies only to
++the historical asymmetric hard scorer.
++"""
++
++from __future__ import annotations
++
++from dataclasses import asdict, dataclass
++import hashlib
++import json
++import math
++import time
++from typing import Iterable
++
++import cv2
++import numpy as np
++from scipy.optimize import minimize_scalar
++
++
++def array_hash(value: np.ndarray) -> str:
++    array = np.ascontiguousarray(value)
++    prefix = json.dumps([list(array.shape), array.dtype.str], separators=(",", ":"))
++    return hashlib.sha256(prefix.encode() + array.tobytes()).hexdigest()
++
++
++def implemented_probabilities(biases: np.ndarray) -> np.ndarray:
++    p = np.asarray(biases, dtype=np.float64)
++    if p.ndim != 1 or not np.all(np.isfinite(p) & (p > 0) & (p < 1)):
++        raise ValueError("biases must be a finite vector strictly between zero and one")
++    q = np.floor(p * float(1 << 32)) / float(1 << 32)
++    if not np.all((q > 0) & (q < 1)):
++        raise ValueError("implemented probabilities must remain strictly between zero and one")
++    return q
++
++
++def signed_scores(
++    biases: np.ndarray,
++    codebook: np.ndarray,
++    weights: np.ndarray,
++    *,
++    row_chunk: int = 64,
++) -> np.ndarray:
++    """Score fixed signed evidence under the implemented Bernoulli law."""
++
++    q = implemented_probabilities(biases)
++    rows = np.asarray(codebook)
++    w = np.asarray(weights, dtype=np.float64)
++    if rows.ndim != 2 or rows.shape[1] != len(q):
++        raise ValueError("codebook dimensions do not match biases")
++    if w.shape != q.shape or not np.all(np.isfinite(w)):
++        raise ValueError("weights must be a finite vector matching biases")
++    if np.any((rows != 0) & (rows != 1)):
++        raise ValueError("codebook must be binary")
++    if row_chunk < 1:
++        raise ValueError("row_chunk must be positive")
++    positive = w * np.sqrt((1.0 - q) / q)
++    negative = -w * np.sqrt(q / (1.0 - q))
++    result = np.empty(rows.shape[0], dtype=np.float64)
++    for start in range(0, rows.shape[0], row_chunk):
++        stop = min(start + row_chunk, rows.shape[0])
++        result[start:stop] = np.where(rows[start:stop] == 1, positive, negative).sum(axis=1)
++    return result
++
++
++def conditional_signed_threshold(
++    biases: np.ndarray,
++    weights: np.ndarray,
++    family_epsilon: float,
++    hypotheses: int,
++) -> dict[str, object]:
++    """Chernoff boundary for a fixed, row-independent signed evidence vector."""
++
++    q = implemented_probabilities(biases)
++    w = np.asarray(weights, dtype=np.float64)
++    if w.shape != q.shape or not np.all(np.isfinite(w)):
++        raise ValueError("weights must be a finite vector matching biases")
++    if not 0 < family_epsilon < 1 or hypotheses < 1:
++        raise ValueError("invalid family budget")
++    active = w != 0
++    if not np.any(active):
++        return {
++            "threshold": None,
++            "reason": "zero signed evidence",
++            "active_symbols": 0,
++            "hypotheses": hypotheses,
++            "family_epsilon": family_epsilon,
++        }
++    q = q[active]
++    w = w[active]
++    positive = w * np.sqrt((1.0 - q) / q)
++    negative = -w * np.sqrt(q / (1.0 - q))
++    log_budget = float(math.log(hypotheses / family_epsilon))
++
++    def cumulant(theta: float) -> float:
++        return float(
++            np.logaddexp(
++                np.log(q) + theta * positive,
++                np.log1p(-q) + theta * negative,
++            ).sum()
++        )
++
++    def boundary(log_theta: float) -> float:
++        theta = float(math.exp(log_theta))
++        return (cumulant(theta) + log_budget) / theta
++
++    optimum = minimize_scalar(boundary, bounds=(-20.0, 4.0), method="bounded")
++    if not optimum.success or not np.isfinite(optimum.fun):
++        raise RuntimeError("signed Chernoff optimization failed")
++    theta = float(math.exp(optimum.x))
++    k = cumulant(theta)
++    threshold = float((k + log_budget) / theta + 1e-9)
++    return {
++        "threshold": threshold,
++        "theta": theta,
++        "cumulant": k,
++        "active_symbols": int(active.sum()),
++        "hypotheses": hypotheses,
++        "family_epsilon": family_epsilon,
++        "modeled_per_hypothesis_upper": float(math.exp(k - theta * threshold)),
++        "sample_probability": "floor(p * 2^32) / 2^32",
++        "score": "signed centered implemented-Bernoulli score",
++    }
++
++
++def block_view(values: np.ndarray, block_size: int = 6) -> np.ndarray:
++    image = np.asarray(values)
++    if image.ndim != 2:
++        raise ValueError("block view requires a scalar image")
++    rows, columns = image.shape[0] // block_size, image.shape[1] // block_size
++    crop = image[: rows * block_size, : columns * block_size]
++    return (
++        crop.reshape(rows, block_size, columns, block_size)
++        .transpose(0, 2, 1, 3)
++        .reshape(rows * columns, block_size, block_size)
++    )
++
++
++def extract_hard(
++    captured: np.ndarray,
++    source: np.ndarray,
++    order: np.ndarray,
++    templates: np.ndarray,
++) -> dict[str, object]:
++    """Reproduce the float32 historical block correlations and strict signs."""
++
++    captured = np.asarray(captured, dtype=np.float32)
++    source = np.asarray(source, dtype=np.float32)
++    selected_templates = np.asarray(templates, dtype=np.float32)
++    indices = np.asarray(order, dtype=np.int64)
++    if captured.shape != source.shape or captured.ndim != 2:
++        raise ValueError("captured and source luma must have the same 2-D shape")
++    if selected_templates.shape != (len(indices), 6, 6):
++        raise ValueError("templates must be one 6x6 array per symbol")
++    blocks = block_view(captured - source)[indices]
++    correlations = np.sum(blocks * selected_templates, axis=(1, 2), dtype=np.float32)
++    word = (correlations > 0).astype(np.uint8)
++    return {
++        "correlations": correlations,
++        "word": word,
++        "correlations_sha256": array_hash(correlations),
++        "word_sha256": array_hash(word),
++        "zero_correlation_fraction": float(np.mean(correlations == 0)),
++    }
++
++
++@dataclass(frozen=True)
++class GlobalFit:
++    sigma: float
++    gain: float
++    offset: float
++    loss: float
++    retained_pixels: int
++    candidate_losses: tuple[dict[str, float | int | str], ...]
++    elapsed_seconds: float
++
++    def to_dict(self) -> dict[str, object]:
++        return asdict(self)
++
++
++def content_mask(
++    midpoint: np.ndarray,
++    *,
++    border: int = 12,
++    gradient_min: float = 8.0,
++    gradient_max: float = 160.0,
++    luma_min: float = 8.0,
++    luma_max: float = 247.0,
++    stride: int = 2,
++) -> np.ndarray:
++    reference = np.asarray(midpoint, dtype=np.float32)
++    if reference.ndim != 2 or not np.all(np.isfinite(reference)):
++        raise ValueError("midpoint must be a finite scalar image")
++    gx = cv2.Sobel(reference, cv2.CV_32F, 1, 0, ksize=3)
++    gy = cv2.Sobel(reference, cv2.CV_32F, 0, 1, ksize=3)
++    gradient = cv2.magnitude(gx, gy)
++    mask = (
++        (gradient >= gradient_min)
++        & (gradient <= gradient_max)
++        & (reference >= luma_min)
++        & (reference <= luma_max)
++    )
++    if border:
++        mask[:border] = False
++        mask[-border:] = False
++        mask[:, :border] = False
++        mask[:, -border:] = False
++    if stride > 1:
++        sampling = np.zeros(mask.shape, dtype=bool)
++        sampling[::stride, ::stride] = True
++        mask &= sampling
++    return mask
++
++
++def _fit_affine(
++    reference: np.ndarray,
++    captured: np.ndarray,
++    *,
++    trim_fraction: float = 0.8,
++    iterations: int = 3,
++    gain_bounds: tuple[float, float] = (0.35, 1.8),
++    offset_bounds: tuple[float, float] = (-100.0, 100.0),
++) -> tuple[float, float, float, float]:
++    x = np.asarray(reference, dtype=np.float64).ravel()
++    y = np.asarray(captured, dtype=np.float64).ravel()
++    if x.shape != y.shape or len(x) < 2 or not np.all(np.isfinite(x)) or not np.all(np.isfinite(y)):
++        raise ValueError("affine fit needs matching finite samples")
++    kept = np.ones(len(x), dtype=bool)
++    gain = offset = 0.0
++    for _ in range(iterations):
++        design = np.column_stack((x[kept], np.ones(int(kept.sum()))))
++        if np.linalg.matrix_rank(design) < 2:
++            raise ValueError("rank-deficient photometric fit")
++        gain, offset = np.linalg.lstsq(design, y[kept], rcond=None)[0]
++        residual = np.abs(y - (gain * x + offset))
++        boundary = float(np.quantile(residual, trim_fraction))
++        kept = residual <= boundary
++    if not gain_bounds[0] <= gain <= gain_bounds[1]:
++        raise ValueError("photometric gain outside frozen bounds")
++    if not offset_bounds[0] <= offset <= offset_bounds[1]:
++        raise ValueError("photometric offset outside frozen bounds")
++    residual = y - (gain * x + offset)
++    loss = float(np.median(np.abs(residual)))
++    noise = max(1.0, float(1.4826 * np.median(np.abs(residual - np.median(residual)))))
++    return float(gain), float(offset), loss, noise
++
++
++def _blur(values: np.ndarray, sigma: float) -> np.ndarray:
++    image = np.asarray(values, dtype=np.float32)
++    return image.copy() if sigma == 0 else cv2.GaussianBlur(image, (0, 0), sigma)
++
++
++def fit_global_channel(
++    midpoint: np.ndarray,
++    captured: np.ndarray,
++    mask: np.ndarray,
++    *,
++    sigmas: Iterable[float] = (0.0, 0.6, 1.0, 1.4),
++    minimum_pixels: int = 4096,
++) -> GlobalFit:
++    started = time.perf_counter()
++    midpoint = np.asarray(midpoint, dtype=np.float32)
++    captured = np.asarray(captured, dtype=np.float32)
++    mask = np.asarray(mask, dtype=bool)
++    if midpoint.shape != captured.shape or midpoint.shape != mask.shape or midpoint.ndim != 2:
++        raise ValueError("midpoint, capture, and mask must have the same scalar shape")
++    if not np.all(np.isfinite(midpoint)) or not np.all(np.isfinite(captured)):
++        raise ValueError("channel fit images must be finite")
++    retained = int(mask.sum())
++    if retained < minimum_pixels:
++        raise ValueError(f"content mask has {retained} pixels; need {minimum_pixels}")
++    candidates: list[dict[str, float | int | str]] = []
++    valid: list[tuple[float, float, float, float]] = []
++    for sigma in sigmas:
++        reference = _blur(midpoint, float(sigma))
++        try:
++            gain, offset, loss, _ = _fit_affine(reference[mask], captured[mask])
++        except ValueError as error:
++            candidates.append({"sigma": float(sigma), "status": "failed", "reason": str(error)})
++            continue
++        candidates.append({"sigma": float(sigma), "status": "fit", "gain": gain, "offset": offset, "loss": loss})
++        valid.append((loss, float(sigma), gain, offset))
++    if not valid:
++        raise ValueError("all frozen global channel candidates failed")
++    loss, sigma, gain, offset = min(valid, key=lambda row: (row[0], row[1]))
++    return GlobalFit(
++        sigma=sigma,
++        gain=gain,
++        offset=offset,
++        loss=loss,
++        retained_pixels=retained,
++        candidate_losses=tuple(candidates),
++        elapsed_seconds=time.perf_counter() - started,
++    )
++
++
++def _blurred_template_bank(base_templates: np.ndarray, sigma: float) -> np.ndarray:
++    base = np.asarray(base_templates, dtype=np.float32)
++    if base.shape != (2, 6, 6):
++        raise ValueError("base template bank must be 2x6x6")
++    output = np.empty_like(base)
++    for index, template in enumerate(base):
++        padded = np.zeros((18, 18), dtype=np.float32)
++        padded[6:12, 6:12] = template
++        output[index] = _blur(padded, sigma)[6:12, 6:12]
++        output[index] -= float(output[index].mean())
++    return output
++
++
++def _tile_geometry(shape: tuple[int, int], tile_size: int) -> tuple[int, int, np.ndarray]:
++    height, width = shape
++    tile_rows = math.ceil(height / tile_size)
++    tile_columns = math.ceil(width / tile_size)
++    y, x = np.indices(shape)
++    pixels = (y // tile_size) * tile_columns + x // tile_size
++    return tile_rows, tile_columns, pixels.astype(np.int32)
++
++
++def _tile_noise(residual: np.ndarray, tile_pixels: np.ndarray, tile_count: int) -> np.ndarray:
++    noise = np.ones(tile_count, dtype=np.float32)
++    flat_residual = np.asarray(residual, dtype=np.float32).ravel()
++    flat_tiles = tile_pixels.ravel()
++    order = np.argsort(flat_tiles, kind="stable")
++    sorted_residual = flat_residual[order]
++    counts = np.bincount(flat_tiles, minlength=tile_count)
++    boundaries = np.concatenate(([0], np.cumsum(counts)))
++    for tile in range(tile_count):
++        values = sorted_residual[boundaries[tile] : boundaries[tile + 1]]
++        if len(values):
++            median = float(np.median(values))
++            noise[tile] = max(1.0, float(1.4826 * np.median(np.abs(values - median))))
++    return noise
++
++
++def _symbol_tiles(order: np.ndarray, shape: tuple[int, int], tile_size: int) -> np.ndarray:
++    rows, columns = shape[0] // 6, shape[1] // 6
++    block_indices = np.asarray(order, dtype=np.int64)
++    block_y, block_x = block_indices // columns, block_indices % columns
++    tile_columns = math.ceil(shape[1] / tile_size)
++    return (((block_y * 6 + 3) // tile_size) * tile_columns + ((block_x * 6 + 3) // tile_size)).astype(np.int32)
++
++
++def _selected_templates(
++    base_templates: np.ndarray,
++    orientations: np.ndarray,
++    polarities: np.ndarray,
++    sigma: float,
++) -> np.ndarray:
++    bank = _blurred_template_bank(base_templates, sigma)
++    orientation = np.asarray(orientations, dtype=np.int64)
++    polarity = np.asarray(polarities, dtype=np.float32)
++    if orientation.shape != polarity.shape or np.any((orientation < 0) | (orientation > 1)):
++        raise ValueError("invalid carrier orientation/polarity")
++    return bank[orientation] * polarity[:, None, None]
++
++
++def extract_global_soft(
++    captured: np.ndarray,
++    midpoint: np.ndarray,
++    order: np.ndarray,
++    orientations: np.ndarray,
++    polarities: np.ndarray,
++    base_templates: np.ndarray,
++    *,
++    sigmas: Iterable[float] = (0.0, 0.6, 1.0, 1.4),
++    tile_size: int = 96,
++    prefit: GlobalFit | None = None,
++) -> dict[str, object]:
++    started = time.perf_counter()
++    captured = np.asarray(captured, dtype=np.float32)
++    midpoint = np.asarray(midpoint, dtype=np.float32)
++    mask = content_mask(midpoint)
++    fit = prefit or fit_global_channel(midpoint, captured, mask, sigmas=sigmas)
++    reference = _blur(midpoint, fit.sigma)
++    residual = captured - (fit.gain * reference + fit.offset)
++    tile_rows, tile_columns, tile_pixels = _tile_geometry(residual.shape, tile_size)
++    tile_count = tile_rows * tile_columns
++    noise = _tile_noise(residual, tile_pixels, tile_count)
++    symbol_tiles = _symbol_tiles(order, residual.shape, tile_size)
++    templates = _selected_templates(base_templates, orientations, polarities, fit.sigma)
++    selected = block_view(residual)[np.asarray(order, dtype=np.int64)]
++    correlations = np.sum(selected * templates, axis=(1, 2), dtype=np.float32)
++    norms = np.sqrt(np.sum(templates * templates, axis=(1, 2), dtype=np.float32))
++    denominator = np.maximum(1e-6, noise[symbol_tiles] * norms)
++    z = np.clip(correlations / denominator, -12.0, 12.0)
++    weights = np.tanh(z / 3.0).astype(np.float32)
++    return {
++        "weights": weights,
++        "correlations": correlations,
++        "z": z.astype(np.float32),
++        "fit": fit.to_dict(),
++        "mask_pixels": int(mask.sum()),
++        "noise_median": float(np.median(noise)),
++        "weights_sha256": array_hash(weights),
++        "elapsed_seconds": time.perf_counter() - started,
++    }
++
++
++def _shift_image(image: np.ndarray, dx: float, dy: float) -> np.ndarray:
++    return cv2.warpAffine(
++        np.asarray(image, dtype=np.float32),
++        np.array([[1.0, 0.0, dx], [0.0, 1.0, dy]], dtype=np.float32),
++        (image.shape[1], image.shape[0]),
++        flags=cv2.INTER_LANCZOS4,
++        borderMode=cv2.BORDER_CONSTANT,
++        borderValue=255.0,
++    )
++
++
++def extract_local_mixture_soft(
++    captured: np.ndarray,
++    midpoint: np.ndarray,
++    order: np.ndarray,
++    orientations: np.ndarray,
++    polarities: np.ndarray,
++    base_templates: np.ndarray,
++    *,
++    sigmas: Iterable[float] = (0.0, 0.6, 1.0, 1.4),
++    shifts: Iterable[float] = (-0.75, 0.0, 0.75),
++    tile_size: int = 96,
++    minimum_tile_pixels: int = 64,
++    prefit: GlobalFit | None = None,
++) -> dict[str, object]:
++    """Marginalize fixed local shifts using only source-content losses."""
++
++    started = time.perf_counter()
++    captured = np.asarray(captured, dtype=np.float32)
++    midpoint = np.asarray(midpoint, dtype=np.float32)
++    mask = content_mask(midpoint)
++    fit = prefit or fit_global_channel(midpoint, captured, mask, sigmas=sigmas)
++    reference = _blur(midpoint, fit.sigma)
++    global_result = extract_global_soft(
++        captured,
++        midpoint,
++        order,
++        orientations,
++        polarities,
++        base_templates,
++        sigmas=sigmas,
++        tile_size=tile_size,
++        prefit=fit,
++    )
++    candidates = [(float(dx), float(dy)) for dy in shifts for dx in shifts]
++    shifted = [_shift_image(captured, dx, dy) for dx, dy in candidates]
++    tile_rows, tile_columns, tile_pixels = _tile_geometry(captured.shape, tile_size)
++    tile_count = tile_rows * tile_columns
++    candidate_count = len(candidates)
++    gains = np.full((tile_count, candidate_count), np.nan, dtype=np.float32)
++    offsets = np.full_like(gains, np.nan)
++    losses = np.full_like(gains, np.inf)
++    noises = np.full_like(gains, np.nan)
++    valid_tiles = np.zeros(tile_count, dtype=bool)
++    for tile in range(tile_count):
++        tile_y, tile_x = divmod(tile, tile_columns)
++        y0, x0 = tile_y * tile_size, tile_x * tile_size
++        y1 = min(y0 + tile_size, captured.shape[0])
++        x1 = min(x0 + tile_size, captured.shape[1])
++        selected = mask[y0:y1, x0:x1].ravel()
++        if int(selected.sum()) < minimum_tile_pixels:
++            continue
++        tile_reference = reference[y0:y1, x0:x1].ravel()[selected]
++        for candidate, image in enumerate(shifted):
++            try:
++                gain, offset, loss, noise = _fit_affine(
++                    tile_reference,
++                    image[y0:y1, x0:x1].ravel()[selected],
++                    iterations=2,
++                )
++            except ValueError:
++                continue
++            gains[tile, candidate] = gain
++            offsets[tile, candidate] = offset
++            losses[tile, candidate] = loss
++            noises[tile, candidate] = noise
++        valid_tiles[tile] = bool(np.isfinite(losses[tile]).all())
++    posterior = np.zeros_like(losses)
++    for tile in np.flatnonzero(valid_tiles):
++        minimum = float(np.min(losses[tile]))
++        scale = max(0.35, float(np.median(losses[tile]) - minimum))
++        mass = np.exp(-(losses[tile] - minimum) / scale) + 0.02
++        posterior[tile] = mass / mass.sum()
++    symbol_tiles = _symbol_tiles(order, captured.shape, tile_size)
++    templates = _selected_templates(base_templates, orientations, polarities, fit.sigma)
++    template_norms = np.sqrt(np.sum(templates * templates, axis=(1, 2), dtype=np.float32))
++    weights = np.zeros(len(order), dtype=np.float64)
++    correlations = np.zeros(len(order), dtype=np.float64)
++    block_indices = np.asarray(order, dtype=np.int64)
++    for candidate, image in enumerate(shifted):
++        cap_blocks = block_view(image)[block_indices]
++        ref_blocks = block_view(reference)[block_indices]
++        gain = gains[symbol_tiles, candidate]
++        offset = offsets[symbol_tiles, candidate]
++        valid_symbols = valid_tiles[symbol_tiles]
++        local_residual = cap_blocks - gain[:, None, None] * ref_blocks - offset[:, None, None]
++        correlation = np.sum(local_residual * templates, axis=(1, 2), dtype=np.float32)
++        denominator = np.maximum(1e-6, noises[symbol_tiles, candidate] * template_norms)
++        confidence = np.tanh(np.clip(correlation / denominator, -12.0, 12.0) / 3.0)
++        mixture = posterior[symbol_tiles, candidate]
++        weights[valid_symbols] += mixture[valid_symbols] * confidence[valid_symbols]
++        correlations[valid_symbols] += mixture[valid_symbols] * correlation[valid_symbols]
++    fallback = ~valid_tiles[symbol_tiles]
++    weights[fallback] = np.asarray(global_result["weights"])[fallback]
++    correlations[fallback] = np.asarray(global_result["correlations"])[fallback]
++    weights32 = weights.astype(np.float32)
++    return {
++        "weights": weights32,
++        "correlations": correlations.astype(np.float32),
++        "fit": fit.to_dict(),
++        "candidate_shifts": [{"dx": dx, "dy": dy} for dx, dy in candidates],
++        "valid_tiles": int(valid_tiles.sum()),
++        "fallback_tiles": int((~valid_tiles).sum()),
++        "fallback_symbols": int(fallback.sum()),
++        "posterior_entropy_mean": float(
++            np.mean(-np.sum(posterior[valid_tiles] * np.log(np.maximum(posterior[valid_tiles], 1e-30)), axis=1))
++        ) if np.any(valid_tiles) else None,
++        "weights_sha256": array_hash(weights32),
++        "elapsed_seconds": time.perf_counter() - started,
++    }
+diff --git a/research/robustness/receiver/run_pilot.py b/research/robustness/receiver/run_pilot.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..2e953243e880f31cb1a9cd20819a76fb4da80143
+--- /dev/null
++++ b/research/robustness/receiver/run_pilot.py
+@@ -0,0 +1,1365 @@
++#!/usr/bin/env python3
++"""Frozen three-stage runner for the unchanged NISHAN carrier pilot.
++
++``fixtures`` may issue public synthetic rows and writes evaluation labels to a
++separate file. ``prepare`` never opens that label file and obtains only the
++bias vector through a zero-row keyed-generator call. ``score`` verifies the
++prepared commitment, creates the full roster, and evaluates every row.
++
++This is research tooling.  It does not alter the production/demo receiver and
++does not turn a recovered visual pattern into content authenticity or human
++culpability.
++"""
++
++from __future__ import annotations
++
++import argparse
++import csv
++from dataclasses import asdict, replace
++import hashlib
++import io
++import json
++import math
++import os
++from pathlib import Path
++import platform
++import resource
++import subprocess
++import tempfile
++import time
++import traceback
++from typing import Any
++
++import cv2
++import numpy as np
++from PIL import Image
++
++from nishan import registration, tardos, tardos_carrier, watermark
++
++from research.robustness.receiver import receiver
++
++
++ROOT = Path(__file__).resolve().parents[3]
++DEFAULT_PREREGISTRATION = Path(__file__).with_name("preregistration.json")
++FIXTURE_SECRET = hashlib.sha3_256(
++    b"NISHAN Tardos carrier public fixture v1"
++).digest()
++WRONG_KEY_SECRET = hashlib.sha3_256(
++    b"NISHAN Tardos carrier public fixture v1\x00wrong-key-control/v1"
++).digest()
++CODEBOOK_CONTEXT = "public-benchmark-codebook/v1"
++CARRIER_CONTEXT = "synthetic-source/full-tardos-profile-v1"
++PROFILES = (
++    "affine_hard_asymmetric",
++    "affine_global_signed_soft",
++    "affine_local_mixture_signed_soft",
++)
++
++
++def digest(path: Path) -> str:
++    handle = hashlib.sha256()
++    with Path(path).open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            handle.update(chunk)
++    return handle.hexdigest()
++
++
++def _json_bytes(value: object) -> bytes:
++    return (json.dumps(
++        value, indent=2, sort_keys=True, allow_nan=False
++    ) + "\n").encode("utf-8")
++
++
++def dump_exclusive(path: Path, value: object) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with path.open("xb") as handle:
++        handle.write(_json_bytes(value))
++
++
++def _relative(path: Path) -> str:
++    resolved = path.resolve()
++    try:
++        return str(resolved.relative_to(ROOT.resolve()))
++    except ValueError:
++        return str(resolved)
++
++
++def _resolve(path: str) -> Path:
++    value = Path(path)
++    return value if value.is_absolute() else ROOT / value
++
++
++def _git_head() -> str:
++    return subprocess.run(
++        ["git", "rev-parse", "HEAD"],
++        cwd=ROOT,
++        check=True,
++        capture_output=True,
++        text=True,
++    ).stdout.strip()
++
++
++def _git_file_commit(path: Path) -> dict[str, str]:
++    relative = str(Path(path).resolve().relative_to(ROOT.resolve()))
++    output = subprocess.run(
++        [
++            "git", "log", "-1",
++            "--format=%H%n%aI%n%cI%n%s",
++            "--", relative,
++        ],
++        cwd=ROOT,
++        check=True,
++        capture_output=True,
++        text=True,
++    ).stdout.splitlines()
++    if len(output) != 4:
++        raise ValueError(f"cannot resolve Git chronology for {relative}")
++    return {
++        "commit": output[0],
++        "author_time": output[1],
++        "committer_time": output[2],
++        "subject": output[3],
++    }
++
++
++def _peak_rss_kib() -> int:
++    return int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
++
++
++def _load_preregistration(path: Path) -> tuple[dict[str, Any], str]:
++    path = Path(path)
++    payload = json.loads(path.read_text())
++    required = {
++        "schema": "nishan.receiver-preregistration/v1",
++        "protected_baseline": "f37e861dc02815adf1bebb3e1b45ff222dccf821",
++    }
++    for name, expected in required.items():
++        if payload.get(name) != expected:
++            raise ValueError(f"changed preregistration field: {name}")
++    carrier = payload["carrier"]
++    expected_carrier = {
++        "roster_size": 1000,
++        "coalition_limit": 5,
++        "code_length": 52500,
++        "block_size_pixels": 6,
++        "dpi": 144,
++        "strength": 4.0,
++        "historical_threshold": 2100.0,
++    }
++    for name, expected in expected_carrier.items():
++        if carrier.get(name) != expected:
++            raise ValueError(f"changed frozen carrier field: {name}")
++    ids = [item["id"] for item in payload["receiver_profiles"]]
++    if ids != list(PROFILES):
++        raise ValueError("changed receiver profile order")
++    if payload["family_calibration"]["hypotheses"] != 60000:
++        raise ValueError("changed frozen hypothesis count")
++    return payload, digest(path)
++
++
++def _configuration(preregistration: dict[str, Any]) -> tardos.Parameters:
++    carrier = preregistration["carrier"]
++    config = tardos.parameters(
++        carrier["roster_size"],
++        carrier["coalition_limit"],
++        carrier["familywise_epsilon_original_profile"],
++    )
++    if config.code_length != carrier["code_length"] or config.threshold != 2100:
++        raise ValueError("implemented original profile no longer matches frozen carrier")
++    return config
++
++
++def generate_biases(config: tardos.Parameters) -> np.ndarray:
++    """Return only biases through the reviewed zero-row generator path."""
++
++    biases, empty = tardos.generate_keyed(
++        replace(config, roster_size=0), FIXTURE_SECRET, CODEBOOK_CONTEXT
++    )
++    if empty.shape != (0, config.code_length):
++        raise AssertionError("zero-row generator returned recipient data")
++    return biases
++
++
++def generate_roster(config: tardos.Parameters) -> tuple[np.ndarray, np.ndarray]:
++    """Full roster access: callers are restricted to fixtures and score."""
++
++    return tardos.generate_keyed(config, FIXTURE_SECRET, CODEBOOK_CONTEXT)
++
++
++def _verify_hash(path: Path, expected: str, label: str) -> str:
++    if not path.is_file():
++        raise FileNotFoundError(f"missing {label}: {path}")
++    actual = digest(path)
++    if actual != expected:
++        raise ValueError(f"{label} SHA-256 mismatch: {actual} != {expected}")
++    return actual
++
++
++def _luma(image: np.ndarray) -> np.ndarray:
++    return watermark._luma(np.asarray(image, dtype=np.uint8)).astype(np.float32)
++
++
++def _psnr(reference: np.ndarray, observed: np.ndarray, mask: np.ndarray | None = None) -> float | None:
++    left = np.asarray(reference, dtype=np.float32)
++    right = np.asarray(observed, dtype=np.float32)
++    if left.shape != right.shape:
++        return None
++    delta = left - right
++    if mask is not None:
++        selected = np.asarray(mask, dtype=bool)
++        if selected.shape != left.shape[:2] or not np.any(selected):
++            return None
++        delta = delta[selected]
++    mse = float(np.mean(np.square(delta, dtype=np.float64)))
++    return None if mse == 0 else float(20 * math.log10(255 / math.sqrt(mse)))
++
++
++def _text_mask(source: np.ndarray) -> np.ndarray:
++    gray = _luma(source)
++    gx = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=3)
++    gy = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=3)
++    return (gray < 247) | (cv2.magnitude(gx, gy) >= 8)
++
++
++def _jpeg_roundtrip(image: np.ndarray, quality: int) -> np.ndarray:
++    stream = io.BytesIO()
++    Image.fromarray(image).save(stream, format="JPEG", quality=quality)
++    stream.seek(0)
++    with Image.open(stream) as decoded:
++        return np.asarray(decoded.convert("RGB"), dtype=np.uint8)
++
++
++def _global_transform(image: np.ndarray, settings: dict[str, Any]) -> np.ndarray:
++    values = cv2.GaussianBlur(
++        np.asarray(image, dtype=np.float32), (0, 0), settings["blur_sigma"]
++    )
++    values = 255 * np.power(np.clip(values / 255, 0, 1), settings["gamma"])
++    return np.clip(settings["gain"] * values + settings["offset"], 0, 255).astype(np.uint8)
++
++
++def _local_transform(image: np.ndarray, settings: dict[str, Any]) -> np.ndarray:
++    source = np.asarray(image, dtype=np.float32)
++    height, width = source.shape[:2]
++    y, x = np.indices((height, width), dtype=np.float32)
++    map_x = x + settings["x_amplitude_pixels"] * np.sin(
++        2 * np.pi * y / settings["x_period_pixels"]
++    )
++    map_y = y + settings["y_amplitude_pixels"] * np.sin(
++        2 * np.pi * x / settings["y_period_pixels"]
++    )
++    warped = cv2.remap(
++        source,
++        map_x,
++        map_y,
++        cv2.INTER_LANCZOS4,
++        borderMode=cv2.BORDER_CONSTANT,
++        borderValue=(255, 255, 255),
++    )
++    blurred = cv2.GaussianBlur(warped, (0, 0), settings["blur_sigma"])
++    shading = (
++        settings.get("planar_shading_x", 0) * (x / max(width - 1, 1) - 0.5)
++        + settings.get("planar_shading_y", 0) * (y / max(height - 1, 1) - 0.5)
++    )
++    return np.clip(blurred + shading[:, :, None], 0, 255).astype(np.uint8)
++
++
++def _combined_transform(image: np.ndarray, settings: dict[str, Any]) -> np.ndarray:
++    """Apply the frozen warp, one blur, photometric map, then one JPEG pass."""
++
++    source = np.asarray(image, dtype=np.float32)
++    height, width = source.shape[:2]
++    y, x = np.indices((height, width), dtype=np.float32)
++    map_x = x + settings["x_amplitude_pixels"] * np.sin(
++        2 * np.pi * y / settings["x_period_pixels"]
++    )
++    map_y = y + settings["y_amplitude_pixels"] * np.sin(
++        2 * np.pi * x / settings["y_period_pixels"]
++    )
++    warped = cv2.remap(
++        source,
++        map_x,
++        map_y,
++        cv2.INTER_LANCZOS4,
++        borderMode=cv2.BORDER_CONSTANT,
++        borderValue=(255, 255, 255),
++    )
++    blurred = cv2.GaussianBlur(warped, (0, 0), settings["blur_sigma"])
++    values = 255 * np.power(np.clip(blurred / 255, 0, 1), settings["gamma"])
++    values = np.clip(settings["gain"] * values + settings["offset"], 0, 255)
++    return _jpeg_roundtrip(values.astype(np.uint8), settings["jpeg_quality"])
++
++
++def _transform(image: np.ndarray, name: str, settings: dict[str, Any]) -> np.ndarray:
++    if name == "identity":
++        return np.asarray(image, dtype=np.uint8).copy()
++    if name == "jpeg_q55":
++        return _jpeg_roundtrip(image, settings["jpeg_q55"]["quality"])
++    if name == "global":
++        return _global_transform(image, settings["global"])
++    if name == "local":
++        return _local_transform(image, settings["local"])
++    if name == "combined":
++        return _combined_transform(image, settings["combined"])
++    if name == "white_clip":
++        values = np.asarray(image, dtype=np.uint8).copy()
++        spec = settings["white_clip"]
++        values[values >= spec["values_at_or_above"]] = spec["replacement"]
++        return values
++    raise ValueError(f"unsupported frozen transform: {name}")
++
++
++def _save_png(path: Path, image: np.ndarray) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with path.open("xb") as handle:
++        Image.fromarray(np.asarray(image, dtype=np.uint8)).save(handle, format="PNG", optimize=True)
++
++
++def _image_metadata(path: Path) -> dict[str, Any]:
++    with Image.open(path) as image:
++        exif = {
++            str(key): str(value)
++            for key, value in image.getexif().items()
++        }
++        return {
++            "byte_size": path.stat().st_size,
++            "width": image.width,
++            "height": image.height,
++            "format": image.format,
++            "mode": image.mode,
++            "exif": exif,
++        }
++
++
++def _source_inventory(preregistration: dict[str, Any]) -> dict[str, Path]:
++    inventory = {"existing": _resolve(preregistration["inputs"]["existing_source"]["path"])}
++    source_manifest_path = _resolve(
++        preregistration["inputs"]["source_pack_manifest"]["path"]
++    )
++    source_manifest = json.loads(source_manifest_path.read_text())
++    for item in source_manifest["cases"]:
++        path = source_manifest_path.parent / item["file"]
++        _verify_hash(path, item["sha256"], f"source pack {item['id']}")
++        inventory[item["id"]] = path
++    return inventory
++
++
++def fixtures(
++    preregistration_path: Path,
++    output_directory: Path,
++    *,
++    release_pending: bool = False,
++) -> dict[str, Any]:
++    """Create matched captures and a separate scoring-only label file."""
++
++    output = Path(output_directory)
++    if output.exists():
++        raise FileExistsError(output)
++    output.mkdir(parents=True, exist_ok=False)
++    started = time.perf_counter()
++    cv2.setNumThreads(2)
++    preregistration, preregistration_hash = _load_preregistration(preregistration_path)
++    config = _configuration(preregistration)
++    sources = _source_inventory(preregistration)
++    existing_source_spec = preregistration["inputs"]["existing_source"]
++    existing_marked_spec = preregistration["inputs"]["existing_marked"]
++    _verify_hash(sources["existing"], existing_source_spec["sha256"], "existing source")
++    existing_marked = _resolve(existing_marked_spec["path"])
++    _verify_hash(existing_marked, existing_marked_spec["sha256"], "existing marked PDF")
++    for item in preregistration["inputs"]["historical_captures"]:
++        _verify_hash(Path(item["path"]), item["sha256"], item["id"])
++
++    biases, codebook = generate_roster(config)
++    labels = {
++        "schema": "nishan.receiver-labels/v1",
++        "preregistration_sha256": preregistration_hash,
++        "cases": {
++            item["id"]: {
++                "expected_rows": item["score_expected_rows"],
++                "safe_outcome": item["safe_outcome"],
++            }
++            for item in preregistration["cases"]
++        },
++    }
++    label_path = output / "labels.json"
++    dump_exclusive(label_path, labels)
++
++    rendered_sources: dict[str, np.ndarray] = {}
++    marked_cache: dict[tuple[str, int], tuple[np.ndarray, dict[str, Any]]] = {}
++
++    def source_rgb(source_id: str) -> np.ndarray:
++        if source_id not in rendered_sources:
++            pages, _ = watermark.load_pages(sources[source_id], dpi=144)
++            if len(pages) != 1:
++                raise ValueError(f"{source_id} is not a one-page source")
++            rendered_sources[source_id] = pages[0]
++        return rendered_sources[source_id]
++
++    with tempfile.TemporaryDirectory(prefix="nishan-receiver-fixtures-") as temporary:
++        temporary_path = Path(temporary)
++
++        def marked(source_id: str, row: int) -> tuple[np.ndarray, dict[str, Any]]:
++            key = (source_id, row)
++            if key not in marked_cache:
++                destination = temporary_path / f"{source_id}-row{row}.pdf"
++                metrics = tardos_carrier.embed_pdf(
++                    sources[source_id], destination, codebook[row],
++                    FIXTURE_SECRET, CARRIER_CONTEXT,
++                    strength=4.0, dpi=144, block_size=6,
++                )
++                pages, _ = watermark.load_pages(destination, dpi=144)
++                marked_cache[key] = (pages[0], asdict(metrics))
++            return marked_cache[key]
++
++        records: list[dict[str, Any]] = []
++        for frozen_case in preregistration["cases"]:
++            case_id = frozen_case["id"]
++            record: dict[str, Any] = {
++                "id": case_id,
++                "split": frozen_case["split"],
++                "category": frozen_case["category"],
++                "transform": frozen_case["transform"],
++                "source_id": frozen_case["source"],
++                "receiver_variant": frozen_case.get("receiver_variant", "frozen_correct_key"),
++            }
++            try:
++                if frozen_case["transform"] == "external_pending":
++                    if not release_pending:
++                        record.update(
++                            status="sealed_pending_release",
++                            reason="prospective capture deliberately not read by fixtures",
++                            source_path=_relative(sources["existing"]),
++                            source_sha256=digest(sources["existing"]),
++                            capture_path=None,
++                            capture_sha256=None,
++                        )
++                    else:
++                        pending = Path(preregistration["inputs"]["pending_capture"]["path"])
++                        metadata = _image_metadata(pending)
++                        record.update(
++                            status="ready",
++                            source_path=_relative(sources["existing"]),
++                            source_sha256=digest(sources["existing"]),
++                            capture_path=str(pending.resolve()),
++                            capture_sha256=digest(pending),
++                            intake=metadata | {
++                                "transfer_statement": "unverified; supplied filename alone does not establish transfer processing",
++                            },
++                            observed_category="real_camera_transfer_unknown_confirmation",
++                            preregistered_category=frozen_case["category"],
++                            category_deviation=(
++                                "The preregistered WhatsApp-document label is not factually verified; "
++                                "measurement is reported as camera/transfer-unknown."
++                            ),
++                        )
++                    records.append(record)
++                    continue
++
++                if frozen_case["transform"] == "external":
++                    item = next(
++                        value for value in preregistration["inputs"]["historical_captures"]
++                        if value["id"] == case_id
++                    )
++                    capture = Path(item["path"])
++                    record.update(
++                        status="ready",
++                        source_path=_relative(sources["existing"]),
++                        source_sha256=digest(sources["existing"]),
++                        capture_path=str(capture.resolve()),
++                        capture_sha256=digest(capture),
++                        intake=_image_metadata(capture),
++                        synthetic_metrics=None,
++                    )
++                    records.append(record)
++                    continue
++
++                source_id = frozen_case["source"]
++                source = source_rgb(source_id)
++                embedding_metrics: dict[str, Any] | None
++                fixture_kind = frozen_case["fixture"]
++                if case_id == "existing_exact":
++                    pages, _ = watermark.load_pages(existing_marked, dpi=144)
++                    observed = pages[0]
++                    embedding_metrics = asdict(
++                        tardos_carrier.measure_pdf_pair(sources["existing"], existing_marked, dpi=144)
++                    )
++                    capture_path = existing_marked
++                elif fixture_kind == "unmarked":
++                    observed = source.copy()
++                    embedding_metrics = None
++                    capture_path = None
++                elif fixture_kind == "transplanted_row0_overlay":
++                    donor_source = source_rgb(frozen_case["donor_source"])
++                    donor_marked, donor_metrics = marked(frozen_case["donor_source"], 0)
++                    if donor_source.shape != source.shape:
++                        raise ValueError("transplant donor and target geometry differ")
++                    observed = np.clip(
++                        source.astype(np.int16)
++                        + donor_marked.astype(np.int16)
++                        - donor_source.astype(np.int16),
++                        0,
++                        255,
++                    ).astype(np.uint8)
++                    embedding_metrics = donor_metrics | {
++                        "transplant_definition": "target + (donor_marked - donor_unmarked)",
++                    }
++                    capture_path = None
++                else:
++                    row = 1 if fixture_kind == "row1" else 0
++                    capture_source_id = frozen_case.get("capture_source", source_id)
++                    observed, embedding_metrics = marked(capture_source_id, row)
++                    capture_path = None
++
++                transformed = _transform(
++                    observed,
++                    frozen_case["transform"],
++                    preregistration["synthetic_transform_configuration"],
++                )
++                if capture_path is None:
++                    capture_path = output / "captures" / f"{case_id}.png"
++                    _save_png(capture_path, transformed)
++                capture_hash = digest(capture_path)
++                mask = _text_mask(source)
++                record.update(
++                    status="ready",
++                    source_path=_relative(sources[source_id]),
++                    source_sha256=digest(sources[source_id]),
++                    capture_path=_relative(capture_path),
++                    capture_sha256=capture_hash,
++                    synthetic_metrics={
++                        "embedding": embedding_metrics,
++                        "source_to_observation_psnr_db": _psnr(source, transformed),
++                        "source_text_region_psnr_db": _psnr(source, transformed, mask),
++                        "text_region_definition": "source luma <247 OR Sobel magnitude >=8",
++                        "saturation_fraction": float(np.mean((transformed == 0) | (transformed == 255))),
++                        "pixel_shape": list(transformed.shape),
++                    },
++                )
++            except Exception as error:  # Retain every frozen failure.
++                record.update(
++                    status="fixture_failed",
++                    reason=f"{type(error).__name__}: {error}",
++                    traceback=traceback.format_exc(),
++                    capture_path=None,
++                    capture_sha256=None,
++                )
++            records.append(record)
++
++    payload = {
++        "schema": "nishan.receiver-fixtures/v1",
++        "completed": True,
++        "preregistration_path": _relative(preregistration_path),
++        "preregistration_sha256": preregistration_hash,
++        "freeze_chronology": {
++            "typed_frozen_at": preregistration["frozen_at"],
++            "authoritative_protocol_commit": _git_file_commit(preregistration_path),
++            "interpretation": (
++                "Git commit ancestry and commit time establish that the protocol file was committed "
++                "before receiver measurements. The typed frozen_at value is inaccurate metadata and "
++                "is not used to claim ordering."
++            ),
++        },
++        "labels_sha256": digest(label_path),
++        "release_pending_capture": release_pending,
++        "codebook_commitment": tardos.manifest(config, biases, codebook),
++        "carrier": {
++            "roster_size": 1000,
++            "coalition_limit": 5,
++            "code_length": 52500,
++            "block_size_pixels": 6,
++            "dpi": 144,
++            "strength": 4.0,
++            "carrier_context": CARRIER_CONTEXT,
++            "same_embedded_row_bytes_across_receiver_profiles": True,
++        },
++        "cases": records,
++        "runtime": {
++            "elapsed_seconds": time.perf_counter() - started,
++            "peak_rss_kib": _peak_rss_kib(),
++            "python": platform.python_version(),
++            "numpy": np.__version__,
++            "opencv": cv2.__version__,
++            "git_head": _git_head(),
++        },
++        "warnings": [
++            "Synthetic transforms are diagnostics, not physical print/camera evidence.",
++            "Historical captures are development-only repeated observations.",
++            "Labels are separate from receiver-preparation inputs.",
++        ],
++    }
++    dump_exclusive(output / "manifest.json", payload)
++    return payload
++
++
++def _ecc_affine(
++    source: np.ndarray, aligned: np.ndarray
++) -> tuple[np.ndarray, dict[str, Any]]:
++    """Frozen content-only ECC refinement; warp maps source into ORB input."""
++
++    matrix = np.eye(2, 3, dtype=np.float32)
++    gray_source = cv2.cvtColor(source, cv2.COLOR_RGB2GRAY).astype(np.float32) / 255
++    gray_aligned = cv2.cvtColor(aligned, cv2.COLOR_RGB2GRAY).astype(np.float32) / 255
++    coefficient, matrix = cv2.findTransformECC(
++        gray_source,
++        gray_aligned,
++        matrix,
++        cv2.MOTION_AFFINE,
++        (cv2.TERM_CRITERIA_COUNT | cv2.TERM_CRITERIA_EPS, 200, 1e-6),
++        None,
++        5,
++    )
++    return matrix, {
++        "ecc_coefficient": float(coefficient),
++        "inverse_warp": matrix.tolist(),
++        "motion": "affine",
++        "iterations": 200,
++        "stop_epsilon": 1e-6,
++        "gaussian_size": 5,
++    }
++
++
++def _compose_single_resampling(
++    capture: np.ndarray,
++    source_shape: tuple[int, ...],
++    orb_homography: list[list[float]],
++    ecc_inverse_warp: np.ndarray,
++) -> tuple[np.ndarray, np.ndarray]:
++    inverse = np.eye(3, dtype=np.float64)
++    inverse[:2] = np.asarray(ecc_inverse_warp, dtype=np.float64)
++    combined = np.linalg.inv(inverse) @ np.asarray(orb_homography, dtype=np.float64)
++    result = cv2.warpPerspective(
++        capture,
++        combined,
++        (source_shape[1], source_shape[0]),
++        flags=cv2.INTER_LANCZOS4,
++        borderMode=cv2.BORDER_CONSTANT,
++        borderValue=(255, 255, 255),
++    )
++    return result, combined
++
++
++def _align(source: np.ndarray, capture: np.ndarray) -> tuple[np.ndarray, dict[str, Any]]:
++    aligned, orb = registration.align_page(source, capture)
++    metrics = {"orb": orb.to_dict()}
++    same_shape_identity = (
++        source.shape == capture.shape
++        and not orb.applied
++        and orb.rejection_reason is None
++        and orb.baseline_similarity >= 0.92
++    )
++    if same_shape_identity:
++        metrics.update(
++            mode="same-geometry content-similarity guard",
++            raw_to_reference=np.eye(3).tolist(),
++            single_final_resampling=True,
++        )
++        return aligned, metrics
++    if not orb.applied or orb.homography_suspect_to_reference is None:
++        raise ValueError(
++            "ORB initialization was not accepted: " + str(orb.rejection_reason)
++        )
++    inverse, ecc = _ecc_affine(source, aligned)
++    rendered, combined = _compose_single_resampling(
++        capture, source.shape, orb.homography_suspect_to_reference, inverse
++    )
++    metrics.update(
++        mode="ORB then ECC-affine; composed original-capture resampling",
++        ecc=ecc,
++        raw_to_reference=combined.tolist(),
++        single_final_resampling=True,
++    )
++    return rendered, metrics
++
++
++def _source_response(
++    source_path: Path,
++    biases: np.ndarray,
++    secret: bytes,
++) -> dict[str, Any]:
++    pages, _ = watermark.load_pages(source_path, dpi=144)
++    if len(pages) != 1:
++        raise ValueError("frozen runner supports exactly one page per source")
++    source_rgb = pages[0]
++    source_luma = _luma(source_rgb)
++    rows, columns = source_luma.shape[0] // 6, source_luma.shape[1] // 6
++    order, orientation, polarity = tardos_carrier._plan(
++        secret, CARRIER_CONTEXT, rows * columns, len(biases)
++    )
++    endpoints = []
++    with tempfile.TemporaryDirectory(prefix="nishan-receiver-endpoints-") as temporary:
++        for bit in (0, 1):
++            destination = Path(temporary) / f"endpoint-{bit}.pdf"
++            tardos_carrier.embed_pdf(
++                source_path,
++                destination,
++                np.full(len(biases), bit, dtype=np.uint8),
++                secret,
++                CARRIER_CONTEXT,
++                strength=4.0,
++                dpi=144,
++                block_size=6,
++            )
++            rendered, _ = watermark.load_pages(destination, dpi=144)
++            endpoints.append(_luma(rendered[0]))
++    q = receiver.implemented_probabilities(biases)
++    probabilities = np.full(rows * columns, 0.5, dtype=np.float32)
++    probabilities[order] = q.astype(np.float32)
++    q_image = np.full(source_luma.shape, 0.5, dtype=np.float32)
++    q_image[: rows * 6, : columns * 6] = np.repeat(
++        np.repeat(probabilities.reshape(rows, columns), 6, axis=0), 6, axis=1
++    )
++    expectation = endpoints[0] + q_image * (endpoints[1] - endpoints[0])
++    return {
++        "source_rgb": source_rgb,
++        "source_luma": source_luma,
++        "expectation": expectation.astype(np.float32),
++        "order": order,
++        "orientation": orientation,
++        "polarity": polarity,
++        "base_templates": tardos_carrier._templates(6),
++        "endpoint_zero_sha256": receiver.array_hash(endpoints[0]),
++        "endpoint_one_sha256": receiver.array_hash(endpoints[1]),
++        "expectation_sha256": receiver.array_hash(expectation.astype(np.float32)),
++    }
++
++
++def _manifest_cases(fixtures_directory: Path) -> tuple[dict[str, Any], str]:
++    path = Path(fixtures_directory) / "manifest.json"
++    payload = json.loads(path.read_text())
++    if payload.get("schema") != "nishan.receiver-fixtures/v1" or not payload.get("completed"):
++        raise ValueError("invalid or incomplete fixture manifest")
++    return payload, digest(path)
++
++
++def _validate_fixture_inventory(
++    preregistration: dict[str, Any], fixtures_payload: dict[str, Any]
++) -> None:
++    frozen = [
++        (item["id"], item["split"], item["category"], item["transform"])
++        for item in preregistration["cases"]
++    ]
++    observed = [
++        (item["id"], item["split"], item["category"], item["transform"])
++        for item in fixtures_payload.get("cases", [])
++    ]
++    if observed != frozen:
++        raise ValueError("fixture manifest does not retain the frozen case inventory")
++
++
++def _record_failure(
++    records: list[dict[str, Any]], case: dict[str, Any], status: str, reason: str
++) -> None:
++    for profile in PROFILES:
++        records.append({
++            "case_id": case["id"],
++            "profile": profile,
++            "status": status,
++            "reason": reason,
++            "source_sha256": case.get("source_sha256"),
++            "capture_sha256": case.get("capture_sha256"),
++        })
++
++
++def _metadata_without_arrays(result: dict[str, Any]) -> dict[str, Any]:
++    return {
++        key: value
++        for key, value in result.items()
++        if not isinstance(value, np.ndarray)
++    }
++
++
++def prepare(
++    preregistration_path: Path,
++    fixtures_directory: Path,
++    output_directory: Path,
++) -> dict[str, Any]:
++    """Fit geometry/channel and commit evidence without roster rows or labels."""
++
++    output = Path(output_directory)
++    if output.exists():
++        raise FileExistsError(output)
++    output.mkdir(parents=True, exist_ok=False)
++    started = time.perf_counter()
++    cv2.setNumThreads(2)
++    preregistration, preregistration_hash = _load_preregistration(preregistration_path)
++    fixtures_payload, fixtures_hash = _manifest_cases(fixtures_directory)
++    if fixtures_payload["preregistration_sha256"] != preregistration_hash:
++        raise ValueError("fixture/preregistration commitment mismatch")
++    _validate_fixture_inventory(preregistration, fixtures_payload)
++    config = _configuration(preregistration)
++    biases = generate_biases(config)
++    fixed = preregistration["fixed_receiver_configuration"]
++    sigmas = tuple(fixed["global_channel"]["gaussian_sigmas"])
++    shifts = tuple(fixed["local_uncertainty"]["shift_x_pixels"])
++    arrays: dict[str, np.ndarray] = {"biases": biases}
++    records: list[dict[str, Any]] = []
++    source_cache: dict[tuple[str, str], dict[str, Any]] = {}
++
++    for case in fixtures_payload["cases"]:
++        if case.get("status") != "ready":
++            _record_failure(
++                records, case, "input_unavailable", case.get("reason", case.get("status", "unavailable"))
++            )
++            continue
++        try:
++            source_path = _resolve(case["source_path"])
++            capture_path = _resolve(case["capture_path"])
++            _verify_hash(source_path, case["source_sha256"], f"{case['id']} source")
++            _verify_hash(capture_path, case["capture_sha256"], f"{case['id']} capture")
++            receiver_secret = WRONG_KEY_SECRET if case.get("receiver_variant") == "wrong_key" else FIXTURE_SECRET
++            cache_key = (str(source_path.resolve()), hashlib.sha256(receiver_secret).hexdigest())
++            if cache_key not in source_cache:
++                source_cache[cache_key] = _source_response(source_path, biases, receiver_secret)
++            response = source_cache[cache_key]
++            capture_pages, _ = watermark.load_pages(capture_path, dpi=144)
++            if len(capture_pages) != 1:
++                raise ValueError("capture must contain exactly one page")
++            aligned_rgb, alignment = _align(response["source_rgb"], capture_pages[0])
++            captured_luma = _luma(aligned_rgb)
++        except Exception as error:
++            _record_failure(
++                records,
++                case,
++                "initialization_failed",
++                f"{type(error).__name__}: {error}",
++            )
++            continue
++
++        common = {
++            "case_id": case["id"],
++            "source_sha256": case["source_sha256"],
++            "capture_sha256": case["capture_sha256"],
++            "receiver_variant": case.get("receiver_variant", "frozen_correct_key"),
++            "registration": alignment,
++            "expectation_sha256": response["expectation_sha256"],
++            "endpoint_zero_sha256": response["endpoint_zero_sha256"],
++            "endpoint_one_sha256": response["endpoint_one_sha256"],
++        }
++        selected_templates = (
++            response["base_templates"][response["orientation"]]
++            * response["polarity"][:, None, None]
++        )
++
++        hard_started = time.perf_counter()
++        try:
++            hard = receiver.extract_hard(
++                captured_luma,
++                response["source_luma"],
++                response["order"],
++                selected_templates,
++            )
++            index = len(records)
++            word_key = f"record_{index}_word"
++            correlations_key = f"record_{index}_correlations"
++            arrays[word_key] = hard["word"]
++            arrays[correlations_key] = hard["correlations"]
++            records.append(common | {
++                "profile": PROFILES[0],
++                "status": "prepared",
++                "word_key": word_key,
++                "correlations_key": correlations_key,
++                "diagnostics": _metadata_without_arrays(hard),
++                "runtime_seconds": time.perf_counter() - hard_started,
++            })
++        except Exception as error:
++            records.append(common | {
++                "profile": PROFILES[0],
++                "status": "evidence_failed",
++                "reason": f"{type(error).__name__}: {error}",
++                "runtime_seconds": time.perf_counter() - hard_started,
++            })
++
++        fit = None
++        global_started = time.perf_counter()
++        try:
++            mask = receiver.content_mask(response["expectation"])
++            fit = receiver.fit_global_channel(
++                response["expectation"],
++                captured_luma,
++                mask,
++                sigmas=sigmas,
++                minimum_pixels=fixed["content_mask"]["minimum_pixels_global"],
++            )
++            global_result = receiver.extract_global_soft(
++                captured_luma,
++                response["expectation"],
++                response["order"],
++                response["orientation"],
++                response["polarity"],
++                response["base_templates"],
++                sigmas=sigmas,
++                tile_size=fixed["soft_evidence"]["noise_tiles_pixels"],
++                prefit=fit,
++            )
++            index = len(records)
++            weights_key = f"record_{index}_weights"
++            correlations_key = f"record_{index}_correlations"
++            arrays[weights_key] = global_result["weights"]
++            arrays[correlations_key] = global_result["correlations"]
++            records.append(common | {
++                "profile": PROFILES[1],
++                "status": "prepared",
++                "weights_key": weights_key,
++                "correlations_key": correlations_key,
++                "diagnostics": _metadata_without_arrays(global_result),
++                "runtime_seconds": time.perf_counter() - global_started,
++            })
++        except Exception as error:
++            records.append(common | {
++                "profile": PROFILES[1],
++                "status": "evidence_failed",
++                "reason": f"{type(error).__name__}: {error}",
++                "runtime_seconds": time.perf_counter() - global_started,
++            })
++
++        local_started = time.perf_counter()
++        try:
++            if fit is None:
++                raise ValueError("shared frozen global channel fit unavailable")
++            local_result = receiver.extract_local_mixture_soft(
++                captured_luma,
++                response["expectation"],
++                response["order"],
++                response["orientation"],
++                response["polarity"],
++                response["base_templates"],
++                sigmas=sigmas,
++                shifts=shifts,
++                tile_size=fixed["local_uncertainty"]["tile_pixels"],
++                minimum_tile_pixels=fixed["content_mask"]["minimum_pixels_tile"],
++                prefit=fit,
++            )
++            index = len(records)
++            weights_key = f"record_{index}_weights"
++            correlations_key = f"record_{index}_correlations"
++            arrays[weights_key] = local_result["weights"]
++            arrays[correlations_key] = local_result["correlations"]
++            records.append(common | {
++                "profile": PROFILES[2],
++                "status": "prepared",
++                "weights_key": weights_key,
++                "correlations_key": correlations_key,
++                "diagnostics": _metadata_without_arrays(local_result),
++                "runtime_seconds": time.perf_counter() - local_started,
++            })
++        except Exception as error:
++            records.append(common | {
++                "profile": PROFILES[2],
++                "status": "evidence_failed",
++                "reason": f"{type(error).__name__}: {error}",
++                "runtime_seconds": time.perf_counter() - local_started,
++            })
++
++    expected_pairs = [
++        (case["id"], profile)
++        for case in fixtures_payload["cases"]
++        for profile in PROFILES
++    ]
++    actual_pairs = [(item["case_id"], item["profile"]) for item in records]
++    if actual_pairs != expected_pairs:
++        raise AssertionError("preparation did not retain the frozen case/profile Cartesian product")
++    payload = {
++        "schema": "nishan.receiver-preparation/v1",
++        "completed": True,
++        "preregistration_sha256": preregistration_hash,
++        "fixture_manifest_sha256": fixtures_hash,
++        "labels_loaded": False,
++        "roster_rows_loaded": 0,
++        "profiles": list(PROFILES),
++        "records": records,
++        "array_sha256": {
++            name: receiver.array_hash(value) for name, value in arrays.items()
++        },
++        "code_sha256": {
++            "research/robustness/receiver/run_pilot.py": digest(Path(__file__)),
++            "research/robustness/receiver/receiver.py": digest(Path(receiver.__file__)),
++            "prototypes/nishan_pq/nishan/tardos.py": digest(Path(tardos.__file__)),
++            "prototypes/nishan_pq/nishan/tardos_carrier.py": digest(Path(tardos_carrier.__file__)),
++            "prototypes/nishan_pq/nishan/registration.py": digest(Path(registration.__file__)),
++        },
++        "runtime": {
++            "elapsed_seconds": time.perf_counter() - started,
++            "peak_rss_kib": _peak_rss_kib(),
++            "python": platform.python_version(),
++            "numpy": np.__version__,
++            "opencv": cv2.__version__,
++            "git_head": _git_head(),
++        },
++        "warnings": [
++            "No recipient row, expected label, or prior attribution score was loaded.",
++            "Channel/geometry fitting used only source descriptors, bias expectation, and capture pixels.",
++            "Failures are retained; profiles are never substituted after scoring.",
++        ],
++    }
++    evidence_path = output / "evidence.npz"
++    with evidence_path.open("xb") as handle:
++        np.savez_compressed(handle, **arrays)
++    dump_exclusive(output / "preparation.json", payload)
++    commitment = {
++        "schema": "nishan.receiver-preparation-commitment/v1",
++        "completed": True,
++        "sha256": {
++            "preparation.json": digest(output / "preparation.json"),
++            "evidence.npz": digest(evidence_path),
++        },
++    }
++    dump_exclusive(output / "commitment.json", commitment)
++    return payload
++
++
++def validate_prepared(
++    preregistration_path: Path,
++    fixtures_directory: Path,
++    prepared_directory: Path,
++) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], str]:
++    preregistration, preregistration_hash = _load_preregistration(preregistration_path)
++    fixtures_payload, fixtures_hash = _manifest_cases(fixtures_directory)
++    _validate_fixture_inventory(preregistration, fixtures_payload)
++    directory = Path(prepared_directory)
++    commitment = json.loads((directory / "commitment.json").read_text())
++    if commitment.get("completed") is not True or set(commitment.get("sha256", {})) != {
++        "preparation.json", "evidence.npz"
++    }:
++        raise ValueError("invalid preparation commitment inventory")
++    for name, expected in commitment["sha256"].items():
++        if digest(directory / name) != expected:
++            raise ValueError(f"prepared file hash mismatch: {name}")
++    payload = json.loads((directory / "preparation.json").read_text())
++    if payload.get("schema") != "nishan.receiver-preparation/v1" or not payload.get("completed"):
++        raise ValueError("invalid preparation metadata")
++    if payload["preregistration_sha256"] != preregistration_hash:
++        raise ValueError("prepared preregistration mismatch")
++    if payload["fixture_manifest_sha256"] != fixtures_hash:
++        raise ValueError("prepared fixture manifest mismatch")
++    if payload.get("labels_loaded") is not False or payload.get("roster_rows_loaded") != 0:
++        raise ValueError("preparation stage-separation assertion failed")
++    for name, expected in payload["code_sha256"].items():
++        path = ROOT / name
++        if digest(path) != expected:
++            raise ValueError(f"prepared code hash mismatch: {name}")
++    with np.load(directory / "evidence.npz", allow_pickle=False) as stored:
++        if set(stored.files) != set(payload["array_sha256"]):
++            raise ValueError("prepared array inventory mismatch")
++        for name, expected in payload["array_sha256"].items():
++            if receiver.array_hash(stored[name]) != expected:
++                raise ValueError(f"prepared array hash mismatch: {name}")
++    return preregistration, fixtures_payload, payload, preregistration_hash
++
++
++def _outcome(
++    expected: list[int], accused: list[int], safe_outcome: str
++) -> tuple[str, str]:
++    expected_set, accused_set = set(expected), set(accused)
++    if not expected:
++        score_outcome = "abstain" if not accused else "wrong"
++    elif not accused:
++        score_outcome = "abstain"
++    elif accused_set == expected_set:
++        score_outcome = "correct"
++    else:
++        score_outcome = "wrong"
++    if safe_outcome == "abstain_transplant_pattern_is_not_authenticity":
++        return score_outcome, "abstain_transplant_pattern_is_not_authenticity"
++    return score_outcome, score_outcome
++
++
++def _rank(scores: np.ndarray, row: int) -> int:
++    return int(1 + np.count_nonzero(scores > scores[row]))
++
++
++def _score_record(
++    item: dict[str, Any],
++    arrays: Any,
++    biases: np.ndarray,
++    codebook: np.ndarray,
++    label: dict[str, Any],
++    preregistration: dict[str, Any],
++) -> dict[str, Any]:
++    base = {
++        "case_id": item["case_id"],
++        "profile": item["profile"],
++        "prepared_status": item["status"],
++        "expected_rows": label["expected_rows"],
++        "safe_outcome": label["safe_outcome"],
++        "source_sha256": item.get("source_sha256"),
++        "capture_sha256": item.get("capture_sha256"),
++        "registration": item.get("registration"),
++        "fit_parameters": item.get("diagnostics", {}).get("fit"),
++        "fit_loss": (item.get("diagnostics", {}).get("fit") or {}).get("loss"),
++        "fallback_tiles": item.get("diagnostics", {}).get("fallback_tiles"),
++        "preparation_runtime_seconds": item.get("runtime_seconds"),
++    }
++    if item["status"] != "prepared":
++        return base | {
++            "status": "failure",
++            "reason": item.get("reason"),
++            "score_outcome": "failure",
++            "outcome": "failure",
++            "accused_rows": [],
++            "all_1000_scores": None,
++            "threshold": None,
++        }
++    family = preregistration["family_calibration"]
++    if item["profile"] == PROFILES[0]:
++        word = arrays[item["word_key"]]
++        scores = tardos.accusation_scores(biases, codebook, word)
++        threshold = receiver.conditional_signed_threshold(
++            biases,
++            word.astype(np.float64),
++            family["family_epsilon"],
++            family["hypotheses"],
++        )
++        historical_accused = np.flatnonzero(scores > 2100.0).tolist()
++        evidence_bits = word
++        weight_hash = receiver.array_hash(word)
++        nonzero_fraction = float(np.mean(word != 0))
++    else:
++        weights = arrays[item["weights_key"]]
++        scores = receiver.signed_scores(biases, codebook, weights)
++        threshold = receiver.conditional_signed_threshold(
++            biases,
++            weights,
++            family["family_epsilon"],
++            family["hypotheses"],
++        )
++        historical_accused = None
++        evidence_bits = (weights > 0).astype(np.uint8)
++        weight_hash = receiver.array_hash(weights)
++        nonzero_fraction = float(np.mean(weights != 0))
++    boundary = threshold["threshold"]
++    accused = [] if boundary is None else np.flatnonzero(scores > boundary).tolist()
++    score_outcome, evaluator_disposition = _outcome(
++        label["expected_rows"], accused, label["safe_outcome"]
++    )
++    is_transplant = label["safe_outcome"] == "abstain_transplant_pattern_is_not_authenticity"
++    expected = label["expected_rows"]
++    nonexpected = np.ones(len(scores), dtype=bool)
++    nonexpected[expected] = False
++    expected_scores = [float(scores[row]) for row in expected]
++    expected_ranks = [_rank(scores, row) for row in expected]
++    bit_errors = [float(np.mean(evidence_bits != codebook[row])) for row in expected]
++    highest_other = float(np.max(scores[nonexpected])) if np.any(nonexpected) else None
++    margin = None
++    if expected_scores and boundary is not None:
++        margin = min(expected_scores) - boundary
++    return base | {
++        "status": "scored",
++        "score_outcome": score_outcome,
++        "outcome": score_outcome,
++        "evaluator_safe_disposition": evaluator_disposition,
++        "deployable_manipulation_detected": False if is_transplant else None,
++        "security_success_counted": False if is_transplant else None,
++        "accused_rows": accused,
++        "all_1000_scores": scores.tolist(),
++        "expected_scores": expected_scores,
++        "expected_ranks": expected_ranks,
++        "highest_nonexpected_score": highest_other,
++        "threshold": boundary,
++        "threshold_theta": threshold.get("theta"),
++        "conditional_null": threshold,
++        "score_margin": margin,
++        "bit_error_fraction_if_labeled": bit_errors,
++        "weight_hash": weight_hash,
++        "weight_nonzero_fraction": nonzero_fraction,
++        "historical_threshold": 2100.0 if item["profile"] == PROFILES[0] else None,
++        "historical_accused_rows": historical_accused,
++        "historical_outcome": (
++            _outcome(expected, historical_accused, label["safe_outcome"])[0]
++            if historical_accused is not None else None
++        ),
++    }
++
++
++def _write_csv(path: Path, records: list[dict[str, Any]], cases: dict[str, dict[str, Any]]) -> None:
++    fields = [
++        "case_id", "split", "category", "profile", "status", "outcome",
++        "score_outcome", "evaluator_safe_disposition", "deployable_manipulation_detected",
++        "security_success_counted", "expected_rows", "accused_rows", "expected_scores",
++        "expected_ranks", "highest_nonexpected_score", "threshold",
++        "threshold_theta", "score_margin", "bit_error_fraction_if_labeled",
++        "weight_nonzero_fraction", "fit_loss", "fallback_tiles",
++        "historical_accused_rows", "historical_outcome", "reason",
++    ]
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with path.open("x", newline="") as handle:
++        writer = csv.DictWriter(handle, fieldnames=fields)
++        writer.writeheader()
++        for record in records:
++            case = cases[record["case_id"]]
++            row = {name: record.get(name) for name in fields}
++            row["split"] = case["split"]
++            row["category"] = case["category"]
++            for name in (
++                "expected_rows", "accused_rows", "expected_scores", "expected_ranks",
++                "bit_error_fraction_if_labeled", "historical_accused_rows",
++            ):
++                if isinstance(row[name], list):
++                    row[name] = json.dumps(row[name], separators=(",", ":"))
++            writer.writerow(row)
++
++
++def _hash_inventory(root: Path, excluded: set[Path]) -> list[str]:
++    lines = []
++    for path in sorted(value for value in root.rglob("*") if value.is_file()):
++        if path in excluded:
++            continue
++        lines.append(f"{digest(path)}  {path.relative_to(root)}")
++    return lines
++
++
++def score(
++    preregistration_path: Path,
++    fixtures_directory: Path,
++    prepared_directory: Path,
++    output_directory: Path,
++) -> dict[str, Any]:
++    """Verify commitments, generate the roster once, and score all 1,000 rows."""
++
++    output = Path(output_directory)
++    output.mkdir(parents=True, exist_ok=True)
++    targets = [output / "scores.json", output / "cases.csv", output / "hashes.sha256"]
++    existing = [path for path in targets if path.exists()]
++    if existing:
++        raise FileExistsError(existing[0])
++    started = time.perf_counter()
++    preregistration, fixture_payload, prepared, preregistration_hash = validate_prepared(
++        preregistration_path, fixtures_directory, prepared_directory
++    )
++    labels_path = Path(fixtures_directory) / "labels.json"
++    if digest(labels_path) != fixture_payload["labels_sha256"]:
++        raise ValueError("fixture label commitment mismatch")
++    labels = json.loads(labels_path.read_text())
++    if labels["preregistration_sha256"] != preregistration_hash:
++        raise ValueError("labels/preregistration mismatch")
++    case_ids = [item["id"] for item in fixture_payload["cases"]]
++    if set(labels["cases"]) != set(case_ids):
++        raise ValueError("fixture/label case inventory mismatch")
++    config = _configuration(preregistration)
++    biases, codebook = generate_roster(config)
++    records: list[dict[str, Any]] = []
++    with np.load(Path(prepared_directory) / "evidence.npz", allow_pickle=False) as arrays:
++        if not np.array_equal(biases, arrays["biases"]):
++            raise ValueError("full-roster biases differ from committed zero-row biases")
++        for item in prepared["records"]:
++            records.append(_score_record(
++                item,
++                arrays,
++                biases,
++                codebook,
++                labels["cases"][item["case_id"]],
++                preregistration,
++            ))
++    expected_pairs = [
++        (case_id, profile) for case_id in case_ids for profile in PROFILES
++    ]
++    if [(item["case_id"], item["profile"]) for item in records] != expected_pairs:
++        raise AssertionError("score output is not the complete frozen Cartesian product")
++    case_map = {item["id"]: item for item in fixture_payload["cases"]}
++    aggregate: dict[str, Any] = {"profiles": {}, "categories": {}}
++    for profile in PROFILES:
++        selected = [item for item in records if item["profile"] == profile]
++        aggregate["profiles"][profile] = {
++            name: sum(item["outcome"] == name for item in selected)
++            for name in (
++                "correct", "wrong", "abstain", "failure",
++                "abstain_transplant_pattern_is_not_authenticity",
++            )
++        } | {
++            "scored": sum(item["status"] == "scored" for item in selected),
++            "total": len(selected),
++        }
++    for category in sorted({case_map[item["case_id"]]["category"] for item in records}):
++        selected = [
++            item for item in records if case_map[item["case_id"]]["category"] == category
++        ]
++        aggregate["categories"][category] = {
++            "scored": sum(item["status"] == "scored" for item in selected),
++            "correct": sum(item["outcome"] == "correct" for item in selected),
++            "wrong": sum(item["outcome"] == "wrong" for item in selected),
++            "abstain": sum(item["outcome"] == "abstain" for item in selected),
++            "failure": sum(item["outcome"] == "failure" for item in selected),
++            "total": len(selected),
++        }
++    payload = {
++        "schema": "nishan.receiver-scores/v1",
++        "completed": True,
++        "preregistration_sha256": preregistration_hash,
++        "fixture_manifest_sha256": digest(Path(fixtures_directory) / "manifest.json"),
++        "fixture_labels_sha256": digest(labels_path),
++        "preparation_sha256": digest(Path(prepared_directory) / "preparation.json"),
++        "evidence_npz_sha256": digest(Path(prepared_directory) / "evidence.npz"),
++        "preparation_commitment_sha256": digest(Path(prepared_directory) / "commitment.json"),
++        "codebook_commitment": tardos.manifest(config, biases, codebook),
++        "family_calibration": preregistration["family_calibration"],
++        "decision_note": (
++            "The matched primary hard outcome uses its conditional hard-word Chernoff boundary. "
++            "The unchanged historical 2100 boundary is retained separately and is never applied to signed-soft scores. "
++            "For the known transplant fixture, evaluator abstention is recorded separately from the "
++            "receiver's actual donor-pattern result and is never counted as deployable manipulation detection."
++        ),
++        "records": records,
++        "aggregate": aggregate,
++        "runtime": {
++            "elapsed_seconds": time.perf_counter() - started,
++            "peak_rss_kib": _peak_rss_kib(),
++            "python": platform.python_version(),
++            "numpy": np.__version__,
++            "opencv": cv2.__version__,
++            "git_head": _git_head(),
++        },
++        "claim_limits": preregistration["claim_limits"],
++    }
++    dump_exclusive(output / "scores.json", payload)
++    _write_csv(output / "cases.csv", records, case_map)
++    inventory = _hash_inventory(output, {output / "hashes.sha256"})
++    with (output / "hashes.sha256").open("x") as handle:
++        handle.write("\n".join(inventory) + "\n")
++    return payload
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument(
++        "--preregistration", type=Path, default=DEFAULT_PREREGISTRATION
++    )
++    commands = parser.add_subparsers(dest="command", required=True)
++    fixture_parser = commands.add_parser("fixtures")
++    fixture_parser.add_argument("--output", type=Path, required=True)
++    fixture_parser.add_argument(
++        "--release-pending",
++        action="store_true",
++        help="read the reserved prospective capture; use only after coordinator release",
++    )
++    prepare_parser = commands.add_parser("prepare")
++    prepare_parser.add_argument("--fixtures", type=Path, required=True)
++    prepare_parser.add_argument("--output", type=Path, required=True)
++    score_parser = commands.add_parser("score")
++    score_parser.add_argument("--fixtures", type=Path, required=True)
++    score_parser.add_argument("--prepared", type=Path, required=True)
++    score_parser.add_argument("--output", type=Path, required=True)
++    arguments = parser.parse_args()
++    if arguments.command == "fixtures":
++        result = fixtures(
++            arguments.preregistration,
++            arguments.output,
++            release_pending=arguments.release_pending,
++        )
++    elif arguments.command == "prepare":
++        result = prepare(
++            arguments.preregistration, arguments.fixtures, arguments.output
++        )
++    else:
++        result = score(
++            arguments.preregistration,
++            arguments.fixtures,
++            arguments.prepared,
++            arguments.output,
++        )
++    print(json.dumps({
++        "completed": result.get("completed"),
++        "schema": result.get("schema"),
++        "peak_rss_kib": result.get("runtime", {}).get("peak_rss_kib"),
++    }, sort_keys=True))
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/research/robustness/receiver/source_license_audit.md b/research/robustness/receiver/source_license_audit.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..4a3715e1db4da153482d843eaad24f98716938c2
+--- /dev/null
++++ b/research/robustness/receiver/source_license_audit.md
+@@ -0,0 +1,55 @@
++# Source and license audit — unchanged-carrier receiver pilot
++
++Date: 16 September 2026. This audit covers material used by this lead; it is not a patent clearance or a claim that cited algorithms are novel.
++
++## Pinned project inputs
++
++| Input | Pin / hash | Use and status |
++|---|---|---|
++| NISHAN protected baseline | Git `f37e861dc02815adf1bebb3e1b45ff222dccf821` | Existing implementation and public fixture. No production file is modified. |
++| Shared synthetic source pack | Git `1148b8b`; per-PDF hashes in `sources/manifest.json` | Six project-generated PDFs, copied byte-for-byte from the coordinator worktree. Development/validation/confirmation split is retained. |
++| Existing unmarked source | SHA-256 `5b347ce904b224a0b33602b12b905d0534d7f626c7319cec960f8bf2e7ed5b06` | Non-blind reference. |
++| Existing marked PDF | SHA-256 `7f85ad7ae5d65334ad9d055a26af0b434c71980628747e74d017a6431c86e9e5` | Exact public-fixture row bytes; unchanged matched carrier. |
++| Historical physical files | Exact hashes in `preregistration.json` | Private development inputs outside Git. They are neither redistributed nor called unseen tests. |
++
++The source-pack generator writes original synthetic prose and geometric primitives with PyMuPDF. It incorporates no third-party document, font file, image, model, or dataset. This lead will not commit original user captures, private keys, private codebooks, or temporary marked PDFs.
++
++## Primary research sources
++
++| Primary source | Established result used here | Incorporation/license boundary |
++|---|---|---|
++| Gábor Tardos, [*Optimal probabilistic fingerprint codes*](https://www.renyi.hu/~tardos/fingerprint.pdf), STOC 2003 / JACM 2008 | Conditional Bernoulli code construction and innocent-score reasoning. | Citation and independent implementation already in the repository; no paper text or third-party code copied. |
++| Peter Meerwald and Teddy Furon, [*Towards Joint Decoding of Tardos Fingerprinting Codes*](https://arxiv.org/abs/1104.5616), 2011 | Continuous extracted values and compound-channel soft decoding are prior art. | Conceptual comparator only. This pilot's bounded signed statistic and conditional MGF are implemented locally; no author code or weights used. |
++| J. J. K. Ó Ruanaidh Pereira and Thierry Pun, [*Robust template matching for affine resistant image watermarks*](https://archive-ouverte.unige.ch/unige:47477), IEEE TIP 2000 | Watermark synchronization templates and affine recovery are established. | Citation only; the pilot does not copy an implementation or claim template synchronization as new. |
++| Eugene T. Lin, [*Video and Image Watermark Synchronization*](https://www.cerias.purdue.edu/apps/reports_and_papers/view/2858), Purdue dissertation, 2005 | Watermark structure and redundancy can support synchronization. | Citation only. |
++| Benjamin Mathon, Patrick Bas, François Cayre, and Benoît Macq, [*Impacts of watermarking security on Tardos-based fingerprinting*](https://research.dial.uclouvain.be/entities/publication/35e8ed6f-e4c7-4db1-a722-0494ec36fa8d), IEEE TIFS 2013 | Physical symbol estimation and fingerprinting security must be evaluated together. | Citation only. |
++
++These sources support the novelty boundary: global channel fitting, soft evidence, local warp estimation, and compound-channel decoding are established research directions. This lead measures a specific receiver on the existing NISHAN carrier; it does not assert a new general watermarking method.
++
++## Runtime dependencies already present
++
++No package was installed or upgraded. The read-only shared environment reports:
++
++| Package | Version | Distribution license metadata |
++|---|---:|---|
++| NumPy | 2.5.3 | BSD-3-Clause plus bundled permissive components |
++| SciPy | 1.18.1 | BSD-3-Clause; wheel metadata also enumerates bundled runtime components |
++| OpenCV headless | 5.0.0.93 | Apache-2.0 |
++| Pillow | 12.3.0 | MIT-CMU |
++| cryptography | 50.0.1 | Apache-2.0 OR BSD-3-Clause |
++| PyMuPDF | 1.28.2 | AGPL-3.0 or Artifex commercial license |
++
++The experiment calls these installed libraries. It does not vendor or redistribute their source/binaries. PyMuPDF's dual-license status is a deployment/legal-review item already present in the project; this research commit does not change it.
++
++## Missing, sealed, or non-incorporated artifacts
++
++- `__PRIVATE_HOME__/LEGACY_TRIAL_CAPTURE.jpeg` is reported available through the coordinator but remains sealed from this lead until the preregistration and candidate implementation/configuration hashes are committed. Its byte hash and metadata are intentionally not read here.
++- No matched unmarked physical photograph, printer model/settings, print scale, lighting record, distance/angle, or physical calibration target is available.
++- The first historical file is a phone scanner/enhancement output; the second is an ordinary camera image transferred through WhatsApp. Neither substitutes for the reserved WhatsApp-**document** original category.
++- No separately acquired ordinary-photo/scanner pair of the prospective capture is available. Those categories will remain separate and missing rather than inferred.
++- No independent private-key/codebook document set exists for this unchanged-bytes comparison. Source-pack confirmation varies content only and cannot establish independent-key replication.
++- No third-party model weights, external corpus, paid service, or public upload is used.
++
++## Reproducibility and claim boundary
++
++All safe source code, synthetic inputs, hashes, settings, complete score vectors, and failures will be committed. User images remain referenced only by local path and cryptographic digest. A recovered transplanted donor pattern is explicitly evidence of pattern copying, not source authenticity, ledger integrity, non-framing, or human culpability.
+diff --git a/research/robustness/receiver/tests/__init__.py b/research/robustness/receiver/tests/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..37f883ba15314034e1717509bf48809ba77d3425
+--- /dev/null
++++ b/research/robustness/receiver/tests/__init__.py
+@@ -0,0 +1 @@
++"""Focused receiver tests."""
+diff --git a/research/robustness/receiver/tests/test_receiver.py b/research/robustness/receiver/tests/test_receiver.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..15111f6865dfffcbedebaf9bdd4aafd17aadffea
+--- /dev/null
++++ b/research/robustness/receiver/tests/test_receiver.py
+@@ -0,0 +1,249 @@
++from __future__ import annotations
++
++import inspect
++import itertools
++import json
++import math
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import cv2
++import numpy as np
++
++from research.robustness.receiver import receiver
++from research.robustness.receiver import run_pilot
++
++
++class SignedScoreTests(unittest.TestCase):
++    def test_signed_score_matches_direct_centered_sum(self):
++        p = np.array([0.2, 0.4, 0.7], dtype=np.float64)
++        codebook = np.array([[1, 0, 1], [0, 1, 0]], dtype=np.uint8)
++        weights = np.array([0.5, -0.25, 0.75], dtype=np.float64)
++        q = receiver.implemented_probabilities(p)
++        expected = np.array([
++            np.sum(weights * (row - q) / np.sqrt(q * (1 - q)))
++            for row in codebook
++        ])
++        np.testing.assert_allclose(receiver.signed_scores(p, codebook, weights), expected)
++
++    def test_conditional_threshold_covers_exact_small_null_tail(self):
++        p = np.array([0.2, 0.45, 0.8], dtype=np.float64)
++        weights = np.array([0.7, -0.4, 1.0], dtype=np.float64)
++        alpha = 0.2
++        threshold = receiver.conditional_signed_threshold(p, weights, alpha, 1)
++        rows = np.array(list(itertools.product((0, 1), repeat=3)), dtype=np.uint8)
++        scores = receiver.signed_scores(p, rows, weights)
++        q = receiver.implemented_probabilities(p)
++        mass = np.prod(np.where(rows == 1, q, 1 - q), axis=1)
++        exact_tail = float(mass[scores > threshold["threshold"]].sum())
++        self.assertLessEqual(exact_tail, alpha + 1e-12)
++        self.assertLessEqual(threshold["modeled_per_hypothesis_upper"], alpha + 1e-9)
++
++    def test_zero_evidence_abstains_and_bad_shapes_fail(self):
++        p = np.array([0.2, 0.8])
++        result = receiver.conditional_signed_threshold(p, np.zeros(2), 1e-6, 1000)
++        self.assertIsNone(result["threshold"])
++        with self.assertRaises(ValueError):
++            receiver.signed_scores(p, np.zeros((2, 3), np.uint8), np.zeros(2))
++
++
++class EvidenceTests(unittest.TestCase):
++    def test_hard_decoder_preserves_float32_sum_and_strict_sign(self):
++        source = np.zeros((6, 12), dtype=np.float32)
++        captured = source.copy()
++        captured[0, :3] = [2**24, 1, -(2**24)]
++        templates = np.ones((2, 6, 6), dtype=np.float32)
++        result = receiver.extract_hard(captured, source, np.array([0, 1]), templates)
++        expected_blocks = receiver.block_view(captured - source)
++        expected = np.sum(expected_blocks * templates, axis=(1, 2), dtype=np.float32)
++        np.testing.assert_array_equal(result["correlations"], expected)
++        np.testing.assert_array_equal(result["word"], expected > 0)
++        self.assertEqual(result["word"][1], 0)
++
++    def test_global_fit_recovers_frozen_blur_and_photometric_map(self):
++        y, x = np.indices((160, 160), dtype=np.float32)
++        midpoint = 128 + 45 * np.sin(x / 8) + 35 * np.cos(y / 11)
++        captured = 0.82 * cv2.GaussianBlur(midpoint, (0, 0), 1.0) + 17.0
++        fit = receiver.fit_global_channel(
++            midpoint,
++            captured,
++            np.ones(midpoint.shape, bool),
++            minimum_pixels=100,
++        )
++        self.assertEqual(fit.sigma, 1.0)
++        self.assertAlmostEqual(fit.gain, 0.82, places=3)
++        self.assertAlmostEqual(fit.offset, 17.0, places=2)
++        self.assertLess(fit.loss, 1e-3)
++
++    def test_global_and_local_extractors_are_finite_and_row_blind(self):
++        height = width = 192
++        y, x = np.indices((height, width), dtype=np.float32)
++        midpoint = 128 + 35 * np.sin(x / 5) + 30 * np.cos(y / 7)
++        captured = 0.9 * cv2.GaussianBlur(midpoint, (0, 0), 0.6) + 9
++        rows = height // 6
++        columns = width // 6
++        symbols = 900
++        order = np.arange(symbols)
++        orientations = np.arange(symbols) % 2
++        polarities = np.where(np.arange(symbols) % 3, 1, -1)
++        vertical = np.ones((6, 6), np.float32)
++        vertical[:, 3:] = -1
++        horizontal = np.ones((6, 6), np.float32)
++        horizontal[3:, :] = -1
++        templates = np.stack([vertical, horizontal])
++        global_result = receiver.extract_global_soft(
++            captured, midpoint, order, orientations, polarities, templates
++        )
++        local_result = receiver.extract_local_mixture_soft(
++            captured, midpoint, order, orientations, polarities, templates
++        )
++        self.assertEqual((rows * columns), 1024)
++        for result in (global_result, local_result):
++            self.assertEqual(result["weights"].shape, (symbols,))
++            self.assertTrue(np.isfinite(result["weights"]).all())
++            self.assertTrue(np.all(np.abs(result["weights"]) <= 1))
++        for function in (receiver.fit_global_channel, receiver.extract_global_soft,
++                         receiver.extract_local_mixture_soft):
++            parameters = inspect.signature(function).parameters
++            self.assertFalse({"codebook", "row", "target", "scores", "labels"} & set(parameters))
++
++    def test_content_mask_rejects_flat_page(self):
++        midpoint = np.full((128, 128), 200, dtype=np.float32)
++        mask = receiver.content_mask(midpoint)
++        self.assertEqual(int(mask.sum()), 0)
++        with self.assertRaisesRegex(ValueError, "content mask"):
++            receiver.fit_global_channel(midpoint, midpoint, mask)
++
++
++class RunnerBoundaryTests(unittest.TestCase):
++    def setUp(self):
++        self.temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temporary.cleanup)
++        self.root = Path(self.temporary.name)
++        self.preregistration = run_pilot.DEFAULT_PREREGISTRATION
++        self.frozen, self.preregistration_hash = run_pilot._load_preregistration(
++            self.preregistration
++        )
++
++    def fixture_payload(self):
++        cases = []
++        for item in self.frozen["cases"]:
++            cases.append({
++                "id": item["id"],
++                "split": item["split"],
++                "category": item["category"],
++                "transform": item["transform"],
++                "status": "sealed_test_input",
++                "reason": "unit-test stage boundary",
++                "source_sha256": None,
++                "capture_sha256": None,
++            })
++        return {
++            "schema": "nishan.receiver-fixtures/v1",
++            "completed": True,
++            "preregistration_sha256": self.preregistration_hash,
++            "cases": cases,
++        }
++
++    def write_fixtures(self):
++        directory = self.root / "fixtures"
++        directory.mkdir()
++        labels = {
++            "schema": "nishan.receiver-labels/v1",
++            "preregistration_sha256": self.preregistration_hash,
++            "cases": {
++                item["id"]: {
++                    "expected_rows": item["score_expected_rows"],
++                    "safe_outcome": item["safe_outcome"],
++                }
++                for item in self.frozen["cases"]
++            },
++        }
++        run_pilot.dump_exclusive(directory / "labels.json", labels)
++        payload = self.fixture_payload()
++        payload["labels_sha256"] = run_pilot.digest(directory / "labels.json")
++        run_pilot.dump_exclusive(directory / "manifest.json", payload)
++        return directory
++
++    def test_exclusive_outputs_preserve_existing_paths(self):
++        existing = self.root / "existing"
++        existing.mkdir()
++        with self.assertRaises(FileExistsError):
++            run_pilot.fixtures(self.preregistration, existing)
++        with self.assertRaises(FileExistsError):
++            run_pilot.prepare(self.preregistration, self.root / "unused", existing)
++        (existing / "scores.json").write_text("retained")
++        with self.assertRaises(FileExistsError):
++            run_pilot.score(
++                self.preregistration,
++                self.root / "unused-fixtures",
++                self.root / "unused-prepared",
++                existing,
++            )
++        self.assertEqual((existing / "scores.json").read_text(), "retained")
++
++    def test_prepare_uses_zero_row_path_and_does_not_require_labels(self):
++        output = self.root / "prepared"
++        fixture_payload = self.fixture_payload()
++        with patch.object(
++            run_pilot, "_manifest_cases", return_value=(fixture_payload, "fixture-hash")
++        ), patch.object(
++            run_pilot, "generate_roster", side_effect=AssertionError("roster loaded")
++        ):
++            result = run_pilot.prepare(
++                self.preregistration, self.root / "no-label-directory", output
++            )
++        self.assertFalse(result["labels_loaded"])
++        self.assertEqual(result["roster_rows_loaded"], 0)
++        self.assertEqual(len(result["records"]), 20 * 3)
++        self.assertEqual({item["status"] for item in result["records"]}, {"input_unavailable"})
++
++    def test_commitment_tamper_is_rejected(self):
++        fixtures = self.write_fixtures()
++        prepared = self.root / "prepared"
++        run_pilot.prepare(self.preregistration, fixtures, prepared)
++        with (prepared / "evidence.npz").open("ab") as handle:
++            handle.write(b"tampered")
++        with self.assertRaisesRegex(ValueError, "hash mismatch"):
++            run_pilot.validate_prepared(self.preregistration, fixtures, prepared)
++
++    def test_score_never_runs_registration_or_channel_fitting(self):
++        fixtures = self.write_fixtures()
++        prepared = self.root / "prepared"
++        run_pilot.prepare(self.preregistration, fixtures, prepared)
++        with np.load(prepared / "evidence.npz", allow_pickle=False) as arrays:
++            biases = arrays["biases"].copy()
++        tiny_roster = np.zeros((1, 1), dtype=np.uint8)
++        with patch.object(
++            run_pilot, "generate_roster", return_value=(biases, tiny_roster)
++        ), patch.object(
++            run_pilot.tardos, "manifest", return_value={"test": "no scored rows"}
++        ), patch.object(
++            run_pilot.registration,
++            "align_page",
++            side_effect=AssertionError("registration called from score"),
++        ), patch.object(
++            run_pilot.receiver,
++            "fit_global_channel",
++            side_effect=AssertionError("channel fitting called from score"),
++        ):
++            result = run_pilot.score(
++                self.preregistration, fixtures, prepared, self.root / "scored"
++            )
++        self.assertEqual(len(result["records"]), 20 * 3)
++        self.assertEqual({item["status"] for item in result["records"]}, {"failure"})
++        self.assertTrue((self.root / "scored" / "cases.csv").is_file())
++        json.loads((self.root / "scored" / "scores.json").read_text())
++
++    def test_transplant_evaluator_rule_does_not_rewrite_receiver_outcome(self):
++        actual, evaluator = run_pilot._outcome(
++            [0], [0], "abstain_transplant_pattern_is_not_authenticity"
++        )
++        self.assertEqual(actual, "correct")
++        self.assertEqual(evaluator, "abstain_transplant_pattern_is_not_authenticity")
++
++
++if __name__ == "__main__":
++    unittest.main()

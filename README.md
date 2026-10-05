@@ -1,5 +1,31 @@
 # SIH 2026 campaign workspace
 
+## Current submission — Aevrix, 5 October 2026
+
+**Start with the [dated submission package](submissions/SIH26237_NISHAN_PQ/2026-10-05/README.md).**
+It contains the six-page Aevrix PDF, reviewed benchmark logs/JSON, physical-research
+results, claim qualifications, and reproduction instructions. The PDF's broad
+claims must be read together with the [qualifications](submissions/SIH26237_NISHAN_PQ/2026-10-05/CLAIM_QUALIFICATIONS.md).
+
+The stable product source remains the tested `f37e861` baseline; publishing later
+research does **not** merge that research into the demo or establish reliable
+print/photo attribution. Experimental source and its provenance are indexed in
+the dated package. Do not combine separate branches' guarantees.
+
+**Security boundary:** prototype recipient/validator/witness keys share one host.
+This is a tamper-evident prototype under a retained trusted witness, not a demonstration
+of independently administered immutable storage or operator non-framing.
+Clean-PDF agreement can identify a signed release; screenshots/JPEGs are investigative
+leads. A source-copy association does not establish human culpability.
+
+Raw personal captures, runtime keys, local identities/ledgers, third-party datasets,
+and the in-progress video are intentionally excluded. This is a reviewed source/evidence
+publication, **not a full backup of the laptop**. Physical findings are inspectable,
+but cannot be independently rerun without the excluded capture inputs.
+
+The sections below are retained **historical September notes**. Old placeholders,
+dates, publication instructions and attribution wording are superseded by the package above.
+
 ## Start here on another laptop — 15 September 2026
 
 Read [CONTINUE_HERE.md](CONTINUE_HERE.md) for the current status, exact demo

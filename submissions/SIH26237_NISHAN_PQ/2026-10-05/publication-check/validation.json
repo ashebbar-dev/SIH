@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "stable_source_commit": "f37e861dc02815adf1bebb3e1b45ff222dccf821",
+  "context": "Isolated publication checkout, stable product source unchanged; existing host dependencies, not a clean dependency install",
+  "python": "3.14.7",
+  "openssl": "OpenSSL 3.6.5 29 Sep 2026",
+  "doctor": {
+    "ready": true,
+    "ml_kem_768": true,
+    "ml_dsa_65": true
+  },
+  "core_suite": {
+    "command": "python -m unittest discover -s prototypes/nishan_pq/tests -v",
+    "test_count": 59,
+    "exit_code": 0,
+    "reported_seconds": 59.301,
+    "log": "core-tests.txt"
+  },
+  "resource_controls": "Single CPU affinity, nice 19; OMP_NUM_THREADS=1 and OPENBLAS_NUM_THREADS=1",
+  "limitations": [
+    "Does not rerun physical research or the September numerical benchmark studies",
+    "Does not certify a fresh laptop install or independently administered deployment",
+    "Earlier September benchmark values remain dated historical measurements"
+  ]
+}

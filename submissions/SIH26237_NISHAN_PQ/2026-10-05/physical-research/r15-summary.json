@@ -1,0 +1,2121 @@
+{
+  "_publication": {
+    "notice": "Public derivative: local input bindings omitted; measurements and per-case outcomes unchanged.",
+    "omitted_binding_count": 192,
+    "original_summary_sha256": "c91edc234d9fd166f44f30014f650b2b5545243f6f7e0bc017e6034eb7ece58b",
+    "raw_capture_inputs_included": false
+  },
+  "commit": "f48f52b31bbbe8b0841e8f462d60009e21b5c3c0",
+  "groups": {
+    "clean": {
+      "glyph-rs17-p16-linear-v1": {
+        "by_route": {
+          "render": {
+            "exact": 1,
+            "finite": 1,
+            "marked": 1
+          }
+        },
+        "controls": 1,
+        "controls_abstain": 1,
+        "exact_correct": 1,
+        "exact_gained": [],
+        "exact_lost": [],
+        "finite_correct": 1,
+        "gained": [],
+        "lost": [],
+        "marked": 1,
+        "wrong": 0
+      },
+      "glyph-rs17-p16-spread-v1": {
+        "by_route": {
+          "render": {
+            "exact": 1,
+            "finite": 1,
+            "marked": 1
+          }
+        },
+        "controls": 1,
+        "controls_abstain": 1,
+        "exact_correct": 1,
+        "exact_gained": [],
+        "exact_lost": [],
+        "finite_correct": 1,
+        "gained": [],
+        "lost": [],
+        "marked": 1,
+        "wrong": 0
+      },
+      "glyph-rs35-p16-spread-v1": {
+        "by_route": {
+          "render": {
+            "exact": 1,
+            "finite": 1,
+            "marked": 1
+          }
+        },
+        "controls": 1,
+        "controls_abstain": 1,
+        "exact_correct": 1,
+        "exact_gained": [],
+        "exact_lost": [],
+        "finite_correct": 1,
+        "gained": [],
+        "lost": [],
+        "marked": 1,
+        "wrong": 0
+      }
+    },
+    "test2": {
+      "glyph-rs17-p16-linear-v1": {
+        "by_route": {
+          "normal": {
+            "exact": 1,
+            "finite": 2,
+            "marked": 2
+          },
+          "scanner": {
+            "exact": 0,
+            "finite": 2,
+            "marked": 2
+          },
+          "tilted": {
+            "exact": 0,
+            "finite": 0,
+            "marked": 2
+          },
+          "whatsapp": {
+            "exact": 0,
+            "finite": 1,
+            "marked": 2
+          }
+        },
+        "controls": 4,
+        "controls_abstain": 4,
+        "exact_correct": 1,
+        "exact_gained": [
+          "test2-03-normal"
+        ],
+        "exact_lost": [],
+        "finite_correct": 5,
+        "gained": [],
+        "lost": [],
+        "marked": 8,
+        "wrong": 0
+      }
+    },
+    "test3": {
+      "glyph-rs17-p16-linear-v1": {
+        "by_route": {
+          "normal": {
+            "exact": 0,
+            "finite": 1,
+            "marked": 2
+          },
+          "scanner": {
+            "exact": 1,
+            "finite": 2,
+            "marked": 2
+          },
+          "tilted": {
+            "exact": 0,
+            "finite": 0,
+            "marked": 2
+          },
+          "whatsapp": {
+            "exact": 0,
+            "finite": 2,
+            "marked": 2
+          }
+        },
+        "controls": 4,
+        "controls_abstain": 4,
+        "exact_correct": 1,
+        "exact_gained": [
+          "test3-03-scanner"
+        ],
+        "exact_lost": [],
+        "finite_correct": 5,
+        "gained": [
+          "test3-02-whatsapp",
+          "test3-02-scanner",
+          "test3-03-normal"
+        ],
+        "lost": [],
+        "marked": 8,
+        "wrong": 0
+      },
+      "glyph-rs17-p16-spread-v1": {
+        "by_route": {
+          "normal": {
+            "exact": 1,
+            "finite": 1,
+            "marked": 2
+          },
+          "scanner": {
+            "exact": 0,
+            "finite": 1,
+            "marked": 2
+          },
+          "tilted": {
+            "exact": 0,
+            "finite": 0,
+            "marked": 2
+          },
+          "whatsapp": {
+            "exact": 0,
+            "finite": 1,
+            "marked": 2
+          }
+        },
+        "controls": 4,
+        "controls_abstain": 4,
+        "exact_correct": 1,
+        "exact_gained": [
+          "test3-04-normal"
+        ],
+        "exact_lost": [],
+        "finite_correct": 3,
+        "gained": [
+          "test3-04-scanner"
+        ],
+        "lost": [],
+        "marked": 8,
+        "wrong": 0
+      },
+      "glyph-rs35-p16-spread-v1": {
+        "by_route": {
+          "normal": {
+            "exact": 0,
+            "finite": 0,
+            "marked": 2
+          },
+          "scanner": {
+            "exact": 0,
+            "finite": 1,
+            "marked": 2
+          },
+          "tilted": {
+            "exact": 0,
+            "finite": 0,
+            "marked": 2
+          },
+          "whatsapp": {
+            "exact": 0,
+            "finite": 0,
+            "marked": 2
+          }
+        },
+        "controls": 4,
+        "controls_abstain": 4,
+        "exact_correct": 0,
+        "exact_gained": [],
+        "exact_lost": [],
+        "finite_correct": 1,
+        "gained": [
+          "test3-07-scanner"
+        ],
+        "lost": [],
+        "marked": 8,
+        "wrong": 0
+      }
+    }
+  },
+  "kind": "known-image development; no held-out generalization claim",
+  "peak_child_rss_kib": 451272,
+  "physical_control_applications": 16,
+  "physical_marked_applications": 32,
+  "rows": [
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "clean-01-control",
+      "cohort": "clean",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 0,
+        "observed": 0
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "render",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "clean-01-control",
+      "cohort": "clean",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 0,
+        "observed": 0
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "render",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "clean-01-control",
+      "cohort": "clean",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 0,
+        "observed": 0
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "render",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": true,
+      "baseline_finite_correct": true,
+      "case": "clean-02-linear-A",
+      "cohort": "clean",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "exact_correct": true,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 0,
+      "expected_payload_errors": 0,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "decoded",
+      "payload_erasures": 0,
+      "pilot": {
+        "errors": 0,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "render",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": true,
+      "baseline_finite_correct": true,
+      "case": "clean-04-spread-A",
+      "cohort": "clean",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "exact_correct": true,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 0,
+      "expected_payload_errors": 0,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "decoded",
+      "payload_erasures": 0,
+      "pilot": {
+        "errors": 0,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "render",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": true,
+      "baseline_finite_correct": true,
+      "case": "clean-06-capacity-A",
+      "cohort": "clean",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "exact_correct": true,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 0,
+      "expected_payload_errors": 0,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "decoded",
+      "payload_erasures": 0,
+      "pilot": {
+        "errors": 0,
+        "observed": 16
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "render",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-normal",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 4,
+        "observed": 8
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-normal",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 6,
+        "observed": 13
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-normal",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 7,
+        "observed": 13
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 2,
+        "observed": 7
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 5,
+        "observed": 10
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 6,
+        "observed": 13
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-tilted",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 4,
+        "observed": 8
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-tilted",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 3,
+        "observed": 11
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-tilted",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 6,
+        "observed": 8
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-scanner",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 4,
+        "observed": 10
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-scanner",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 4,
+        "observed": 12
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-01-scanner",
+      "cohort": "test3",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 6,
+        "observed": 12
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-02-normal",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 48,
+      "expected_payload_errors": 14,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 20,
+      "pilot": {
+        "errors": 2,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-02-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 34,
+      "expected_payload_errors": 10,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "decoded",
+      "payload_erasures": 14,
+      "pilot": {
+        "errors": 1,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-02-tilted",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 61,
+      "expected_payload_errors": 18,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 25,
+      "pilot": {
+        "errors": 6,
+        "observed": 14
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-02-scanner",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 22,
+      "expected_payload_errors": 9,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 4,
+      "pilot": {
+        "errors": 0,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-03-normal",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 30,
+      "expected_payload_errors": 13,
+      "finite": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 4,
+      "pilot": {
+        "errors": 0,
+        "observed": 14
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test3-03-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 38,
+      "expected_payload_errors": 16,
+      "finite": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 6,
+      "pilot": {
+        "errors": 0,
+        "observed": 15
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-03-tilted",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 72,
+      "expected_payload_errors": 26,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 20,
+      "pilot": {
+        "errors": 4,
+        "observed": 10
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test3-03-scanner",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "exact_correct": true,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 5,
+      "expected_payload_errors": 2,
+      "finite": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "decoded",
+      "payload_erasures": 1,
+      "pilot": {
+        "errors": 1,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test3-04-normal",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "exact_correct": true,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 6,
+      "expected_payload_errors": 2,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "decoded",
+      "payload_erasures": 2,
+      "pilot": {
+        "errors": 0,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-04-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 54,
+      "expected_payload_errors": 23,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 8,
+      "pilot": {
+        "errors": 3,
+        "observed": 14
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-04-tilted",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 37,
+      "expected_payload_errors": 9,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 19,
+      "pilot": {
+        "errors": 0,
+        "observed": 11
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-04-scanner",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 21,
+      "expected_payload_errors": 7,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 7,
+      "pilot": {
+        "errors": 1,
+        "observed": 14
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-05-normal",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 18,
+      "expected_payload_errors": 8,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 2,
+      "pilot": {
+        "errors": 2,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test3-05-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 29,
+      "expected_payload_errors": 11,
+      "finite": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 7,
+      "pilot": {
+        "errors": 0,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-05-tilted",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 46,
+      "expected_payload_errors": 16,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 14,
+      "pilot": {
+        "errors": 0,
+        "observed": 13
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-05-scanner",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 28,
+      "expected_payload_errors": 7,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 14,
+      "pilot": {
+        "errors": 3,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-06-normal",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 97,
+      "expected_payload_errors": 36,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 25,
+      "pilot": {
+        "errors": 4,
+        "observed": 15
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-06-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 100,
+      "expected_payload_errors": 38,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 24,
+      "pilot": {
+        "errors": 4,
+        "observed": 16
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-06-tilted",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 126,
+      "expected_payload_errors": 43,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 40,
+      "pilot": {
+        "errors": 4,
+        "observed": 14
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-06-scanner",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 44,
+      "expected_payload_errors": 14,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 16,
+      "pilot": {
+        "errors": 2,
+        "observed": 16
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-07-normal",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 107,
+      "expected_payload_errors": 41,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 25,
+      "pilot": {
+        "errors": 3,
+        "observed": 16
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-07-whatsapp",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 113,
+      "expected_payload_errors": 44,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 25,
+      "pilot": {
+        "errors": 5,
+        "observed": 15
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-07-tilted",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 207,
+      "expected_payload_errors": 76,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 55,
+      "pilot": {
+        "errors": 5,
+        "observed": 10
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test3-07-scanner",
+      "cohort": "test3",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 96,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 62,
+      "expected_payload_errors": 21,
+      "finite": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 20,
+      "pilot": {
+        "errors": 1,
+        "observed": 16
+      },
+      "profile": "glyph-rs35-p16-spread-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test2-01-normal",
+      "cohort": "test2",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 4,
+        "observed": 9
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test2-01-whatsapp",
+      "cohort": "test2",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 5,
+        "observed": 12
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test2-01-tilted",
+      "cohort": "test2",
+      "control_abstains_both": true,
+      "coverage": "not_evaluated_geometry",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 0,
+        "observed": 0
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "rejected_registration",
+      "registration": "rejected_registration",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test2-01-scanner",
+      "cohort": "test2",
+      "control_abstains_both": true,
+      "coverage": "accepted",
+      "exact": null,
+      "exact_correct": false,
+      "expected": null,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": false,
+      "packet_status": "abstain_pilots",
+      "pilot": {
+        "errors": 3,
+        "observed": 6
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test2-02-normal",
+      "cohort": "test2",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 22,
+      "expected_payload_errors": 9,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 4,
+      "pilot": {
+        "errors": 1,
+        "observed": 15
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test2-02-whatsapp",
+      "cohort": "test2",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 63,
+      "expected_payload_errors": 28,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_distance",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 7,
+      "pilot": {
+        "errors": 1,
+        "observed": 15
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test2-02-tilted",
+      "cohort": "test2",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 126,
+      "expected_payload_errors": 52,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 22,
+      "pilot": {
+        "errors": 4,
+        "observed": 10
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test2-02-scanner",
+      "cohort": "test2",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "expected_distance_lhs": 19,
+      "expected_payload_errors": 6,
+      "finite": [
+        7,
+        "stroke-v3-synthetic-0007"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 7,
+      "pilot": {
+        "errors": 1,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test2-03-normal",
+      "cohort": "test2",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "exact_correct": true,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 9,
+      "expected_payload_errors": 1,
+      "finite": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "decoded",
+      "payload_erasures": 7,
+      "pilot": {
+        "errors": 1,
+        "observed": 15
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "normal",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test2-03-whatsapp",
+      "cohort": "test2",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 38,
+      "expected_payload_errors": 17,
+      "finite": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 4,
+      "pilot": {
+        "errors": 1,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "whatsapp",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": false,
+      "case": "test2-03-tilted",
+      "cohort": "test2",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 123,
+      "expected_payload_errors": 36,
+      "finite": null,
+      "finite_correct": false,
+      "finite_status": "abstain_pilots",
+      "marked": true,
+      "packet_status": "abstain_pilots",
+      "payload_erasures": 51,
+      "pilot": {
+        "errors": 4,
+        "observed": 12
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "tilted",
+      "wrong": false
+    },
+    {
+      "baseline_exact_correct": false,
+      "baseline_finite_correct": true,
+      "case": "test2-03-scanner",
+      "cohort": "test2",
+      "control_abstains_both": false,
+      "coverage": "accepted",
+      "dmin": 42,
+      "exact": null,
+      "exact_correct": false,
+      "expected": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "expected_distance_lhs": 14,
+      "expected_payload_errors": 5,
+      "finite": [
+        19,
+        "stroke-v3-synthetic-0019"
+      ],
+      "finite_correct": true,
+      "finite_status": "accepted_registry_bounded",
+      "marked": true,
+      "packet_status": "abstain_ecc",
+      "payload_erasures": 4,
+      "pilot": {
+        "errors": 1,
+        "observed": 16
+      },
+      "profile": "glyph-rs17-p16-linear-v1",
+      "profile_status": "complete",
+      "registration": "accepted",
+      "route": "scanner",
+      "wrong": false
+    }
+  ],
+  "schema": "receiver-variant-summary/v1",
+  "summary_driver_sha256": "c4778afb536d66657102798960696838b8782a4aeb406d6c069b2b99c85abe24",
+  "timings": [
+    {
+      "case": "clean-01-control",
+      "rss_kib": 413976,
+      "seconds": 28.711818
+    },
+    {
+      "case": "clean-02-linear-A",
+      "rss_kib": 412372,
+      "seconds": 26.22425
+    },
+    {
+      "case": "clean-04-spread-A",
+      "rss_kib": 412192,
+      "seconds": 27.644365
+    },
+    {
+      "case": "clean-06-capacity-A",
+      "rss_kib": 412936,
+      "seconds": 27.377422
+    },
+    {
+      "case": "test3-01-normal",
+      "rss_kib": 451264,
+      "seconds": 42.655285
+    },
+    {
+      "case": "test3-01-whatsapp",
+      "rss_kib": 419656,
+      "seconds": 44.939335
+    },
+    {
+      "case": "test3-01-tilted",
+      "rss_kib": 451272,
+      "seconds": 36.222604
+    },
+    {
+      "case": "test3-01-scanner",
+      "rss_kib": 428664,
+      "seconds": 44.754993
+    },
+    {
+      "case": "test3-02-normal",
+      "rss_kib": 448816,
+      "seconds": 39.235592
+    },
+    {
+      "case": "test3-02-whatsapp",
+      "rss_kib": 417500,
+      "seconds": 41.186793
+    },
+    {
+      "case": "test3-02-tilted",
+      "rss_kib": 426076,
+      "seconds": 32.718173
+    },
+    {
+      "case": "test3-02-scanner",
+      "rss_kib": 418696,
+      "seconds": 41.105556
+    },
+    {
+      "case": "test3-03-normal",
+      "rss_kib": 448816,
+      "seconds": 35.70785
+    },
+    {
+      "case": "test3-03-whatsapp",
+      "rss_kib": 418016,
+      "seconds": 29.052357
+    },
+    {
+      "case": "test3-03-tilted",
+      "rss_kib": 426208,
+      "seconds": 30.943767
+    },
+    {
+      "case": "test3-03-scanner",
+      "rss_kib": 435280,
+      "seconds": 34.332514
+    },
+    {
+      "case": "test3-04-normal",
+      "rss_kib": 448820,
+      "seconds": 39.159511
+    },
+    {
+      "case": "test3-04-whatsapp",
+      "rss_kib": 418076,
+      "seconds": 41.223491
+    },
+    {
+      "case": "test3-04-tilted",
+      "rss_kib": 426236,
+      "seconds": 32.755961
+    },
+    {
+      "case": "test3-04-scanner",
+      "rss_kib": 440864,
+      "seconds": 41.086712
+    },
+    {
+      "case": "test3-05-normal",
+      "rss_kib": 448764,
+      "seconds": 35.695135
+    },
+    {
+      "case": "test3-05-whatsapp",
+      "rss_kib": 418120,
+      "seconds": 28.917786
+    },
+    {
+      "case": "test3-05-tilted",
+      "rss_kib": 426252,
+      "seconds": 30.423525
+    },
+    {
+      "case": "test3-05-scanner",
+      "rss_kib": 418668,
+      "seconds": 34.621334
+    },
+    {
+      "case": "test3-06-normal",
+      "rss_kib": 449396,
+      "seconds": 36.240251
+    },
+    {
+      "case": "test3-06-whatsapp",
+      "rss_kib": 417920,
+      "seconds": 29.614316
+    },
+    {
+      "case": "test3-06-tilted",
+      "rss_kib": 426688,
+      "seconds": 31.120825
+    },
+    {
+      "case": "test3-06-scanner",
+      "rss_kib": 431868,
+      "seconds": 34.963663
+    },
+    {
+      "case": "test3-07-normal",
+      "rss_kib": 449260,
+      "seconds": 37.100798
+    },
+    {
+      "case": "test3-07-whatsapp",
+      "rss_kib": 417944,
+      "seconds": 30.595889
+    },
+    {
+      "case": "test3-07-tilted",
+      "rss_kib": 426620,
+      "seconds": 31.96869
+    },
+    {
+      "case": "test3-07-scanner",
+      "rss_kib": 431884,
+      "seconds": 35.948808
+    },
+    {
+      "case": "test2-01-normal",
+      "rss_kib": 448912,
+      "seconds": 34.468369
+    },
+    {
+      "case": "test2-01-whatsapp",
+      "rss_kib": 418044,
+      "seconds": 38.728444
+    },
+    {
+      "case": "test2-01-tilted",
+      "rss_kib": 250312,
+      "seconds": 23.631816
+    },
+    {
+      "case": "test2-01-scanner",
+      "rss_kib": 430640,
+      "seconds": 38.721024
+    },
+    {
+      "case": "test2-02-normal",
+      "rss_kib": 449744,
+      "seconds": 36.759703
+    },
+    {
+      "case": "test2-02-whatsapp",
+      "rss_kib": 418180,
+      "seconds": 29.57608
+    },
+    {
+      "case": "test2-02-tilted",
+      "rss_kib": 426124,
+      "seconds": 31.444143
+    },
+    {
+      "case": "test2-02-scanner",
+      "rss_kib": 431340,
+      "seconds": 35.275401
+    },
+    {
+      "case": "test2-03-normal",
+      "rss_kib": 448800,
+      "seconds": 40.017306
+    },
+    {
+      "case": "test2-03-whatsapp",
+      "rss_kib": 418064,
+      "seconds": 41.576039
+    },
+    {
+      "case": "test2-03-tilted",
+      "rss_kib": 426076,
+      "seconds": 33.12684
+    },
+    {
+      "case": "test2-03-scanner",
+      "rss_kib": 446016,
+      "seconds": 41.380244
+    }
+  ],
+  "total_child_seconds": 1538.954778,
+  "unique_physical_controls": 8,
+  "unique_physical_files": 40
+}

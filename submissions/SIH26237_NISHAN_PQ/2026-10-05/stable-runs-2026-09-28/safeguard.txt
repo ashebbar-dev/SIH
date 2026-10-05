@@ -1,0 +1,11 @@
+=== Rusticl warning: Patched Mesa libclc not detected. Upstream libclc may contain known bugs or breaking changes and isn't guaranteed to work reliably. Please visit https://gitlab.freedesktop.org/karolherbst/mesa-libclc for more information. ===
+{
+  "results": "/tmp/nishan-demo-im2dj7/results.json",
+  "pqc_ready": true,
+  "cases": 12,
+  "all_passed": true
+}
+
+real	0m24.160s
+user	0m25.361s
+sys	0m4.464s

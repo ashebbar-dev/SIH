@@ -1,5 +1,11 @@
 # GitHub publication checklist — run on the internal-hackathon day
 
+> **Historical instructions, superseded 5 October 2026.** The repository is already
+> initialized and public. Do not repeat `git init`, broad `git add .`, or remote setup
+> below. The current reviewed release is linked from the root README. Publish only
+> explicit, inspected paths/refs after checking new history for secrets; never publish
+> local identities, keys, witnesses, raw photographs, or whole runtime directories.
+
 The workspace is intentionally **not** initialized as a Git repository before that day.
 
 1. Replace the team ID, registered team name, and public-repository placeholder.

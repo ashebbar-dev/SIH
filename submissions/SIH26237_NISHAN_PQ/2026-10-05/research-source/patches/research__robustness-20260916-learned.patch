@@ -1,0 +1,2111 @@
+diff --git a/research/robustness/learned/PLAN.md b/research/robustness/learned/PLAN.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..7aad97d9f02add0414291c746fa9defead4acde1
+--- /dev/null
++++ b/research/robustness/learned/PLAN.md
+@@ -0,0 +1,80 @@
++# TrustMark Learned-Carrier Pilot Implementation Plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: execute this plan inline with review checkpoints; this campaign explicitly forbids child agents.
++
++**Goal:** Reproduce Adobe TrustMark-Q on the six frozen synthetic PDF sources and measure exact 61-bit recovery, controls, distortion, latency, and memory under a bounded digital transform pilot.
++
++**Architecture:** Render each one-page PDF to a 144-DPI RGB raster, call the pinned official Rust/ONNX TrustMark implementation for encode/decode, and keep issuance/registry logic in Python outside the public watermark decoder. A deterministic runner uses development sources for smoke, validation sources for one global strength choice, then a separately invoked confirmation stage with no retuning.
++
++**Tech Stack:** Adobe TrustMark Rust crate at `2ecb73ad28d1a3f66ac9dc19e1b667711f14314f`, Rust 1.85.0, ONNX Runtime via `ort` 2.0.0-rc.8, TrustMark-Q ONNX models, Python 3.14 shared read-only environment (PyMuPDF 1.28.2, Pillow 12.3.0, NumPy 2.5.3, OpenCV 5.0.0).
++
++**Spec:** `/tmp/sih-robustness-20260916-control/research/robustness_campaign/SPEC.md` and `/tmp/sih-robustness-20260916-control/research/robustness_campaign/LEARNED_BRIEF.md`
++
++## Global Constraints
++
++- Write only `/tmp/sih-robustness-20260916-learned`; do not touch main, other worktrees, old chats, tags, remotes, or the shared venv.
++- CPU only; two effective CPUs; target RSS <=1.5 GiB; runtime/models/cache <=1.5 GiB; research outputs <=500 MiB.
++- One validated implementation path only: pinned official Rust/ONNX TrustMark-Q, with a narrow tracked CLI strength/thread patch.
++- Preserve the common development/validation/confirmation split and exact source hashes.
++- Freeze all settings before validation; choose strength on validation only; write and commit `selection.json` before confirmation.
++- Never inspect or test `LEGACY_TRIAL_CAPTURE.jpeg`; all transforms in this pilot are digital simulations.
++- Do not make print-camera, collusion-equivalence, cryptographic authorship, human-guilt, or invisibility claims.
++
++---
++
++## File map
++
++- `preregistration.json`: frozen hypotheses, inputs, transforms, gates, messages, metrics, and exclusions.
++- `SOURCE_LICENSE_AUDIT.md`: pinned source/model provenance, MIT attribution, and audited tensor/ECC conventions.
++- `patches/trustmark-cli-strength-threads.patch`: minimal reproducible patch adding explicit CLI strength and two ONNX intra-op threads.
++- `src/messages.py`: deterministic public synthetic issuer messages only.
++- `src/receiver.py`: registry-only exact classification; it does not derive messages.
++- `src/pilot.py`: rendering, transforms, subprocess timing/RSS, metrics, staged experiment, and result serialization.
++- `tests/test_pilot.py`: deterministic messages, split enforcement, transforms, metrics, and classifier tests.
++- `results/`: model/config manifests, smoke/validation/confirmation/control rows, summaries, and command log.
++- `REPORT.md` and `checkpoint.json`: measured interpretation and next action.
++
++### Task 1: Pin and verify the official runtime
++
++**Interfaces:** Consumes the pinned TrustMark checkout and official Q model URLs. Produces a patched `trustmark` CLI plus `results/runtime_manifest.json` and `results/model_manifest.json`.
++
++- [ ] Record the upstream commit, license, model URLs, expected filenames, and the absence/presence of upstream ONNX checksums in `SOURCE_LICENSE_AUDIT.md`.
++- [ ] Install Rust 1.85.0 with the minimal profile into `.runtime/`, apply `patches/trustmark-cli-strength-threads.patch`, and build `rust/target/release/trustmark` with the upstream lockfile.
++- [ ] Download only `encoder_Q.onnx` and `decoder_Q.onnx`; record byte sizes and SHA-256 hashes before any inference.
++- [ ] Run the official encode/decode smoke on `dev_memo` message A at strength 1.0 and require exact 61-bit recovery.
++- [ ] Commit the plan, preregistration, audit, patch, manifests, and smoke log; never commit models, caches, or binaries.
++
++### Task 2: Implement the deterministic staged runner
++
++**Interfaces:** `messages.issue(source_id: str, label: str) -> str`; `receiver.classify(decoded: str | None, expected: str, registry: dict[str, str]) -> str`; `pilot.py {prepare,smoke,validation,confirm,report}`.
++
++- [ ] Write `tests/test_pilot.py` first with exact expected messages, manifest-hash rejection, receiver outcomes (`target`, `other_issued`, `unissued_valid`, `abstain`), deterministic transform dimensions, and PSNR sanity checks.
++- [ ] Run `python -m unittest discover -s research/robustness/learned/tests -v` and confirm the new tests fail because the modules do not exist.
++- [ ] Implement the three focused modules and rerun the same command until all tests pass.
++- [ ] Copy the six small synthetic source PDFs and manifest into `source_pack/`; make `prepare` refuse any hash/split mismatch.
++- [ ] Commit the implementation, tests, copied sources, and passing test log.
++
++### Task 3: Run frozen validation and confirmation
++
++**Interfaces:** Validation produces `results/validation_cases.{json,csv}` and `results/selection.json`; confirmation consumes the exact selection hash and produces `results/confirmation_cases.{json,csv}`.
++
++- [ ] Run both preregistered strengths on both validation sources, both messages, and every transform; retain every decode outcome and quality/timing row.
++- [ ] Run unmarked, other-issued, wrong-source/context, and donor-residual transplantation controls; count any valid but unregistered 61-bit output.
++- [ ] Apply the preregistered gate and tie-break mechanically, write `selection.json`, and commit it before decoding either confirmation source.
++- [ ] Invoke confirmation as a separate command that verifies the committed selection/config hashes and evaluates both held-out sources without tuning.
++- [ ] Run the no-target-bit alignment scan and output-size checks, then commit complete machine-readable results.
++
++### Task 4: Report the bounded result
++
++**Interfaces:** Consumes only frozen result rows. Produces `REPORT.md`, `checkpoint.json`, an actual-size crop panel, and at most two print-ready PDFs if every print gate passed.
++
++- [ ] Summarize exact/wrong/abstain counts by split, strength, transform, source, and message; include controls, unissued-valid counts, PSNR/ink/background metrics, latency, peak RSS, and failures.
++- [ ] Separate measured document results from Adobe FAQ/paper claims and disclose 61 data bits + 35 BCH bits + 4 version bits, raster-only output, public decoding, and no content binding.
++- [ ] Generate fixed 1:1 readability crops. Generate print PDFs only if the frozen validation gate passed; label them as requiring new matched prints.
++- [ ] Run tests, JSON validation, hash checks, repository status, and output/resource-size checks; update `checkpoint.json` and commit the final safe evidence package.
++
++## Self-review
++
++- Spec coverage: staged split, exact messages, controls, transplantation, digital transforms, distortion, text/background quality, runtime/RSS, payload/ECC disclosure, and print stop rule are each mapped above.
++- Placeholder scan: every implementation step is concrete and no per-image decisions remain open.
++- Type consistency: issuance returns 61-bit strings; receiver accepts decoded strings or abstention; validation writes the immutable selection consumed by confirmation.
+diff --git a/research/robustness/learned/README.md b/research/robustness/learned/README.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..9ce585d792281b6bdbaa2b719bfdf552bd39520e
+--- /dev/null
++++ b/research/robustness/learned/README.md
+@@ -0,0 +1,49 @@
++# Running the bounded TrustMark-Q pilot
++
++The tracked experiment expects an untracked branch-local runtime at repository root `.runtime/`. It never installs into the shared NISHAN virtual environment.
++
++## One-time runtime preparation
++
++1. Clone <https://github.com/adobe/trustmark> at `2ecb73ad28d1a3f66ac9dc19e1b667711f14314f` into `.runtime/trustmark-src`.
++2. Install Rust `1.85.0` with the minimal profile using branch-local `RUSTUP_HOME=.runtime/rustup` and `CARGO_HOME=.runtime/cargo`.
++3. Apply `patches/trustmark-cli-strength-threads.patch` to the clean TrustMark checkout.
++4. Download only `encoder_Q.onnx` and `decoder_Q.onnx` from the URLs and verify the exact sizes/SHA-256 values in `SOURCE_LICENSE_AUDIT.md`.
++5. From the upstream `rust/` directory, build with the upstream lockfile, branch-local `CARGO_TARGET_DIR=.runtime/target`, and `CARGO_BUILD_JOBS=2`:
++
++```sh
++rustup run 1.85.0 cargo build --release --locked -p trustmark-cli
++```
++
++The measured local runtime/model/cache footprint after build was about 1.3 GiB, below the preregistered 1.5 GiB limit. Models, toolchains, caches, binaries, and work images are gitignored.
++
++## Frozen stages
++
++Use the repository's read-only shared Python environment; do not install into it:
++
++```sh
++export PYTHONDONTWRITEBYTECODE=1
++export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 RAYON_NUM_THREADS=2
++export PYTHONPATH="$PWD/prototypes/nishan_pq"
++PY=__PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python
++$PY -m unittest discover -s research/robustness/learned/tests -v
++$PY research/robustness/learned/src/pilot.py prepare
++$PY research/robustness/learned/src/pilot.py smoke
++$PY research/robustness/learned/src/pilot.py validation
++```
++
++Review and commit `results/selection.json` before the held-out command. `confirm` refuses an untracked or modified selection file.
++
++```sh
++$PY research/robustness/learned/src/pilot.py confirm
++```
++
++After confirmation, the following commands only complete the development allocation, add an explicit visible label to the already gated candidate, and assemble the report. They do not participate in selection. The label is a local post-embedding pixel edit, so the packaging command refuses to retain the PDF unless the edited PNG and its 144-DPI PDF round-trip still recover the exact frozen message:
++
++```sh
++$PY research/robustness/learned/src/run_development_completeness.py
++$PY research/robustness/learned/src/package_print_candidate.py
++```
++
++The low-level `pilot.py report` stage was run once to assemble the base machine summary. `REPORT.md`, `results/summary.json`, and `checkpoint.json` then received the explicitly documented post-confirmation completeness and PDF-verification findings; rerunning the low-level stage would intentionally replace that audited consolidation with the base view. The observed outputs and exact command order are recorded in `RUN_LOG.md`; do not rerun a stage as an opportunity to tune after unblinding. The final one-page candidate is `results/print_candidate_test_mixed_A_strength_1p0.pdf`, with its exact hash and round-trip decode evidence in `results/print_candidate_verification.json`.
++
++All transforms are digital. The candidate requires a new matching print in a preregistered pack with an unmarked reference and original-profile control. It must not be tested on historical captures or `LEGACY_TRIAL_CAPTURE.jpeg`.
+diff --git a/research/robustness/learned/REPORT.md b/research/robustness/learned/REPORT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..8d6b1335afa26c12dc23c7923e4dee841d1ae7ac
+--- /dev/null
++++ b/research/robustness/learned/REPORT.md
+@@ -0,0 +1,93 @@
++# TrustMark-Q learned-carrier pilot
++
++## Outcome
++
++The preregistered validation gate selected global strength **1.0**. It achieved 4/4 clean and 20/24 non-clean exact validation recoveries, met every regional distortion threshold, and produced 0/2 valid unmarked decodes. Strength 1.5 had the same recovery counts but failed the frozen quality gate.
++
++Held-out confirmation was materially weaker: 19/28 exact, 9 abstentions, and no wrong valid messages. Clean, screenshot resize, JPEG Q55, and reference-assisted perspective/blur were 4/4; resize-plus-JPEG was 1/4, grayscale 2/4, and scanner bilevel 0/4. The validation hypothesis passed on its specified allocation, but the simulated robustness rate did not generalize to the confirmation sources. This is not evidence of physical recovery.
++
++This work reproduces Adobe TrustMark; it is integration evidence, not a NISHAN invention. No historical photo, `LEGACY_TRIAL_CAPTURE.jpeg`, new print, scan, camera capture, messaging app, GPU, or training run was used.
++
++## Frozen design and comparator
++
++- Official implementation: Adobe TrustMark Rust/ONNX at `2ecb73ad28d1a3f66ac9dc19e1b667711f14314f`, variant Q, BCH_5.
++- Sources: the unchanged common pack of two development, two validation, and two confirmation one-page PDFs, rendered RGB at 144 DPI (1190×1684 pixels).
++- Messages: two deterministic, independent, public synthetic 61-bit messages per source. Message generation is separate from registry-only receiver logic.
++- Comparison: strengths 1.0 and 1.5 used identical messages, validation sources, and transforms. Selection used validation only; confirmation consumed committed selection `da62826` and configuration `9047f3fd2ec457de8ee2e218fa8543fe40dbf8469d84da2324ac9f4e6c1d944f`.
++- Transforms: clean PNG, screenshot-style resize, JPEG Q55, resize-plus-JPEG Q55, grayscale, scanner-style autocontrast/bilevel, and simulated perspective/blur with the exact injected homography used for reference-assisted rectification.
++
++There is no matched original NISHAN-carrier baseline here: TrustMark carries 61 public data bits and has no collusion code, whereas the original profile has 52,500 symbols and a five-colluder threat model. Cross-profile accuracy or security superiority would be invalid.
++
++## Complete measured recovery
++
++| Allocation | Strengths | Exact | Wrong valid | Abstain | Unmarked valid |
++|---|---:|---:|---:|---:|---:|
++| Development completeness (descriptive, run after confirmation) | 1.0 | 20/28 | 1 | 7 | 1/2 |
++| Validation matrix | 1.0 and 1.5 | 48/56 | 0 | 8 | 0/2 |
++| Validation selected-strength subset | 1.0 | 24/28 | 0 | 4 | 0/2 |
++| Confirmation | 1.0 | 19/28 | 0 | 9 | 0/2 |
++| All six sources at strength 1.0 | 1.0 | 63/84 | 1 | 20 | 1/6 |
++
++The one wrong-valid matrix output was an unregistered 61-bit BCH result from `dev_memo/B` after bilevel conversion (36 post-ECC message-bit differences). The unmarked `dev_table` also yielded a valid but unregistered 61-bit result (29 differences from its target). Exact registry lookup rejected both: **zero unissued identities were accepted**. These observations directly show why ECC success is not authentication and why valid-but-unregistered outputs must be retained in reporting.
++
++For issued matrix recoveries, every valid decoded output other than the one development false positive was the exact target (zero post-ECC message-bit errors). Raw pre-ECC bits/logits are unavailable through the official public Rust API and were not inferred.
++
++### Held-out confirmation by transform
++
++| Transform | Exact | Wrong valid | Abstain |
++|---|---:|---:|---:|
++| `clean_png` | 4/4 | 0 | 0 |
++| `screenshot_resize` | 4/4 | 0 | 0 |
++| `jpeg_q55` | 4/4 | 0 | 0 |
++| `resize_jpeg_q55` | 1/4 | 0 | 3 |
++| `grayscale` | 2/4 | 0 | 2 |
++| `scanner_bilevel` | 0/4 | 0 | 4 |
++| `perspective_blur_rectified` | 4/4 | 0 | 0 |
++
++All scanner-bilevel validation cases also abstained. Confirmation resize-plus-JPEG failures affected `test_short/B` and both `test_mixed` messages; grayscale failures affected both `test_mixed` messages.
++
++## Controls
++
++- Other-issued: a message-B image queried as target A recovered B exactly and was classified `other_issued`, never target A.
++- Wrong source/context: the donor message recovered, but the recipient-source registry rejected it as unregistered.
++- Donor residual transplant: copying the `validation_dense/A` pixel residual onto `validation_diagram` recovered the donor message exactly. The recipient registry rejected it. This demonstrates transplantability, not content authenticity, integrity, authorship, or culpability.
++- Unmarked: the official decoder returned a valid unregistered BCH message for 1/6 sources; the registry receiver accepted none.
++- Wrong key: not applicable because TrustMark is public and unkeyed; the frozen wrong-context registry control is not mislabeled as cryptographic key separation.
++
++## Distortion and readability
++
++At selected strength 1.0, validation clean global/ink/background PSNR ranges were 37.795–39.224 / 33.772–34.449 / 38.404–39.667 dB. Confirmation ranges were 37.271–44.075 / 33.840–34.629 / 37.599–44.518 dB, with 99th-percentile absolute channel error 7–13 levels. Strength 1.5 failed the quality gate because both `validation_dense` messages had global PSNR below 35 dB (34.596 and 34.746 dB).
++
++The fixed 1:1 crop panel was visually inspected. Text remained plainly readable, while faint background perturbation was discernible and stronger at 1.5. This is one inspection aid, not an invisibility claim or a human-subject quality study. Full per-case global, ink, and background PSNR/MAE values are preserved in JSON and CSV.
++
++Every marked output is raster-only. It loses selectable text, semantic structure, and accessibility features.
++
++## Payload and threat change
++
++TrustMark-Q consumes 100 model bits: 61 data, 35 BCH parity, and 4 version bits (two reserved and two schema bits). BCH_5 is configured for up to five correctable flips. The identifier and decoder are public; exact lookup in a frozen registry is only a bounded pilot mechanism.
++
++This experiment provides no cryptographic content binding, ledger guarantee, non-framing guarantee, human attribution, collusion resistance, or equivalence to NISHAN's original full-payload profile. The donor control shows that a valid watermark pattern can move between contents.
++
++## Runtime and resource evidence
++
++Runtime: Linux 7.2.4, Intel Core i5-8350U, Rust 1.85.0, `ort` 2.0.0-rc.8, Python 3.14.7, PyMuPDF 1.28.2, Pillow 12.3.0, NumPy 2.5.3, and OpenCV 5.0.0. ONNX intra-op, Rayon, and common numeric thread settings were 2, with inference pinned to CPUs 0–1.
++
++Across stages, unique encode calls took 0.506–0.587 s; decode calls took 0.243–0.365 s. Peak sampled child RSS was 350,516 KiB. Branch-local runtime/models/cache used 1,292,885,068 bytes; retained research results used about 1.1 MB and ignored work images about 56.8 MB, all below campaign limits. Timing uses Python monotonic time; RSS uses `/proc/<pid>/status` VmHWM/VmRSS sampled every 20 ms.
++
++## Print candidate and PDF verification
++
++The frozen print gate allowed one candidate: `results/print_candidate_test_mixed_A_strength_1p0.pdf`. It is a one-page A4 (595×842 pt) raster-only PDF at 144 DPI, visibly labelled as a TrustMark-Q research candidate with synthetic ID A, strength 1.0, and **NEW MATCHING PRINT ONLY**. The label was a named post-confirmation packaging variant that overwrote pixels in the source's misleading unmarked-reference footer. It did not re-embed, retune, or change the frozen payload; exact decoding was reverified after the edit.
++
++The labelled PNG and the PDF rendered back at 144 DPI both recovered the exact frozen 61-bit message. The deterministic final PDF SHA-256 is `cb92f99abf65de7174476328fe377a4be1a9ff2e8783a4f286a92538347ba944`; a repeat packaging run reproduced it byte-for-byte. Poppler QA confirmed one A4 page, no fonts/selectable text, and no clipping or overlap on the rendered page.
++
++A physical experiment requires a **new matching print**. The coordinator should place this page in a preregistered matched pack with an unmarked reference and original-profile control. It must not be tested on `LEGACY_TRIAL_CAPTURE.jpeg` or historical captures.
++
++## Measured result versus upstream claim
++
++Adobe's FAQ says printing is process-dependent and gives strength 1.5 as an example. This pilot did not test that claim. On these synthetic documents, 1.5 brought no validation recovery improvement over 1.0 and failed the preset visual-quality gate. Digital success under several transforms and failure under bilevel/combined resize-JPEG do not predict a printer-camera path.
++
++## Provenance and next action
++
++Official URLs, MIT attribution, observed model sizes/hashes, tensor conventions, payload/ECC audit, the narrow CLI/thread patch, source hashes, exact commands, per-case results, runtime details, and packaging verification are in `SOURCE_LICENSE_AUDIT.md`, `RUN_LOG.md`, `results/`, and `source_pack/manifest.json`.
++
++Next question for the coordinator/user: include the single gated candidate in a new matched physical pack, or stop this lead after the digital baseline? If physical testing is authorized, freeze printer, paper, scale, lighting, distance, angle, camera, crop/registration, and decision rules before capturing.
+diff --git a/research/robustness/learned/RUN_LOG.md b/research/robustness/learned/RUN_LOG.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b3251a0a7d56fb238a52c57f77ea36e385465cb
+--- /dev/null
++++ b/research/robustness/learned/RUN_LOG.md
+@@ -0,0 +1,184 @@
++# Actual run log
++
++All commands ran from `/tmp/sih-robustness-20260916-learned` on 16 September 2026 unless another working directory is shown. Full per-inference argv/stdout/stderr/wall/RSS records are in `results/command_log.jsonl`.
++
++## Runtime and model acquisition
++
++Pinned minimal toolchain install:
++
++```text
++RUSTUP_HOME=.runtime/rustup CARGO_HOME=.runtime/cargo rustup toolchain install 1.85.0 --profile minimal --no-self-update
++1.85.0-x86_64-unknown-linux-gnu installed - rustc 1.85.0 (4d91de4e4 2025-02-17)
++```
++
++Official Q model verification after HTTPS GET:
++
++```text
++encoder_Q.onnx 17312208 bytes  sha256=19b3d1b25836130ffd78775a8f61539f993375d1823ef0e59ba5b8dffb4f892d
++decoder_Q.onnx 47401222 bytes  sha256=ee3268f057c9dabef680e169302f5973d0589feea86189ed229a896cc3aa88df
++```
++
++Pinned build from `.runtime/trustmark-src/rust`:
++
++```text
++CARGO_BUILD_JOBS=2 rustup run 1.85.0 cargo build --release --locked -p trustmark-cli
++Finished `release` profile [optimized] target(s) in 8m 06s
++binary bytes=38834640
++binary sha256=952177b59ca41a45926cd7fe5010f90d96f19d0a5e92585fb58f6959599e635c
++```
++
++Resource checkpoint immediately after build:
++
++```text
++.runtime bytes=1292885068
++.runtime/rustup=496M  .runtime/cargo=132M  .runtime/models=62M
++.runtime/trustmark-src=74M  .runtime/target=495M
++```
++
++## Focused tests
++
++Command:
++
++```text
++PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 RAYON_NUM_THREADS=2 PYTHONPATH=prototypes/nishan_pq __PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python -m unittest discover -s research/robustness/learned/tests -v
++```
++
++Final output:
++
++```text
++Ran 9 tests in 0.042s
++OK
++```
++
++The tests cover exact frozen messages, issuer/receiver separation, every receiver outcome, official CLI output parsing, copied source hashes/splits, deterministic resize/bilevel/perspective transforms, quality metrics, and the strength tie-break.
++
++## Official clean smoke
++
++Command:
++
++```text
++__PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python research/robustness/learned/src/pilot.py smoke
++```
++
++Outcome:
++
++```text
++source=dev_memo message=A strength=1.0 transform=clean_png
++expected=0111100111110001100011010101000000011001000101001110011100011
++decoded =0111100111110001100011010101000000011001000101001110011100011
++exact=true  global_psnr_db=36.88972096086686
++ink_psnr_db=33.53297985693524  background_psnr_db=37.28728593588533
++encode_wall_seconds=0.52612  encode_peak_rss_kib=342216
++decode_wall_seconds=0.263233 decode_peak_rss_kib=231772
++configuration_sha256=9047f3fd2ec457de8ee2e218fa8543fe40dbf8469d84da2324ac9f4e6c1d944f
++```
++
++No validation or confirmation source was decoded before this checkpoint.
++
++## Frozen validation
++
++Command:
++
++```text
++__PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python research/robustness/learned/src/pilot.py validation
++```
++
++Mechanical selection output:
++
++```text
++strength 1.0: clean 4/4; non-clean 20/24; quality gate pass; unmarked valid 0/2
++strength 1.5: clean 4/4; non-clean 20/24; quality gate fail; unmarked valid 0/2
++selected strength=1.0
++selection sha256=72c49a90854de5af81a5c6aaa8610275806c4c2d5c94da1a46623201131117db
++```
++
++For both strengths, all four messages recovered exactly under screenshot resize, JPEG Q55, resize-plus-JPEG Q55, grayscale, and reference-assisted perspective/blur. All four scanner-bilevel cases abstained; there were no wrong valid matrix messages. Strength 1.5 failed the preregistered quality gate because both `validation_dense` clean messages had global PSNR below 35 dB (34.596 and 34.746 dB). Strength 1.0 clean global/ink/background PSNR ranges were 37.795–39.224 / 33.772–34.449 / 38.404–39.667 dB.
++
++Controls at selected strength 1.0:
++
++```text
++unmarked: 0/2 valid (both abstained)
++other issued: recovered B exactly; target A not accepted
++wrong source/context: recovered donor message; rejected as unregistered in recipient registry
++donor residual transplantation: recovered donor message exactly; rejected for recipient context
++unissued identities accepted by registry receiver: 0
++peak measured child RSS: 350516 KiB
++```
++
++The fixed 1:1 crop panel was visually inspected: text remains plainly readable in all three panes, while faint background perturbation is discernible and stronger at 1.5. This is a single inspection aid, not an invisibility claim or human-subject quality study.
++
++## Held-out confirmation
++
++The confirmation command consumed the already committed selection without changing the carrier, strength, messages, or transform parameters:
++
++```text
++__PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python research/robustness/learned/src/pilot.py confirm
++```
++
++Outcome at the selected strength 1.0:
++
++```text
++matrix exact=19/28  wrong_valid=0  abstain=9
++clean_png=4/4
++screenshot_resize=4/4
++jpeg_q55=4/4
++resize_jpeg_q55=1/4
++grayscale=2/4
++scanner_bilevel=0/4
++perspective_blur_rectified=4/4
++unmarked valid=0/2
++peak measured child RSS=345656 KiB
++```
++
++The four clean confirmation cases passed the frozen print gate. Clean global/ink/background PSNR was 37.271–44.075 / 33.840–34.629 / 37.599–44.518 dB. This digital result does not establish physical print/camera recovery.
++
++## Post-confirmation development completeness audit
++
++The initial pre-validation smoke covered `dev_memo/A`. After selection and confirmation were fixed, the following descriptive-only command filled the two-message requirement for both development sources. It could not alter model selection or the print gate:
++
++```text
++__PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python research/robustness/learned/src/run_development_completeness.py
++```
++
++Outcome:
++
++```text
++matrix exact=20/28  wrong_valid=1  abstain=7
++unmarked valid=1/2
++unissued identities accepted by registry receiver=0
++```
++
++The wrong-valid case was `dev_memo/B` under scanner bilevel: the decoder produced a valid but unregistered BCH message 36 bits from the target. The unmarked `dev_table` source also produced a valid unregistered result, 29 bits from its target. Retaining both findings is deliberate: decoder/ECC validity is not authentication. Across all six sources at selected strength 1.0, the aggregate was 63/84 exact, one wrong-valid unissued output, and 20 abstentions; one of six unmarked sources decoded validly, while the frozen registry accepted zero unissued identities.
++
++## Gated print candidate and PDF QA
++
++After confirmation, a named packaging-only script replaced the source page's misleading unmarked-reference footer with a visible research-candidate banner. This local post-embedding overlay changed footer pixels, but it did not re-embed, retune, or change the frozen message:
++
++```text
++__PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python research/robustness/learned/src/package_print_candidate.py
++```
++
++Verification:
++
++```text
++candidate=results/print_candidate_test_mixed_A_strength_1p0.pdf
++pages=1  media=595x842 pt  raster=1190x1684  bytes=228674
++sha256=cb92f99abf65de7174476328fe377a4be1a9ff2e8783a4f286a92538347ba944
++labelled PNG exact=true
++PDF 144-DPI round-trip exact=true
++repeat packaging PDF hash identical=true
++fonts=none  selectable text=none
++```
++
++Poppler rendering and visual inspection found the complete A4 page and banner with no clipping or overlap. The artifact is raster-only. It is eligible for at most one new matching print only if the coordinator authorizes and preregisters a matched physical pack; it is not evidence of a successful print/camera path.
++
++## Final retained footprint
++
++```text
++branch-local runtime/models/cache=1292885068 bytes
++retained research results=1068932 bytes
++ignored working images=56768549 bytes
++overall sampled child peak RSS=350516 KiB
++```
++
++All remain below the campaign's storage and memory limits. No GPU or training process was used.
+diff --git a/research/robustness/learned/SOURCE_LICENSE_AUDIT.md b/research/robustness/learned/SOURCE_LICENSE_AUDIT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..91a9c70e4005aca6521337373e918b54e9014d98
+--- /dev/null
++++ b/research/robustness/learned/SOURCE_LICENSE_AUDIT.md
+@@ -0,0 +1,64 @@
++# TrustMark source, model, and license audit
++
++Audit date: 16 September 2026. This audit supports one reproduction path only; it is not a general endorsement or novelty claim.
++
++## Selected upstream
++
++- Official repository: <https://github.com/adobe/trustmark>
++- Pinned revision: `2ecb73ad28d1a3f66ac9dc19e1b667711f14314f` (observed upstream description: remove the NumPy `<2.0.0` constraint).
++- Selected implementation: `rust/`, package `trustmark` 0.2.2 and its official `trustmark-cli`, using locked `ort`/`ort-sys` 2.0.0-rc.8.
++- License: the pinned root `LICENSE` is MIT, copyright Adobe 2023. The official root README explicitly says the MIT license covers both repository code and model files downloaded on first use. The tracked patch retains Adobe's notices and changes only CLI exposure/resource settings.
++- Official FAQ: <https://opensource.contentauthenticity.org/docs/durable-cr/tm-faq/>. It describes printing as process-dependent and gives strength 1.5 as an example. That statement is an upstream claim, not a measurement in this pilot.
++
++No StegaStamp mirror, unlicensed print-camera repository, model login, training data, or second inference port is used.
++
++## Official model provenance
++
++The pinned `rust/crates/xtask/src/main.rs` constructs model URLs from the official CAI CDN root and filenames from `rust/src/model.rs`. Only the Q files were downloaded:
++
++| Role | Official URL | Bytes observed by GET and labelled HEAD | SHA-256 observed locally |
++|---|---|---:|---|
++| Encoder | <https://cai-watermark.adobe.net/watermarking/trustmark-models/encoder_Q.onnx> | 17,312,208 | `19b3d1b25836130ffd78775a8f61539f993375d1823ef0e59ba5b8dffb4f892d` |
++| Decoder | <https://cai-watermark.adobe.net/watermarking/trustmark-models/decoder_Q.onnx> | 47,401,222 | `ee3268f057c9dabef680e169302f5973d0589feea86189ed229a896cc3aa88df` |
++
++The encoder graph exposes inputs `onnx::Concat_0` and `onnx::Gemm_1`; the decoder graph exposes input `image`, consistent with the official Rust calls. The audited Rust downloader limits each download to 100,000,000 bytes but publishes no checksum. Therefore these SHA-256 values are locally observed reproducibility pins, not upstream-signed checksums. Model binaries remain untracked.
++
++An initial coordinator handoff associated the two sizes with the opposite filenames because parallel HEAD outputs were not labelled. A new labelled HEAD check plus the downloaded graph inputs corrected that metadata error; it is not treated as an upstream model change.
++
++## Audited tensor and image conventions
++
++From pinned `rust/src/lib.rs` and `rust/src/image_processing.rs`:
++
++- Q encode input is RGB float32 NCHW `[1, 3, 256, 256]`, converted from `[0,1]` to `[-1,1]` after bilinear resize.
++- Q decode input is also 256×256 in the Rust implementation. (The pinned Python path uses a different Q decode resize; this pilot does not mix the ports.)
++- Aspect ratios above 2:1 are center-cropped to the shorter-side square before model resize; ordinary A4 pages use the full rectangle, resized to the square tensor.
++- The encoder receives image input `onnx::Concat_0` and bit input `onnx::Gemm_1`, then exposes output `image`.
++- Residual is `(variant multiplier × requested strength) × (model output − normalized input)`, clamped to `[-0.2, 0.2]`, resized to the original raster using a triangle filter, and added to pixels. Q has a strength multiplier of 1.0.
++- The public decoder thresholds each output logit at zero, then runs BCH validation/correction. It returns a corrected data string or `CorruptWatermark`; it does not expose raw logits or pre-ECC bits. Raw BER is therefore reported unavailable.
++
++## Payload and ECC audit
++
++Pinned `rust/src/bits.rs` and the Python `trustmark/datalayer.py` agree on the selected `BCH_5` layout:
++
++- 100 model bits total.
++- 61 data bits.
++- 35 BCH parity bits using polynomial 137 and correction parameter 5.
++- 4 final version bits: two reserved zero bits plus schema bits `01` for BCH_5.
++- The decoder first tries the indicated schema and may try other supported schemas if validation fails. The returned public value is truncated to the corrected data-bit capacity.
++
++This 61-bit public identifier is not equivalent to NISHAN's original 52,500-symbol, five-colluder profile. ECC validity and exact registry lookup are not cryptographic content binding, authorship, integrity, or evidence of human culpability.
++
++## Local patch boundary
++
++`patches/trustmark-cli-strength-threads.patch` is applied to the clean pinned checkout and makes exactly two operational changes:
++
++1. adds `--strength` to the official CLI and passes it unchanged to the existing library call (the upstream CLI otherwise fixes 0.95); and
++2. changes both explicit ONNX intra-op session settings from 8 threads to 2.
++
++It does not alter model weights, tensors, resize behavior, residual math, bit layout, ECC, or decoding. Build jobs are separately capped with `CARGO_BUILD_JOBS=2`; inference is also pinned to two allowed CPUs and sets common numeric/Rayon thread variables to 2.
++
++## Unresolved provenance limits
++
++- Adobe distributes the ONNX bodies over HTTPS and states their license in the README, but the audited Rust downloader provides no upstream checksum or signature.
++- The Adobe Stock training-data statement in the FAQ was not independently audited.
++- This pilot reproduces integration behavior only; it does not reproduce training or published paper tables.
+diff --git a/research/robustness/learned/src/__init__.py b/research/robustness/learned/src/__init__.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..3b3e4bfb661bf47456eb00a0e6617da3e1a26457
+--- /dev/null
++++ b/research/robustness/learned/src/__init__.py
+@@ -0,0 +1 @@
++"""Bounded TrustMark learned-carrier pilot."""
+diff --git a/research/robustness/learned/src/messages.py b/research/robustness/learned/src/messages.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..644b2c4124136126f8d1e889593e36b367ac1791
+--- /dev/null
++++ b/research/robustness/learned/src/messages.py
+@@ -0,0 +1,32 @@
++"""Deterministic public synthetic issuance for the bounded pilot.
++
++This module is intentionally separate from receiver.py.  It is not a secret
++key generator and must never be used for real identities.
++"""
++
++from __future__ import annotations
++
++import hashlib
++
++SEED = "nishan-trustmark-pilot-2026-09-16-v1"
++LABELS = ("A", "B")
++DATA_BITS = 61
++
++
++def issue(source_id: str, label: str) -> str:
++    """Return the frozen 61-bit synthetic message for one source/label."""
++    if not source_id or "|" in source_id:
++        raise ValueError("source_id must be non-empty and cannot contain '|'")
++    if label not in LABELS:
++        raise ValueError(f"label must be one of {LABELS}")
++    material = f"{SEED}|{source_id}|{label}".encode("utf-8")
++    bits = "".join(f"{byte:08b}" for byte in hashlib.sha256(material).digest())
++    return bits[:DATA_BITS]
++
++
++def build_registry(source_ids: list[str]) -> dict[str, dict[str, str]]:
++    """Build the public synthetic issuance registry used by the pilot."""
++    return {
++        source_id: {label: issue(source_id, label) for label in LABELS}
++        for source_id in source_ids
++    }
+diff --git a/research/robustness/learned/src/package_print_candidate.py b/research/robustness/learned/src/package_print_candidate.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..259c7e2fa80a3940af24c9bb07883d4ce7ba0710
+--- /dev/null
++++ b/research/robustness/learned/src/package_print_candidate.py
+@@ -0,0 +1,158 @@
++#!/usr/bin/env python3
++"""Package the frozen marked raster as a clearly labelled print candidate.
++
++This post-evaluation packaging step overwrites the synthetic source footer that
++incorrectly says no watermark is present. The overlay changes pixels locally,
++but does not re-embed, retune, or change the frozen payload. Both the labelled
++PNG and a 144-DPI PDF round-trip must still decode to the frozen message before
++the final PDF is retained.
++"""
++
++from __future__ import annotations
++
++import json
++import sys
++import time
++from pathlib import Path
++
++import pymupdf
++from PIL import Image, ImageDraw, ImageFont
++
++SRC_DIR = Path(__file__).resolve().parent
++sys.path.insert(0, str(SRC_DIR))
++
++import pilot  # noqa: E402
++
++LEAD_DIR = SRC_DIR.parent
++RESULTS_DIR = LEAD_DIR / "results"
++WORK_DIR = LEAD_DIR / "work" / "print_candidate"
++FONT_PATH = Path("/usr/share/fonts/noto/NotoSans-Bold.ttf")
++
++
++def load_json(path: Path) -> dict:
++    return json.loads(path.read_text(encoding="utf-8"))
++
++
++def main() -> int:
++    selection = pilot.require_committed_selection()
++    if not selection.get("gate_passed") or selection.get("chosen_strength") != 1.0:
++        raise RuntimeError("frozen selection does not authorize the strength-1.0 candidate")
++    confirmation = load_json(RESULTS_DIR / "confirmation_summary.json")
++    if confirmation.get("configuration_sha256") != selection["configuration_sha256"]:
++        raise RuntimeError("confirmation/configuration mismatch")
++    print_gate = load_json(RESULTS_DIR / "print_gate.json")
++    if not print_gate.get("allowed") or not print_gate.get("validation_gate_passed"):
++        raise RuntimeError("frozen validation and confirmation gates do not allow printing")
++    if (
++        print_gate.get("confirmation_clean_exact"),
++        print_gate.get("confirmation_clean_total"),
++    ) != (4, 4):
++        raise RuntimeError("confirmation clean-recovery gate is incomplete")
++    registry = load_json(RESULTS_DIR / "receiver_registry.json")
++    expected = registry["test_mixed"]["A"]
++    source = pilot.marked_path("confirmation", "test_mixed", 1.0, "A")
++    if not source.is_file():
++        raise RuntimeError("missing frozen confirmation marked raster")
++
++    WORK_DIR.mkdir(parents=True, exist_ok=True)
++    labelled_png = WORK_DIR / "test_mixed_A_strength_1p0_labelled.png"
++    image = Image.open(source).convert("RGB")
++    if image.size != (1190, 1684):
++        raise RuntimeError(f"unexpected candidate raster size {image.size}")
++    draw = ImageDraw.Draw(image)
++    draw.rectangle((48, 1528, 1142, 1652), fill="white", outline="black", width=2)
++    title_font = ImageFont.truetype(str(FONT_PATH), 20)
++    detail_font = ImageFont.truetype(str(FONT_PATH), 14)
++    draw.text(
++        (66, 1552),
++        "TRUSTMARK-Q RESEARCH CANDIDATE - SYNTHETIC ID A - STRENGTH 1.0",
++        fill="black",
++        font=title_font,
++    )
++    draw.text(
++        (66, 1594),
++        "NEW MATCHING PRINT ONLY | digital pilot; not content/authorship proof",
++        fill="black",
++        font=detail_font,
++    )
++    image.save(labelled_png, format="PNG")
++    labelled_decoded, labelled_timing = pilot.decode_image(labelled_png)
++    if labelled_decoded != expected:
++        raise RuntimeError("visible-label candidate no longer decodes exactly")
++
++    temporary_pdf = WORK_DIR / "candidate.pdf"
++    frozen_pdf_time = time.strptime(
++        confirmation["created_at_utc"], "%Y-%m-%dT%H:%M:%SZ"
++    )
++    image.save(
++        temporary_pdf,
++        format="PDF",
++        resolution=144.0,
++        title="TrustMark-Q synthetic research candidate",
++        creationDate=frozen_pdf_time,
++        modDate=frozen_pdf_time,
++    )
++    roundtrip_png = WORK_DIR / "candidate_pdf_roundtrip_144dpi.png"
++    with pymupdf.open(temporary_pdf) as document:
++        if document.page_count != 1:
++            raise RuntimeError("candidate PDF is not one page")
++        page = document[0]
++        if tuple(round(value, 3) for value in (page.rect.width, page.rect.height)) != (595.0, 842.0):
++            raise RuntimeError(f"candidate page size changed: {page.rect}")
++        pixmap = page.get_pixmap(matrix=pymupdf.Matrix(2, 2), alpha=False)
++        roundtrip = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
++        roundtrip.save(roundtrip_png, format="PNG")
++    roundtrip_decoded, roundtrip_timing = pilot.decode_image(roundtrip_png)
++    if roundtrip_decoded != expected:
++        raise RuntimeError("144-DPI PDF round-trip no longer decodes exactly")
++
++    output = RESULTS_DIR / "print_candidate_test_mixed_A_strength_1p0.pdf"
++    temporary_pdf.replace(output)
++    verification = {
++        "schema": "nishan-trustmark-print-candidate-verification/v1",
++        "created_at_utc": pilot.utc_now(),
++        "packaging_variant": "visible-label-v1-post-confirmation",
++        "packaging_script_sha256": pilot.sha256_file(Path(__file__)),
++        "source_marked_png_sha256": pilot.sha256_file(source),
++        "labelled_png_sha256": pilot.sha256_file(labelled_png),
++        "pdf_sha256": pilot.sha256_file(output),
++        "pdf_bytes": output.stat().st_size,
++        "page_points": [595.0, 842.0],
++        "raster_dimensions": [1190, 1684],
++        "raster_only": True,
++        "expected_bits": expected,
++        "labelled_png_exact_decode": labelled_decoded == expected,
++        "pdf_roundtrip_144dpi_exact_decode": roundtrip_decoded == expected,
++        "labelled_png_decode_wall_seconds": labelled_timing["wall_seconds"],
++        "labelled_png_decode_peak_rss_kib": labelled_timing["peak_rss_kib"],
++        "pdf_roundtrip_decode_wall_seconds": roundtrip_timing["wall_seconds"],
++        "pdf_roundtrip_decode_peak_rss_kib": roundtrip_timing["peak_rss_kib"],
++        "visible_label": "TRUSTMARK-Q research candidate; synthetic ID A; strength 1.0; new matching print only; not content/authorship proof",
++        "warning": "The visible label is a local post-embedding pixel edit, not a re-embed or retune. Exact recovery was reverified; no physical result is claimed.",
++    }
++    pilot.write_json(RESULTS_DIR / "print_candidate_verification.json", verification)
++
++    print_gate["candidate_pages"] = [
++        {
++            "file": output.name,
++            "sha256": verification["pdf_sha256"],
++            "source_id": "test_mixed",
++            "message_label": "A",
++            "message_bits": expected,
++            "strength": 1.0,
++            "raster_only": True,
++            "packaging_variant": verification["packaging_variant"],
++            "pdf_roundtrip_144dpi_exact_decode": True,
++        }
++    ]
++    print_gate["packaging_note"] = verification["warning"]
++    pilot.write_json(RESULTS_DIR / "print_gate.json", print_gate)
++
++    confirmation["print_gate"] = print_gate
++    pilot.write_json(RESULTS_DIR / "confirmation_summary.json", confirmation)
++    print(json.dumps(verification, indent=2, sort_keys=True))
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/research/robustness/learned/src/pilot.py b/research/robustness/learned/src/pilot.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..7c3bae255459e9f3e2ad2be242b1c792b14c95a6
+--- /dev/null
++++ b/research/robustness/learned/src/pilot.py
+@@ -0,0 +1,1139 @@
++#!/usr/bin/env python3
++"""Frozen, staged TrustMark-Q document pilot.
++
++All image/channel transforms in this file are digital simulations.  The Rust
++binary is the pinned official Adobe implementation with the two small changes
++documented in patches/trustmark-cli-strength-threads.patch.
++"""
++
++from __future__ import annotations
++
++import argparse
++import csv
++import hashlib
++import json
++import math
++import os
++import platform
++import re
++import shutil
++import subprocess
++import sys
++import time
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any, Iterable
++
++import cv2
++import numpy as np
++import pymupdf
++from PIL import Image, ImageDraw, ImageOps
++
++import messages
++import receiver
++
++LEAD_DIR = Path(__file__).resolve().parents[1]
++REPO_ROOT = Path(__file__).resolve().parents[4]
++SOURCE_DIR = LEAD_DIR / "source_pack"
++RESULTS_DIR = LEAD_DIR / "results"
++WORK_DIR = LEAD_DIR / "work"
++RUNTIME_DIR = REPO_ROOT / ".runtime"
++TRUSTMARK_SOURCE = RUNTIME_DIR / "trustmark-src"
++MODELS_DIR = RUNTIME_DIR / "models"
++TRUSTMARK_CLI = RUNTIME_DIR / "target" / "release" / "trustmark"
++PREREG_PATH = LEAD_DIR / "preregistration.json"
++PATCH_PATH = LEAD_DIR / "patches" / "trustmark-cli-strength-threads.patch"
++COMMAND_LOG = RESULTS_DIR / "command_log.jsonl"
++
++MODEL_FILES = {
++    "encoder_Q.onnx": {
++        "url": "https://cai-watermark.adobe.net/watermarking/trustmark-models/encoder_Q.onnx",
++        "bytes": 17_312_208,
++        "sha256": "19b3d1b25836130ffd78775a8f61539f993375d1823ef0e59ba5b8dffb4f892d",
++    },
++    "decoder_Q.onnx": {
++        "url": "https://cai-watermark.adobe.net/watermarking/trustmark-models/decoder_Q.onnx",
++        "bytes": 47_401_222,
++        "sha256": "ee3268f057c9dabef680e169302f5973d0589feea86189ed229a896cc3aa88df",
++    },
++}
++TRUSTMARK_COMMIT = "2ecb73ad28d1a3f66ac9dc19e1b667711f14314f"
++TRANSFORM_IDS = (
++    "clean_png",
++    "screenshot_resize",
++    "jpeg_q55",
++    "resize_jpeg_q55",
++    "grayscale",
++    "scanner_bilevel",
++    "perspective_blur_rectified",
++)
++
++
++def utc_now() -> str:
++    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
++
++
++def sha256_file(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as handle:
++        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def canonical_hash(value: Any) -> str:
++    payload = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
++    return hashlib.sha256(payload).hexdigest()
++
++
++def read_json(path: Path) -> Any:
++    with path.open("r", encoding="utf-8") as handle:
++        return json.load(handle)
++
++
++def write_json(path: Path, value: Any) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    temporary = path.with_suffix(path.suffix + ".tmp")
++    with temporary.open("w", encoding="utf-8") as handle:
++        json.dump(value, handle, indent=2, sort_keys=True)
++        handle.write("\n")
++    temporary.replace(path)
++
++
++def load_preregistration() -> dict[str, Any]:
++    return read_json(PREREG_PATH)
++
++
++def verify_sources() -> list[dict[str, Any]]:
++    """Verify copied source files, their splits, and the frozen preregistration."""
++    manifest = read_json(SOURCE_DIR / "manifest.json")
++    prereg = load_preregistration()
++    frozen = {case["id"]: case for case in prereg["sources"]["cases"]}
++    cases = manifest.get("cases", [])
++    if len(cases) != 6 or set(frozen) != {case.get("id") for case in cases}:
++        raise RuntimeError("source manifest does not contain the frozen six cases")
++    for case in cases:
++        expected = frozen[case["id"]]
++        if case["split"] != expected["split"] or case["sha256"] != expected["sha256"]:
++            raise RuntimeError(f"frozen metadata mismatch for {case['id']}")
++        pdf_path = SOURCE_DIR / case["file"]
++        if sha256_file(pdf_path) != expected["sha256"]:
++            raise RuntimeError(f"source hash mismatch for {case['id']}")
++        if case["page_count"] != 1:
++            raise RuntimeError(f"source {case['id']} is no longer one page")
++    return cases
++
++
++def verify_models() -> dict[str, dict[str, Any]]:
++    observed: dict[str, dict[str, Any]] = {}
++    for filename, expected in MODEL_FILES.items():
++        path = MODELS_DIR / filename
++        if not path.is_file():
++            raise RuntimeError(f"missing official model: {path}")
++        size = path.stat().st_size
++        digest = sha256_file(path)
++        if size != expected["bytes"] or digest != expected["sha256"]:
++            raise RuntimeError(
++                f"model mismatch for {filename}: observed bytes={size} sha256={digest}"
++            )
++        observed[filename] = {**expected, "observed_bytes": size, "observed_sha256": digest}
++    return observed
++
++
++def run_plain(command: list[str], cwd: Path | None = None, env: dict[str, str] | None = None) -> str:
++    completed = subprocess.run(
++        command,
++        cwd=cwd,
++        env=env,
++        text=True,
++        stdout=subprocess.PIPE,
++        stderr=subprocess.STDOUT,
++        check=True,
++    )
++    return completed.stdout.strip()
++
++
++def runtime_environment() -> dict[str, str]:
++    env = os.environ.copy()
++    env.update(
++        {
++            "OMP_NUM_THREADS": "2",
++            "OPENBLAS_NUM_THREADS": "2",
++            "MKL_NUM_THREADS": "2",
++            "RAYON_NUM_THREADS": "2",
++            "PYTHONDONTWRITEBYTECODE": "1",
++        }
++    )
++    return env
++
++
++def allowed_cpu_spec() -> str:
++    status = Path("/proc/self/status").read_text(encoding="utf-8")
++    match = re.search(r"^Cpus_allowed_list:\s*(.+)$", status, re.MULTILINE)
++    if not match:
++        raise RuntimeError("cannot determine allowed CPUs")
++    cpus: list[int] = []
++    for part in match.group(1).strip().split(","):
++        if "-" in part:
++            first, last = (int(value) for value in part.split("-", 1))
++            cpus.extend(range(first, last + 1))
++        else:
++            cpus.append(int(part))
++        if len(cpus) >= 2:
++            break
++    if not cpus:
++        raise RuntimeError("no allowed CPUs reported")
++    return ",".join(str(cpu) for cpu in cpus[:2])
++
++
++def append_command_log(record: dict[str, Any]) -> None:
++    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
++    with COMMAND_LOG.open("a", encoding="utf-8") as handle:
++        handle.write(json.dumps(record, sort_keys=True) + "\n")
++
++
++def run_timed(command: list[str]) -> dict[str, Any]:
++    """Run one CLI invocation on at most two CPUs and sample Linux RSS."""
++    cpu_spec = allowed_cpu_spec()
++    wrapped = ["taskset", "-c", cpu_spec, *command]
++    started = utc_now()
++    monotonic_start = time.monotonic()
++    process = subprocess.Popen(
++        wrapped,
++        cwd=REPO_ROOT,
++        env=runtime_environment(),
++        text=True,
++        stdout=subprocess.PIPE,
++        stderr=subprocess.PIPE,
++    )
++    peak_rss_kib = 0
++    status_path = Path(f"/proc/{process.pid}/status")
++    while process.poll() is None:
++        try:
++            status = status_path.read_text(encoding="utf-8")
++            for field in ("VmHWM", "VmRSS"):
++                match = re.search(rf"^{field}:\s*([0-9]+) kB$", status, re.MULTILINE)
++                if match:
++                    peak_rss_kib = max(peak_rss_kib, int(match.group(1)))
++        except FileNotFoundError:
++            pass
++        time.sleep(0.02)
++    stdout, stderr = process.communicate()
++    timing = {
++        "wall_seconds": round(time.monotonic() - monotonic_start, 6),
++        "peak_rss_kib": peak_rss_kib,
++    }
++    record = {
++        "at_utc": started,
++        "argv": [str(item) for item in command],
++        "cpu_spec": cpu_spec,
++        "returncode": process.returncode,
++        "stdout": stdout,
++        "stderr": stderr,
++        "measurement": "Python monotonic wall time; /proc/<pid>/status VmHWM/VmRSS sampled every 20 ms",
++        **timing,
++    }
++    append_command_log(record)
++    if process.returncode != 0:
++        raise RuntimeError(
++            f"TrustMark command failed ({process.returncode}): {command}\n"
++            f"stdout={stdout}\nstderr={stderr}"
++        )
++    return {**record, **timing}
++
++
++def prepare() -> dict[str, Any]:
++    cases = verify_sources()
++    models = verify_models()
++    if not TRUSTMARK_CLI.is_file():
++        raise RuntimeError(f"missing built CLI: {TRUSTMARK_CLI}")
++    revision = run_plain(["git", "rev-parse", "HEAD"], cwd=TRUSTMARK_SOURCE)
++    if revision != TRUSTMARK_COMMIT:
++        raise RuntimeError(f"unexpected TrustMark revision {revision}")
++    registry = messages.build_registry([case["id"] for case in cases])
++    write_json(RESULTS_DIR / "issuer_registry.json", registry)
++    write_json(RESULTS_DIR / "receiver_registry.json", registry)
++
++    model_manifest = {
++        "schema": "nishan-trustmark-model-manifest/v1",
++        "recorded_at_utc": utc_now(),
++        "upstream_revision": TRUSTMARK_COMMIT,
++        "license": "MIT (official README states code and downloaded model files are covered)",
++        "models": models,
++        "note": "SHA-256 values are observed local pins; the audited upstream Rust downloader did not publish ONNX checksums.",
++    }
++    write_json(RESULTS_DIR / "model_manifest.json", model_manifest)
++
++    configuration = {
++        "preregistration_sha256": sha256_file(PREREG_PATH),
++        "source_manifest_sha256": sha256_file(SOURCE_DIR / "manifest.json"),
++        "source_sha256": {case["id"]: case["sha256"] for case in cases},
++        "registry_sha256": canonical_hash(registry),
++        "trustmark_commit": TRUSTMARK_COMMIT,
++        "trustmark_patch_sha256": sha256_file(PATCH_PATH),
++        "trustmark_cli_sha256": sha256_file(TRUSTMARK_CLI),
++        "runner_sha256": {
++            "messages.py": sha256_file(LEAD_DIR / "src" / "messages.py"),
++            "receiver.py": sha256_file(LEAD_DIR / "src" / "receiver.py"),
++            "pilot.py": sha256_file(LEAD_DIR / "src" / "pilot.py"),
++        },
++        "models": {name: value["sha256"] for name, value in MODEL_FILES.items()},
++        "variant": "Q",
++        "ecc_schema": "BCH_5",
++        "strengths": [1.0, 1.5],
++        "transforms": list(TRANSFORM_IDS),
++        "render_dpi": 144,
++        "effective_cpu_limit": 2,
++    }
++    config_manifest = {
++        "schema": "nishan-trustmark-configuration/v1",
++        "configuration": configuration,
++        "configuration_sha256": canonical_hash(configuration),
++    }
++    write_json(RESULTS_DIR / "configuration.json", config_manifest)
++
++    rust_env = os.environ.copy()
++    rust_env.update(
++        {
++            "RUSTUP_HOME": str(RUNTIME_DIR / "rustup"),
++            "CARGO_HOME": str(RUNTIME_DIR / "cargo"),
++        }
++    )
++    runtime_manifest = {
++        "schema": "nishan-trustmark-runtime/v1",
++        "recorded_at_utc": utc_now(),
++        "platform": platform.platform(),
++        "python": sys.version,
++        "pymupdf": pymupdf.__version__,
++        "pillow": Image.__version__,
++        "numpy": np.__version__,
++        "opencv": cv2.__version__,
++        "rustc": run_plain(["rustup", "run", "1.85.0", "rustc", "--version"], env=rust_env),
++        "cargo": run_plain(["rustup", "run", "1.85.0", "cargo", "--version"], env=rust_env),
++        "trustmark_upstream_revision": revision,
++        "cpu_allowed_for_inference": allowed_cpu_spec(),
++        "thread_environment": {
++            "OMP_NUM_THREADS": 2,
++            "OPENBLAS_NUM_THREADS": 2,
++            "MKL_NUM_THREADS": 2,
++            "RAYON_NUM_THREADS": 2,
++            "onnx_intra_op_threads": 2,
++        },
++    }
++    write_json(RESULTS_DIR / "runtime_manifest.json", runtime_manifest)
++    return config_manifest
++
++
++def render_source(case: dict[str, Any]) -> Image.Image:
++    render_dir = WORK_DIR / "renders"
++    render_dir.mkdir(parents=True, exist_ok=True)
++    output = render_dir / f"{case['id']}.png"
++    with pymupdf.open(SOURCE_DIR / case["file"]) as document:
++        if document.page_count != 1:
++            raise RuntimeError(f"unexpected page count for {case['id']}")
++        pixmap = document[0].get_pixmap(matrix=pymupdf.Matrix(2, 2), alpha=False)
++        image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
++    image.save(output, format="PNG")
++    return image
++
++
++def apply_transform(image: Image.Image, transform_id: str, output: Path) -> None:
++    """Apply one preregistered transform and save its exact decoder input."""
++    output.parent.mkdir(parents=True, exist_ok=True)
++    rgb = image.convert("RGB")
++    if transform_id == "clean_png":
++        rgb.save(output, format="PNG")
++        return
++    if transform_id in {"screenshot_resize", "resize_jpeg_q55"}:
++        width, height = rgb.size
++        scale = 768 / min(width, height)
++        resized = rgb.resize(
++            (round(width * scale), round(height * scale)), Image.Resampling.LANCZOS
++        )
++        if transform_id == "screenshot_resize":
++            resized.save(output, format="PNG")
++        else:
++            resized.save(output, format="JPEG", quality=55, subsampling=2)
++        return
++    if transform_id == "jpeg_q55":
++        rgb.save(output, format="JPEG", quality=55, subsampling=2)
++        return
++    if transform_id == "grayscale":
++        rgb.convert("L").convert("RGB").save(output, format="PNG")
++        return
++    if transform_id == "scanner_bilevel":
++        grayscale = ImageOps.autocontrast(rgb.convert("L"))
++        binary = grayscale.point(lambda value: 255 if value >= 200 else 0)
++        binary.convert("RGB").save(output, format="PNG")
++        return
++    if transform_id == "perspective_blur_rectified":
++        array = np.asarray(rgb)
++        height, width = array.shape[:2]
++        source = np.float32(
++            [[0, 0], [width - 1, 0], [width - 1, height - 1], [0, height - 1]]
++        )
++        fractions = np.float32([[0.03, 0.02], [0.98, 0.04], [0.96, 0.97], [0.04, 0.95]])
++        destination = fractions * np.float32([width - 1, height - 1])
++        homography = cv2.getPerspectiveTransform(source, destination)
++        warped = cv2.warpPerspective(
++            array,
++            homography,
++            (width, height),
++            flags=cv2.INTER_LINEAR,
++            borderMode=cv2.BORDER_CONSTANT,
++            borderValue=(255, 255, 255),
++        )
++        blurred = cv2.GaussianBlur(warped, (0, 0), sigmaX=1.2, sigmaY=1.2)
++        rectified = cv2.warpPerspective(
++            blurred,
++            np.linalg.inv(homography),
++            (width, height),
++            flags=cv2.INTER_LINEAR,
++            borderMode=cv2.BORDER_CONSTANT,
++            borderValue=(255, 255, 255),
++        )
++        Image.fromarray(rectified.astype(np.uint8), "RGB").save(output, format="PNG")
++        return
++    raise ValueError(f"unknown transform {transform_id}")
++
++
++def _psnr(diff: np.ndarray) -> float | str:
++    mse = float(np.mean(np.square(diff, dtype=np.float64)))
++    if mse == 0:
++        return "inf"
++    return 10 * math.log10((255.0 * 255.0) / mse)
++
++
++def quality_metrics(source: Image.Image, marked: Image.Image) -> dict[str, float | str | int | None]:
++    original = np.asarray(source.convert("RGB"), dtype=np.float64)
++    changed = np.asarray(marked.convert("RGB"), dtype=np.float64)
++    if original.shape != changed.shape:
++        raise ValueError("quality inputs must have identical dimensions")
++    diff = changed - original
++    absolute = np.abs(diff)
++    luminance = 0.299 * original[:, :, 0] + 0.587 * original[:, :, 1] + 0.114 * original[:, :, 2]
++    ink_mask = luminance <= 220
++    background_mask = luminance >= 245
++
++    def region(mask: np.ndarray) -> tuple[float | str | None, float | None, int]:
++        count = int(np.count_nonzero(mask))
++        if count == 0:
++            return None, None, 0
++        selected = diff[mask]
++        return _psnr(selected), float(np.mean(np.abs(selected))), count
++
++    ink_psnr, ink_mae, ink_pixels = region(ink_mask)
++    background_psnr, background_mae, background_pixels = region(background_mask)
++    return {
++        "global_psnr_db": _psnr(diff),
++        "ink_psnr_db": ink_psnr,
++        "background_psnr_db": background_psnr,
++        "global_mae": float(np.mean(absolute)),
++        "ink_mae": ink_mae,
++        "background_mae": background_mae,
++        "p99_absolute_channel_error": float(np.percentile(absolute, 99)),
++        "ink_pixels": ink_pixels,
++        "background_pixels": background_pixels,
++    }
++
++
++def encode_image(input_path: Path, output_path: Path, message: str, strength: float) -> dict[str, Any]:
++    command = [
++        str(TRUSTMARK_CLI),
++        "--models",
++        str(MODELS_DIR),
++        "encode",
++        "-i",
++        str(input_path),
++        "-o",
++        str(output_path),
++        "--watermark",
++        message,
++        "--version",
++        "BCH_5",
++        "--variant",
++        "Q",
++        "--strength",
++        str(strength),
++    ]
++    return run_timed(command)
++
++
++def decode_image(input_path: Path) -> tuple[str | None, dict[str, Any]]:
++    command = [
++        str(TRUSTMARK_CLI),
++        "--models",
++        str(MODELS_DIR),
++        "decode",
++        "-i",
++        str(input_path),
++        "--variant",
++        "Q",
++    ]
++    timing = run_timed(command)
++    return receiver.parse_decode_output(timing["stdout"]), timing
++
++
++def strength_name(strength: float) -> str:
++    return f"{strength:.1f}".replace(".", "p")
++
++
++def render_path(source_id: str) -> Path:
++    return WORK_DIR / "renders" / f"{source_id}.png"
++
++
++def marked_path(stage: str, source_id: str, strength: float, label: str) -> Path:
++    return WORK_DIR / stage / source_id / strength_name(strength) / label / "marked.png"
++
++
++def hamming_distance(left: str, right: str) -> int:
++    if len(left) != len(right):
++        raise ValueError("bitstrings must have equal length")
++    return sum(a != b for a, b in zip(left, right))
++
++
++def make_result_row(
++    *,
++    stage: str,
++    case_type: str,
++    source_id: str,
++    receiver_source_id: str,
++    strength: float | None,
++    message_label: str,
++    transform_id: str,
++    expected: str,
++    decoded: str | None,
++    registry: dict[str, str],
++    decode_timing: dict[str, Any],
++    encode_timing: dict[str, Any] | None = None,
++    quality: dict[str, Any] | None = None,
++    input_size: tuple[int, int] | None = None,
++    notes: str = "",
++) -> dict[str, Any]:
++    decision = receiver.classify(decoded, expected, registry)
++    row: dict[str, Any] = {
++        "stage": stage,
++        "case_type": case_type,
++        "source_id": source_id,
++        "receiver_source_id": receiver_source_id,
++        "strength": strength,
++        "message_label": message_label,
++        "transform": transform_id,
++        "expected_bits": expected,
++        "decoded_bits": decoded,
++        **decision,
++        "exact_recovery": decoded == expected,
++        "post_ecc_message_bit_errors": hamming_distance(expected, decoded) if decoded else None,
++        "raw_pre_ecc_bit_errors": None,
++        "decode_wall_seconds": decode_timing["wall_seconds"],
++        "decode_peak_rss_kib": decode_timing["peak_rss_kib"],
++        "encode_wall_seconds": encode_timing["wall_seconds"] if encode_timing else None,
++        "encode_peak_rss_kib": encode_timing["peak_rss_kib"] if encode_timing else None,
++        "decoder_input_width": input_size[0] if input_size else None,
++        "decoder_input_height": input_size[1] if input_size else None,
++        "notes": notes,
++    }
++    if quality:
++        row.update(quality)
++    return row
++
++
++def evaluate_matrix(
++    stage: str,
++    cases: list[dict[str, Any]],
++    strengths: Iterable[float],
++    registry: dict[str, dict[str, str]],
++) -> list[dict[str, Any]]:
++    rows: list[dict[str, Any]] = []
++    for case in cases:
++        source = render_source(case)
++        source_path = render_path(case["id"])
++        for strength in strengths:
++            for label in messages.LABELS:
++                expected = registry[case["id"]][label]
++                output = marked_path(stage, case["id"], strength, label)
++                output.parent.mkdir(parents=True, exist_ok=True)
++                encode_timing = encode_image(source_path, output, expected, strength)
++                marked = Image.open(output).convert("RGB")
++                quality = quality_metrics(source, marked)
++                for transform_id in TRANSFORM_IDS:
++                    if transform_id == "clean_png":
++                        decoder_input = output
++                    else:
++                        suffix = ".jpg" if "jpeg" in transform_id else ".png"
++                        decoder_input = output.parent / f"{transform_id}{suffix}"
++                        apply_transform(marked, transform_id, decoder_input)
++                    with Image.open(decoder_input) as transformed:
++                        input_size = transformed.size
++                    decoded, decode_timing = decode_image(decoder_input)
++                    rows.append(
++                        make_result_row(
++                            stage=stage,
++                            case_type="matrix",
++                            source_id=case["id"],
++                            receiver_source_id=case["id"],
++                            strength=strength,
++                            message_label=label,
++                            transform_id=transform_id,
++                            expected=expected,
++                            decoded=decoded,
++                            registry=registry[case["id"]],
++                            decode_timing=decode_timing,
++                            encode_timing=encode_timing,
++                            quality=quality,
++                            input_size=input_size,
++                        )
++                    )
++    return rows
++
++
++def evaluate_unmarked_controls(
++    stage: str,
++    cases: list[dict[str, Any]],
++    registry: dict[str, dict[str, str]],
++) -> list[dict[str, Any]]:
++    rows = []
++    for case in cases:
++        image = render_source(case)
++        path = render_path(case["id"])
++        decoded, timing = decode_image(path)
++        rows.append(
++            make_result_row(
++                stage=stage,
++                case_type="control_unmarked",
++                source_id=case["id"],
++                receiver_source_id=case["id"],
++                strength=None,
++                message_label="A",
++                transform_id="unmarked_clean",
++                expected=registry[case["id"]]["A"],
++                decoded=decoded,
++                registry=registry[case["id"]],
++                decode_timing=timing,
++                input_size=image.size,
++                notes="Expected abstention; any valid 61-bit output is retained.",
++            )
++        )
++    return rows
++
++
++def _metric_at_least(value: Any, minimum: float) -> bool:
++    return value == "inf" or (isinstance(value, (int, float)) and value >= minimum)
++
++
++def select_strength(rows: list[dict[str, Any]], unmarked_valid: int) -> dict[str, Any]:
++    details: dict[str, Any] = {}
++    passing: list[float] = []
++    for strength in (1.0, 1.5):
++        candidate = [
++            row
++            for row in rows
++            if row["case_type"] == "matrix" and float(row["strength"]) == strength
++        ]
++        clean = [row for row in candidate if row["transform"] == "clean_png"]
++        nonclean = [row for row in candidate if row["transform"] != "clean_png"]
++        clean_exact = sum(bool(row["exact_recovery"]) for row in clean)
++        nonclean_exact = sum(bool(row["exact_recovery"]) for row in nonclean)
++        quality_pass = all(
++            _metric_at_least(row["global_psnr_db"], 35)
++            and _metric_at_least(row["ink_psnr_db"], 30)
++            and _metric_at_least(row["background_psnr_db"], 35)
++            for row in clean
++        )
++        gate = (
++            len(clean) == 4
++            and clean_exact == 4
++            and len(nonclean) == 24
++            and nonclean_exact >= 18
++            and quality_pass
++            and unmarked_valid == 0
++        )
++        details[str(strength)] = {
++            "clean_exact": clean_exact,
++            "clean_total": len(clean),
++            "nonclean_exact": nonclean_exact,
++            "nonclean_total": len(nonclean),
++            "quality_pass": quality_pass,
++            "unmarked_valid": unmarked_valid,
++            "gate_pass": gate,
++        }
++        if gate:
++            passing.append(strength)
++
++    ranking = sorted(
++        (1.0, 1.5),
++        key=lambda strength: (-details[str(strength)]["nonclean_exact"], strength),
++    )
++    chosen = min(
++        passing,
++        key=lambda strength: (-details[str(strength)]["nonclean_exact"], strength),
++        default=None,
++    )
++    return {
++        "schema": "nishan-trustmark-selection/v1",
++        "created_at_utc": utc_now(),
++        "gate_passed": chosen is not None,
++        "chosen_strength": chosen,
++        "diagnostic_strength_if_no_gate": ranking[0],
++        "tie_break": "highest non-clean exact count, then lowest strength",
++        "strength_details": details,
++    }
++
++
++def synthetic_passing_validation_rows_for_test() -> list[dict[str, Any]]:
++    rows: list[dict[str, Any]] = []
++    for strength in (1.0, 1.5):
++        for index in range(4):
++            rows.append(
++                {
++                    "case_type": "matrix",
++                    "strength": strength,
++                    "transform": "clean_png",
++                    "exact_recovery": True,
++                    "global_psnr_db": 40.0,
++                    "ink_psnr_db": 35.0,
++                    "background_psnr_db": 40.0,
++                }
++            )
++        for index in range(24):
++            rows.append(
++                {
++                    "case_type": "matrix",
++                    "strength": strength,
++                    "transform": "nonclean",
++                    "exact_recovery": True,
++                }
++            )
++    return rows
++
++
++def write_rows(stem: str, rows: list[dict[str, Any]]) -> None:
++    write_json(
++        RESULTS_DIR / f"{stem}.json",
++        {"schema": "nishan-trustmark-case-results/v1", "created_at_utc": utc_now(), "rows": rows},
++    )
++    fieldnames = sorted({key for row in rows for key in row})
++    csv_path = RESULTS_DIR / f"{stem}.csv"
++    with csv_path.open("w", encoding="utf-8", newline="") as handle:
++        writer = csv.DictWriter(handle, fieldnames=fieldnames)
++        writer.writeheader()
++        for row in rows:
++            writer.writerow(
++                {
++                    key: json.dumps(value, sort_keys=True)
++                    if isinstance(value, (dict, list))
++                    else value
++                    for key, value in row.items()
++                }
++            )
++
++
++def smoke() -> dict[str, Any]:
++    config = prepare()
++    case = [case for case in verify_sources() if case["id"] == "dev_memo"][0]
++    registry = read_json(RESULTS_DIR / "receiver_registry.json")
++    source = render_source(case)
++    source_path = render_path(case["id"])
++    expected = registry[case["id"]]["A"]
++    output = marked_path("smoke", case["id"], 1.0, "A")
++    output.parent.mkdir(parents=True, exist_ok=True)
++    encode_timing = encode_image(source_path, output, expected, 1.0)
++    with Image.open(output) as opened:
++        marked = opened.convert("RGB")
++    decoded, decode_timing = decode_image(output)
++    clean_a = make_result_row(
++        stage="smoke",
++        case_type="matrix",
++        source_id=case["id"],
++        receiver_source_id=case["id"],
++        strength=1.0,
++        message_label="A",
++        transform_id="clean_png",
++        expected=expected,
++        decoded=decoded,
++        registry=registry[case["id"]],
++        decode_timing=decode_timing,
++        encode_timing=encode_timing,
++        quality=quality_metrics(source, marked),
++        input_size=marked.size,
++    )
++    passed = bool(clean_a["exact_recovery"])
++    result = {
++        "schema": "nishan-trustmark-smoke/v1",
++        "created_at_utc": utc_now(),
++        "passed": passed,
++        "configuration_sha256": config["configuration_sha256"],
++        "case": clean_a,
++        "note": "Only the preregistered development source informed implementation debugging.",
++    }
++    write_json(RESULTS_DIR / "smoke.json", result)
++    if not passed:
++        raise RuntimeError("official TrustMark development smoke did not recover the exact message")
++    return result
++
++
++def make_readability_panel() -> None:
++    source = Image.open(render_path("validation_dense")).convert("RGB")
++    images = [
++        ("unmarked source", source),
++        ("strength 1.0", Image.open(marked_path("validation", "validation_dense", 1.0, "A")).convert("RGB")),
++        ("strength 1.5", Image.open(marked_path("validation", "validation_dense", 1.5, "A")).convert("RGB")),
++    ]
++    x, y, width, height = (96, 96, 640, 384)
++    label_height = 24
++    panel = Image.new("RGB", (width * len(images), height + label_height), "white")
++    draw = ImageDraw.Draw(panel)
++    for index, (label, image) in enumerate(images):
++        crop = image.crop((x, y, x + width, y + height))
++        panel.paste(crop, (index * width, label_height))
++        draw.text((index * width + 4, 4), label, fill="black")
++    panel.save(RESULTS_DIR / "readability_1to1.png", format="PNG")
++
++
++def selected_validation_controls(
++    strength: float,
++    registry: dict[str, dict[str, str]],
++) -> list[dict[str, Any]]:
++    rows: list[dict[str, Any]] = []
++    dense_b = marked_path("validation", "validation_dense", strength, "B")
++    decoded, timing = decode_image(dense_b)
++    rows.append(
++        make_result_row(
++            stage="validation",
++            case_type="control_other_issued",
++            source_id="validation_dense",
++            receiver_source_id="validation_dense",
++            strength=strength,
++            message_label="A",
++            transform_id="clean_png",
++            expected=registry["validation_dense"]["A"],
++            decoded=decoded,
++            registry=registry["validation_dense"],
++            decode_timing=timing,
++            input_size=Image.open(dense_b).size,
++            notes="Image carries issued message B while target query is A.",
++        )
++    )
++
++    dense_a = marked_path("validation", "validation_dense", strength, "A")
++    decoded, timing = decode_image(dense_a)
++    rows.append(
++        make_result_row(
++            stage="validation",
++            case_type="control_wrong_source_context",
++            source_id="validation_dense",
++            receiver_source_id="validation_diagram",
++            strength=strength,
++            message_label="A",
++            transform_id="clean_png",
++            expected=registry["validation_diagram"]["A"],
++            decoded=decoded,
++            registry=registry["validation_diagram"],
++            decode_timing=timing,
++            input_size=Image.open(dense_a).size,
++            notes="Public TrustMark has no key; this is a frozen wrong-source registry control.",
++        )
++    )
++
++    dense_source = np.asarray(Image.open(render_path("validation_dense")).convert("RGB"), dtype=np.int16)
++    dense_marked = np.asarray(Image.open(dense_a).convert("RGB"), dtype=np.int16)
++    diagram_source_image = Image.open(render_path("validation_diagram")).convert("RGB")
++    diagram_source = np.asarray(diagram_source_image, dtype=np.int16)
++    if dense_source.shape != diagram_source.shape:
++        raise RuntimeError("transplant sources have different raster dimensions")
++    transplant = np.clip(diagram_source + (dense_marked - dense_source), 0, 255).astype(np.uint8)
++    transplant_path = WORK_DIR / "validation" / "controls" / "donor_residual_transplant.png"
++    transplant_path.parent.mkdir(parents=True, exist_ok=True)
++    Image.fromarray(transplant, "RGB").save(transplant_path, format="PNG")
++    decoded, timing = decode_image(transplant_path)
++    row = make_result_row(
++        stage="validation",
++        case_type="control_donor_residual_transplant",
++        source_id="validation_diagram",
++        receiver_source_id="validation_diagram",
++        strength=strength,
++        message_label="A",
++        transform_id="donor_residual_transplant",
++        expected=registry["validation_diagram"]["A"],
++        decoded=decoded,
++        registry=registry["validation_diagram"],
++        decode_timing=timing,
++        quality=quality_metrics(diagram_source_image, Image.fromarray(transplant, "RGB")),
++        input_size=diagram_source_image.size,
++        notes="Residual copied from validation_dense/A. Donor recovery would demonstrate transplantability, not content authenticity or culpability.",
++    )
++    row["decoded_matches_donor_message"] = decoded == registry["validation_dense"]["A"]
++    rows.append(row)
++    return rows
++
++
++def validation() -> dict[str, Any]:
++    config = prepare()
++    smoke_result = read_json(RESULTS_DIR / "smoke.json")
++    if not smoke_result.get("passed"):
++        raise RuntimeError("a passing development smoke is required before validation")
++    if smoke_result["configuration_sha256"] != config["configuration_sha256"]:
++        raise RuntimeError("configuration changed after development smoke")
++    cases = [case for case in verify_sources() if case["split"] == "validation"]
++    registry = read_json(RESULTS_DIR / "receiver_registry.json")
++    matrix_rows = evaluate_matrix("validation", cases, [1.0, 1.5], registry)
++    unmarked_rows = evaluate_unmarked_controls("validation", cases, registry)
++    unmarked_valid = sum(bool(row["decoder_valid"]) for row in unmarked_rows)
++    selection = select_strength(matrix_rows, unmarked_valid)
++    selected_for_controls = selection["chosen_strength"]
++    if selected_for_controls is None:
++        selected_for_controls = selection["diagnostic_strength_if_no_gate"]
++    control_rows = selected_validation_controls(float(selected_for_controls), registry)
++    rows = matrix_rows + unmarked_rows + control_rows
++    selection.update(
++        {
++            "configuration_sha256": config["configuration_sha256"],
++            "controls_run_at_strength": selected_for_controls,
++            "selection_uses_controls": "unmarked only; other controls are diagnostic and do not tune strength",
++        }
++    )
++    write_rows("validation_cases", rows)
++    write_json(RESULTS_DIR / "selection.json", selection)
++    make_readability_panel()
++    return selection
++
++
++def require_committed_selection() -> dict[str, Any]:
++    relative = RESULTS_DIR.joinpath("selection.json").relative_to(REPO_ROOT)
++    subprocess.run(
++        ["git", "ls-files", "--error-unmatch", str(relative)],
++        cwd=REPO_ROOT,
++        stdout=subprocess.PIPE,
++        stderr=subprocess.PIPE,
++        check=True,
++    )
++    status = run_plain(["git", "status", "--porcelain", "--", str(relative)], cwd=REPO_ROOT)
++    if status:
++        raise RuntimeError("selection.json must be committed and unchanged before confirmation")
++    return read_json(RESULTS_DIR / "selection.json")
++
++
++def create_print_candidate_if_allowed(
++    selection: dict[str, Any], rows: list[dict[str, Any]], strength: float
++) -> dict[str, Any]:
++    clean = [
++        row
++        for row in rows
++        if row["case_type"] == "matrix" and row["transform"] == "clean_png"
++    ]
++    confirmation_clean_pass = len(clean) == 4 and all(row["exact_recovery"] for row in clean)
++    allowed = bool(selection["gate_passed"] and confirmation_clean_pass)
++    metadata: dict[str, Any] = {
++        "allowed": allowed,
++        "validation_gate_passed": selection["gate_passed"],
++        "confirmation_clean_exact": sum(bool(row["exact_recovery"]) for row in clean),
++        "confirmation_clean_total": len(clean),
++        "candidate_pages": [],
++        "warning": "Any candidate requires a NEW matching print. Do not test this carrier on old captures.",
++    }
++    if allowed:
++        image_path = marked_path("confirmation", "test_mixed", strength, "A")
++        output = RESULTS_DIR / f"print_candidate_test_mixed_A_strength_{strength_name(strength)}.pdf"
++        image = Image.open(image_path).convert("RGB")
++        image.save(output, format="PDF", resolution=144.0)
++        metadata["candidate_pages"].append(
++            {
++                "file": output.name,
++                "sha256": sha256_file(output),
++                "source_id": "test_mixed",
++                "message_label": "A",
++                "message_bits": read_json(RESULTS_DIR / "receiver_registry.json")["test_mixed"]["A"],
++                "strength": strength,
++                "raster_only": True,
++            }
++        )
++    write_json(RESULTS_DIR / "print_gate.json", metadata)
++    return metadata
++
++
++def confirmation() -> dict[str, Any]:
++    config = prepare()
++    selection = require_committed_selection()
++    if selection["configuration_sha256"] != config["configuration_sha256"]:
++        raise RuntimeError("configuration changed after validation selection")
++    strength = selection["chosen_strength"]
++    negative_only = False
++    if strength is None:
++        strength = selection["diagnostic_strength_if_no_gate"]
++        negative_only = True
++    cases = [case for case in verify_sources() if case["split"] == "confirmation"]
++    registry = read_json(RESULTS_DIR / "receiver_registry.json")
++    matrix_rows = evaluate_matrix("confirmation", cases, [float(strength)], registry)
++    unmarked_rows = evaluate_unmarked_controls("confirmation", cases, registry)
++    rows = matrix_rows + unmarked_rows
++    write_rows("confirmation_cases", rows)
++    print_gate = create_print_candidate_if_allowed(selection, matrix_rows, float(strength))
++    summary = {
++        "schema": "nishan-trustmark-confirmation/v1",
++        "created_at_utc": utc_now(),
++        "configuration_sha256": config["configuration_sha256"],
++        "selection_sha256": sha256_file(RESULTS_DIR / "selection.json"),
++        "strength": strength,
++        "negative_only_because_validation_gate_failed": negative_only,
++        "matrix_exact": sum(bool(row["exact_recovery"]) for row in matrix_rows),
++        "matrix_total": len(matrix_rows),
++        "clean_exact": sum(
++            bool(row["exact_recovery"])
++            for row in matrix_rows
++            if row["transform"] == "clean_png"
++        ),
++        "clean_total": sum(row["transform"] == "clean_png" for row in matrix_rows),
++        "unmarked_valid": sum(bool(row["decoder_valid"]) for row in unmarked_rows),
++        "print_gate": print_gate,
++    }
++    write_json(RESULTS_DIR / "confirmation_summary.json", summary)
++    return summary
++
++
++def aggregate_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
++    matrix = [row for row in rows if row["case_type"] == "matrix"]
++    by_transform: dict[str, dict[str, int]] = {}
++    for transform_id in TRANSFORM_IDS:
++        selected = [row for row in matrix if row["transform"] == transform_id]
++        by_transform[transform_id] = {
++            "exact": sum(bool(row["exact_recovery"]) for row in selected),
++            "total": len(selected),
++            "wrong_valid": sum(
++                bool(row["decoder_valid"] and not row["exact_recovery"]) for row in selected
++            ),
++            "abstain": sum(row["outcome"] == "abstain" for row in selected),
++        }
++    valid_rss = [
++        value
++        for row in rows
++        for value in (row.get("encode_peak_rss_kib"), row.get("decode_peak_rss_kib"))
++        if isinstance(value, int)
++    ]
++    return {
++        "matrix_exact": sum(bool(row["exact_recovery"]) for row in matrix),
++        "matrix_total": len(matrix),
++        "wrong_valid": sum(
++            bool(row["decoder_valid"] and not row["exact_recovery"]) for row in matrix
++        ),
++        "abstain": sum(row["outcome"] == "abstain" for row in matrix),
++        "unissued_valid_rows": sum(row["outcome"] == "unissued_valid" for row in rows),
++        "unissued_accepted_rows": sum(bool(row["unissued_accepted"]) for row in rows),
++        "peak_child_rss_kib": max(valid_rss, default=None),
++        "by_transform": by_transform,
++    }
++
++
++def report() -> dict[str, Any]:
++    validation_payload = read_json(RESULTS_DIR / "validation_cases.json")
++    confirmation_payload = read_json(RESULTS_DIR / "confirmation_cases.json")
++    selection = read_json(RESULTS_DIR / "selection.json")
++    config = read_json(RESULTS_DIR / "configuration.json")
++    validation_summary = aggregate_rows(validation_payload["rows"])
++    confirmation_summary = aggregate_rows(confirmation_payload["rows"])
++    summary = {
++        "schema": "nishan-trustmark-pilot-summary/v1",
++        "created_at_utc": utc_now(),
++        "configuration_sha256": config["configuration_sha256"],
++        "selection": selection,
++        "validation": validation_summary,
++        "confirmation": confirmation_summary,
++        "raw_pre_ecc_bit_errors": "unavailable through official public Rust API",
++    }
++    write_json(RESULTS_DIR / "summary.json", summary)
++
++    chosen = selection["chosen_strength"]
++    print_gate = read_json(RESULTS_DIR / "print_gate.json")
++    lines = [
++        "# TrustMark-Q learned-carrier pilot",
++        "",
++        "## Outcome",
++        "",
++        f"The frozen validation gate {'passed' if selection['gate_passed'] else 'did not pass'}. "
++        f"Selected global strength: `{chosen}`. This is a bounded reproduction of Adobe TrustMark, not a NISHAN invention.",
++        "",
++        "All evaluated transforms were digital simulations on synthetic one-page PDFs. No old or new physical capture was opened, and these results do not establish print/scan/camera or messaging-app recovery.",
++        "",
++        "## Decisive counts",
++        "",
++        f"- Validation matrix: {validation_summary['matrix_exact']}/{validation_summary['matrix_total']} exact, "
++        f"{validation_summary['wrong_valid']} wrong-valid, {validation_summary['abstain']} abstentions across both preregistered strengths.",
++        f"- Confirmation matrix: {confirmation_summary['matrix_exact']}/{confirmation_summary['matrix_total']} exact, "
++        f"{confirmation_summary['wrong_valid']} wrong-valid, {confirmation_summary['abstain']} abstentions at the frozen strength.",
++        f"- Valid-but-unregistered outputs accepted by the registry receiver: {validation_summary['unissued_accepted_rows'] + confirmation_summary['unissued_accepted_rows']}. The receiver only accepts exact frozen registry entries.",
++        f"- Peak measured child RSS: {max(validation_summary['peak_child_rss_kib'] or 0, confirmation_summary['peak_child_rss_kib'] or 0)} KiB.",
++        "",
++        "## Confirmation by transform",
++        "",
++        "| Transform | Exact | Wrong valid | Abstain |",
++        "|---|---:|---:|---:|",
++    ]
++    for transform_id, counts in confirmation_summary["by_transform"].items():
++        lines.append(
++            f"| `{transform_id}` | {counts['exact']}/{counts['total']} | {counts['wrong_valid']} | {counts['abstain']} |"
++        )
++    lines.extend(
++        [
++            "",
++            "## Payload, receiver, and quality limits",
++            "",
++            "TrustMark-Q consumes 100 model bits. BCH_5 provides 61 data bits, 35 ECC bits, and 4 version bits (two reserved plus two schema bits), with the implementation configured to correct up to five flips. The public Rust API returns only a corrected 61-bit message or a corrupt/missing result, so raw pre-ECC BER is unavailable; the case files retain post-ECC message Hamming distance whenever a valid message exists.",
++            "",
++            "The carrier is public and unkeyed. Exact registry lookup is a bounded pilot decision, not cryptographic authentication or content binding. The wrong-context and donor-residual controls therefore cannot establish authorship, integrity, or human culpability. Output pages are raster-only and lose selectable text/accessibility semantics.",
++            "",
++            "Global, ink-region, and background PSNR/MAE are recorded per clean marked case in `results/*.json` and `results/*.csv`; `results/readability_1to1.png` preserves one source pixel per displayed crop pixel. No claim of invisibility follows from PSNR alone.",
++            "",
++            "## Print decision",
++            "",
++            f"Print gate allowed: `{print_gate['allowed']}`. Candidate pages produced: {len(print_gate['candidate_pages'])}. Any candidate requires a NEW matching print and must not be tested on `LEGACY_TRIAL_CAPTURE.jpeg` or historical captures.",
++            "",
++            "## Provenance and reproduction",
++            "",
++            f"Configuration hash: `{config['configuration_sha256']}`. Runtime, model hashes, exact commands, source hashes, and Adobe MIT attribution are in `results/runtime_manifest.json`, `results/model_manifest.json`, `results/command_log.jsonl`, the copied `source_pack/manifest.json`, and `SOURCE_LICENSE_AUDIT.md`.",
++            "",
++            "Adobe's FAQ describes process-dependent printing and gives strength 1.5 as an example; that is an upstream claim, not a result of this document pilot.",
++        ]
++    )
++    report_path = LEAD_DIR / "REPORT.md"
++    report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
++
++    checkpoint = {
++        "schema": "nishan-learned-checkpoint/v1",
++        "updated_at_utc": utc_now(),
++        "stage": "bounded_digital_pilot_complete",
++        "blocking_inputs": [
++            "New matched prints and captures are required for any physical claim."
++        ],
++        "required_user_or_gpt6_pro_question": "Should the coordinator include the gated raster candidate in a matched print pack with an unmarked reference and original-profile control?",
++        "next_runnable_action": "If authorized, print only the coordinator-selected matched pack and preregister capture conditions before decoding.",
++        "configuration_sha256": config["configuration_sha256"],
++        "selected_strength": chosen,
++        "print_gate_allowed": print_gate["allowed"],
++    }
++    write_json(LEAD_DIR / "checkpoint.json", checkpoint)
++    return summary
++
++
++def parse_args(argv: list[str]) -> argparse.Namespace:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument(
++        "stage", choices=("prepare", "smoke", "validation", "confirm", "report")
++    )
++    return parser.parse_args(argv)
++
++
++def main(argv: list[str] | None = None) -> int:
++    args = parse_args(sys.argv[1:] if argv is None else argv)
++    action = {
++        "prepare": prepare,
++        "smoke": smoke,
++        "validation": validation,
++        "confirm": confirmation,
++        "report": report,
++    }[args.stage]
++    result = action()
++    print(json.dumps(result, indent=2, sort_keys=True))
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/research/robustness/learned/src/receiver.py b/research/robustness/learned/src/receiver.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..82b58835635dffcfd83fcec7ead4a817d1f16d74
+--- /dev/null
++++ b/research/robustness/learned/src/receiver.py
+@@ -0,0 +1,54 @@
++"""Registry-only receiver decisions for the bounded pilot."""
++
++from __future__ import annotations
++
++import re
++
++BITSTRING = re.compile(r"^[01]{61}$")
++DECODED = re.compile(r"Found watermark: ([01]{61})")
++
++
++def parse_decode_output(stdout: str) -> str | None:
++    """Parse the official CLI's valid-message or abstention output."""
++    if "Corrupt or missing watermark" in stdout:
++        return None
++    match = DECODED.search(stdout)
++    if not match:
++        raise ValueError(f"unrecognized TrustMark decode output: {stdout!r}")
++    return match.group(1)
++
++
++def classify(
++    decoded: str | None,
++    expected: str,
++    registry: dict[str, str],
++) -> dict[str, bool | str]:
++    """Classify without deriving or guessing messages.
++
++    A valid but unregistered BCH output is never accepted by this receiver.
++    """
++    if not BITSTRING.fullmatch(expected):
++        raise ValueError("expected must be a 61-bit string")
++    if set(registry) != {"A", "B"} or any(
++        not BITSTRING.fullmatch(value) for value in registry.values()
++    ):
++        raise ValueError("registry must contain valid A and B messages")
++
++    if decoded is None:
++        outcome = "abstain"
++    elif not BITSTRING.fullmatch(decoded):
++        raise ValueError("decoded must be None or a 61-bit string")
++    elif decoded == expected:
++        outcome = "exact_target"
++    elif decoded in registry.values():
++        outcome = "other_issued"
++    else:
++        outcome = "unissued_valid"
++
++    return {
++        "outcome": outcome,
++        "decoder_valid": decoded is not None,
++        "target_accepted": outcome == "exact_target",
++        "any_issued_recognized": decoded in registry.values() if decoded else False,
++        "unissued_accepted": False,
++    }
+diff --git a/research/robustness/learned/src/run_development_completeness.py b/research/robustness/learned/src/run_development_completeness.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..0b750a8f40a550ada1b222b4a62334848d1b3cf4
+--- /dev/null
++++ b/research/robustness/learned/src/run_development_completeness.py
+@@ -0,0 +1,60 @@
++#!/usr/bin/env python3
++"""Complete two-message coverage of the development split after confirmation.
++
++This descriptive run is intentionally post-confirmation. It uses only the
++already committed strength 1.0 and cannot affect selection or the print gate.
++"""
++
++from __future__ import annotations
++
++import json
++import sys
++from pathlib import Path
++
++SRC_DIR = Path(__file__).resolve().parent
++sys.path.insert(0, str(SRC_DIR))
++
++import pilot  # noqa: E402
++
++LEAD_DIR = SRC_DIR.parent
++RESULTS_DIR = LEAD_DIR / "results"
++
++
++def main() -> int:
++    selection = pilot.require_committed_selection()
++    if not selection.get("gate_passed") or selection.get("chosen_strength") != 1.0:
++        raise RuntimeError("unexpected frozen selection")
++    confirmation = pilot.read_json(RESULTS_DIR / "confirmation_summary.json")
++    if confirmation.get("configuration_sha256") != selection["configuration_sha256"]:
++        raise RuntimeError("confirmation/configuration mismatch")
++    cases = [case for case in pilot.verify_sources() if case["split"] == "development"]
++    registry = pilot.read_json(RESULTS_DIR / "receiver_registry.json")
++    matrix = pilot.evaluate_matrix("development_post_confirmation", cases, [1.0], registry)
++    unmarked = pilot.evaluate_unmarked_controls("development_post_confirmation", cases, registry)
++    rows = matrix + unmarked
++    pilot.write_rows("development_cases", rows)
++    summary = {
++        "schema": "nishan-trustmark-development-completeness/v1",
++        "created_at_utc": pilot.utc_now(),
++        "configuration_sha256": selection["configuration_sha256"],
++        "selection_sha256": pilot.sha256_file(RESULTS_DIR / "selection.json"),
++        "strength": 1.0,
++        "post_confirmation_descriptive_only": True,
++        "cannot_change_selection_or_print_gate": True,
++        "matrix_exact": sum(bool(row["exact_recovery"]) for row in matrix),
++        "matrix_total": len(matrix),
++        "wrong_valid": sum(
++            bool(row["decoder_valid"] and not row["exact_recovery"]) for row in matrix
++        ),
++        "abstain": sum(row["outcome"] == "abstain" for row in matrix),
++        "unmarked_valid": sum(bool(row["decoder_valid"]) for row in unmarked),
++        "sources": [case["id"] for case in cases],
++        "messages_per_source": 2,
++    }
++    pilot.write_json(RESULTS_DIR / "development_summary.json", summary)
++    print(json.dumps(summary, indent=2, sort_keys=True))
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/research/robustness/learned/tests/test_pilot.py b/research/robustness/learned/tests/test_pilot.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..1160182cf79e0268990eee5b541f1d12812f2203
+--- /dev/null
++++ b/research/robustness/learned/tests/test_pilot.py
+@@ -0,0 +1,125 @@
++from __future__ import annotations
++
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++import numpy as np
++from PIL import Image
++
++LEAD_DIR = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(LEAD_DIR / "src"))
++
++import messages  # noqa: E402
++import pilot  # noqa: E402
++import receiver  # noqa: E402
++
++
++class MessageTests(unittest.TestCase):
++    def test_frozen_message_and_independence(self) -> None:
++        self.assertEqual(
++            messages.issue("dev_memo", "A"),
++            "0111100111110001100011010101000000011001000101001110011100011",
++        )
++        self.assertEqual(len(messages.issue("dev_memo", "B")), 61)
++        self.assertNotEqual(
++            messages.issue("dev_memo", "A"), messages.issue("dev_memo", "B")
++        )
++        self.assertNotEqual(
++            messages.issue("dev_memo", "A"), messages.issue("dev_table", "A")
++        )
++
++    def test_invalid_message_inputs_fail(self) -> None:
++        with self.assertRaises(ValueError):
++            messages.issue("dev|memo", "A")
++        with self.assertRaises(ValueError):
++            messages.issue("dev_memo", "C")
++
++
++class ReceiverTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.registry = {
++            "A": messages.issue("dev_memo", "A"),
++            "B": messages.issue("dev_memo", "B"),
++        }
++
++    def test_all_receiver_outcomes(self) -> None:
++        expected = self.registry["A"]
++        self.assertEqual(
++            receiver.classify(expected, expected, self.registry)["outcome"],
++            "exact_target",
++        )
++        self.assertEqual(
++            receiver.classify(self.registry["B"], expected, self.registry)["outcome"],
++            "other_issued",
++        )
++        unissued = "0" * 61
++        self.assertNotIn(unissued, self.registry.values())
++        decision = receiver.classify(unissued, expected, self.registry)
++        self.assertEqual(decision["outcome"], "unissued_valid")
++        self.assertFalse(decision["unissued_accepted"])
++        self.assertEqual(
++            receiver.classify(None, expected, self.registry)["outcome"], "abstain"
++        )
++
++    def test_cli_output_parser(self) -> None:
++        message = self.registry["A"]
++        self.assertEqual(receiver.parse_decode_output(f"Found watermark: {message}\n"), message)
++        self.assertIsNone(receiver.parse_decode_output("Corrupt or missing watermark\n"))
++        with self.assertRaises(ValueError):
++            receiver.parse_decode_output("unexpected")
++
++
++class SourceAndTransformTests(unittest.TestCase):
++    def test_source_pack_matches_frozen_manifest(self) -> None:
++        cases = pilot.verify_sources()
++        self.assertEqual(len(cases), 6)
++        self.assertEqual(
++            [case["split"] for case in cases].count("confirmation"), 2
++        )
++
++    def test_resize_and_bilevel_are_deterministic(self) -> None:
++        array = np.full((120, 80, 3), 250, dtype=np.uint8)
++        array[20:100, 30:50] = 30
++        image = Image.fromarray(array, "RGB")
++        with tempfile.TemporaryDirectory() as tmp:
++            resized_path = Path(tmp) / "resize.png"
++            pilot.apply_transform(image, "screenshot_resize", resized_path)
++            with Image.open(resized_path) as resized:
++                self.assertEqual(resized.size, (768, 1152))
++            bilevel_path = Path(tmp) / "bilevel.png"
++            pilot.apply_transform(image, "scanner_bilevel", bilevel_path)
++            with Image.open(bilevel_path) as bilevel:
++                values = set(np.asarray(bilevel).reshape(-1).tolist())
++            self.assertEqual(values, {0, 255})
++
++    def test_perspective_path_retains_dimensions(self) -> None:
++        image = Image.new("RGB", (96, 128), "white")
++        with tempfile.TemporaryDirectory() as tmp:
++            output = Path(tmp) / "perspective.png"
++            pilot.apply_transform(image, "perspective_blur_rectified", output)
++            with Image.open(output) as transformed:
++                self.assertEqual(transformed.size, image.size)
++
++
++class MetricAndSelectionTests(unittest.TestCase):
++    def test_quality_metrics(self) -> None:
++        source = Image.new("RGB", (20, 20), "white")
++        same = pilot.quality_metrics(source, source)
++        self.assertEqual(same["global_psnr_db"], "inf")
++        changed = source.copy()
++        changed.putpixel((0, 0), (0, 0, 0))
++        metrics = pilot.quality_metrics(source, changed)
++        self.assertGreater(metrics["global_mae"], 0)
++        self.assertLess(metrics["global_psnr_db"], 60)
++
++    def test_selection_tie_prefers_lower_strength(self) -> None:
++        rows = pilot.synthetic_passing_validation_rows_for_test()
++        selection = pilot.select_strength(rows, unmarked_valid=0)
++        self.assertEqual(selection["chosen_strength"], 1.0)
++        self.assertTrue(selection["gate_passed"])
++
++
++if __name__ == "__main__":
++    unittest.main()

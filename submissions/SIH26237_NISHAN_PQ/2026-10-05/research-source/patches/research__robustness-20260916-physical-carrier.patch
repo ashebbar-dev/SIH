@@ -1,0 +1,3126 @@
+diff --git a/research/robustness/physical_carrier/PLAN.md b/research/robustness/physical_carrier/PLAN.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..2976d9eae95108bdf6c72280cf151ce5835e5add
+--- /dev/null
++++ b/research/robustness/physical_carrier/PLAN.md
+@@ -0,0 +1,201 @@
++# Print-aware compact physical carrier implementation plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
++
++**Goal:** Build and falsify a text-preserving, print-aware compact session-message carrier against a nominal-area-matched legacy spatial-template baseline, without claiming the original 52,500-symbol Tardos threat model.
++
++**Architecture:** A small codec packs a 10-bit roster row and 22-bit synthetic session/message identifier with a 16-bit keyed check, then encodes the 48 bits as twelve extended-Hamming `(8,4,4)` blocks (96 codeword bits). The candidate carrier disperses seven analog repetitions across source-specific 32 px blank-region tiles and encodes each bit with equal-ink, complementary clustered-dot lobes; the baseline disperses fifty repetitions through the existing 12 px bipolar split template. A single runner copies the committed common source pack, generates the frozen observations and falsification controls, and writes finite JSON plus per-case CSV.
++
++**Tech Stack:** Python 3.11+, NumPy, Pillow, PyMuPDF, existing `nishan.tardos_carrier`, existing `nishan.registration`, `unittest`.
++
++**Spec:** `/tmp/sih-robustness-20260916-control/research/robustness_campaign/SPEC.md` and `research/robustness/physical_carrier/preregistration.json`.
++
++## Global constraints
++
++- Protected baseline is `f37e861dc02815adf1bebb3e1b45ff222dccf821`; all writes remain on `research/robustness-20260916-physical-carrier` in `/tmp/sih-robustness-20260916-physical-carrier`.
++- Use `__PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python` read-only with `PYTHONDONTWRITEBYTECODE=1`; do not install dependencies.
++- Set `OMP_NUM_THREADS=2`, `OPENBLAS_NUM_THREADS=2`, and `MKL_NUM_THREADS=2`; target less than 1.5 GiB resident memory and 500 MiB added artifacts.
++- Historical `legacy-capture-0*.jpeg` captures are development-only channel diagnostics and are not evaluation data for this new carrier. New carrier evidence requires newly printed corresponding pages.
++- The 48-bit research message is not a UUID, deployment authenticator, content-binding proof, or collusion-equivalent fingerprint. The 16-bit keyed check does not justify a false-attribution security claim.
++- The roster has 1,000 rows, but the compact message has no collusion resistance. Exact whole-message recovery, ECC failures, tag failures, target-message mismatch, and abstentions are reported separately.
++- No more than two lead-specific physical-test PDFs may be selected: one candidate and one matched baseline. The coordinator's eventual pack must separately reference an unmarked source and original 52,500-symbol control.
++- Configuration, source allocation, transformations, metrics, and advancement rule are frozen in `preregistration.json` before evaluation.
++
++---
++
++## File map
++
++- `research/robustness/physical_carrier/codec.py`: bounded message packing, keyed check, extended-Hamming encoding/decoding, and exact-message decision.
++- `research/robustness/physical_carrier/carrier.py`: blank-tile capacity, 32 px clustered-dot embed/decode, fidelity masks, and nominal-area profile declarations.
++- `research/robustness/physical_carrier/run_pilot.py`: source verification, PDF generation, transforms, controls, observation scoring, CSV/JSON/log/print-packet outputs.
++- `research/robustness/physical_carrier/score_capture.py`: read-only scorer for a fresh capture and one frozen print-ready profile/source pair.
++- `research/robustness/physical_carrier/tests/test_codec.py`: codec distance, correction, rejection, and exact-message tests.
++- `research/robustness/physical_carrier/tests/test_carrier.py`: profile-area, blank capacity, tile masking, and correlation-collapse tests.
++- `research/robustness/physical_carrier/tests/test_matrix.py`: declared matrix/control identities, no-overwrite guard, and finite-output tests.
++- `research/robustness/physical_carrier/pilot/`: generated committed manifest, CSV/JSON results, concise command log, two selected PDFs if advancement passes, and small diagnostic crops; no replay secrets.
++- `research/robustness/physical_carrier/REPORT.md`: measured comparison, failures, scope changes, and physical next step.
++- `research/robustness/physical_carrier/checkpoint.json`: current stage, blockers, and focused GPT-6-Pro question.
++- `research/robustness/physical_carrier/SOURCE_AUDIT.md`: common-pack provenance, hashes, local generator commit, primary references, and missing physical artifacts.
++
++### Task 1: Implement the bounded message/ECC codec
++
++**Files:**
++- Create: `research/robustness/physical_carrier/codec.py`
++- Create: `research/robustness/physical_carrier/tests/test_codec.py`
++
++**Interfaces:**
++- Consumes: `row: int`, `message_id: int`, `key: bytes`, and `context: str`.
++- Produces: `encode_message(...) -> numpy.ndarray[uint8]` of shape `(96,)`; `decode_message(...) -> DecodeResult` with corrected bit counts, uncorrectable block count, tag validity, parsed fields, and exact expected-message match.
++
++- [ ] **Step 1: Write failing tests for bit layout and ECC distance**
++
++```python
++def test_message_round_trip_is_96_bits():
++    word = encode_message(7, 0x2A1B3C, b"k" * 32, "ctx")
++    assert word.shape == (96,)
++    result = decode_message(word, b"k" * 32, "ctx", expected=(7, 0x2A1B3C))
++    assert result.accepted_expected and result.payload_bits == 48
++
++def test_each_hamming_block_corrects_one_and_rejects_two_errors():
++    encoded = encode_nibble(0b1010)
++    for index in range(8):
++        damaged = encoded.copy(); damaged[index] ^= 1
++        assert decode_nibble(damaged).nibble == 0b1010
++    damaged = encoded.copy(); damaged[[0, 1]] ^= 1
++    assert decode_nibble(damaged).uncorrectable
++```
++
++- [ ] **Step 2: Run the focused codec tests and retain the RED output**
++
++Run: `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=research/robustness/physical_carrier __PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python -m unittest research.robustness.physical_carrier.tests.test_codec -v`
++
++Expected: import failure because `codec.py` does not exist.
++
++- [ ] **Step 3: Implement the exact frozen codec**
++
++Implement a big-endian 32-bit body `row[10] || message_id[22]`, a two-byte `HMAC-SHA3-256(key, b"NISHAN-PHYSICAL-MESSAGE/v1\0" + context + body)[:2]`, and twelve independently encoded extended-Hamming blocks. Use code positions `[p1,p2,d0,p4,d1,d2,d3,p0]` and brute-force nearest-codeword decoding; accept a block only at distance 0 or 1. `accepted_expected` requires zero uncorrectable blocks, a valid 16-bit check, and exact equality of both parsed fields to the expected tuple.
++
++- [ ] **Step 4: Add negative tests for wrong key/context, other issued message, malformed fields, and two-bit ECC errors**
++
++```python
++assert not decode_message(word, b"z" * 32, "ctx", expected=(7, 0x2A1B3C)).tag_valid
++assert not decode_message(word, b"k" * 32, "wrong", expected=(7, 0x2A1B3C)).tag_valid
++assert decode_message(other_word, key, "ctx", expected=(7, 0x2A1B3C)).valid_other_message
++```
++
++- [ ] **Step 5: Run the codec tests and retain the GREEN output**
++
++Expected: all codec tests pass without bytecode files.
++
++### Task 2: Implement the candidate carrier and matched profile accounting
++
++**Files:**
++- Create: `research/robustness/physical_carrier/carrier.py`
++- Create: `research/robustness/physical_carrier/tests/test_carrier.py`
++
++**Interfaces:**
++- Consumes: source PDF, 96-bit codeword, public synthetic carrier key/context, frozen `CarrierProfile`.
++- Produces: text-preserving marked PDF; capacity/fidelity dictionaries; `decode_correlations(...) -> (96-bit hard word, 96 summed correlations, diagnostics)`.
++
++- [ ] **Step 1: Write failing profile and capacity tests**
++
++```python
++def test_profiles_have_nearly_equal_nominal_area():
++    assert CANDIDATE.physical_symbols == 96 * 7
++    assert BASELINE.physical_symbols == 96 * 50
++    assert abs(CANDIDATE.nominal_pixels / BASELINE.nominal_pixels - 1) < 0.005
++
++def test_candidate_mask_excludes_padded_text_and_nonblank_tiles():
++    tiles = eligible_tiles(source, block_size=32, text_padding=8, blank_floor=254)
++    assert all(tile_is_blank_and_outside_text(source, tile) for tile in tiles)
++```
++
++- [ ] **Step 2: Run carrier tests to verify RED**
++
++Run: `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/robustness/physical_carrier __PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python -m unittest research.robustness.physical_carrier.tests.test_carrier -v`
++
++- [ ] **Step 3: Implement the 32 px equal-ink clustered-dot carrier**
++
++Each physical symbol uses one 32×32 blank tile, one of two complementary left/right or top/bottom lobes, sixteen 2×2 dark clusters (64 changed pixels), an 18-level neutral-luma decrement, and keyed orientation/polarity. Both bit values deposit the same number and strength of neutral-gray pixels. Select only tiles outside text boxes padded by 8 rendered pixels and with at least 99% of pixels at luma 254 or higher. Sum seven analog repetitions before the hard bit decision. Draw only the small opaque gray vector clusters in eligible blank tiles so PDF text objects remain unchanged and a page-wide transparency group cannot perturb text antialiasing.
++
++- [ ] **Step 4: Wrap the matched legacy baseline**
++
++Use existing `tardos_carrier.embed_pdf`/`decode_word_with_diagnostics` with block 12, strength 4, fifty analog repetitions, and the same 96-bit codeword. Record that its bipolar template clips asymmetrically on white paper and that it does not avoid text regions.
++
++- [ ] **Step 5: Implement fidelity masks and explicit capacity failure**
++
++Measure global PSNR, text-region MSE/PSNR/max delta/changed fraction, blank-region MSE/PSNR/max delta/changed fraction, extracted-text equality, eligible tile count, maximum complete 96-bit repetitions, and rejection of the frozen 18-repetition capacity probe.
++
++- [ ] **Step 6: Run carrier tests and retain GREEN output**
++
++Expected: all profile, mask, correlation, and capacity tests pass.
++
++### Task 3: Implement and run the frozen synthetic matrix
++
++**Files:**
++- Create: `research/robustness/physical_carrier/run_pilot.py`
++- Create: `research/robustness/physical_carrier/tests/test_matrix.py`
++- Generate: `research/robustness/physical_carrier/pilot/manifest.json`
++- Generate: `research/robustness/physical_carrier/pilot/observations.csv`
++- Generate: `research/robustness/physical_carrier/pilot/results.json`
++- Generate: `research/robustness/physical_carrier/pilot/command.log`
++
++**Interfaces:**
++- Consumes: the six PDFs and manifest at `/tmp/sih-robustness-20260916-control/research/robustness_campaign/sources/`, with hashes verified before use.
++- Produces: one observation row per frozen identity and aggregate split/profile/channel counts.
++
++- [ ] **Step 1: Test the exact declared matrix and no-overwrite guard**
++
++For every source/profile declare six target positives (`clean`, `jpeg55`, `photo_resize_jpeg`, `print_halftone`, `scanner_contrast`, `scanner_bilevel`), three unmarked negatives (`clean`, `print_halftone`, `scanner_bilevel`), clean wrong-key, clean wrong-context, clean other-issued, and a copied-overlay/content-modified transplant. Assert the count, unique identity tuples, and expected classifications.
++
++- [ ] **Step 2: Implement the frozen transforms**
++
++`photo_resize_jpeg` downsizes longest edge to 1280 px and saves JPEG quality 65 with 4:2:0 subsampling; `print_halftone` upscales 2×, applies a fixed 8×8 Bayer bilevel screen, 3 px dot gain, 0.6 px optical blur, and downsamples to 144 DPI; `scanner_contrast` converts to grayscale, applies fixed 1.8× contrast and 0.6 px blur; `scanner_bilevel` thresholds grayscale at 200. These are deterministic diagnostics, not validated device models. JPEG Q55 remains a separate codec control and is not called WhatsApp robustness.
++
++- [ ] **Step 3: Implement controls and outcome labels**
++
++Unmarked/wrong-key/wrong-context must abstain; other-issued may decode a valid whole message but must not equal/accept the expected target. The transplant deliberately moves the donor residual onto modified visible content; donor recovery is recorded as failure of content binding, never authenticity or culpability evidence.
++
++- [ ] **Step 4: Run focused tests and retain output**
++
++Run: `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/robustness/physical_carrier __PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python -m unittest discover -s research/robustness/physical_carrier/tests -p 'test_*.py' -v`
++
++- [ ] **Step 5: Run the one frozen pilot with two CPU threads**
++
++Run: `OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/robustness/physical_carrier __PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python research/robustness/physical_carrier/run_pilot.py --output research/robustness/physical_carrier/pilot`
++
++Expected: finite JSON/CSV, verified source/configuration hashes, no overwritten destination, and split-specific exact-message counts.
++
++### Task 4: Package the physical falsification and report
++
++**Files:**
++- Create: `research/robustness/physical_carrier/score_capture.py`
++- Generate conditionally: `research/robustness/physical_carrier/pilot/print_ready/test-mixed-candidate-row-7.pdf`
++- Generate conditionally: `research/robustness/physical_carrier/pilot/print_ready/test-mixed-baseline-row-7.pdf`
++- Create: `research/robustness/physical_carrier/REPORT.md`
++- Create: `research/robustness/physical_carrier/SOURCE_AUDIT.md`
++- Create: `research/robustness/physical_carrier/checkpoint.json`
++
++**Interfaces:**
++- Consumes: frozen pilot results and a future original capture file.
++- Produces: empirical extraction report with whole-message/ECC/tag details and no identity or content-authenticity verdict.
++
++- [ ] **Step 1: Apply the preregistered advancement rule without tuning**
++
++Require all clean positives to recover the entire expected 48-bit payload, all target-negative controls to avoid `accepted_expected`, unchanged extracted text, zero candidate text-region changed pixels, candidate confirmation-channel exact-recovery count no lower than baseline, and exact recovery on both confirmation sources under `print_halftone` and `photo_resize_jpeg`. Scanner-bilevel failures remain counted and disclosed.
++
++- [ ] **Step 2: Select at most two PDFs only if the rule passes**
++
++Copy only the `test_mixed` row-7 candidate and matched baseline PDFs into `pilot/print_ready/`. `PRINTING.md` must ask for actual-size printing with identical settings, one full-page phone photograph each, original camera files sent as WhatsApp documents, and a scanner/binarization capture if feasible. It must reference, not duplicate, the unmarked source and coordinator-owned original 52,500-symbol control.
++
++- [ ] **Step 3: Implement read-only fresh-capture scoring**
++
++The scorer verifies source/config hashes, uses always-on content registration, emits ECC corrections/uncorrectable blocks/full recovered payload/tag validity/exact expected-message match, and never writes to the pilot directory or promotes an identity verdict.
++
++- [ ] **Step 4: Write the report and audit**
++
++Report every profile/channel/split count, bit and block failures, all false-control outcomes, capacity failures, text/blank distortion, runtime/hardware/commit/config hash, prior compact-pilot non-improvement, payload/threat reduction, transplant limitation, and that synthetic success is not physical evidence.
++
++- [ ] **Step 5: Re-run tests, hash artifacts, inspect the selected crop, and commit safe files**
++
++Do not commit real captures, private keys, caches, or more than the two selected PDFs. Record exact command output and artifact sizes, then commit the bounded research package on this branch without pushing or merging.
+diff --git a/research/robustness/physical_carrier/REPORT.md b/research/robustness/physical_carrier/REPORT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..515163cb3a6f525639789ea1589a9dcd4aa0caff
+--- /dev/null
++++ b/research/robustness/physical_carrier/REPORT.md
+@@ -0,0 +1,164 @@
++# Compact print-aware physical carrier: frozen synthetic pilot
++
++Date: 2026-09-16
++Status: **synthetic advancement rule passed; physical robustness remains untested**
++
++## Decision
++
++The preregistered candidate `inkcluster_32_r7` advances to one fresh, matched physical falsification alongside `legacy_split_12_r50`. It recovered the entire expected 48-bit message in 30/36 positive synthetic cases versus 26/36 for the legacy comparator, and in 6/8 versus 5/8 confirmation-channel cases. All required clean, photo-resize, and halftone cases passed; every target-negative control avoided target acceptance.
++
++This is **not** evidence that the candidate is superior, invisible, physically robust, secure, or production-ready. Only nominal carrier area was matched. The candidate used a larger decrement (18 versus strength 4), source-informed blank allocation, fewer changed pixels, and substantially worse global PSNR (39.709 dB versus 46.204-46.250 dB). At inspection zoom its dots are plainly visible. No fresh print, camera, scanner, or WhatsApp observation was tested.
++
++## Hypothesis and frozen comparison
++
++The engineering hypothesis was that a 96-bit, ECC-protected session message placed as seven equal-ink clustered-dot repetitions in blank 32 px tiles would retain exact-message recovery through the frozen diagnostics while avoiding text pixels. It was compared with the existing 12 px split template carrying the same 96-bit word fifty times.
++
++| Property | Legacy comparator | Candidate |
++|---|---:|---:|
++| Logical codeword | 96 bits | 96 bits |
++| Physical repetitions | 50 | 7 |
++| Physical symbols | 4,800 | 672 |
++| Block size | 12 px | 32 px |
++| Nominal area | 691,200 px | 688,128 px (-0.444%) |
++| Configured strength | 4 | 18-level luma decrement |
++| Placement | all keyed spatial blocks; text not avoided | source-specific tiles, padded text excluded, at least 99% luma >=254 |
++| Changed pixels/symbol | template-wide/clipped on white | 64 pixels in sixteen 2x2 clusters |
++| Coalition model | none in this compact comparison | none |
++
++This is nominal-area matching only. It is not matched measured distortion, local contrast, visibility, spatial freedom, embedding strength, or the original `m=52,500`, `c=5` threat model.
++
++The bounded message is `recipient_row[10] || synthetic_session_message_id[22] || keyed_check[16]` (48 payload bits) encoded as twelve independent extended-Hamming `(8,4,4)` blocks (96 coded bits). The target is row 7 and public synthetic message `0x2A1B3C`; row 29/message `0x155AA5` is the other-issued control. The 16-bit HMAC truncation is only a pilot rejection check, not a deployment authenticator or false-attribution guarantee.
++
++## Matrix and exact-message recovery
++
++Every cell reports complete expected-message recovery, not a partial score or a row-only match.
++
++| Profile | Split | clean | jpeg55 | photo resize/JPEG | print halftone | scanner contrast | scanner bilevel |
++|---|---|---:|---:|---:|---:|---:|---:|
++| `legacy_split_12_r50` | development | 2/2 | 2/2 | 2/2 | 2/2 | 1/2 | 0/2 |
++| `legacy_split_12_r50` | validation | 2/2 | 2/2 | 2/2 | 2/2 | 0/2 | 0/2 |
++| `legacy_split_12_r50` | confirmation | 2/2 | 2/2 | 2/2 | 2/2 | 1/2 | 0/2 |
++| `inkcluster_32_r7` | development | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 | 0/2 |
++| `inkcluster_32_r7` | validation | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 | 0/2 |
++| `inkcluster_32_r7` | confirmation | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 | 0/2 |
++
++`jpeg55` is only a same-size codec diagnostic. `photo_resize_jpeg` is a deterministic resize/recompression diagnostic. Neither is a WhatsApp result or physical-photo result. Synthetic registration was off; the read-only fresh-capture scorer forces content registration on.
++
++### Bit and ECC summary across all six sources
++
++| Profile | Channel | exact/6 | BER mean [min,max] | corrected blocks | uncorrectable blocks |
++|---|---|---:|---:|---:|---:|
++| `legacy_split_12_r50` | clean | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `legacy_split_12_r50` | jpeg55 | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `legacy_split_12_r50` | photo resize/JPEG | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `legacy_split_12_r50` | print halftone | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `legacy_split_12_r50` | scanner contrast | 2/6 | 0.2917 [0.0000,0.4896] | 24 | 23 |
++| `legacy_split_12_r50` | scanner bilevel | 0/6 | 0.4583 [0.3750,0.5208] | 30 | 38 |
++| `inkcluster_32_r7` | clean | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `inkcluster_32_r7` | jpeg55 | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `inkcluster_32_r7` | photo resize/JPEG | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `inkcluster_32_r7` | print halftone | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `inkcluster_32_r7` | scanner contrast | 6/6 | 0.0000 [0.0000,0.0000] | 0 | 0 |
++| `inkcluster_32_r7` | scanner bilevel | 0/6 | 0.4444 [0.4167,0.5000] | 0 | 0 |
++
++The candidate's bilevel hard words happened to be valid Hamming codewords, so they recorded zero uncorrectable blocks, but their recovered payloads failed the keyed check. This is failure, not soft evidence of recovery.
++
++### Every positive failure
++
++| Source | Profile | Channel | BER | corrected | uncorrectable | tag | reason |
++|---|---|---|---:|---:|---:|---|---|
++| dev_memo | `legacy_split_12_r50` | scanner contrast | 0.3333 | 6 | 6 | false | `uncorrectable_ecc` |
++| dev_memo | `legacy_split_12_r50` | scanner bilevel | 0.3750 | 4 | 8 | false | `uncorrectable_ecc` |
++| dev_memo | `inkcluster_32_r7` | scanner bilevel | 0.4167 | 0 | 0 | false | `keyed_check_failed` |
++| dev_table | `legacy_split_12_r50` | scanner bilevel | 0.4271 | 5 | 7 | false | `uncorrectable_ecc` |
++| dev_table | `inkcluster_32_r7` | scanner bilevel | 0.5000 | 0 | 0 | false | `keyed_check_failed` |
++| validation_dense | `legacy_split_12_r50` | scanner contrast | 0.4896 | 5 | 7 | false | `uncorrectable_ecc` |
++| validation_dense | `legacy_split_12_r50` | scanner bilevel | 0.4896 | 5 | 6 | false | `uncorrectable_ecc` |
++| validation_dense | `inkcluster_32_r7` | scanner bilevel | 0.4583 | 0 | 0 | false | `keyed_check_failed` |
++| validation_diagram | `legacy_split_12_r50` | scanner contrast | 0.4583 | 6 | 6 | false | `uncorrectable_ecc` |
++| validation_diagram | `legacy_split_12_r50` | scanner bilevel | 0.4688 | 5 | 6 | false | `uncorrectable_ecc` |
++| validation_diagram | `inkcluster_32_r7` | scanner bilevel | 0.4167 | 0 | 0 | false | `keyed_check_failed` |
++| test_short | `legacy_split_12_r50` | scanner bilevel | 0.5208 | 6 | 6 | false | `uncorrectable_ecc` |
++| test_short | `inkcluster_32_r7` | scanner bilevel | 0.4167 | 0 | 0 | false | `keyed_check_failed` |
++| test_mixed | `legacy_split_12_r50` | scanner contrast | 0.4688 | 7 | 4 | false | `uncorrectable_ecc` |
++| test_mixed | `legacy_split_12_r50` | scanner bilevel | 0.4688 | 5 | 5 | false | `uncorrectable_ecc` |
++| test_mixed | `inkcluster_32_r7` | scanner bilevel | 0.4583 | 0 | 0 | false | `keyed_check_failed` |
++
++## Negative and transplantation controls
++
++For each profile, all 18 unmarked observations, six wrong-key observations, and six wrong-context observations abstained. All six other-issued observations decoded the complete valid row-29 message but never accepted the expected row-7 message. Across both profiles, target acceptance was therefore 0/72 mandatory target-negative observations.
++
++All 12 copied-overlay/modified-content observations recovered the donor's complete row-7 message: 12/12 explicit content-binding failures. This is expected for a residual transplant and shows that message recovery does not establish document authenticity, ledger truth, who copied the pattern, or human culpability. Transplants were excluded from the target-negative gate exactly as preregistered, not hidden.
++
++## Fidelity and visibility
++
++Ranges span the six target PDFs; they are not confidence intervals.
++
++| Region/metric | Legacy comparator | Candidate |
++|---|---:|---:|
++| Whole page PSNR | 46.204-46.250 dB | 39.709 dB |
++| Whole page MSE | 1.542-1.558 | 6.954 |
++| Whole page changed fraction | 17.653-20.718% | 2.146% |
++| Whole page max channel delta | 3 | 18 |
++| Text-region MSE | 1.525-1.540 | 0 |
++| Text-region changed fraction | 24.875-29.061% | 0% |
++| Text-region max channel delta | 3 | 0 |
++| Blank-region PSNR | 46.216-46.246 dB | 38.216-39.495 dB |
++| Blank-region changed fraction | 17.148-17.267% | 2.254-3.026% |
++| Blank-region max channel delta | 3 | 18 |
++| Extracted text identical | 6/6 | 6/6 |
++
++The candidate changed exactly 43,008 rendered pixels per page and none inside the unpadded text boxes. Its sparse marks are stronger, so global and blank-region PSNR are about 6.5-8.0 dB worse despite the lower changed fraction. The baseline's bipolar template clips asymmetrically against white paper and modifies many text pixels.
++
++The inspected 2x nearest-neighbor crop shows readable text in all panels, conspicuous candidate dot clusters, and lower-contrast diffuse baseline blocks. Poppler renders of both selected PDFs were one-page A4, unencrypted, with no clipping or layout overflow; the measured baseline text-pixel perturbation remains visible and disclosed. The inherited footer says “no watermark”; it is misleading on the marked derivatives, so the print operator must label sheets by filename. No blinded observer, print, or calibrated visibility study was performed.
++
++## Capacity and explicit failures
++
++Candidate eligible-tile counts were 929 (`dev_memo`), 727 (`dev_table`), 1,160 (`validation_dense`), 1,161 (`validation_diagram`), 1,679 (`test_short`), and 891 (`test_mixed`). This supports only 7-17 complete 96-bit repetitions. Frozen r7 fit every page, with `dev_table` at the seven-repetition floor.
++
++The fixed r18 probe required 1,728 tiles and was rejected on all 6/6 sources before embedding. The baseline had 13,860 total 12 px blocks on every page and needed 4,800. Capacity is therefore source-layout dependent and can fail on denser or differently formatted documents; the roster size does not imply carrier capacity.
++
++## Advancement-rule audit
++
++All frozen requirements passed without changing any seed, source, transform, profile, strength, threshold, or rule:
++
++- 12/12 clean positives recovered the entire expected message.
++- 0/72 mandatory target negatives accepted the expected message.
++- 12/12 target PDFs preserved extracted text.
++- 6/6 candidate PDFs had zero changed text-region pixels.
++- Candidate confirmation recovery was 6/8, not lower than the baseline's 5/8.
++- Candidate recovered both confirmation sources under both photo-resize/JPEG and print-halftone (4/4).
++
++Scanner-bilevel failures remained counted and disclosed. Passing this rule selects a page for a fresh physical falsification only.
++
++## Execution integrity and reproducibility
++
++The pre-evaluation implementation/configuration was committed as `ad4581f0798becd96e3a0253f11006f60415ea2c`; focused tests passed 22/22. Attempt 1 completed and wrote all 156 observation rows and arrays, then failed during packaging because `np.flatnonzero` was incorrectly unpacked as two coordinate arrays. Its manifest, CSV, arrays, and traceback are retained under `pilot_attempt1_packaging_failure/`.
++
++Only the post-evaluation visual-crop line was changed to `np.nonzero`; no algorithm, observation, transform, seed, threshold, or gate changed. Recovery attempt 2 ran from `67c2849d8116bc4d46107ec4e3c96e41b5ebebd1`. All 156 typed CSV outcome fields except runtime and both stored arrays were exactly equal between attempts. Attempt 2 completed in 147.194 seconds at 434,420 KiB peak RSS; final artifacts total 3,109,116 bytes. Final tests passed 26/26 after the read-only scorer and stricter frozen-identity/mask/ECC checks were added.
++
++- Configuration/preregistration SHA3-256: `6a97145dd1486aa9c77a79f809992e29cd26ee6eb83b2ae2b21ef96a445988ba`.
++- Runtime: Python 3.14.7; NumPy 2.5.3; Pillow 12.3.0; PyMuPDF 1.28.2; OpenCV headless 5.0.0.93.
++- Hardware: Intel Core i5-8350U, 4 cores/8 threads; Linux 7.2.4; OMP/OpenBLAS/MKL thread limits all 2.
++- Exact run and test commands: `pilot/command.log` and `pilot/test.log`.
++- Machine-readable retry comparison: `pilot/attempt_comparison.json`.
++- Full per-observation outcomes: `pilot/observations.csv`; full finite JSON and fidelity/capacity/control summaries: `pilot/results.json`; raw hard words/correlations: `pilot/observation_arrays.npz`.
++
++The prior 2026-09-12 compact pilot improved some synthetic BER but had no attribution-success-count improvement because its original comparator already succeeded everywhere; it had no physical test. This new pilot observes four additional candidate scanner-contrast recoveries overall, but the changed payload/threat model and much larger measured distortion prevent a same-threat or same-invisibility comparison. No published physical-document claim is treated as a measured comparator here.
++
++## Selected physical packet and next action
++
++The gate selected exactly two files:
++
++- `pilot/print_ready/test-mixed-candidate-row-7.pdf` - SHA-256 `2ec9016ab6de8bffbaa48b2e1efa81d69daa4b14dabeb52d59f7901c8ec21097`, SHA3-256 `a500a1b6351984d73d01b25ae22e4e45e1cf5172fa1818fff8e2a7d64dba4586`.
++- `pilot/print_ready/test-mixed-baseline-row-7.pdf` - SHA-256 `a642c6cf128b99405268faa150db6eaf57eb919b7c3dc35d2161d17b3e533ffa`, SHA3-256 `eacd3d268c570c371ce2c7e00f004d083cbeff483e2cc236784712028a6c9bae`.
++
++Print both at actual size with identical paper/printer settings. The eventual common packet must separately include/reference the unmarked `test_mixed.pdf` and coordinator-owned original 52,500-symbol control. Photograph every complete page upright under the same lighting/distance. Keep the original camera files and send them through WhatsApp **as documents**. If possible, obtain both a normal scanner capture and a separately labeled bilevel/binarized capture. Do not pool ordinary-camera, continuous-tone scanner, and bilevel results.
++
++Historical or newly supplied photos of an old carrier cannot validate these pages. Each score must use the matching source/profile. `score_capture.py` verifies the frozen hashes, forces content registration, and emits ECC corrections, uncorrectable blocks, full payload, tag validity, and exact-message match to stdout without writing into the pilot.
++
++The focused coordinator/GPT-6-Pro question is: **does the candidate's zero text-region distortion and 6/8 confirmation recovery justify this fresh print test despite its visibly stronger marks and roughly 6.5 dB worse whole-page PSNR, or should a separately named distortion-matched variant be preregistered before spending physical-test effort?** The current frozen rule answers only that the two-page falsification is worth trying.
++
++## Claim boundary
++
++The result supports only this statement: on six public synthetic pages and the declared deterministic transforms, the bounded 96-bit candidate met the preregistered rule for a fresh physical test. It does not support a WhatsApp claim, real print/camera or scanner claim, five-colluder claim, 52,500-symbol equivalence, false-attribution rate, content authenticity, immutable ledger claim, identity verdict, guilt claim, official SIH score, novelty claim, or production promotion.
+diff --git a/research/robustness/physical_carrier/SOURCE_AUDIT.md b/research/robustness/physical_carrier/SOURCE_AUDIT.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..1c8900ee7759be9192b2cb34eed01038b431c992
+--- /dev/null
++++ b/research/robustness/physical_carrier/SOURCE_AUDIT.md
+@@ -0,0 +1,60 @@
++# Source and license audit
++
++Date: 2026-09-16. This audit covers the compact physical-carrier pilot only. No user photographs, private keys, third-party datasets, model weights, paid services, or downloaded research artifacts were used.
++
++## Synthetic source pack
++
++All six one-page A4 PDFs are deterministic synthetic documents generated locally by `research/robustness_campaign/make_sources.py`. The generator uses only literal synthetic text, vector lines/rectangles, and PyMuPDF's built-in Base-14 fonts (`helv`, `tiro`, and `cour`). It imports no images, fonts, names, or operational records.
++
++- Pinned control commit: `1148b8b7bf5dde7d37ef9854f7d9978c6f003456` (`Add deterministic document diversity pack for robustness comparisons`).
++- Generator SHA-256 at that commit and in the inspected control worktree: `a48bf7b6caaa5204ffeec3794594d0aee3923dbcc366a14a8709a7dfa2fbbbc9`.
++- Source manifest SHA-256: `93be78266a0b5d8641fa00814e95d33a9de7519b283cb1195617a3e56a0c26ba`.
++- Source manifest SHA3-256 recorded by the pilot: `432fa0a75af1dcc443c87d9781bfae5e890eb7fc61c748495a949134ce3293ab`.
++- Allocation: `dev_memo` and `dev_table` development; `validation_dense` and `validation_diagram` validation; `test_short` and `test_mixed` confirmation.
++
++| Source | SHA-256 | Pages | Extracted characters |
++|---|---|---:|---:|
++| `dev_memo.pdf` | `52dc3801c0d65dc11eefd0b619c9426e3a6d700bdb0f9cc7c4421a817ca1a4e9` | 1 | 2,105 |
++| `dev_table.pdf` | `44a957f1996aad1da9738b0363a54583a23363d41df5922f21cd0dd783f4000e` | 1 | 1,442 |
++| `validation_dense.pdf` | `f18c6239248ff9ae1bb96d367a1092ab477c34df33f72a242764471571e5308c` | 1 | 3,745 |
++| `validation_diagram.pdf` | `d335161bb12febc75e4cfc936df13eb0d96dc1418439360912f56574503a96d3` | 1 | 1,264 |
++| `test_short.pdf` | `9dcc47491c0eacf9bbc8f2bf9b5131556bd463011fcb445122ec7d4e824c59d9` | 1 | 260 |
++| `test_mixed.pdf` | `351245e873555e6fcabdb914f5ddf66c355d5ec315c5b4a1bbca896d2450d395` | 1 | 2,107 |
++
++The source pack is synthetic convenience material, not a representative or licensed corpus and not evidence of real document diversity. The inherited `test_mixed` footer says no watermark is embedded; it is true only for the unmarked source and false in the two marked print derivatives. The print operator must label sheets by filename rather than by that inherited sentence.
++
++## Local implementation provenance
++
++- Protected application baseline: `f37e861dc02815adf1bebb3e1b45ff222dccf821`, tag `baseline/nishan-demo-2026-09-16`.
++- Frozen carrier/codec commit before evaluation: `ad4581f0798becd96e3a0253f11006f60415ea2c`.
++- Packaging-recovery commit used for the completed run: `67c2849d8116bc4d46107ec4e3c96e41b5ebebd1`.
++- Completed-result commit: `7337b7ecb294dcf19ba037d881219ee7673151e2`.
++- Repository origin recorded locally: [ashebbar-dev/SIH](https://github.com/ashebbar-dev/SIH).
++- The legacy comparator and registration code are repository-local `nishan.tardos_carrier` and `nishan.registration`; their exact SHA3-256 values are in `pilot/manifest.json`.
++- No repository-level `LICENSE`, `COPYING`, or equivalent file was found. These research outputs therefore make no redistribution-license claim for the enclosing project.
++
++The equal-ink clustered-dot carrier and bounded codec were implemented locally for this falsification pilot. They are not claimed as novel. No external watermark implementation or model was copied into this branch.
++
++## Runtime dependency audit
++
++The pre-existing read-only virtual environment was used; nothing was installed or updated.
++
++| Installed package | Version | Local metadata license | Primary project/license URL |
++|---|---:|---|---|
++| NumPy | 2.5.3 | `BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0` | [NumPy license](https://numpy.org/doc/stable/license) |
++| Pillow | 12.3.0 | `MIT-CMU` | [Pillow LICENSE](https://github.com/python-pillow/Pillow/blob/main/LICENSE) |
++| PyMuPDF | 1.28.2 | GNU AGPL 3.0 or Artifex commercial license | [PyMuPDF licensing FAQ](https://pymupdf.readthedocs.io/en/latest/faq/index.html) |
++| OpenCV Python headless | 5.0.0.93 | Apache 2.0 | [OpenCV license transition](https://github.com/opencv/opencv/wiki/OE-32.--Change-OpenCV-License-to-Apache-2) |
++
++These entries report installed-distribution metadata and primary project pages; they are not legal advice. PyMuPDF's dual-license terms and the missing enclosing-project license require review before any redistribution beyond the private research branch.
++
++## Missing or deliberately excluded artifacts
++
++- No newly printed candidate or baseline page, ordinary-camera photograph, scanner capture, or scanner-bilevel capture exists yet.
++- Historical `legacy-capture-0*.jpeg`, `LEGACY_TRIAL_CAPTURE`, and any older-carrier photo are excluded because they do not contain this carrier. The user's newer reported approximately 1,650-score photo/report was not supplied and would still not validate a differently embedded page.
++- No validated printer/ink/paper/phone/scanner/WhatsApp channel model, device calibration, ICC profile, lighting record, or physical scale measurement exists.
++- The coordinator-owned unmarked `test_mixed` reference and original 52,500-symbol/five-colluder control are referenced but not duplicated into this lead's two-PDF packet.
++- No deployment secrets exist: the committed seeds, keys, row, context, and 22-bit message identifier are public synthetic test state.
++- No false-attribution dataset, adversarial collusion set, copied-overlay prevention mechanism, or content-binding primitive was added.
++
++The next admissible evidence is a fresh matched physical capture of these exact marked PDFs, accompanied by separately labeled unmarked and original-profile controls.
+diff --git a/research/robustness/physical_carrier/carrier.py b/research/robustness/physical_carrier/carrier.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..d38c621741c6106aa6281aa80ad89a71b3439ba6
+--- /dev/null
++++ b/research/robustness/physical_carrier/carrier.py
+@@ -0,0 +1,592 @@
++"""Frozen spatial carriers for the print-aware compact-message pilot.
++
++The candidate is an empirical, source-informed background carrier.  It does
++not preserve the threat model of the 52,500-symbol Tardos profile: it carries a
++96-bit ECC word and assumes no collusion.  The legacy comparator uses the
++existing spatial split template but carries the same compact ECC word.
++"""
++
++from __future__ import annotations
++
++import hashlib
++import hmac
++import io
++import math
++from dataclasses import asdict, dataclass
++from pathlib import Path
++
++import numpy as np
++import pymupdf as fitz
++from PIL import Image
++
++from nishan import registration, tardos_carrier, watermark
++
++from codec import CODEWORD_BITS
++
++
++DPI = 144
++TEXT_PADDING = 8
++BLANK_LUMA_FLOOR = 254.0
++MINIMUM_BLANK_FRACTION = 0.99
++CAPACITY_PROBE_REPETITIONS = 18
++
++
++@dataclass(frozen=True)
++class CarrierProfile:
++    name: str
++    kind: str
++    block_size: int
++    repetitions: int
++    strength: float
++    text_avoidance: bool
++
++    @property
++    def physical_symbols(self) -> int:
++        return CODEWORD_BITS * self.repetitions
++
++    @property
++    def nominal_pixels(self) -> int:
++        return self.physical_symbols * self.block_size**2
++
++    def to_dict(self) -> dict[str, object]:
++        return {
++            **asdict(self),
++            "codeword_bits": CODEWORD_BITS,
++            "physical_symbols": self.physical_symbols,
++            "nominal_pixels": self.nominal_pixels,
++            "dpi": DPI,
++        }
++
++
++BASELINE = CarrierProfile(
++    name="legacy_split_12_r50",
++    kind="legacy_split",
++    block_size=12,
++    repetitions=50,
++    strength=4.0,
++    text_avoidance=False,
++)
++CANDIDATE = CarrierProfile(
++    name="inkcluster_32_r7",
++    kind="inkcluster",
++    block_size=32,
++    repetitions=7,
++    strength=18.0,
++    text_avoidance=True,
++)
++PROFILES = {profile.name: profile for profile in (BASELINE, CANDIDATE)}
++
++
++@dataclass(frozen=True)
++class Tile:
++    page: int
++    y: int
++    x: int
++
++
++def _prf_bytes(
++    secret: bytes, context: str, purpose: bytes, length: int
++) -> bytes:
++    if not isinstance(secret, bytes) or len(secret) < 16:
++        raise ValueError("carrier secret must contain at least 16 bytes")
++    if not isinstance(context, str) or not context:
++        raise ValueError("carrier context must be a non-empty string")
++    prefix = b"NISHAN-INKCLUSTER/v1\x00" + purpose + b"\x00" + context.encode(
++        "utf-8"
++    )
++    output = bytearray()
++    for counter in range(math.ceil(length / hashlib.sha3_256().digest_size)):
++        output.extend(
++            hmac.new(
++                secret,
++                prefix + counter.to_bytes(8, "big"),
++                hashlib.sha3_256,
++            ).digest()
++        )
++    return bytes(output[:length])
++
++
++def _binary_word(value: np.ndarray, length: int, label: str) -> np.ndarray:
++    array = np.asarray(value)
++    if array.shape != (length,) or np.any((array != 0) & (array != 1)):
++        raise ValueError(f"{label} must be a binary vector of length {length}")
++    return array.astype(np.uint8, copy=False)
++
++
++def _text(document: fitz.Document) -> str:
++    return "\f".join(page.get_text() for page in document)
++
++
++def _text_hash(value: str) -> str:
++    return hashlib.sha3_256(value.encode("utf-8")).hexdigest()
++
++
++def _text_masks(
++    source: Path,
++    page_shapes: list[tuple[int, int]],
++    *,
++    padding: int,
++) -> list[np.ndarray]:
++    document = fitz.open(source)
++    try:
++        if len(document) != len(page_shapes):
++            raise ValueError("PDF page count changed while making text masks")
++        masks: list[np.ndarray] = []
++        for page, (height, width) in zip(document, page_shapes, strict=True):
++            mask = np.zeros((height, width), dtype=bool)
++            scale_x = width / page.rect.width
++            scale_y = height / page.rect.height
++            for word in page.get_text("words"):
++                x0, y0, x1, y1 = word[:4]
++                left = max(0, int(math.floor(x0 * scale_x)) - padding)
++                right = min(width, int(math.ceil(x1 * scale_x)) + padding)
++                top = max(0, int(math.floor(y0 * scale_y)) - padding)
++                bottom = min(height, int(math.ceil(y1 * scale_y)) + padding)
++                if right > left and bottom > top:
++                    mask[top:bottom, left:right] = True
++            masks.append(mask)
++        return masks
++    finally:
++        document.close()
++
++
++def eligible_tiles(
++    source: Path,
++    *,
++    block_size: int = CANDIDATE.block_size,
++    text_padding: int = TEXT_PADDING,
++    blank_floor: float = BLANK_LUMA_FLOOR,
++    minimum_blank_fraction: float = MINIMUM_BLANK_FRACTION,
++) -> list[Tile]:
++    """Return raster-grid tiles that avoid padded text and are nearly blank."""
++
++    if block_size < 4 or block_size % 2:
++        raise ValueError("block_size must be an even integer of at least four")
++    if text_padding < 0:
++        raise ValueError("text_padding cannot be negative")
++    if not 0.0 <= minimum_blank_fraction <= 1.0:
++        raise ValueError("minimum_blank_fraction must be in [0, 1]")
++    pages, _ = watermark.load_pages(Path(source), dpi=DPI)
++    shapes = [page.shape[:2] for page in pages]
++    masks = _text_masks(Path(source), shapes, padding=text_padding)
++    result: list[Tile] = []
++    for page_index, (page, text_mask) in enumerate(
++        zip(pages, masks, strict=True)
++    ):
++        height, width = page.shape[:2]
++        luma = watermark._luma(page)
++        for y in range(0, height - block_size + 1, block_size):
++            for x in range(0, width - block_size + 1, block_size):
++                if text_mask[y : y + block_size, x : x + block_size].any():
++                    continue
++                blank_fraction = float(
++                    np.mean(
++                        luma[y : y + block_size, x : x + block_size]
++                        >= blank_floor
++                    )
++                )
++                if blank_fraction >= minimum_blank_fraction:
++                    result.append(Tile(page=page_index, y=y, x=x))
++    return result
++
++
++def candidate_capacity(source: Path) -> int:
++    return len(eligible_tiles(Path(source)))
++
++
++def _cluster_masks(block_size: int) -> np.ndarray:
++    """Return `[orientation, negative/positive, y, x]` clustered-dot masks."""
++
++    if block_size != 32:
++        raise ValueError("the frozen candidate uses exactly 32 px blocks")
++    masks = np.zeros((2, 2, block_size, block_size), dtype=bool)
++    # Vertical lobes: four x positions by four y positions, each a 2x2 cluster.
++    for lobe, x_base in enumerate((0, block_size // 2)):
++        for y in (3, 11, 19, 27):
++            for x in (1, 5, 9, 13):
++                masks[0, lobe, y : y + 2, x_base + x : x_base + x + 2] = True
++    # Horizontal lobes use the same equal-ink construction rotated 90 degrees.
++    for lobe, y_base in enumerate((0, block_size // 2)):
++        for y in (1, 5, 9, 13):
++            for x in (3, 11, 19, 27):
++                masks[1, lobe, y_base + y : y_base + y + 2, x : x + 2] = True
++    return masks
++
++
++def _candidate_plan(
++    secret: bytes, context: str, capacity: int, symbols: int
++) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
++    if symbols > capacity:
++        raise ValueError(
++            f"candidate needs {symbols} blank tiles but source capacity is {capacity}"
++        )
++    keys = np.frombuffer(
++        _prf_bytes(secret, context, b"tile-order", capacity * 8), dtype="<u8"
++    )
++    order = np.argsort(keys, kind="stable")[:symbols]
++    controls = np.unpackbits(
++        np.frombuffer(
++            _prf_bytes(secret, context, b"controls", math.ceil(symbols * 2 / 8)),
++            dtype=np.uint8,
++        )
++    )[: symbols * 2].reshape(symbols, 2)
++    orientations = controls[:, 0]
++    polarities = 2 * controls[:, 1].astype(np.int8) - 1
++    return order, orientations, polarities
++
++
++def _rgba_overlay(alpha: np.ndarray) -> bytes:
++    rgba = np.zeros((*alpha.shape, 4), dtype=np.uint8)
++    rgba[:, :, 3] = alpha
++    stream = io.BytesIO()
++    Image.fromarray(rgba, mode="RGBA").save(stream, format="PNG", optimize=True)
++    return stream.getvalue()
++
++
++def _cluster_origins(orientation: int, lobe: int) -> tuple[tuple[int, int], ...]:
++    """Return the sixteen 2x2 cluster origins for one frozen lobe."""
++
++    if orientation not in {0, 1} or lobe not in {0, 1}:
++        raise ValueError("orientation and lobe must be binary")
++    if orientation == 0:
++        return tuple(
++            (y, 16 * lobe + x)
++            for y in (3, 11, 19, 27)
++            for x in (1, 5, 9, 13)
++        )
++    return tuple(
++        (16 * lobe + y, x)
++        for y in (1, 5, 9, 13)
++        for x in (3, 11, 19, 27)
++    )
++
++
++def _embed_candidate(
++    source: Path,
++    destination: Path,
++    physical_word: np.ndarray,
++    secret: bytes,
++    context: str,
++    profile: CarrierProfile,
++) -> dict[str, object]:
++    pages, _ = watermark.load_pages(source, dpi=DPI)
++    tiles = eligible_tiles(source, block_size=profile.block_size)
++    order, orientations, polarities = _candidate_plan(
++        secret, context, len(tiles), int(physical_word.size)
++    )
++    masks = _cluster_masks(profile.block_size)
++    alpha = int(round(profile.strength))
++    if not 1 <= alpha <= 255 or float(alpha) != profile.strength:
++        raise ValueError("candidate strength must be an integer alpha in [1,255]")
++    signs = 2 * physical_word.astype(np.int8) - 1
++    placements: list[tuple[Tile, int, int]] = []
++    for symbol_index, tile_index in enumerate(order):
++        tile = tiles[int(tile_index)]
++        orientation = int(orientations[symbol_index])
++        encoded_positive = signs[symbol_index] * polarities[symbol_index] > 0
++        lobe = 1 if encoded_positive else 0
++        placements.append((tile, orientation, lobe))
++
++    document = fitz.open(source)
++    try:
++        source_text = _text(document)
++        for page_index, page in enumerate(document):
++            height, width = pages[page_index].shape[:2]
++            scale_x = page.rect.width / width
++            scale_y = page.rect.height / height
++            shape = page.new_shape()
++            rectangles = 0
++            for tile, orientation, lobe in placements:
++                if tile.page != page_index:
++                    continue
++                for local_y, local_x in _cluster_origins(orientation, lobe):
++                    shape.draw_rect(
++                        fitz.Rect(
++                            (tile.x + local_x) * scale_x,
++                            (tile.y + local_y) * scale_y,
++                            (tile.x + local_x + 2) * scale_x,
++                            (tile.y + local_y + 2) * scale_y,
++                        )
++                    )
++                    rectangles += 1
++            if rectangles:
++                gray = (255 - alpha) / 255.0
++                shape.finish(color=None, fill=(gray, gray, gray), width=0)
++                shape.commit(overlay=True)
++        destination.parent.mkdir(parents=True, exist_ok=True)
++        document.save(destination, garbage=0, clean=False, deflate=True)
++    finally:
++        document.close()
++    marked_document = fitz.open(destination)
++    try:
++        marked_text = _text(marked_document)
++    finally:
++        marked_document.close()
++    return {
++        "pages": len(pages),
++        "eligible_tiles": len(tiles),
++        "embedded_symbols": int(physical_word.size),
++        "changed_pixels_per_symbol": 64,
++        "actual_luma_mark_pixels": int(physical_word.size * 64),
++        "text_preserved": marked_text == source_text,
++        "source_text_sha3_256": _text_hash(source_text),
++        "marked_text_sha3_256": _text_hash(marked_text),
++    }
++
++
++def _region_metrics(
++    original: list[np.ndarray],
++    marked: list[np.ndarray],
++    masks: list[np.ndarray],
++) -> dict[str, object]:
++    squared_error = 0.0
++    values = 0
++    pixels = 0
++    changed_pixels = 0
++    max_delta = 0.0
++    for source_page, marked_page, mask in zip(
++        original, marked, masks, strict=True
++    ):
++        if source_page.shape != marked_page.shape or mask.shape != source_page.shape[:2]:
++            raise ValueError("fidelity inputs have incompatible shapes")
++        selected_source = source_page[mask].astype(np.float64)
++        selected_marked = marked_page[mask].astype(np.float64)
++        difference = selected_marked - selected_source
++        if difference.size:
++            squared_error += float(np.square(difference).sum())
++            values += int(difference.size)
++            pixels += int(mask.sum())
++            changed_pixels += int(np.count_nonzero(np.any(difference != 0.0, axis=1)))
++            max_delta = max(max_delta, float(np.abs(difference).max()))
++    if values == 0:
++        return {
++            "pixels": 0,
++            "mse": None,
++            "psnr_db": None,
++            "psnr_infinite": None,
++            "max_absolute_delta": None,
++            "changed_pixels": 0,
++            "changed_fraction": None,
++            "unavailable_reason": "region mask contains no pixels",
++        }
++    mse = squared_error / values
++    return {
++        "pixels": pixels,
++        "mse": mse,
++        "psnr_db": None if mse == 0.0 else 20.0 * math.log10(255.0 / math.sqrt(mse)),
++        "psnr_infinite": mse == 0.0,
++        "max_absolute_delta": max_delta,
++        "changed_pixels": changed_pixels,
++        "changed_fraction": changed_pixels / pixels,
++        "unavailable_reason": None,
++    }
++
++
++def fidelity_metrics(source: Path, marked: Path) -> dict[str, object]:
++    """Measure global, text-box and source-blank rendered distortion."""
++
++    source_pages, _ = watermark.load_pages(Path(source), dpi=DPI)
++    marked_pages, _ = watermark.load_pages(Path(marked), dpi=DPI)
++    if len(source_pages) != len(marked_pages):
++        raise ValueError("source and marked page counts differ")
++    shapes = [page.shape[:2] for page in source_pages]
++    text_masks = _text_masks(Path(source), shapes, padding=0)
++    global_masks = [np.ones(shape, dtype=bool) for shape in shapes]
++    blank_masks = [
++        (watermark._luma(page) >= BLANK_LUMA_FLOOR) & ~text_mask
++        for page, text_mask in zip(source_pages, text_masks, strict=True)
++    ]
++    return {
++        "global": _region_metrics(source_pages, marked_pages, global_masks),
++        "text_region": _region_metrics(source_pages, marked_pages, text_masks),
++        "blank_region": _region_metrics(source_pages, marked_pages, blank_masks),
++        "text_region_definition": "union of extracted word rectangles at 144 DPI, no padding",
++        "blank_region_definition": "source luma >=254 outside unpadded text rectangles",
++    }
++
++
++def embed_profile(
++    source: Path,
++    destination: Path,
++    codeword: np.ndarray,
++    secret: bytes,
++    context: str,
++    profile: CarrierProfile,
++) -> dict[str, object]:
++    """Embed the same 96-bit ECC word through one frozen spatial profile."""
++
++    word = _binary_word(codeword, CODEWORD_BITS, "ECC codeword")
++    physical_word = np.tile(word, profile.repetitions)
++    if profile.kind == "inkcluster":
++        carrier_metrics = _embed_candidate(
++            Path(source), Path(destination), physical_word, secret, context, profile
++        )
++    elif profile.kind == "legacy_split":
++        result = tardos_carrier.embed_pdf(
++            Path(source),
++            Path(destination),
++            physical_word,
++            secret,
++            context,
++            strength=profile.strength,
++            dpi=DPI,
++            block_size=profile.block_size,
++        )
++        carrier_metrics = asdict(result)
++        carrier_metrics["eligible_tiles"] = result.capacity_symbols
++        carrier_metrics["actual_luma_mark_pixels"] = None
++        carrier_metrics["changed_pixels_per_symbol"] = None
++    else:
++        raise ValueError(f"unknown carrier kind: {profile.kind}")
++    return {
++        "profile": profile.to_dict(),
++        **carrier_metrics,
++        "fidelity": fidelity_metrics(Path(source), Path(destination)),
++    }
++
++
++def collapse_correlations(
++    correlations: np.ndarray, logical_bits: int, repetitions: int
++) -> tuple[np.ndarray, np.ndarray]:
++    values = np.asarray(correlations, dtype=np.float64)
++    if logical_bits < 1 or repetitions < 1:
++        raise ValueError("logical_bits and repetitions must be positive")
++    if values.shape != (logical_bits * repetitions,) or not np.all(
++        np.isfinite(values)
++    ):
++        raise ValueError("correlations have the wrong shape or non-finite values")
++    summed = values.reshape(repetitions, logical_bits).sum(axis=0)
++    return (summed > 0.0).astype(np.uint8), summed
++
++
++def _registered_pages(
++    source: Path, suspect: Path, registration_mode: str
++) -> tuple[list[np.ndarray], list[np.ndarray], list[dict[str, object]]]:
++    if registration_mode not in {"off", "auto", "always"}:
++        raise ValueError("registration_mode must be off, auto, or always")
++    reference_pages, _ = watermark.load_pages(source, dpi=DPI)
++    suspect_pages, _ = watermark.load_pages(suspect, dpi=DPI)
++    if len(reference_pages) != len(suspect_pages):
++        raise ValueError("reference and suspect page counts differ")
++    aligned: list[np.ndarray] = []
++    diagnostics: list[dict[str, object]] = []
++    for reference, observed in zip(reference_pages, suspect_pages, strict=True):
++        original_observed_shape = observed.shape[:2]
++        should_register = registration_mode == "always" or (
++            registration_mode == "auto" and observed.shape[:2] != reference.shape[:2]
++        )
++        if should_register:
++            result, metrics = registration.align_page(reference, observed)
++            aligned.append(result)
++            diagnostics.append(metrics.to_dict())
++        else:
++            if observed.shape[:2] != reference.shape[:2]:
++                observed = np.asarray(
++                    Image.fromarray(observed).resize(
++                        (reference.shape[1], reference.shape[0]),
++                        Image.Resampling.LANCZOS,
++                    ),
++                    dtype=np.uint8,
++                )
++            aligned.append(observed)
++            diagnostics.append(
++                {
++                    "method": "identity"
++                    if original_observed_shape == reference.shape[:2]
++                    else "resize-only",
++                    "applied": False,
++                    "reference_width": int(reference.shape[1]),
++                    "reference_height": int(reference.shape[0]),
++                    "suspect_width": int(original_observed_shape[1]),
++                    "suspect_height": int(original_observed_shape[0]),
++                    "rejection_reason": None
++                    if original_observed_shape == reference.shape[:2]
++                    else "registration disabled",
++                }
++            )
++    return reference_pages, aligned, diagnostics
++
++
++def _decode_candidate_physical(
++    source: Path,
++    suspect: Path,
++    symbol_count: int,
++    secret: bytes,
++    context: str,
++    profile: CarrierProfile,
++    registration_mode: str,
++) -> tuple[np.ndarray, list[dict[str, object]]]:
++    reference_pages, suspect_pages, diagnostics = _registered_pages(
++        source, suspect, registration_mode
++    )
++    tiles = eligible_tiles(source, block_size=profile.block_size)
++    order, orientations, polarities = _candidate_plan(
++        secret, context, len(tiles), symbol_count
++    )
++    masks = _cluster_masks(profile.block_size)
++    ink_pages = [
++        watermark._luma(reference) - watermark._luma(observed)
++        for reference, observed in zip(reference_pages, suspect_pages, strict=True)
++    ]
++    correlations = np.empty(symbol_count, dtype=np.float64)
++    for symbol_index, tile_index in enumerate(order):
++        tile = tiles[int(tile_index)]
++        patch = ink_pages[tile.page][
++            tile.y : tile.y + profile.block_size,
++            tile.x : tile.x + profile.block_size,
++        ]
++        orientation = int(orientations[symbol_index])
++        negative, positive = masks[orientation]
++        value = float(patch[positive].sum() - patch[negative].sum())
++        correlations[symbol_index] = value * int(polarities[symbol_index])
++    return correlations, diagnostics
++
++
++def decode_profile(
++    source: Path,
++    suspect: Path,
++    secret: bytes,
++    context: str,
++    profile: CarrierProfile,
++    *,
++    registration_mode: str = "auto",
++) -> tuple[np.ndarray, np.ndarray, dict[str, object]]:
++    """Decode and analog-sum repetitions before making the 96 hard bits."""
++
++    if profile.kind == "inkcluster":
++        physical, page_diagnostics = _decode_candidate_physical(
++            Path(source),
++            Path(suspect),
++            profile.physical_symbols,
++            secret,
++            context,
++            profile,
++            registration_mode,
++        )
++    elif profile.kind == "legacy_split":
++        _, physical, imported_diagnostics = tardos_carrier.decode_word_with_diagnostics(
++            Path(source),
++            Path(suspect),
++            profile.physical_symbols,
++            secret,
++            context,
++            dpi=DPI,
++            block_size=profile.block_size,
++            registration_mode=registration_mode,
++        )
++        page_diagnostics = imported_diagnostics["pages"]
++    else:
++        raise ValueError(f"unknown carrier kind: {profile.kind}")
++    word, summed = collapse_correlations(
++        physical, CODEWORD_BITS, profile.repetitions
++    )
++    return word, summed, {
++        "registration_mode": registration_mode,
++        "pages": page_diagnostics,
++        "physical_correlation_minimum": float(physical.min()),
++        "physical_correlation_maximum": float(physical.max()),
++        "physical_correlation_mean": float(physical.mean()),
++        "logical_correlation_minimum": float(summed.min()),
++        "logical_correlation_maximum": float(summed.max()),
++        "logical_correlation_mean": float(summed.mean()),
++    }
+diff --git a/research/robustness/physical_carrier/codec.py b/research/robustness/physical_carrier/codec.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..3c914e353949638355b9d01e7de1dc7fa6648444
+--- /dev/null
++++ b/research/robustness/physical_carrier/codec.py
+@@ -0,0 +1,221 @@
++"""Bounded research message and ECC for the physical-carrier pilot.
++
++This is deliberately not a deployment authenticator or collusion code.  It
++packs a small recipient/session tuple, adds a 16-bit keyed check, and protects
++the resulting 48 bits with twelve extended-Hamming (8,4,4) blocks.  The keyed
++check is only an experimental rejection mechanism; its size does not justify a
++false-attribution security claim.
++"""
++
++from __future__ import annotations
++
++import hashlib
++import hmac
++from dataclasses import asdict, dataclass
++
++import numpy as np
++
++
++ROSTER_SIZE = 1000
++ROW_BITS = 10
++MESSAGE_ID_BITS = 22
++BODY_BITS = ROW_BITS + MESSAGE_ID_BITS
++TAG_BITS = 16
++PAYLOAD_BITS = BODY_BITS + TAG_BITS
++CODEWORD_BITS = PAYLOAD_BITS * 2
++MAX_ROW = ROSTER_SIZE - 1
++MAX_MESSAGE_ID = (1 << MESSAGE_ID_BITS) - 1
++_DOMAIN = b"NISHAN-PHYSICAL-MESSAGE/v1\x00"
++
++
++@dataclass(frozen=True)
++class NibbleDecode:
++    nibble: int | None
++    distance: int
++    uncorrectable: bool
++
++
++@dataclass(frozen=True)
++class DecodeResult:
++    payload_bits: int
++    codeword_bits: int
++    corrected_blocks: int
++    uncorrectable_blocks: int
++    tag_valid: bool
++    accepted_expected: bool
++    valid_other_message: bool
++    row: int | None
++    message_id: int | None
++    expected_row: int | None
++    expected_message_id: int | None
++    recovered_payload_hex: str | None
++    failure_reason: str | None
++
++    def to_dict(self) -> dict[str, object]:
++        return asdict(self)
++
++
++def _validate_key_context(key: bytes, context: str) -> None:
++    if not isinstance(key, bytes) or len(key) < 16:
++        raise ValueError("key must be bytes containing at least 16 bytes")
++    if not isinstance(context, str) or not context:
++        raise ValueError("context must be a non-empty string")
++
++
++def _binary_word(value: np.ndarray, length: int, label: str) -> np.ndarray:
++    array = np.asarray(value)
++    if array.shape != (length,) or np.any((array != 0) & (array != 1)):
++        raise ValueError(f"{label} must be a binary vector of length {length}")
++    return array.astype(np.uint8, copy=False)
++
++
++def encode_nibble(nibble: int) -> np.ndarray:
++    """Encode one nibble as systematic extended Hamming (8,4,4)."""
++
++    if not isinstance(nibble, (int, np.integer)) or not 0 <= int(nibble) < 16:
++        raise ValueError("nibble must be an integer in [0, 15]")
++    value = int(nibble)
++    d0 = (value >> 3) & 1
++    d1 = (value >> 2) & 1
++    d2 = (value >> 1) & 1
++    d3 = value & 1
++    p1 = d0 ^ d1 ^ d3
++    p2 = d0 ^ d2 ^ d3
++    p4 = d1 ^ d2 ^ d3
++    first_seven = np.array([p1, p2, d0, p4, d1, d2, d3], dtype=np.uint8)
++    p0 = int(np.bitwise_xor.reduce(first_seven))
++    return np.concatenate((first_seven, np.array([p0], dtype=np.uint8)))
++
++
++_NIBBLE_CODEBOOK = np.stack([encode_nibble(value) for value in range(16)])
++
++
++def decode_nibble(codeword: np.ndarray) -> NibbleDecode:
++    """Decode only distance-zero/one words and reject every larger distance."""
++
++    word = _binary_word(codeword, 8, "nibble codeword")
++    distances = np.count_nonzero(_NIBBLE_CODEBOOK != word[None, :], axis=1)
++    distance = int(distances.min())
++    if distance > 1:
++        return NibbleDecode(nibble=None, distance=distance, uncorrectable=True)
++    nearest = np.flatnonzero(distances == distance)
++    if nearest.size != 1:
++        return NibbleDecode(nibble=None, distance=distance, uncorrectable=True)
++    return NibbleDecode(
++        nibble=int(nearest[0]), distance=distance, uncorrectable=False
++    )
++
++
++def _body(row: int, message_id: int) -> bytes:
++    if not isinstance(row, (int, np.integer)) or not 0 <= int(row) <= MAX_ROW:
++        raise ValueError(f"row must be an integer in [0, {MAX_ROW}]")
++    if (
++        not isinstance(message_id, (int, np.integer))
++        or not 0 <= int(message_id) <= MAX_MESSAGE_ID
++    ):
++        raise ValueError(
++            f"message_id must be an integer in [0, {MAX_MESSAGE_ID}]"
++        )
++    packed = (int(row) << MESSAGE_ID_BITS) | int(message_id)
++    return packed.to_bytes(4, "big")
++
++
++def _tag(body: bytes, key: bytes, context: str) -> bytes:
++    _validate_key_context(key, context)
++    return hmac.new(
++        key,
++        _DOMAIN + context.encode("utf-8") + body,
++        hashlib.sha3_256,
++    ).digest()[: TAG_BITS // 8]
++
++
++def encode_message(row: int, message_id: int, key: bytes, context: str) -> np.ndarray:
++    """Return the frozen 96-bit ECC codeword for one bounded research message."""
++
++    body = _body(row, message_id)
++    payload = body + _tag(body, key, context)
++    payload_bits = np.unpackbits(np.frombuffer(payload, dtype=np.uint8))
++    blocks: list[np.ndarray] = []
++    for start in range(0, PAYLOAD_BITS, 4):
++        nibble = int(np.packbits(payload_bits[start : start + 4], bitorder="big")[0] >> 4)
++        blocks.append(encode_nibble(nibble))
++    result = np.concatenate(blocks).astype(np.uint8, copy=False)
++    if result.shape != (CODEWORD_BITS,):
++        raise AssertionError("message codec emitted the wrong codeword length")
++    return result
++
++
++def decode_message(
++    codeword: np.ndarray,
++    key: bytes,
++    context: str,
++    *,
++    expected: tuple[int, int] | None = None,
++) -> DecodeResult:
++    """Decode the full message; tag validity alone never accepts an expectation."""
++
++    _validate_key_context(key, context)
++    word = _binary_word(codeword, CODEWORD_BITS, "message codeword")
++    if expected is not None:
++        _body(*expected)
++    decoded_blocks = [decode_nibble(block) for block in word.reshape(-1, 8)]
++    corrected = sum(block.distance == 1 for block in decoded_blocks)
++    uncorrectable = sum(block.uncorrectable for block in decoded_blocks)
++    expected_row = expected[0] if expected is not None else None
++    expected_message_id = expected[1] if expected is not None else None
++    if uncorrectable:
++        return DecodeResult(
++            payload_bits=PAYLOAD_BITS,
++            codeword_bits=CODEWORD_BITS,
++            corrected_blocks=corrected,
++            uncorrectable_blocks=uncorrectable,
++            tag_valid=False,
++            accepted_expected=False,
++            valid_other_message=False,
++            row=None,
++            message_id=None,
++            expected_row=expected_row,
++            expected_message_id=expected_message_id,
++            recovered_payload_hex=None,
++            failure_reason="uncorrectable_ecc",
++        )
++
++    nibbles = [int(block.nibble) for block in decoded_blocks]
++    payload = bytes(
++        (nibbles[index] << 4) | nibbles[index + 1]
++        for index in range(0, len(nibbles), 2)
++    )
++    body, observed_tag = payload[:4], payload[4:]
++    packed = int.from_bytes(body, "big")
++    row = packed >> MESSAGE_ID_BITS
++    message_id = packed & MAX_MESSAGE_ID
++    fields_valid = row <= MAX_ROW
++    tag_valid = fields_valid and hmac.compare_digest(
++        observed_tag, _tag(body, key, context)
++    )
++    expected_match = expected is None or (row, message_id) == expected
++    accepted = tag_valid and expected_match
++    valid_other = bool(tag_valid and expected is not None and not expected_match)
++    if not fields_valid:
++        failure_reason = "decoded_row_out_of_roster"
++    elif not tag_valid:
++        failure_reason = "keyed_check_failed"
++    elif valid_other:
++        failure_reason = "valid_other_message"
++    else:
++        failure_reason = None
++    return DecodeResult(
++        payload_bits=PAYLOAD_BITS,
++        codeword_bits=CODEWORD_BITS,
++        corrected_blocks=corrected,
++        uncorrectable_blocks=0,
++        tag_valid=bool(tag_valid),
++        accepted_expected=bool(accepted),
++        valid_other_message=valid_other,
++        row=int(row),
++        message_id=int(message_id),
++        expected_row=expected_row,
++        expected_message_id=expected_message_id,
++        recovered_payload_hex=payload.hex(),
++        failure_reason=failure_reason,
++    )
+diff --git a/research/robustness/physical_carrier/pilot/PRINTING.md b/research/robustness/physical_carrier/pilot/PRINTING.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..1b4407ffcdf354de740276ccc9f8c6ffa3c1a35f
+--- /dev/null
++++ b/research/robustness/physical_carrier/pilot/PRINTING.md
+@@ -0,0 +1,11 @@
++# Fresh physical falsification packet
++
++The frozen synthetic prioritization rule passed.
++
++This lead contributes at most two pages: the print-aware candidate and its nominal-area-matched compact-message baseline. The strengths and spatial allocations differ; this is not a same-invisibility comparison.
++
++If selected, print both PDFs at actual size with identical printer settings. Photograph the complete page from the same distance and lighting using the phone's ordinary camera. Retain the original camera files and send them through WhatsApp **as documents**, not pasted as chat images. If feasible, also make one scanner-style contrast/binarization capture; label it separately.
++
++The coordinator's eventual common packet must separately reference the unmarked `test_mixed.pdf` source (SHA-256 `351245e873555e6fcabdb914f5ddf66c355d5ec315c5b4a1bbca896d2450d395`) and an original 52,500-symbol control. They are not duplicated here and do not count as this lead's candidate PDFs.
++
++Do not use historical LEGACY_TRIAL_CAPTURE or legacy-capture-0 captures: they contain a different carrier. A donor session/message recovery does not prove content authenticity or human culpability.
+diff --git a/research/robustness/physical_carrier/run_pilot.py b/research/robustness/physical_carrier/run_pilot.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..ad6e0b98bcfb6f64c2bada480768d0936d9265bd
+--- /dev/null
++++ b/research/robustness/physical_carrier/run_pilot.py
+@@ -0,0 +1,1096 @@
++#!/usr/bin/env python3
++"""Run the frozen synthetic pilot for the print-aware compact carrier."""
++
++from __future__ import annotations
++
++import argparse
++import csv
++import hashlib
++import importlib.metadata
++import io
++import json
++import os
++import platform
++import resource
++import shutil
++import subprocess
++import tempfile
++import time
++import traceback
++from dataclasses import replace
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any
++
++import numpy as np
++from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
++
++from nishan import tardos_carrier, watermark
++
++from carrier import (
++    BASELINE,
++    CAPACITY_PROBE_REPETITIONS,
++    CANDIDATE,
++    DPI,
++    PROFILES,
++    candidate_capacity,
++    decode_profile,
++    embed_profile,
++)
++from codec import CODEWORD_BITS, decode_message, encode_message
++
++
++REPO_ROOT = Path(__file__).resolve().parents[3]
++EXPERIMENT_ROOT = Path(__file__).resolve().parent
++COMMON_SOURCE_ROOT = Path(
++    "/tmp/sih-robustness-20260916-control/research/robustness_campaign/sources"
++)
++SOURCE_MANIFEST = COMMON_SOURCE_ROOT / "manifest.json"
++PREREGISTRATION = EXPERIMENT_ROOT / "preregistration.json"
++SOURCE_CONTROL_COMMIT = "1148b8b7bf5dde7d37ef9854f7d9978c6f003456"
++SCHEMA = "nishan-physical-carrier-pilot/v1"
++PUBLIC_SEED = b"NISHAN physical carrier public pilot 2026-09-16 v1"
++WRONG_SEED = b"NISHAN physical carrier intentionally wrong key 2026-09-16 v1"
++CONTEXT_PREFIX = "nishan-physical-carrier-pilot/v1"
++TARGET = (7, 0x2A1B3C)
++OTHER_ISSUED = (29, 0x155AA5)
++POSITIVE_TRANSFORMS = (
++    "clean",
++    "jpeg55",
++    "photo_resize_jpeg",
++    "print_halftone",
++    "scanner_contrast",
++    "scanner_bilevel",
++)
++UNMARKED_TRANSFORMS = ("clean", "print_halftone", "scanner_bilevel")
++CONFIRMATION_CHANNELS = (
++    "photo_resize_jpeg",
++    "print_halftone",
++    "scanner_contrast",
++    "scanner_bilevel",
++)
++
++
++def _now() -> str:
++    return datetime.now(timezone.utc).isoformat()
++
++
++def _sha256(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def _sha3(path: Path) -> str:
++    digest = hashlib.sha3_256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def _json_write(path: Path, value: object) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(
++        json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n",
++        encoding="utf-8",
++    )
++
++
++def create_output_directory(output: Path) -> None:
++    Path(output).mkdir(parents=True, exist_ok=False)
++
++
++def _derive(seed: bytes, purpose: bytes) -> bytes:
++    return hashlib.sha3_256(seed + b"\x00" + purpose).digest()
++
++
++def _message_context(source_id: str) -> str:
++    return f"{CONTEXT_PREFIX}/{source_id}/message"
++
++
++def _carrier_context(source_id: str, profile_name: str) -> str:
++    return f"{CONTEXT_PREFIX}/{source_id}/carrier/{profile_name}"
++
++
++def build_declared_matrix(
++    cases: list[dict[str, object]],
++) -> list[dict[str, object]]:
++    matrix: list[dict[str, object]] = []
++    for case in cases:
++        source_id = str(case["id"])
++        split = str(case["split"])
++        for profile in PROFILES:
++            for transform in POSITIVE_TRANSFORMS:
++                matrix.append(
++                    {
++                        "source_id": source_id,
++                        "split": split,
++                        "profile": profile,
++                        "kind": "positive",
++                        "transform": transform,
++                        "expected_class": "exact_expected",
++                    }
++                )
++            for transform in UNMARKED_TRANSFORMS:
++                matrix.append(
++                    {
++                        "source_id": source_id,
++                        "split": split,
++                        "profile": profile,
++                        "kind": "unmarked",
++                        "transform": transform,
++                        "expected_class": "abstain",
++                    }
++                )
++            matrix.extend(
++                [
++                    {
++                        "source_id": source_id,
++                        "split": split,
++                        "profile": profile,
++                        "kind": "wrong_key",
++                        "transform": "clean",
++                        "expected_class": "abstain",
++                    },
++                    {
++                        "source_id": source_id,
++                        "split": split,
++                        "profile": profile,
++                        "kind": "wrong_context",
++                        "transform": "clean",
++                        "expected_class": "abstain",
++                    },
++                    {
++                        "source_id": source_id,
++                        "split": split,
++                        "profile": profile,
++                        "kind": "other_issued",
++                        "transform": "clean",
++                        "expected_class": "valid_other_message",
++                    },
++                    {
++                        "source_id": source_id,
++                        "split": split,
++                        "profile": profile,
++                        "kind": "copied_overlay_modified_content",
++                        "transform": "transplant",
++                        "expected_class": "content_binding_failure_if_donor_recovers",
++                    },
++                ]
++            )
++    identities = {
++        (item["source_id"], item["profile"], item["kind"], item["transform"])
++        for item in matrix
++    }
++    expected_count = len(cases) * len(PROFILES) * 13
++    if len(matrix) != expected_count or len(identities) != expected_count:
++        raise RuntimeError("declared observation matrix is incomplete or duplicated")
++    return matrix
++
++
++def _jpeg_roundtrip(image: Image.Image, quality: int, subsampling: int) -> Image.Image:
++    stream = io.BytesIO()
++    image.convert("RGB").save(
++        stream,
++        format="JPEG",
++        quality=quality,
++        subsampling=subsampling,
++        optimize=False,
++    )
++    stream.seek(0)
++    with Image.open(stream) as decoded:
++        return decoded.convert("RGB").copy()
++
++
++def _bayer8() -> np.ndarray:
++    matrix = np.array([[0, 2], [3, 1]], dtype=np.float32)
++    while matrix.shape[0] < 8:
++        matrix = np.block(
++            [[4 * matrix, 4 * matrix + 2], [4 * matrix + 3, 4 * matrix + 1]]
++        )
++    return matrix
++
++
++def apply_transform(image: Image.Image, name: str) -> Image.Image:
++    """Apply one deterministic frozen diagnostic channel."""
++
++    rgb = image.convert("RGB")
++    if name == "clean":
++        return rgb.copy()
++    if name == "jpeg55":
++        return _jpeg_roundtrip(rgb, quality=55, subsampling=0)
++    if name == "photo_resize_jpeg":
++        scale = min(1.0, 1280.0 / max(rgb.size))
++        resized = rgb.resize(
++            (max(1, round(rgb.width * scale)), max(1, round(rgb.height * scale))),
++            Image.Resampling.LANCZOS,
++        )
++        return _jpeg_roundtrip(resized, quality=65, subsampling=2)
++    if name == "print_halftone":
++        doubled = rgb.resize(
++            (rgb.width * 2, rgb.height * 2), Image.Resampling.BICUBIC
++        ).convert("L")
++        gray = np.asarray(doubled, dtype=np.float32)
++        bayer = _bayer8()
++        tiled = np.tile(
++            (bayer + 0.5) * (255.0 / 64.0),
++            (int(np.ceil(gray.shape[0] / 8)), int(np.ceil(gray.shape[1] / 8))),
++        )[: gray.shape[0], : gray.shape[1]]
++        screened = np.where(gray <= tiled, 0, 255).astype(np.uint8)
++        gained = Image.fromarray(screened, mode="L").filter(ImageFilter.MinFilter(3))
++        optical = gained.filter(ImageFilter.GaussianBlur(radius=0.6))
++        return optical.resize(rgb.size, Image.Resampling.LANCZOS).convert("RGB")
++    if name == "scanner_contrast":
++        gray = ImageEnhance.Contrast(rgb.convert("L")).enhance(1.8)
++        return gray.filter(ImageFilter.GaussianBlur(radius=0.6)).convert("RGB")
++    if name == "scanner_bilevel":
++        gray = np.asarray(rgb.convert("L"), dtype=np.uint8)
++        binary = np.where(gray <= 200, 0, 255).astype(np.uint8)
++        return Image.fromarray(binary, mode="L").convert("RGB")
++    raise ValueError(f"unknown frozen transform: {name}")
++
++
++def _modified_content_transplant(
++    source: Image.Image, marked: Image.Image
++) -> tuple[Image.Image, dict[str, object]]:
++    """Move the donor residual onto visibly modified content without binding it."""
++
++    source_array = np.asarray(source.convert("RGB"), dtype=np.int16)
++    marked_array = np.asarray(marked.convert("RGB"), dtype=np.int16)
++    if source_array.shape != marked_array.shape:
++        raise ValueError("transplant source and marked render shapes differ")
++    modified = source.convert("RGB").copy()
++    draw = ImageDraw.Draw(modified)
++    width, height = modified.size
++    rectangle = (
++        round(width * 0.07),
++        round(height * 0.07),
++        round(width * 0.43),
++        round(height * 0.105),
++    )
++    draw.rectangle(rectangle, fill=(255, 255, 255))
++    draw.rectangle(
++        (
++            rectangle[0] + 8,
++            rectangle[1] + 8,
++            min(rectangle[2] - 8, rectangle[0] + 230),
++            rectangle[3] - 8,
++        ),
++        fill=(20, 20, 20),
++    )
++    modified_array = np.asarray(modified, dtype=np.int16)
++    donor_residual = marked_array - source_array
++    transplanted = np.clip(modified_array + donor_residual, 0, 255).astype(np.uint8)
++    changed = np.any(modified_array != source_array, axis=2)
++    return Image.fromarray(transplanted, mode="RGB"), {
++        "modified_content_pixels": int(changed.sum()),
++        "modified_content_fraction": float(changed.mean()),
++        "construction": "visible raster modification plus donor marked-minus-source residual",
++    }
++
++
++def _render_one(path: Path) -> Image.Image:
++    pages, _ = watermark.load_pages(path, dpi=DPI)
++    if len(pages) != 1:
++        raise ValueError("the frozen common source pack must contain one-page PDFs")
++    return Image.fromarray(pages[0], mode="RGB")
++
++
++def _save_image(image: Image.Image, path: Path) -> Path:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    image.save(path, format="PNG", optimize=False)
++    return path
++
++
++def _verify_source_pack() -> tuple[dict[str, object], list[dict[str, object]]]:
++    try:
++        manifest = json.loads(SOURCE_MANIFEST.read_text(encoding="utf-8"))
++    except (OSError, json.JSONDecodeError) as error:
++        raise ValueError(f"cannot read common source manifest: {error}") from error
++    if manifest.get("schema") != "nishan-robustness-source-pack/v1":
++        raise ValueError("unexpected common source manifest schema")
++    cases = manifest.get("cases")
++    if not isinstance(cases, list) or len(cases) != 6:
++        raise ValueError("common source manifest must declare exactly six cases")
++    expected_splits = {"development": 2, "validation": 2, "confirmation": 2}
++    actual_splits = {
++        split: sum(case.get("split") == split for case in cases)
++        for split in expected_splits
++    }
++    if actual_splits != expected_splits:
++        raise ValueError("common source split allocation changed")
++    for case in cases:
++        path = COMMON_SOURCE_ROOT / str(case["file"])
++        if not path.is_file() or _sha256(path) != case.get("sha256"):
++            raise ValueError(f"source hash mismatch: {path}")
++    return manifest, cases
++
++
++def _implementation_hashes() -> dict[str, str]:
++    paths = [
++        EXPERIMENT_ROOT / "codec.py",
++        EXPERIMENT_ROOT / "carrier.py",
++        EXPERIMENT_ROOT / "run_pilot.py",
++        PREREGISTRATION,
++        REPO_ROOT / "prototypes/nishan_pq/nishan/tardos_carrier.py",
++        REPO_ROOT / "prototypes/nishan_pq/nishan/registration.py",
++    ]
++    return {path.relative_to(REPO_ROOT).as_posix(): _sha3(path) for path in paths}
++
++
++def _environment() -> dict[str, object]:
++    packages: dict[str, str] = {}
++    for name in ("numpy", "pillow", "pymupdf", "opencv-python-headless"):
++        try:
++            packages[name] = importlib.metadata.version(name)
++        except importlib.metadata.PackageNotFoundError:
++            packages[name] = "unavailable"
++    try:
++        git_head = subprocess.run(
++            ["git", "rev-parse", "HEAD"],
++            cwd=REPO_ROOT,
++            check=True,
++            capture_output=True,
++            text=True,
++        ).stdout.strip()
++    except (OSError, subprocess.CalledProcessError):
++        git_head = "unavailable"
++    return {
++        "python": platform.python_version(),
++        "platform": platform.platform(),
++        "processor": platform.processor() or "unreported",
++        "logical_cpu_count": os.cpu_count(),
++        "thread_environment": {
++            name: os.environ.get(name)
++            for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")
++        },
++        "packages": packages,
++        "git_head_at_run": git_head,
++    }
++
++
++def _observation(
++    declaration: dict[str, object],
++    source: Path,
++    suspect: Path,
++    profile_name: str,
++    carrier_key: bytes,
++    carrier_context: str,
++    codec_key: bytes,
++    codec_context: str,
++    ground_truth: np.ndarray | None,
++) -> tuple[dict[str, object], np.ndarray, np.ndarray]:
++    profile = PROFILES[profile_name]
++    started = time.perf_counter()
++    decoded_word, correlations, diagnostics = decode_profile(
++        source,
++        suspect,
++        carrier_key,
++        carrier_context,
++        profile,
++        registration_mode="off",
++    )
++    decode_seconds = time.perf_counter() - started
++    result = decode_message(
++        decoded_word, codec_key, codec_context, expected=TARGET
++    )
++    if result.accepted_expected:
++        outcome_class = "exact_expected"
++    elif result.valid_other_message:
++        outcome_class = "valid_other_message"
++    else:
++        outcome_class = "abstain"
++    kind = str(declaration["kind"])
++    target_negative = kind in {
++        "unmarked",
++        "wrong_key",
++        "wrong_context",
++        "other_issued",
++    }
++    ber = (
++        None
++        if ground_truth is None
++        else float(np.count_nonzero(decoded_word != ground_truth) / CODEWORD_BITS)
++    )
++    observation = {
++        **declaration,
++        "outcome_class": outcome_class,
++        "expected_class_observed": outcome_class == declaration["expected_class"],
++        "target_negative": target_negative,
++        "target_negative_pass": None
++        if not target_negative
++        else not result.accepted_expected,
++        "content_binding_failure": kind == "copied_overlay_modified_content"
++        and result.accepted_expected,
++        "codeword_ber_against_embedded": ber,
++        "codeword_ber_unavailable_reason": None
++        if ground_truth is not None
++        else "unmarked observation has no embedded codeword",
++        "decoded_one_bits": int(decoded_word.sum()),
++        "decode_seconds": decode_seconds,
++        "registration_mode": "off",
++        "registration": diagnostics,
++        **result.to_dict(),
++    }
++    return observation, decoded_word, correlations
++
++
++def _positive_summary(observations: list[dict[str, object]]) -> list[dict[str, object]]:
++    rows: list[dict[str, object]] = []
++    for profile in PROFILES:
++        for split in ("development", "validation", "confirmation"):
++            for transform in POSITIVE_TRANSFORMS:
++                cases = [
++                    item
++                    for item in observations
++                    if item["kind"] == "positive"
++                    and item["profile"] == profile
++                    and item["split"] == split
++                    and item["transform"] == transform
++                ]
++                rows.append(
++                    {
++                        "profile": profile,
++                        "split": split,
++                        "transform": transform,
++                        "total": len(cases),
++                        "exact_expected": sum(
++                            bool(item["accepted_expected"]) for item in cases
++                        ),
++                        "failures": [
++                            {
++                                "source_id": item["source_id"],
++                                "failure_reason": item["failure_reason"],
++                                "codeword_ber": item["codeword_ber_against_embedded"],
++                                "uncorrectable_blocks": item["uncorrectable_blocks"],
++                            }
++                            for item in cases
++                            if not item["accepted_expected"]
++                        ],
++                    }
++                )
++    return rows
++
++
++def _control_summary(observations: list[dict[str, object]]) -> list[dict[str, object]]:
++    rows: list[dict[str, object]] = []
++    kinds = (
++        "unmarked",
++        "wrong_key",
++        "wrong_context",
++        "other_issued",
++        "copied_overlay_modified_content",
++    )
++    for profile in PROFILES:
++        for kind in kinds:
++            cases = [
++                item
++                for item in observations
++                if item["profile"] == profile and item["kind"] == kind
++            ]
++            rows.append(
++                {
++                    "profile": profile,
++                    "kind": kind,
++                    "total": len(cases),
++                    "accepted_expected": sum(
++                        bool(item["accepted_expected"]) for item in cases
++                    ),
++                    "valid_other_message": sum(
++                        bool(item["valid_other_message"]) for item in cases
++                    ),
++                    "tag_valid": sum(bool(item["tag_valid"]) for item in cases),
++                    "abstain": sum(item["outcome_class"] == "abstain" for item in cases),
++                    "content_binding_failures": sum(
++                        bool(item["content_binding_failure"]) for item in cases
++                    ),
++                }
++            )
++    return rows
++
++
++def _advancement(
++    observations: list[dict[str, object]], issued: list[dict[str, object]]
++) -> dict[str, object]:
++    clean = [
++        item
++        for item in observations
++        if item["kind"] == "positive" and item["transform"] == "clean"
++    ]
++    clean_exact = len(clean) == 12 and all(item["accepted_expected"] for item in clean)
++    negatives = [item for item in observations if item["target_negative"]]
++    negatives_clear = len(negatives) == 72 and all(
++        not item["accepted_expected"] for item in negatives
++    )
++    text_preserved = len(issued) == 12 and all(
++        item["metrics"]["text_preserved"] for item in issued
++    )
++    candidate_issued = [
++        item for item in issued if item["profile"] == CANDIDATE.name
++    ]
++    candidate_text_zero = len(candidate_issued) == 6 and all(
++        item["metrics"]["fidelity"]["text_region"]["changed_fraction"] == 0.0
++        for item in candidate_issued
++    )
++
++    confirmation = [
++        item
++        for item in observations
++        if item["kind"] == "positive"
++        and item["split"] == "confirmation"
++        and item["transform"] in CONFIRMATION_CHANNELS
++    ]
++    confirmation_counts = {
++        profile: sum(
++            item["profile"] == profile and bool(item["accepted_expected"])
++            for item in confirmation
++        )
++        for profile in PROFILES
++    }
++    not_lower = (
++        confirmation_counts[CANDIDATE.name]
++        >= confirmation_counts[BASELINE.name]
++    )
++    required_candidate_cases = [
++        item
++        for item in observations
++        if item["kind"] == "positive"
++        and item["split"] == "confirmation"
++        and item["profile"] == CANDIDATE.name
++        and item["transform"] in {"photo_resize_jpeg", "print_halftone"}
++    ]
++    candidate_photo_print_exact = len(required_candidate_cases) == 4 and all(
++        item["accepted_expected"] for item in required_candidate_cases
++    )
++    requirements = {
++        "all_12_clean_positives_exact": clean_exact,
++        "all_72_target_negatives_avoid_expected_acceptance": negatives_clear,
++        "all_12_target_pdfs_preserve_extracted_text": text_preserved,
++        "all_6_candidate_text_regions_have_zero_changed_pixels": candidate_text_zero,
++        "candidate_confirmation_count_not_lower": not_lower,
++        "candidate_both_confirmation_photo_and_halftone_exact": candidate_photo_print_exact,
++    }
++    return {
++        "worth_fresh_matched_physical_falsification": all(requirements.values()),
++        "requirements": requirements,
++        "confirmation_channels": list(CONFIRMATION_CHANNELS),
++        "confirmation_exact_counts_out_of_8": confirmation_counts,
++        "interpretation": (
++            "Frozen prioritization only. Nominal area is matched within 0.5%, but "
++            "strength, spatial allocation and measured distortion are different; this "
++            "is not same-invisibility, statistical superiority or physical evidence."
++        ),
++    }
++
++
++def _write_csv(path: Path, observations: list[dict[str, object]]) -> None:
++    columns = [
++        "array_index",
++        "source_id",
++        "split",
++        "profile",
++        "kind",
++        "transform",
++        "expected_class",
++        "outcome_class",
++        "accepted_expected",
++        "valid_other_message",
++        "tag_valid",
++        "row",
++        "message_id",
++        "corrected_blocks",
++        "uncorrectable_blocks",
++        "failure_reason",
++        "codeword_ber_against_embedded",
++        "target_negative_pass",
++        "content_binding_failure",
++        "decode_seconds",
++    ]
++    with path.open("w", encoding="utf-8", newline="") as stream:
++        writer = csv.DictWriter(stream, fieldnames=columns)
++        writer.writeheader()
++        for observation in observations:
++            writer.writerow({name: observation.get(name) for name in columns})
++
++
++def _artifact_hashes(output: Path) -> dict[str, str]:
++    return {
++        path.relative_to(output).as_posix(): _sha3(path)
++        for path in sorted(output.rglob("*"))
++        if path.is_file() and path.name not in {"results.json", "failure.json"}
++    }
++
++
++def _write_printing_instructions(output: Path, selected: bool) -> None:
++    status = (
++        "The frozen synthetic prioritization rule passed."
++        if selected
++        else "The frozen synthetic prioritization rule did not pass; no PDFs were selected."
++    )
++    lines = [
++        "# Fresh physical falsification packet",
++        "",
++        status,
++        "",
++        "This lead contributes at most two pages: the print-aware candidate and its nominal-area-matched compact-message baseline. The strengths and spatial allocations differ; this is not a same-invisibility comparison.",
++        "",
++        "If selected, print both PDFs at actual size with identical printer settings. Photograph the complete page from the same distance and lighting using the phone's ordinary camera. Retain the original camera files and send them through WhatsApp **as documents**, not pasted as chat images. If feasible, also make one scanner-style contrast/binarization capture; label it separately.",
++        "",
++        "The coordinator's eventual common packet must separately reference the unmarked `test_mixed.pdf` source (SHA-256 `351245e873555e6fcabdb914f5ddf66c355d5ec315c5b4a1bbca896d2450d395`) and an original 52,500-symbol control. They are not duplicated here and do not count as this lead's candidate PDFs.",
++        "",
++        "Do not use historical LEGACY_TRIAL_CAPTURE or legacy-capture-0 captures: they contain a different carrier. A donor session/message recovery does not prove content authenticity or human culpability.",
++    ]
++    (output / "PRINTING.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
++
++
++def _visual_sample(
++    source_pdf: Path, candidate_pdf: Path, baseline_pdf: Path, destination: Path
++) -> None:
++    source = np.asarray(_render_one(source_pdf), dtype=np.uint8)
++    candidate = np.asarray(_render_one(candidate_pdf), dtype=np.uint8)
++    baseline = np.asarray(_render_one(baseline_pdf), dtype=np.uint8)
++    difference = np.max(np.abs(candidate.astype(np.int16) - source.astype(np.int16)), axis=2)
++    ys, xs = np.nonzero(difference)
++    if ys.size == 0:
++        center_y, center_x = source.shape[0] // 2, source.shape[1] // 2
++    else:
++        center_y, center_x = int(np.median(ys)), int(np.median(xs))
++    crop_size = 256
++    y0 = max(0, min(source.shape[0] - crop_size, center_y - crop_size // 2))
++    x0 = max(0, min(source.shape[1] - crop_size, center_x - crop_size // 2))
++    panels = [
++        source[y0 : y0 + crop_size, x0 : x0 + crop_size],
++        candidate[y0 : y0 + crop_size, x0 : x0 + crop_size],
++        baseline[y0 : y0 + crop_size, x0 : x0 + crop_size],
++    ]
++    montage = np.concatenate(panels, axis=1)
++    destination.parent.mkdir(parents=True, exist_ok=True)
++    Image.fromarray(montage).resize(
++        (montage.shape[1] * 2, montage.shape[0] * 2), Image.Resampling.NEAREST
++    ).save(destination, format="PNG")
++
++
++def run(output: Path) -> dict[str, object]:
++    output = Path(output)
++    create_output_directory(output)
++    started = time.perf_counter()
++    manifest: dict[str, object] = {}
++    try:
++        source_manifest, cases = _verify_source_pack()
++        declared_matrix = build_declared_matrix(cases)
++        implementation_hashes = _implementation_hashes()
++        master = _derive(PUBLIC_SEED, b"master")
++        carrier_key = _derive(master, b"carrier")
++        codec_key = _derive(master, b"codec")
++        wrong_master = _derive(WRONG_SEED, b"master")
++        wrong_carrier_key = _derive(wrong_master, b"carrier")
++        wrong_codec_key = _derive(wrong_master, b"codec")
++
++        sources_directory = output / "sources"
++        sources_directory.mkdir()
++        local_sources: dict[str, Path] = {}
++        for case in cases:
++            source_id = str(case["id"])
++            source = COMMON_SOURCE_ROOT / str(case["file"])
++            copied = sources_directory / str(case["file"])
++            shutil.copy2(source, copied)
++            if _sha256(copied) != case["sha256"]:
++                raise RuntimeError(f"copied source hash mismatch: {source_id}")
++            local_sources[source_id] = copied
++        shutil.copy2(SOURCE_MANIFEST, sources_directory / "manifest.json")
++
++        manifest = {
++            "schema": SCHEMA,
++            "status": "prepared",
++            "prepared_at_utc": _now(),
++            "protected_baseline_commit": "f37e861dc02815adf1bebb3e1b45ff222dccf821",
++            "source_control_commit": SOURCE_CONTROL_COMMIT,
++            "source_manifest_sha3_256": _sha3(SOURCE_MANIFEST),
++            "source_manifest": source_manifest,
++            "preregistration_path": "research/robustness/physical_carrier/preregistration.json",
++            "preregistration_sha3_256": _sha3(PREREGISTRATION),
++            "implementation_sha3_256": implementation_hashes,
++            "profiles": {name: profile.to_dict() for name, profile in PROFILES.items()},
++            "payload": {
++                "body_bits": 32,
++                "keyed_check_bits": 16,
++                "payload_bits": 48,
++                "ecc_bits": 48,
++                "codeword_bits": 96,
++                "target": {"row": TARGET[0], "message_id": TARGET[1]},
++                "other_issued": {
++                    "row": OTHER_ISSUED[0],
++                    "message_id": OTHER_ISSUED[1],
++                },
++                "security_boundary": (
++                    "Bounded public synthetic research message; no deployment authentication, "
++                    "UUID, content binding, false-attribution bound or collusion guarantee."
++                ),
++            },
++            "public_key_commitments": {
++                "carrier_key_sha3_256": hashlib.sha3_256(carrier_key).hexdigest(),
++                "codec_key_sha3_256": hashlib.sha3_256(codec_key).hexdigest(),
++                "wrong_carrier_key_sha3_256": hashlib.sha3_256(
++                    wrong_carrier_key
++                ).hexdigest(),
++                "wrong_codec_key_sha3_256": hashlib.sha3_256(
++                    wrong_codec_key
++                ).hexdigest(),
++                "warning": "Keys derive from the public preregistered seed and are not secrets.",
++            },
++            "declared_matrix": declared_matrix,
++            "declared_observation_count": len(declared_matrix),
++            "environment": _environment(),
++        }
++        _json_write(output / "manifest.json", manifest)
++
++        issued: list[dict[str, object]] = []
++        marked_paths: dict[tuple[str, str, str], Path] = {}
++        capacity: list[dict[str, object]] = []
++        capacity_probe_profile = replace(
++            CANDIDATE,
++            name="capacity_probe_32_r18",
++            repetitions=CAPACITY_PROBE_REPETITIONS,
++        )
++        with tempfile.TemporaryDirectory(dir="/tmp") as temporary_root:
++            temporary = Path(temporary_root)
++            for case in cases:
++                source_id = str(case["id"])
++                source = local_sources[source_id]
++                message_context = _message_context(source_id)
++                target_word = encode_message(*TARGET, codec_key, message_context)
++                other_word = encode_message(
++                    *OTHER_ISSUED, codec_key, message_context
++                )
++                eligible = candidate_capacity(source)
++                probe_path = temporary / f"capacity-{source_id}.pdf"
++                probe_error: str | None = None
++                try:
++                    embed_profile(
++                        source,
++                        probe_path,
++                        target_word,
++                        carrier_key,
++                        _carrier_context(source_id, capacity_probe_profile.name),
++                        capacity_probe_profile,
++                    )
++                except ValueError as error:
++                    probe_error = str(error)
++                if probe_error is None:
++                    raise RuntimeError(
++                        f"fixed capacity probe unexpectedly fit source {source_id}"
++                    )
++                capacity.append(
++                    {
++                        "source_id": source_id,
++                        "split": case["split"],
++                        "candidate_eligible_tiles": eligible,
++                        "candidate_max_complete_96bit_repetitions": eligible
++                        // CODEWORD_BITS,
++                        "candidate_r7_fits": eligible >= CANDIDATE.physical_symbols,
++                        "candidate_r18_probe_rejected": True,
++                        "candidate_r18_probe_error": probe_error,
++                        "legacy_12px_total_capacity": tardos_carrier.capacity(
++                            source, dpi=DPI, block_size=BASELINE.block_size
++                        ),
++                    }
++                )
++                for profile_name, profile in PROFILES.items():
++                    carrier_context = _carrier_context(source_id, profile_name)
++                    for issue_name, word in (
++                        ("target", target_word),
++                        ("other", other_word),
++                    ):
++                        pdf_path = (
++                            output
++                            / "internal/marked"
++                            / source_id
++                            / profile_name
++                            / f"{issue_name}.pdf"
++                        )
++                        embed_started = time.perf_counter()
++                        metrics = embed_profile(
++                            source,
++                            pdf_path,
++                            word,
++                            carrier_key,
++                            carrier_context,
++                            profile,
++                        )
++                        embed_seconds = time.perf_counter() - embed_started
++                        marked_paths[(source_id, profile_name, issue_name)] = pdf_path
++                        if issue_name == "target":
++                            issued.append(
++                                {
++                                    "source_id": source_id,
++                                    "split": case["split"],
++                                    "profile": profile_name,
++                                    "row": TARGET[0],
++                                    "message_id": TARGET[1],
++                                    "path": pdf_path.relative_to(output).as_posix(),
++                                    "sha3_256": _sha3(pdf_path),
++                                    "bytes": pdf_path.stat().st_size,
++                                    "embed_seconds": embed_seconds,
++                                    "metrics": metrics,
++                                }
++                            )
++
++            observations: list[dict[str, object]] = []
++            decoded_words: list[np.ndarray] = []
++            logical_correlations: list[np.ndarray] = []
++            transplant_details: list[dict[str, object]] = []
++            for case in cases:
++                source_id = str(case["id"])
++                source = local_sources[source_id]
++                source_image = _render_one(source)
++                message_context = _message_context(source_id)
++                target_word = encode_message(*TARGET, codec_key, message_context)
++                other_word = encode_message(
++                    *OTHER_ISSUED, codec_key, message_context
++                )
++                for profile_name in PROFILES:
++                    target_image = _render_one(
++                        marked_paths[(source_id, profile_name, "target")]
++                    )
++                    other_image = _render_one(
++                        marked_paths[(source_id, profile_name, "other")]
++                    )
++                    raster_root = temporary / source_id / profile_name
++                    target_paths = {
++                        transform: _save_image(
++                            apply_transform(target_image, transform),
++                            raster_root / f"target-{transform}.png",
++                        )
++                        for transform in POSITIVE_TRANSFORMS
++                    }
++                    unmarked_paths = {
++                        transform: _save_image(
++                            apply_transform(source_image, transform),
++                            raster_root / f"unmarked-{transform}.png",
++                        )
++                        for transform in UNMARKED_TRANSFORMS
++                    }
++                    other_path = _save_image(
++                        other_image, raster_root / "other-clean.png"
++                    )
++                    transplanted, transplant_metadata = _modified_content_transplant(
++                        source_image, target_image
++                    )
++                    transplant_path = _save_image(
++                        transplanted, raster_root / "transplant.png"
++                    )
++                    transplant_details.append(
++                        {
++                            "source_id": source_id,
++                            "profile": profile_name,
++                            **transplant_metadata,
++                        }
++                    )
++
++                    declarations = [
++                        item
++                        for item in declared_matrix
++                        if item["source_id"] == source_id
++                        and item["profile"] == profile_name
++                    ]
++                    for declaration in declarations:
++                        kind = str(declaration["kind"])
++                        transform = str(declaration["transform"])
++                        decode_carrier_key = carrier_key
++                        decode_codec_key = codec_key
++                        decode_carrier_context = _carrier_context(
++                            source_id, profile_name
++                        )
++                        decode_message_context = message_context
++                        ground_truth: np.ndarray | None = target_word
++                        if kind == "positive":
++                            suspect = target_paths[transform]
++                        elif kind == "unmarked":
++                            suspect = unmarked_paths[transform]
++                            ground_truth = None
++                        elif kind == "wrong_key":
++                            suspect = target_paths["clean"]
++                            decode_carrier_key = wrong_carrier_key
++                            decode_codec_key = wrong_codec_key
++                        elif kind == "wrong_context":
++                            suspect = target_paths["clean"]
++                            decode_carrier_context += "/intentionally-wrong"
++                            decode_message_context += "/intentionally-wrong"
++                        elif kind == "other_issued":
++                            suspect = other_path
++                            ground_truth = other_word
++                        elif kind == "copied_overlay_modified_content":
++                            suspect = transplant_path
++                        else:
++                            raise RuntimeError(f"unknown matrix kind: {kind}")
++                        observation, word, correlations = _observation(
++                            declaration,
++                            source,
++                            suspect,
++                            profile_name,
++                            decode_carrier_key,
++                            decode_carrier_context,
++                            decode_codec_key,
++                            decode_message_context,
++                            ground_truth,
++                        )
++                        observation["array_index"] = len(observations)
++                        observations.append(observation)
++                        decoded_words.append(word)
++                        logical_correlations.append(correlations)
++
++        expected_identities = {
++            (item["source_id"], item["profile"], item["kind"], item["transform"])
++            for item in declared_matrix
++        }
++        observed_identities = {
++            (item["source_id"], item["profile"], item["kind"], item["transform"])
++            for item in observations
++        }
++        if len(observations) != 156 or observed_identities != expected_identities:
++            raise RuntimeError("completed observations do not match declared matrix")
++
++        arrays_path = output / "observation_arrays.npz"
++        np.savez_compressed(
++            arrays_path,
++            decoded_words=np.stack(decoded_words).astype(np.uint8),
++            logical_correlations=np.stack(logical_correlations).astype(np.float64),
++        )
++        _write_csv(output / "observations.csv", observations)
++        advancement = _advancement(observations, issued)
++        selected = bool(
++            advancement["worth_fresh_matched_physical_falsification"]
++        )
++        if selected:
++            print_directory = output / "print_ready"
++            print_directory.mkdir()
++            selected_source = "test_mixed"
++            candidate_destination = (
++                print_directory / "test-mixed-candidate-row-7.pdf"
++            )
++            baseline_destination = (
++                print_directory / "test-mixed-baseline-row-7.pdf"
++            )
++            shutil.copy2(
++                marked_paths[(selected_source, CANDIDATE.name, "target")],
++                candidate_destination,
++            )
++            shutil.copy2(
++                marked_paths[(selected_source, BASELINE.name, "target")],
++                baseline_destination,
++            )
++            _visual_sample(
++                local_sources[selected_source],
++                candidate_destination,
++                baseline_destination,
++                output / "visual-sample-source-candidate-baseline-2x.png",
++            )
++        _write_printing_instructions(output, selected)
++
++        duration = time.perf_counter() - started
++        result: dict[str, Any] = {
++            "schema": SCHEMA,
++            "status": "complete",
++            "completed_at_utc": _now(),
++            "empirical_synthetic_only": True,
++            "duration_seconds": duration,
++            "peak_rss_kib": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss),
++            "configuration_sha3_256": _sha3(PREREGISTRATION),
++            "limitations": [
++                "No new carrier physical print, scan or camera capture was evaluated.",
++                "Deterministic transforms are falsification diagnostics, not validated printer, scanner, phone or WhatsApp models.",
++                "The compact 96-bit carrier has no collusion guarantee and is not the original 52,500-symbol profile.",
++                "The 16-bit keyed check is not a deployment authenticator or false-attribution bound.",
++                "Nominal area is matched within 0.5%, but strength, source-informed allocation, local contrast and measured distortion differ.",
++                "Donor recovery after copied-overlay transplantation is not content authenticity or human-culpability evidence.",
++            ],
++            "payload_disclosure": manifest["payload"],
++            "profiles": manifest["profiles"],
++            "capacity": capacity,
++            "issued_target_pdfs": issued,
++            "transplant_controls": transplant_details,
++            "observation_counts": {
++                "total": len(observations),
++                "positive": sum(item["kind"] == "positive" for item in observations),
++                "unmarked": sum(item["kind"] == "unmarked" for item in observations),
++                "wrong_key": sum(item["kind"] == "wrong_key" for item in observations),
++                "wrong_context": sum(
++                    item["kind"] == "wrong_context" for item in observations
++                ),
++                "other_issued": sum(
++                    item["kind"] == "other_issued" for item in observations
++                ),
++                "copied_overlay_modified_content": sum(
++                    item["kind"] == "copied_overlay_modified_content"
++                    for item in observations
++                ),
++            },
++            "positive_summary": _positive_summary(observations),
++            "control_summary": _control_summary(observations),
++            "advancement": advancement,
++            "observations": observations,
++            "arrays": {
++                "path": arrays_path.relative_to(output).as_posix(),
++                "sha3_256": _sha3(arrays_path),
++                "decoded_words_shape": list(np.stack(decoded_words).shape),
++                "logical_correlations_shape": list(
++                    np.stack(logical_correlations).shape
++                ),
++            },
++            "artifact_sha3_256": _artifact_hashes(output),
++        }
++        _json_write(output / "results.json", result)
++        (output / "command.log").write_text(
++            "\n".join(
++                [
++                    f"started_utc={manifest['prepared_at_utc']}",
++                    f"completed_utc={result['completed_at_utc']}",
++                    "command=OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=prototypes/nishan_pq:research/robustness/physical_carrier __PRIVATE_CAPTURE_WORKSPACE__/SIH/.venv/bin/python research/robustness/physical_carrier/run_pilot.py --output research/robustness/physical_carrier/pilot",
++                    f"status=complete observations={len(observations)} duration_seconds={duration:.6f}",
++                    f"configuration_sha3_256={result['configuration_sha3_256']}",
++                ]
++            )
++            + "\n",
++            encoding="utf-8",
++        )
++        return result
++    except Exception as error:
++        _json_write(
++            output / "failure.json",
++            {
++                "schema": SCHEMA,
++                "status": "failure",
++                "failed_at_utc": _now(),
++                "error_type": type(error).__name__,
++                "error": str(error),
++                "traceback": traceback.format_exc(),
++                "retained_output": True,
++            },
++        )
++        raise
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", required=True, type=Path)
++    args = parser.parse_args()
++    result = run(args.output)
++    print(
++        json.dumps(
++            {
++                "status": result["status"],
++                "duration_seconds": result["duration_seconds"],
++                "observation_counts": result["observation_counts"],
++                "advancement": result["advancement"],
++            },
++            sort_keys=True,
++            allow_nan=False,
++        )
++    )
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/research/robustness/physical_carrier/score_capture.py b/research/robustness/physical_carrier/score_capture.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..253f32e6bb82e65b4cd5dda722c5d15c4afa411f
+--- /dev/null
++++ b/research/robustness/physical_carrier/score_capture.py
+@@ -0,0 +1,220 @@
++#!/usr/bin/env python3
++"""Score one fresh capture against the frozen compact physical-carrier pilot.
++
++The scorer is deliberately read-only: it verifies the committed pilot and
++source hashes, reads one suspect file, and emits finite JSON to stdout.  It
++does not write into the pilot directory and does not make an identity,
++authenticity, or culpability decision.
++"""
++
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import tempfile
++import time
++from pathlib import Path
++from typing import Any
++
++import numpy as np
++from PIL import Image, ImageOps
++
++from nishan import watermark
++
++from carrier import PROFILES, decode_profile
++from codec import CODEWORD_BITS, decode_message, encode_message
++from run_pilot import (
++    EXPERIMENT_ROOT,
++    PREREGISTRATION,
++    PUBLIC_SEED,
++    TARGET,
++    _carrier_context,
++    _derive,
++    _message_context,
++    _sha3,
++)
++
++
++DEFAULT_PILOT = EXPERIMENT_ROOT / "pilot"
++
++
++def _sha256(path: Path) -> str:
++    digest = hashlib.sha256()
++    with path.open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def _read_json(path: Path) -> dict[str, Any]:
++    try:
++        value = json.loads(path.read_text(encoding="utf-8"))
++    except (OSError, json.JSONDecodeError) as error:
++        raise ValueError(f"cannot read verified JSON {path}: {error}") from error
++    if not isinstance(value, dict):
++        raise ValueError(f"expected a JSON object at {path}")
++    return value
++
++
++def _verified_inputs(
++    pilot: Path, source_id: str, profile_name: str
++) -> tuple[Path, dict[str, Any], dict[str, Any]]:
++    manifest = _read_json(pilot / "manifest.json")
++    results = _read_json(pilot / "results.json")
++    if manifest.get("status") != "prepared" or results.get("status") != "complete":
++        raise ValueError("pilot manifest/results are not in their completed states")
++
++    current_config_hash = _sha3(PREREGISTRATION)
++    recorded_hashes = {
++        manifest.get("preregistration_sha3_256"),
++        results.get("configuration_sha3_256"),
++    }
++    if recorded_hashes != {current_config_hash}:
++        raise ValueError("current preregistration does not match the completed pilot")
++
++    implementation = manifest.get("implementation_sha3_256")
++    if not isinstance(implementation, dict):
++        raise ValueError("pilot manifest has no implementation hash map")
++    repo_root = EXPERIMENT_ROOT.parents[2]
++    for relative, expected_hash in implementation.items():
++        implementation_path = repo_root / str(relative)
++        if not implementation_path.is_file() or _sha3(implementation_path) != expected_hash:
++            raise ValueError(f"implementation hash mismatch: {relative}")
++
++    source_manifest = manifest.get("source_manifest")
++    cases = source_manifest.get("cases") if isinstance(source_manifest, dict) else None
++    if not isinstance(cases, list):
++        raise ValueError("pilot manifest has no verified source cases")
++    matching = [case for case in cases if case.get("id") == source_id]
++    if len(matching) != 1:
++        raise ValueError(f"source id is not uniquely declared: {source_id}")
++    case = matching[0]
++    source = pilot / "sources" / str(case["file"])
++    if not source.is_file() or _sha256(source) != case.get("sha256"):
++        raise ValueError(f"pilot source hash mismatch: {source_id}")
++
++    if profile_name not in PROFILES or profile_name not in manifest.get("profiles", {}):
++        raise ValueError(f"profile was not frozen in the completed pilot: {profile_name}")
++    if PROFILES[profile_name].to_dict() != manifest["profiles"][profile_name]:
++        raise ValueError(f"current profile differs from the completed pilot: {profile_name}")
++    return source, manifest, results
++
++
++def _oriented_raster(capture: Path, temporary: Path) -> Path:
++    """Losslessly materialize EXIF orientation for raster camera files."""
++
++    if watermark.is_pdf_document(capture):
++        return capture
++    with Image.open(capture) as image:
++        oriented = ImageOps.exif_transpose(image).convert("RGB")
++        if oriented.width < 1 or oriented.height < 1:
++            raise ValueError("capture has no raster pixels")
++        normalized = temporary / "capture-exif-oriented.png"
++        oriented.save(normalized, format="PNG", optimize=False)
++    return normalized
++
++
++def score_capture(
++    capture: Path,
++    *,
++    pilot: Path = DEFAULT_PILOT,
++    source_id: str = "test_mixed",
++    profile_name: str,
++) -> dict[str, Any]:
++    capture = Path(capture).resolve()
++    pilot = Path(pilot).resolve()
++    if not capture.is_file():
++        raise ValueError(f"capture does not exist: {capture}")
++    source, manifest, _ = _verified_inputs(pilot, source_id, profile_name)
++
++    master = _derive(PUBLIC_SEED, b"master")
++    carrier_key = _derive(master, b"carrier")
++    codec_key = _derive(master, b"codec")
++    carrier_context = _carrier_context(source_id, profile_name)
++    message_context = _message_context(source_id)
++    expected_word = encode_message(*TARGET, codec_key, message_context)
++
++    started = time.perf_counter()
++    with tempfile.TemporaryDirectory(prefix="nishan-capture-") as directory:
++        suspect = _oriented_raster(capture, Path(directory))
++        decoded_word, correlations, registration = decode_profile(
++            source,
++            suspect,
++            carrier_key,
++            carrier_context,
++            PROFILES[profile_name],
++            registration_mode="always",
++        )
++    elapsed = time.perf_counter() - started
++    decoded = decode_message(
++        decoded_word,
++        codec_key,
++        message_context,
++        expected=TARGET,
++    )
++    if decoded.accepted_expected:
++        outcome = "exact_expected"
++    elif decoded.valid_other_message:
++        outcome = "valid_other_message"
++    else:
++        outcome = "abstain"
++
++    bit_errors = int(np.count_nonzero(decoded_word != expected_word))
++    result: dict[str, Any] = {
++        "schema": "nishan-physical-capture-score/v1",
++        "research_only": True,
++        "synthetic_pilot_message": True,
++        "capture": {
++            "path": str(capture),
++            "sha256": _sha256(capture),
++            "bytes": capture.stat().st_size,
++        },
++        "verified_source": {
++            "source_id": source_id,
++            "path": str(source),
++            "sha256": _sha256(source),
++        },
++        "profile": PROFILES[profile_name].to_dict(),
++        "pilot_configuration_sha3_256": manifest["preregistration_sha3_256"],
++        "verified_implementation_sha3_256": manifest["implementation_sha3_256"],
++        "scorer_sha3_256": _sha3(Path(__file__)),
++        "registration_mode": "always",
++        "registration": registration,
++        "elapsed_seconds": elapsed,
++        "outcome": outcome,
++        "expected_codeword_bit_errors": bit_errors,
++        "expected_codeword_ber": bit_errors / CODEWORD_BITS,
++        "decoded_codeword_hex": np.packbits(decoded_word).tobytes().hex(),
++        "logical_correlation_minimum": float(correlations.min()),
++        "logical_correlation_maximum": float(correlations.max()),
++        "logical_correlation_mean": float(correlations.mean()),
++        "decode": decoded.to_dict(),
++        "interpretation": (
++            "Exact recovery, if present, is only recovery of the public synthetic "
++            "48-bit pilot message. It is not content authentication, a deployment "
++            "identity verdict, a false-attribution bound, or evidence of culpability."
++        ),
++    }
++    json.dumps(result, allow_nan=False)
++    return result
++
++
++def main() -> None:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--capture", required=True, type=Path)
++    parser.add_argument("--pilot", type=Path, default=DEFAULT_PILOT)
++    parser.add_argument("--source-id", default="test_mixed")
++    parser.add_argument("--profile", required=True, choices=tuple(PROFILES))
++    args = parser.parse_args()
++    result = score_capture(
++        args.capture,
++        pilot=args.pilot,
++        source_id=args.source_id,
++        profile_name=args.profile,
++    )
++    print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/research/robustness/physical_carrier/tests/test_carrier.py b/research/robustness/physical_carrier/tests/test_carrier.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..0c9127d28b916d214f5b62dffb51a4271a855581
+--- /dev/null
++++ b/research/robustness/physical_carrier/tests/test_carrier.py
+@@ -0,0 +1,144 @@
++from __future__ import annotations
++
++import tempfile
++import unittest
++from pathlib import Path
++
++import numpy as np
++
++from carrier import (
++    BLANK_LUMA_FLOOR,
++    BASELINE,
++    CANDIDATE,
++    CAPACITY_PROBE_REPETITIONS,
++    MINIMUM_BLANK_FRACTION,
++    TEXT_PADDING,
++    _cluster_masks,
++    _text_masks,
++    candidate_capacity,
++    collapse_correlations,
++    decode_profile,
++    embed_profile,
++    eligible_tiles,
++    fidelity_metrics,
++)
++from codec import CODEWORD_BITS, encode_message
++from nishan import watermark
++
++
++SOURCE_ROOT = Path(
++    "/tmp/sih-robustness-20260916-control/research/robustness_campaign/sources"
++)
++KEY = b"c" * 32
++CONTEXT = "carrier-test/test-short"
++
++
++class ProfileAccountingTests(unittest.TestCase):
++    def test_profiles_freeze_payload_repetition_area_and_changed_strength(self):
++        self.assertEqual(CANDIDATE.physical_symbols, CODEWORD_BITS * 7)
++        self.assertEqual(BASELINE.physical_symbols, CODEWORD_BITS * 50)
++        self.assertEqual(CANDIDATE.nominal_pixels, 688_128)
++        self.assertEqual(BASELINE.nominal_pixels, 691_200)
++        self.assertLess(
++            abs(CANDIDATE.nominal_pixels / BASELINE.nominal_pixels - 1.0),
++            0.005,
++        )
++        self.assertEqual(CANDIDATE.strength, 18.0)
++        self.assertEqual(BASELINE.strength, 4.0)
++        self.assertNotEqual(CANDIDATE.strength, BASELINE.strength)
++
++    def test_cluster_masks_are_disjoint_equal_ink_and_orientation_specific(self):
++        masks = _cluster_masks(CANDIDATE.block_size)
++        self.assertEqual(masks.shape, (2, 2, 32, 32))
++        for orientation in range(2):
++            negative, positive = masks[orientation]
++            self.assertEqual(int(negative.sum()), 64)
++            self.assertEqual(int(positive.sum()), 64)
++            self.assertFalse(np.any(negative & positive))
++        self.assertFalse(np.array_equal(masks[0], masks[1]))
++
++    def test_all_common_sources_fit_r7_but_reject_fixed_r18_probe(self):
++        for source in sorted(SOURCE_ROOT.glob("*.pdf")):
++            with self.subTest(source=source.name):
++                capacity = candidate_capacity(source)
++                self.assertGreaterEqual(capacity, CANDIDATE.physical_symbols)
++                self.assertLess(
++                    capacity, CODEWORD_BITS * CAPACITY_PROBE_REPETITIONS
++                )
++
++    def test_candidate_tiles_independently_satisfy_text_and_blank_masks(self):
++        source = SOURCE_ROOT / "test_mixed.pdf"
++        pages, _ = watermark.load_pages(source, dpi=144)
++        masks = _text_masks(
++            source,
++            [page.shape[:2] for page in pages],
++            padding=TEXT_PADDING,
++        )
++        tiles = eligible_tiles(source)
++        self.assertGreaterEqual(len(tiles), CANDIDATE.physical_symbols)
++        for tile in tiles:
++            patch = pages[tile.page][
++                tile.y : tile.y + CANDIDATE.block_size,
++                tile.x : tile.x + CANDIDATE.block_size,
++            ]
++            text_patch = masks[tile.page][
++                tile.y : tile.y + CANDIDATE.block_size,
++                tile.x : tile.x + CANDIDATE.block_size,
++            ]
++            self.assertFalse(text_patch.any())
++            self.assertGreaterEqual(
++                float(np.mean(watermark._luma(patch) >= BLANK_LUMA_FLOOR)),
++                MINIMUM_BLANK_FRACTION,
++            )
++
++    def test_correlation_repetitions_are_summed_before_hard_decision(self):
++        correlations = np.zeros(CODEWORD_BITS * 7, dtype=np.float64)
++        correlations.reshape(7, CODEWORD_BITS)[:, 0] = [9, -1, -1, -1, -1, -1, -1]
++        correlations.reshape(7, CODEWORD_BITS)[:, 1] = [-9, 1, 1, 1, 1, 1, 1]
++        word, summed = collapse_correlations(correlations, CODEWORD_BITS, 7)
++        self.assertEqual(int(word[0]), 1)
++        self.assertEqual(int(word[1]), 0)
++        self.assertEqual(float(summed[0]), 3.0)
++        self.assertEqual(float(summed[1]), -3.0)
++
++
++class CandidateRoundTripTests(unittest.TestCase):
++    def test_candidate_clean_round_trip_preserves_text_and_text_pixels(self):
++        source = SOURCE_ROOT / "test_short.pdf"
++        codeword = encode_message(7, 0x2A1B3C, KEY, CONTEXT)
++        with tempfile.TemporaryDirectory(dir="/tmp") as directory:
++            marked = Path(directory) / "candidate.pdf"
++            metrics = embed_profile(
++                source, marked, codeword, KEY, CONTEXT, CANDIDATE
++            )
++            decoded, correlations, diagnostics = decode_profile(
++                source, marked, KEY, CONTEXT, CANDIDATE, registration_mode="off"
++            )
++            np.testing.assert_array_equal(decoded, codeword)
++            self.assertEqual(correlations.shape, (CODEWORD_BITS,))
++            self.assertTrue(metrics["text_preserved"])
++            self.assertEqual(metrics["fidelity"]["text_region"]["changed_fraction"], 0.0)
++            self.assertEqual(diagnostics["registration_mode"], "off")
++
++    def test_baseline_clean_round_trip_uses_same_codeword(self):
++        source = SOURCE_ROOT / "test_short.pdf"
++        codeword = encode_message(7, 0x2A1B3C, KEY, CONTEXT)
++        with tempfile.TemporaryDirectory(dir="/tmp") as directory:
++            marked = Path(directory) / "baseline.pdf"
++            metrics = embed_profile(
++                source, marked, codeword, KEY, CONTEXT, BASELINE
++            )
++            decoded, correlations, _ = decode_profile(
++                source, marked, KEY, CONTEXT, BASELINE, registration_mode="off"
++            )
++            np.testing.assert_array_equal(decoded, codeword)
++            self.assertEqual(correlations.shape, (CODEWORD_BITS,))
++            self.assertTrue(metrics["text_preserved"])
++            self.assertGreaterEqual(
++                fidelity_metrics(source, marked)["text_region"]["changed_fraction"],
++                0.0,
++            )
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/research/robustness/physical_carrier/tests/test_codec.py b/research/robustness/physical_carrier/tests/test_codec.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..c19f179c42b64f5090778c16b876a69c6df8ba41
+--- /dev/null
++++ b/research/robustness/physical_carrier/tests/test_codec.py
+@@ -0,0 +1,160 @@
++from __future__ import annotations
++
++import unittest
++
++import numpy as np
++
++from codec import (
++    CODEWORD_BITS,
++    MAX_MESSAGE_ID,
++    MAX_ROW,
++    PAYLOAD_BITS,
++    _tag,
++    decode_message,
++    decode_nibble,
++    encode_message,
++    encode_nibble,
++)
++
++
++KEY = b"k" * 32
++CONTEXT = "synthetic/source-a"
++TARGET = (7, 0x2A1B3C)
++
++
++class ExtendedHammingTests(unittest.TestCase):
++    def test_all_codewords_have_minimum_distance_four(self):
++        words = np.stack([encode_nibble(value) for value in range(16)])
++        distances = np.count_nonzero(words[:, None, :] != words[None, :, :], axis=2)
++        distances += np.eye(16, dtype=np.int64) * 8
++        self.assertEqual(int(distances.min()), 4)
++
++    def test_each_nibble_round_trips_and_single_error_is_corrected(self):
++        for value in range(16):
++            encoded = encode_nibble(value)
++            clean = decode_nibble(encoded)
++            self.assertEqual(clean.nibble, value)
++            self.assertEqual(clean.distance, 0)
++            self.assertFalse(clean.uncorrectable)
++            for index in range(8):
++                damaged = encoded.copy()
++                damaged[index] ^= 1
++                decoded = decode_nibble(damaged)
++                self.assertEqual(decoded.nibble, value)
++                self.assertEqual(decoded.distance, 1)
++                self.assertFalse(decoded.uncorrectable)
++
++    def test_two_errors_are_rejected_even_if_nearest_codeword_ties(self):
++        for value in range(16):
++            encoded = encode_nibble(value)
++            for first in range(8):
++                for second in range(first + 1, 8):
++                    damaged = encoded.copy()
++                    damaged[[first, second]] ^= 1
++                    decoded = decode_nibble(damaged)
++                    self.assertTrue(decoded.uncorrectable)
++                    self.assertIsNone(decoded.nibble)
++                    self.assertEqual(decoded.distance, 2)
++
++    def test_nibble_inputs_are_validated(self):
++        for bad in (-1, 16):
++            with self.subTest(bad=bad), self.assertRaises(ValueError):
++                encode_nibble(bad)
++        for bad_word in (np.zeros(7), np.zeros((1, 8)), np.array([0] * 7 + [2])):
++            with self.subTest(shape=bad_word.shape), self.assertRaises(ValueError):
++                decode_nibble(bad_word)
++
++
++class MessageCodecTests(unittest.TestCase):
++    def test_message_round_trip_is_exactly_96_codeword_bits(self):
++        word = encode_message(*TARGET, KEY, CONTEXT)
++        self.assertEqual(word.shape, (CODEWORD_BITS,))
++        self.assertEqual(word.dtype, np.uint8)
++        decoded = decode_message(word, KEY, CONTEXT, expected=TARGET)
++        self.assertTrue(decoded.tag_valid)
++        self.assertTrue(decoded.accepted_expected)
++        self.assertFalse(decoded.valid_other_message)
++        self.assertEqual((decoded.row, decoded.message_id), TARGET)
++        self.assertEqual(decoded.payload_bits, 48)
++        self.assertEqual(decoded.codeword_bits, 96)
++        self.assertEqual(decoded.corrected_blocks, 0)
++        self.assertEqual(decoded.uncorrectable_blocks, 0)
++
++    def test_public_vector_locks_exact_hmac_framing(self):
++        word = encode_message(*TARGET, KEY, CONTEXT)
++        decoded = decode_message(word, KEY, CONTEXT, expected=TARGET)
++        self.assertEqual(decoded.recovered_payload_hex, "01ea1b3c0df4")
++
++    def test_one_error_in_every_block_is_corrected(self):
++        word = encode_message(*TARGET, KEY, CONTEXT)
++        damaged = word.copy()
++        damaged[np.arange(12) * 8] ^= 1
++        decoded = decode_message(damaged, KEY, CONTEXT, expected=TARGET)
++        self.assertTrue(decoded.accepted_expected)
++        self.assertEqual(decoded.corrected_blocks, 12)
++        self.assertEqual(decoded.uncorrectable_blocks, 0)
++
++    def test_double_error_causes_abstention_before_tag_acceptance(self):
++        word = encode_message(*TARGET, KEY, CONTEXT)
++        word[[0, 1]] ^= 1
++        decoded = decode_message(word, KEY, CONTEXT, expected=TARGET)
++        self.assertFalse(decoded.accepted_expected)
++        self.assertFalse(decoded.tag_valid)
++        self.assertEqual(decoded.uncorrectable_blocks, 1)
++        self.assertEqual(decoded.failure_reason, "uncorrectable_ecc")
++
++    def test_wrong_key_and_context_fail_the_keyed_check(self):
++        word = encode_message(*TARGET, KEY, CONTEXT)
++        wrong_key = decode_message(word, b"z" * 32, CONTEXT, expected=TARGET)
++        wrong_context = decode_message(word, KEY, "synthetic/wrong", expected=TARGET)
++        self.assertFalse(wrong_key.tag_valid)
++        self.assertFalse(wrong_key.accepted_expected)
++        self.assertFalse(wrong_context.tag_valid)
++        self.assertFalse(wrong_context.accepted_expected)
++
++    def test_other_issued_message_is_valid_but_not_the_expected_target(self):
++        other = (29, 0x155AA5)
++        word = encode_message(*other, KEY, CONTEXT)
++        decoded = decode_message(word, KEY, CONTEXT, expected=TARGET)
++        self.assertTrue(decoded.tag_valid)
++        self.assertTrue(decoded.valid_other_message)
++        self.assertFalse(decoded.accepted_expected)
++        self.assertEqual((decoded.row, decoded.message_id), other)
++        self.assertEqual(decoded.failure_reason, "valid_other_message")
++
++    def test_field_and_word_bounds_are_rejected(self):
++        for row, message in ((-1, 0), (MAX_ROW + 1, 0), (0, -1), (0, MAX_MESSAGE_ID + 1)):
++            with self.subTest(row=row, message=message), self.assertRaises(ValueError):
++                encode_message(row, message, KEY, CONTEXT)
++        with self.assertRaises(ValueError):
++            decode_message(np.zeros(95, dtype=np.uint8), KEY, CONTEXT, expected=TARGET)
++        with self.assertRaises(ValueError):
++            decode_message(np.full(96, 2, dtype=np.uint8), KEY, CONTEXT, expected=TARGET)
++
++    def test_decoded_row_outside_roster_is_rejected_even_with_matching_tag(self):
++        body = (((MAX_ROW + 1) << 22) | 1).to_bytes(4, "big")
++        payload_bits = np.unpackbits(
++            np.frombuffer(body + _tag(body, KEY, CONTEXT), dtype=np.uint8)
++        )
++        word = np.concatenate(
++            [
++                encode_nibble(
++                    int(
++                        np.packbits(
++                            payload_bits[start : start + 4], bitorder="big"
++                        )[0]
++                        >> 4
++                    )
++                )
++                for start in range(0, PAYLOAD_BITS, 4)
++            ]
++        )
++        decoded = decode_message(word, KEY, CONTEXT, expected=TARGET)
++        self.assertFalse(decoded.accepted_expected)
++        self.assertFalse(decoded.tag_valid)
++        self.assertEqual(decoded.row, MAX_ROW + 1)
++        self.assertEqual(decoded.failure_reason, "decoded_row_out_of_roster")
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/research/robustness/physical_carrier/tests/test_matrix.py b/research/robustness/physical_carrier/tests/test_matrix.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..1e86947640124c1388a92d98c88f46108583f81a
+--- /dev/null
++++ b/research/robustness/physical_carrier/tests/test_matrix.py
+@@ -0,0 +1,149 @@
++from __future__ import annotations
++
++import tempfile
++import unittest
++import json
++from itertools import product
++from pathlib import Path
++
++import numpy as np
++from PIL import Image
++
++from carrier import PROFILES
++from run_pilot import (
++    POSITIVE_TRANSFORMS,
++    UNMARKED_TRANSFORMS,
++    apply_transform,
++    build_declared_matrix,
++    create_output_directory,
++    _json_write,
++)
++
++
++CASES = [
++    {"id": "dev_a", "split": "development"},
++    {"id": "confirm_b", "split": "confirmation"},
++]
++EXPECTED_PROFILES = {"legacy_split_12_r50", "inkcluster_32_r7"}
++EXPECTED_POSITIVE_TRANSFORMS = {
++    "clean",
++    "jpeg55",
++    "photo_resize_jpeg",
++    "print_halftone",
++    "scanner_contrast",
++    "scanner_bilevel",
++}
++EXPECTED_UNMARKED_TRANSFORMS = {"clean", "print_halftone", "scanner_bilevel"}
++
++
++class MatrixTests(unittest.TestCase):
++    def test_declared_matrix_has_exact_unique_control_identities(self):
++        matrix = build_declared_matrix(CASES)
++        expected_per_source_profile = (
++            len(POSITIVE_TRANSFORMS) + len(UNMARKED_TRANSFORMS) + 4
++        )
++        self.assertEqual(
++            len(matrix), len(CASES) * len(PROFILES) * expected_per_source_profile
++        )
++        identities = {
++            (
++                item["source_id"],
++                item["profile"],
++                item["kind"],
++                item["transform"],
++            )
++            for item in matrix
++        }
++        self.assertEqual(len(identities), len(matrix))
++        self.assertEqual(set(PROFILES), EXPECTED_PROFILES)
++        self.assertEqual(set(POSITIVE_TRANSFORMS), EXPECTED_POSITIVE_TRANSFORMS)
++        self.assertEqual(set(UNMARKED_TRANSFORMS), EXPECTED_UNMARKED_TRANSFORMS)
++        expected_identities = set()
++        for case, profile, transform in product(
++            CASES, EXPECTED_PROFILES, EXPECTED_POSITIVE_TRANSFORMS
++        ):
++            expected_identities.add((case["id"], profile, "positive", transform))
++        for case, profile, transform in product(
++            CASES, EXPECTED_PROFILES, EXPECTED_UNMARKED_TRANSFORMS
++        ):
++            expected_identities.add((case["id"], profile, "unmarked", transform))
++        for case, profile, kind in product(
++            CASES,
++            EXPECTED_PROFILES,
++            {"wrong_key", "wrong_context", "other_issued"},
++        ):
++            expected_identities.add((case["id"], profile, kind, "clean"))
++        for case, profile in product(CASES, EXPECTED_PROFILES):
++            expected_identities.add(
++                (case["id"], profile, "copied_overlay_modified_content", "transplant")
++            )
++        self.assertEqual(identities, expected_identities)
++        for case in CASES:
++            for profile in PROFILES:
++                subset = [
++                    item
++                    for item in matrix
++                    if item["source_id"] == case["id"]
++                    and item["profile"] == profile
++                ]
++                self.assertEqual(len(subset), 13)
++                self.assertEqual(
++                    {item["kind"] for item in subset},
++                    {
++                        "positive",
++                        "unmarked",
++                        "wrong_key",
++                        "wrong_context",
++                        "other_issued",
++                        "copied_overlay_modified_content",
++                    },
++                )
++
++    def test_output_guard_does_not_overwrite(self):
++        with tempfile.TemporaryDirectory(dir="/tmp") as directory:
++            output = Path(directory) / "run"
++            create_output_directory(output)
++            sentinel = output / "sentinel"
++            sentinel.write_text("keep", encoding="utf-8")
++            with self.assertRaises(FileExistsError):
++                create_output_directory(output)
++            self.assertEqual(sentinel.read_text(encoding="utf-8"), "keep")
++
++    def test_json_writer_is_finite(self):
++        with tempfile.TemporaryDirectory(dir="/tmp") as directory:
++            finite = Path(directory) / "finite.json"
++            _json_write(finite, {"value": 1.25})
++            self.assertEqual(json.loads(finite.read_text())["value"], 1.25)
++            with self.assertRaises(ValueError):
++                _json_write(Path(directory) / "nan.json", {"value": float("nan")})
++
++
++class TransformTests(unittest.TestCase):
++    def setUp(self):
++        ramp = np.linspace(0, 255, 96, dtype=np.uint8)
++        x, y = np.meshgrid(ramp, ramp)
++        rgb = np.stack((x, y, np.full((96, 96), 220)), axis=2)
++        self.image = Image.fromarray(rgb.astype(np.uint8), mode="RGB")
++
++    def test_all_frozen_transforms_are_deterministic(self):
++        for name in POSITIVE_TRANSFORMS:
++            with self.subTest(name=name):
++                first = np.asarray(apply_transform(self.image, name))
++                second = np.asarray(apply_transform(self.image, name))
++                np.testing.assert_array_equal(first, second)
++
++    def test_photo_channel_is_separate_resize_and_recompression(self):
++        large = self.image.resize((1500, 1800))
++        transformed = apply_transform(large, "photo_resize_jpeg")
++        self.assertEqual(max(transformed.size), 1280)
++        self.assertNotEqual(transformed.size, large.size)
++
++    def test_scanner_bilevel_is_binary_and_not_jpeg55(self):
++        bilevel = np.asarray(apply_transform(self.image, "scanner_bilevel"))
++        self.assertLessEqual(set(np.unique(bilevel).tolist()), {0, 255})
++        jpeg = np.asarray(apply_transform(self.image, "jpeg55"))
++        self.assertGreater(len(np.unique(jpeg)), 2)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/research/robustness/physical_carrier/tests/test_score_capture.py b/research/robustness/physical_carrier/tests/test_score_capture.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..2fb7691a5f824c0e63c6b857a0142fa14b8bdf82
+--- /dev/null
++++ b/research/robustness/physical_carrier/tests/test_score_capture.py
+@@ -0,0 +1,36 @@
++from __future__ import annotations
++
++import unittest
++from pathlib import Path
++
++from carrier import CANDIDATE
++from score_capture import score_capture
++
++
++EXPERIMENT_ROOT = Path(__file__).resolve().parents[1]
++PILOT = EXPERIMENT_ROOT / "pilot"
++
++
++class FreshCaptureScorerTests(unittest.TestCase):
++    def test_selected_candidate_digital_pdf_scores_read_only_with_registration(self):
++        capture = PILOT / "print_ready/test-mixed-candidate-row-7.pdf"
++        before = sorted(path.relative_to(PILOT) for path in PILOT.rglob("*"))
++        result = score_capture(
++            capture,
++            pilot=PILOT,
++            source_id="test_mixed",
++            profile_name=CANDIDATE.name,
++        )
++        after = sorted(path.relative_to(PILOT) for path in PILOT.rglob("*"))
++
++        self.assertEqual(before, after)
++        self.assertEqual(result["registration_mode"], "always")
++        self.assertEqual(result["outcome"], "exact_expected")
++        self.assertTrue(result["decode"]["accepted_expected"])
++        self.assertEqual(result["decode"]["row"], 7)
++        self.assertEqual(result["decode"]["message_id"], 0x2A1B3C)
++        self.assertEqual(result["expected_codeword_bit_errors"], 0)
++
++
++if __name__ == "__main__":
++    unittest.main()
